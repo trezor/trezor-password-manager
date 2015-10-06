@@ -1,9 +1,10 @@
 "use strict";
 
-let React = require('react'),
+var React = require('react'),
     Router = require('react-router'),
     {Spring} = require("react-motion"),
     range = require("lodash.range"),
+    DataService = require('../../components/data_service'),
     {Link} = Router,
     springConfig = [300, 41],
     itemsCount = 4,
@@ -17,11 +18,26 @@ let React = require('react'),
                 mouse: 0,
                 isPressed: false,
                 lastPressed: 0,
-                order: range(itemsCount)
+                order: range(itemsCount),
+                active: 0,
+                tags: {}
             }
         },
 
-        componentDidMount() {
+        componentWillMount() {
+            DataService.getUserTagsTest().then(response => {
+                this.setState({
+                    tags: response.tags,
+                    active: Object.getOwnPropertyDescriptor(response.tags, this.state.active).value.name
+                });
+            });
+            this.props.eventEmitter.on('changeTag', this.changeTag);
+        },
+
+        changeTag(e) {
+            this.setState({
+                active: Object.getOwnPropertyDescriptor(this.state.tags, e).value.name
+            });
         },
 
         handleTouchStart(key, pressLocation, e) {
@@ -105,7 +121,7 @@ let React = require('react'),
                     <div className="row">
                         <div className="col-sm-6">
                             <div className="page-title">
-                                <h3 className="title">Internet</h3>
+                                <h3 className="title">{this.state.active}</h3>
                             </div>
                         </div>
                         <div className="col-sm-6 text-right">

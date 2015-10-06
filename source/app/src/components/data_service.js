@@ -1,7 +1,7 @@
 "use strict";
 
 require('whatwg-fetch');
-let dataService = {
+var dataService = {
 
     getUserTagsTest() {
         return fetch('./tags.json', {

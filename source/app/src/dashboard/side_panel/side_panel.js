@@ -1,6 +1,6 @@
 "use strict";
 
-let React = require('react'),
+var React = require('react'),
     Router = require('react-router'),
     DataService = require('../../components/data_service'),
 
@@ -27,10 +27,11 @@ let React = require('react'),
             this.setState({
                 active: Object.getOwnPropertyDescriptor(this.state.tags, e).value.name
             });
+            this.props.eventEmitter.emit('changeTag', e)
         },
 
         render(){
-            let tag_array = Object.keys(this.state.tags).map((key) => {
+            var tag_array = Object.keys(this.state.tags).map((key) => {
                 var obj = this.state.tags[key];
                 obj.active = this.state.active === obj.name ? 'active' : '';
                 return (

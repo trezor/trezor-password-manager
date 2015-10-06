@@ -1,6 +1,6 @@
 "use strict";
 
-let React = require('react'),
+var React = require('react'),
     Router = require('react-router'),
 
     Header = React.createClass({

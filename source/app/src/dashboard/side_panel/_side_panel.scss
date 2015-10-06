@@ -38,6 +38,7 @@ aside.left-panel {
   ul > li {
     position: relative;
     cursor: pointer;
+    @include unselectable();
 
     &.active:hover > a, &.active > a {
       color: $c_blue_light;

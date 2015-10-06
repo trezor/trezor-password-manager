@@ -1,6 +1,6 @@
 "use strict";
 
-let React = require('react'),
+var React = require('react'),
     Router = require('react-router'),
     {Link} = Router,
     Home = React.createClass({
@@ -26,6 +26,8 @@ let React = require('react'),
                 'success': true,
                 'version': 2
             };
+
+            sessionStorage.setItem("public_key", window.trezorResponse.public_key);
             this.transitionTo('dashboard');
         },
 
