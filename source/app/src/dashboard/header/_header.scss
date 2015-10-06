@@ -1,0 +1,11 @@
+header {
+  background-color: #fff;
+  border-bottom: 1px solid #ececee;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  height: 52px;
+  line-height: 52px;
+  @include box-sizing(border-box);
+  @include box-shadow(0 1px 1px rgba($c_black, 0.05));
+  
+}

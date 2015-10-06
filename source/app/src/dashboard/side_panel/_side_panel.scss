@@ -1,0 +1,74 @@
+aside.left-panel {
+  background-color: $c_content_dark_blue_bg;
+  color: $c_font_title_grey;
+  overflow: hidden;
+  outline: none;
+  width: 230px;
+  position: fixed;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+
+
+.logo {
+  padding: 15px 20px;
+  text-transform: uppercase;
+
+  img{
+    vertical-align: middle;
+    text-align: left;
+    margin-right: 10px;
+    margin-top: -12px;
+  }
+
+  span {
+    color: $c_white;
+    font-weight: 700;
+    font-size: 1.9em;
+    letter-spacing: .05em;
+  }
+}
+
+
+.navigation {
+  margin: 20px 0 20px;
+
+  ul > li {
+    position: relative;
+    cursor: pointer;
+
+    &.active:hover > a, &.active > a {
+      color: $c_blue_light;
+      background: $c_content_dark_blue_active_bg;
+    }
+
+    & > a {
+      display: block;
+      padding: 15px 25px;
+      color: $c_font_grey;
+      font-size: 15px;
+      text-decoration: none;
+      font-weight: 400;
+      outline: none !important;
+      @include transition(all 0.3s);
+
+      &:hover{
+        color: $c_white;
+      }
+
+      .nav-label {
+        vertical-align: middle;
+      }
+
+      i {
+        margin-right: 6px;
+        font-size: 18px;
+        width: 25px;
+        float: left;
+      }
+    }
+  }
+}
+
