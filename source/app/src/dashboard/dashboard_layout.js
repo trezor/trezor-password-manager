@@ -7,6 +7,7 @@ var React = require('react'),
     Header = require('./header/header'),
     Store = require('../components/data_store'),
     Service = require('../components/data_service'),
+    Popup = require('../components/modal_dialogs/entry_popup'),
     events = require('events'),
     eventEmitter = new events.EventEmitter(),
     {Link} = Router,
@@ -51,11 +52,12 @@ var React = require('react'),
                 <div>
                     {this.state.ready ?
                         <div>
-                            <SidePanel eventEmitter={eventEmitter}/>
+                            <Popup eventEmitter={eventEmitter} />
+                            <SidePanel eventEmitter={eventEmitter} />
 
                             <section className="content">
-                                <Header eventEmitter={eventEmitter}/>
-                                <PasswordTable eventEmitter={eventEmitter}/>
+                                <Header eventEmitter={eventEmitter} />
+                                <PasswordTable eventEmitter={eventEmitter} />
                             </section>
                         </div>
                         :
