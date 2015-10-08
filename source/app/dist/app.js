@@ -55,6 +55,10 @@ module.exports = Service;
         this.eventEmitter.emit('update', this.data);
     }
 
+    Object.defineProperty(Store.prototype,"getTagById",{writable:true,configurable:true,value:function(id) {
+        return Object.getOwnPropertyDescriptor(this.data.tags, id).value.name
+    }});
+
     Object.defineProperty(Store.prototype,"toObject",{writable:true,configurable:true,value:function() {
         return this.data;
     }});
@@ -188,7 +192,8 @@ var React = require('react'),
             return {
                 active_id: 0,
                 active_name: '',
-                tags: {}
+                tags: {},
+                passwords: {}
             }
         },
 
@@ -199,8 +204,8 @@ var React = require('react'),
 
         changeTag:function(e) {
             this.setState({
-                active_id: e,
-                active_name: Object.getOwnPropertyDescriptor(this.state.tags, e).value.name
+                active_id: parseInt(e),
+                active_name: Context.getTagById(e)
             });
         },
 
@@ -208,12 +213,29 @@ var React = require('react'),
             Context = context;
             this.setState({
                 tags: Context.data.tags,
-                active_name: Object.getOwnPropertyDescriptor(Context.data.tags, this.state.active_id).value.name
+                passwords: Context.data.passwords,
+                active_name: Context.getTagById(this.state.active_id)
             });
         },
 
 
         render:function(){
+            var password_table = Object.keys(this.state.passwords).map(function(key)  {
+                var obj = this.state.passwords[key];
+                if(obj.tags.indexOf(this.state.active_id) > -1){
+                    return (
+                        React.createElement("tr", {key: key}, 
+                            React.createElement("td", null, obj.name), 
+                            React.createElement("td", null, obj.username), 
+                            React.createElement("td", null, obj.password), 
+                            React.createElement("td", null, 
+                                Object.keys(obj.tags).map(function(key)  {
+                                    return ' '+Context.getTagById(obj.tags[key])
+                                })
+                            )
+                        ))
+                }
+            }.bind(this));
 
             return (
                 React.createElement("div", {className: "wraper container-fluid"}, 
@@ -239,24 +261,7 @@ var React = require('react'),
                                     )
                                     ), 
                                     React.createElement("tbody", null, 
-                                    React.createElement("tr", null, 
-                                        React.createElement("td", null, "Facebook.com"), 
-                                        React.createElement("td", null, "pietro.mak@gmail.com"), 
-                                        React.createElement("td", null, "**********"), 
-                                        React.createElement("td", null, "All Internet")
-                                    ), 
-                                    React.createElement("tr", null, 
-                                        React.createElement("td", null, "Kyberia.com"), 
-                                        React.createElement("td", null, "Peter Jensen"), 
-                                        React.createElement("td", null, "**********"), 
-                                        React.createElement("td", null, "All Internet")
-                                    ), 
-                                    React.createElement("tr", null, 
-                                        React.createElement("td", null, "Mail"), 
-                                        React.createElement("td", null, "pietro.mak@gmail.com"), 
-                                        React.createElement("td", null, "**********"), 
-                                        React.createElement("td", null, "All Email")
-                                    )
+                                    password_table
                                     )
                                 )
 
@@ -295,8 +300,8 @@ var React = require('react'),
         onClick:function(e) {
             this.props.eventEmitter.emit('changeTag', e);
             this.setState({
-                active_id: e,
-                active_name: Object.getOwnPropertyDescriptor(this.state.tags, e).value.name
+                active_id: parseInt(e),
+                active_name: Context.getTagById(e)
             });
         },
 
@@ -304,7 +309,7 @@ var React = require('react'),
             Context = context;
             this.setState({
                 tags: Context.data.tags,
-                active_name: Object.getOwnPropertyDescriptor(Context.data.tags, this.state.active_id).value.name
+                active_name: Context.getTagById(this.state.active_id)
             });
         },
 

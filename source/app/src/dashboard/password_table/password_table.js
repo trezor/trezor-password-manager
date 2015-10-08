@@ -12,7 +12,8 @@ var React = require('react'),
             return {
                 active_id: 0,
                 active_name: '',
-                tags: {}
+                tags: {},
+                passwords: {}
             }
         },
 
@@ -23,8 +24,8 @@ var React = require('react'),
 
         changeTag(e) {
             this.setState({
-                active_id: e,
-                active_name: Object.getOwnPropertyDescriptor(this.state.tags, e).value.name
+                active_id: parseInt(e),
+                active_name: Context.getTagById(e)
             });
         },
 
@@ -32,12 +33,29 @@ var React = require('react'),
             Context = context;
             this.setState({
                 tags: Context.data.tags,
-                active_name: Object.getOwnPropertyDescriptor(Context.data.tags, this.state.active_id).value.name
+                passwords: Context.data.passwords,
+                active_name: Context.getTagById(this.state.active_id)
             });
         },
 
 
         render(){
+            var password_table = Object.keys(this.state.passwords).map((key) => {
+                var obj = this.state.passwords[key];
+                if(obj.tags.indexOf(this.state.active_id) > -1){
+                    return (
+                        <tr key={key}>
+                            <td>{obj.name}</td>
+                            <td>{obj.username}</td>
+                            <td>{obj.password}</td>
+                            <td>{
+                                Object.keys(obj.tags).map((key) => {
+                                    return ' '+Context.getTagById(obj.tags[key])
+                                })
+                            }</td>
+                        </tr>)
+                }
+            });
 
             return (
                 <div className="wraper container-fluid">
@@ -63,24 +81,7 @@ var React = require('react'),
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr>
-                                        <td>Facebook.com</td>
-                                        <td>pietro.mak@gmail.com</td>
-                                        <td>**********</td>
-                                        <td>All Internet</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Kyberia.com</td>
-                                        <td>Peter Jensen</td>
-                                        <td>**********</td>
-                                        <td>All Internet</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Mail</td>
-                                        <td>pietro.mak@gmail.com</td>
-                                        <td>**********</td>
-                                        <td>All Email</td>
-                                    </tr>
+                                    {password_table}
                                     </tbody>
                                 </table>
 

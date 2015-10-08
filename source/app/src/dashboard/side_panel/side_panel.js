@@ -21,8 +21,8 @@ var React = require('react'),
         onClick(e) {
             this.props.eventEmitter.emit('changeTag', e);
             this.setState({
-                active_id: e,
-                active_name: Object.getOwnPropertyDescriptor(this.state.tags, e).value.name
+                active_id: parseInt(e),
+                active_name: Context.getTagById(e)
             });
         },
 
@@ -30,7 +30,7 @@ var React = require('react'),
             Context = context;
             this.setState({
                 tags: Context.data.tags,
-                active_name: Object.getOwnPropertyDescriptor(Context.data.tags, this.state.active_id).value.name
+                active_name: Context.getTagById(this.state.active_id)
             });
         },
 

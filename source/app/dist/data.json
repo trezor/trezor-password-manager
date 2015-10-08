@@ -12,5 +12,25 @@
       "name": "Email",
       "icon": "email"
     }
+  },
+  "passwords": {
+    "0": {
+      "name": "Facebook.com",
+      "Username": "pietro.mak@gmail.com",
+      "Password": "**************",
+      "Tags": ["0", "1"]
+    },
+    "1": {
+      "name": "Kyberia.sk",
+      "Username": "pietro.mak@gmail.com",
+      "Password": "**************",
+      "Tags": ["0", "1"]
+    },
+    "2": {
+      "name": "Mail",
+      "Username": "pietro.mak@gmail.com",
+      "Password": "**************",
+      "Tags": ["0", "2"]
+    }
   }
 }
