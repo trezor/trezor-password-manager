@@ -3165,7 +3165,13 @@ aside.left-panel {
   margin: 20px 0 20px; }
   .navigation ul > li {
     position: relative;
-    cursor: pointer; }
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none; }
     .navigation ul > li.active:hover > a, .navigation ul > li.active > a {
       color: #3498db;
       background: #162338; }
@@ -3202,7 +3208,6 @@ aside.left-panel {
       color: #797979; }
     .content .wraper .dashboard {
       width: 100%;
-      text-align: center;
       z-index: 0;
       padding: 10px 10px;
       border: none;
@@ -3214,41 +3219,6 @@ aside.left-panel {
       -moz-border-radius: 4px;
       -ms-border-radius: 4px;
       border-radius: 4px; }
-      .content .wraper .dashboard .order-list {
-        width: 100%;
-        min-height: 400px;
-        display: inline-block;
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none; }
-        .content .wraper .dashboard .order-list .order-list-item {
-          position: absolute;
-          text-align: left;
-          width: 90%;
-          height: 40px;
-          overflow: visible;
-          pointer-events: auto;
-          transform-origin: 50% 50% 0px;
-          color: #999999;
-          line-height: 40px;
-          padding-left: 12px;
-          font-size: 24px;
-          font-weight: 400;
-          background-color: white;
-          -webkit-box-sizing: border-box;
-          -moz-box-sizing: border-box;
-          box-sizing: border-box; }
-        .content .wraper .dashboard .order-list .link {
-          position: absolute;
-          color: #4c4c4c;
-          text-decoration: none;
-          font: 14px/1em "Helvetica";
-          padding: 10px;
-          top: 0;
-          left: 0; }
 
 header {
   background-color: #fff;

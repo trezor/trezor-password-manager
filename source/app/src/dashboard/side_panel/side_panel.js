@@ -3,43 +3,49 @@
 var React = require('react'),
     Router = require('react-router'),
     DataService = require('../../components/data_service'),
-
+    Context = {},
     SidePanel = React.createClass({
 
         getInitialState() {
             return {
-                trezorCredentials: window.trezorResponse,
                 tags: {},
-                active: 0
+                active_id: 0,
+                active_name: ''
             }
         },
 
         componentWillMount() {
-            DataService.getUserTagsTest().then(response => {
-                this.setState({
-                    tags: response.tags,
-                    active: Object.getOwnPropertyDescriptor(response.tags, this.state.active).value.name
-                });
-            });
+            this.props.eventEmitter.on('contextInit', this.saveContext);
         },
 
         onClick(e) {
+            this.props.eventEmitter.emit('changeTag', e);
             this.setState({
-                active: Object.getOwnPropertyDescriptor(this.state.tags, e).value.name
+                active_id: e,
+                active_name: Object.getOwnPropertyDescriptor(this.state.tags, e).value.name
             });
-            this.props.eventEmitter.emit('changeTag', e)
+        },
+
+        saveContext(context) {
+            Context = context;
+            this.setState({
+                tags: Context.data.tags,
+                active_name: Object.getOwnPropertyDescriptor(Context.data.tags, this.state.active_id).value.name
+            });
         },
 
         render(){
             var tag_array = Object.keys(this.state.tags).map((key) => {
                 var obj = this.state.tags[key];
-                obj.active = this.state.active === obj.name ? 'active' : '';
+                obj.active = this.state.active_name === obj.name ? 'active' : '';
                 return (
-                    <li key={key} className={obj.active}><a data-tag-key={key} data-tag-name={obj.name} onClick={this.onClick.bind(null, key)}
-                                         onTouchStart={this.onClick.bind(null, key)}><i
+                    <li key={key} className={obj.active}><a data-tag-key={key} data-tag-name={obj.name}
+                                                            onClick={this.onClick.bind(null, key)}
+                                                            onTouchStart={this.onClick.bind(null, key)}><i
                         className={"icon ion-" + obj.icon}></i> <span
                         className="nav-label">{obj.name}</span></a></li>)
             });
+
 
             return (
                 <aside className="left-panel">

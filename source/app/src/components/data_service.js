@@ -1,10 +1,9 @@
 "use strict";
-
 require('whatwg-fetch');
-var dataService = {
+var Service = {
 
-    getUserTagsTest() {
-        return fetch('./tags.json', {
+    getContextTest() {
+        return fetch('./data.json', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -19,4 +18,4 @@ var dataService = {
 
 };
 
-module.exports = dataService;
+module.exports = Service;
