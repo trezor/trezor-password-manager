@@ -4,9 +4,10 @@ var React = require('react'),
     Router = require('react-router'),
     DataService = require('../../components/data_service'),
     {Link} = Router,
-    Context = {},
 
     PasswordTable = React.createClass({
+
+        context: {},
 
         getInitialState() {
             return {
@@ -25,16 +26,16 @@ var React = require('react'),
         changeTag(e) {
             this.setState({
                 active_id: parseInt(e),
-                active_name: Context.getTagById(e)
+                active_name: this.context.getTagById(e)
             });
         },
 
         saveContext(context) {
-            Context = context;
+            this.context = context;
             this.setState({
-                tags: Context.data.tags,
-                passwords: Context.data.passwords,
-                active_name: Context.getTagById(this.state.active_id)
+                tags: this.context.data.tags,
+                passwords: this.context.data.passwords,
+                active_name: this.context.getTagById(this.state.active_id)
             });
         },
 
@@ -50,7 +51,7 @@ var React = require('react'),
                             <td>{obj.password}</td>
                             <td>{
                                 Object.keys(obj.tags).map((key) => {
-                                    return ' '+Context.getTagById(obj.tags[key])
+                                    return ' '+this.context.getTagById(obj.tags[key])
                                 })
                             }</td>
                         </tr>)

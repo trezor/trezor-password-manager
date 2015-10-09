@@ -6,12 +6,29 @@ var React = require('react'),
     Popup = React.createClass({
 
         getInitialState() {
-            return { showModal: false };
+            return {
+                contentStyle: 'add',
+                showModal: false
+            };
         },
 
         componentWillMount() {
-            this.props.eventEmitter.on('openAddPopup', this.open);
-            this.props.eventEmitter.on('openEditPopup', this.open);
+            this.props.eventEmitter.on('openAddPopup', this.openNewContent);
+            this.props.eventEmitter.on('openEditPopup', this.openEditContent);
+        },
+
+        openNewContent() {
+            this.setState({
+                contentStyle: 'add'
+            });
+            this.open();
+        },
+
+        openEditContent(entry_id) {
+            this.setState({
+                contentStyle: 'edit'
+            });
+            this.open();
         },
 
         close() {

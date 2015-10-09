@@ -3,8 +3,9 @@
 var React = require('react'),
     Router = require('react-router'),
     DataService = require('../../components/data_service'),
-    Context = {},
     SidePanel = React.createClass({
+
+        context: {},
 
         getInitialState() {
             return {
@@ -22,15 +23,15 @@ var React = require('react'),
             this.props.eventEmitter.emit('changeTag', e);
             this.setState({
                 active_id: parseInt(e),
-                active_name: Context.getTagById(e)
+                active_name: this.context.getTagById(e)
             });
         },
 
         saveContext(context) {
-            Context = context;
+            this.context = context;
             this.setState({
-                tags: Context.data.tags,
-                active_name: Context.getTagById(this.state.active_id)
+                tags: this.context.data.tags,
+                active_name: this.context.getTagById(this.state.active_id)
             });
         },
 
