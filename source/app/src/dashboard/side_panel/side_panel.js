@@ -11,7 +11,7 @@ var React = require('react'),
             return {
                 tags: {},
                 active_id: 0,
-                active_name: ''
+                active_title: ''
             }
         },
 
@@ -23,7 +23,7 @@ var React = require('react'),
             this.props.eventEmitter.emit('changeTag', e);
             this.setState({
                 active_id: parseInt(e),
-                active_name: this.context.getTagById(e)
+                active_title: this.context.getTagById(e)
             });
         },
 
@@ -31,20 +31,20 @@ var React = require('react'),
             this.context = context;
             this.setState({
                 tags: this.context.data.tags,
-                active_name: this.context.getTagById(this.state.active_id)
+                active_title: this.context.getTagById(this.state.active_id)
             });
         },
 
         render(){
             var tag_array = Object.keys(this.state.tags).map((key) => {
                 var obj = this.state.tags[key];
-                obj.active = this.state.active_name === obj.name ? 'active' : '';
+                obj.active = this.state.active_title === obj.title ? 'active' : '';
                 return (
-                    <li key={key} className={obj.active}><a data-tag-key={key} data-tag-name={obj.name}
+                    <li key={key} className={obj.active}><a data-tag-key={key} data-tag-name={obj.title}
                                                             onClick={this.onClick.bind(null, key)}
                                                             onTouchStart={this.onClick.bind(null, key)}><i
                         className={"icon ion-" + obj.icon}></i> <span
-                        className="nav-label">{obj.name}</span></a></li>)
+                        className="nav-label">{obj.title}</span></a></li>)
             });
 
 

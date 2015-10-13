@@ -1,6 +1,6 @@
 aside.left-panel {
-  background-color: $c_content_dark_blue_bg;
-  color: $c_font_title_grey;
+  background-color: $c_blue_dark_very;
+  color: $c_grey_content_font;
   overflow: hidden;
   outline: none;
   width: 230px;
@@ -41,14 +41,14 @@ aside.left-panel {
     @include unselectable();
 
     &.active:hover > a, &.active > a {
-      color: $c_blue_light;
-      background: $c_content_dark_blue_active_bg;
+      color: $c_blue;
+      background: $c_blue_dark_very_much;
     }
 
     & > a {
       display: block;
       padding: 15px 25px;
-      color: $c_font_grey;
+      color: $c_grey_font;
       font-size: 15px;
       text-decoration: none;
       font-weight: 400;

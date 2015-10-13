@@ -1,35 +1,35 @@
 {
   "tags": {
     "0": {
-      "name": "All",
+      "title": "All",
       "icon": "home"
     },
     "1": {
-      "name": "Internet",
+      "title": "Internet",
       "icon": "earth"
     },
     "2": {
-      "name": "Email",
+      "title": "Email",
       "icon": "email"
     }
   },
   "passwords": {
     "0": {
-      "name": "Facebook.com",
+      "title": "Facebook.com",
       "username": "pietro.mak@gmail.com",
-      "password": "**************",
+      "password": "nicetry",
       "tags": [0, 1]
     },
     "1": {
-      "name": "Kyberia.sk",
+      "title": "Kyberia.sk",
       "username": "kokot@gmail.com",
-      "password": "**************",
+      "password": "nicetry",
       "tags": [0, 1]
     },
     "2": {
-      "name": "Mail",
+      "title": "Mail",
       "username": "pietro.mak@gmail.com",
-      "password": "**************",
+      "password": "nicetry",
       "tags": [0, 2]
     }
   }

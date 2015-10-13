@@ -14,11 +14,15 @@ html, body {
   line-height: 1;
   font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 14px;
-  background-color: $c_content_bg;
+  background-color: $c_grey_bg;
+  color: $c_grey_content_font;
   overflow-x: hidden;
 }
 
+@import "styles/buttons";
 @import "home/home";
 @import "dashboard/side_panel/side_panel";
 @import "dashboard/password_table/password_table";
+@import "dashboard/password_table/table_entry/table_entry";
+@import "dashboard/password_table/filter_input/filter_input";
 @import "dashboard/header/header";

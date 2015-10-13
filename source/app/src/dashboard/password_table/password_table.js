@@ -3,6 +3,10 @@
 var React = require('react'),
     Router = require('react-router'),
     DataService = require('../../components/data_service'),
+    Table_Entry = require('./table_entry/table_entry'),
+    Filter_Input = require('./filter_input/filter_input'),
+    DropdownButton = require('react-bootstrap').DropdownButton,
+    MenuItem = require('react-bootstrap').MenuItem,
     {Link} = Router,
 
     PasswordTable = React.createClass({
@@ -12,21 +16,31 @@ var React = require('react'),
         getInitialState() {
             return {
                 active_id: 0,
-                active_name: '',
+                active_title: '',
                 tags: {},
-                passwords: {}
+                passwords: {},
+                filter: ''
             }
         },
+
 
         componentWillMount() {
             this.props.eventEmitter.on('changeTag', this.changeTag);
             this.props.eventEmitter.on('contextInit', this.saveContext);
+            this.props.eventEmitter.on('filter', this.setupFilter);
+        },
+
+
+        setupFilter(filterVal) {
+            this.setState({
+                filter: filterVal.toLowerCase()
+            });
         },
 
         changeTag(e) {
             this.setState({
                 active_id: parseInt(e),
-                active_name: this.context.getTagById(e)
+                active_title: this.context.getTagById(e)
             });
         },
 
@@ -35,7 +49,7 @@ var React = require('react'),
             this.setState({
                 tags: this.context.data.tags,
                 passwords: this.context.data.passwords,
-                active_name: this.context.getTagById(this.state.active_id)
+                active_title: this.context.getTagById(this.state.active_id)
             });
         },
 
@@ -43,30 +57,44 @@ var React = require('react'),
         render(){
             var password_table = Object.keys(this.state.passwords).map((key) => {
                 var obj = this.state.passwords[key];
-                if(obj.tags.indexOf(this.state.active_id) > -1){
-                    return (
-                        <tr key={key}>
-                            <td>{obj.name}</td>
-                            <td>{obj.username}</td>
-                            <td>{obj.password}</td>
-                            <td>{
-                                Object.keys(obj.tags).map((key) => {
-                                    return ' '+this.context.getTagById(obj.tags[key])
-                                })
-                            }</td>
-                        </tr>)
+                if (obj.tags.indexOf(this.state.active_id) > -1) {
+
+                    if (this.state.filter.length > 0) {
+                        if (obj.title.toLowerCase().indexOf(this.state.filter) > -1 ||
+                            obj.username.toLowerCase().indexOf(this.state.filter) > -1) {
+                            return (
+                                <Table_Entry eventEmitter={this.props.eventEmitter} context={this.context} key={key}
+                                             title={obj.title} username={obj.username}
+                                             password={obj.password}/>
+                            )
+                        }
+                    } else {
+                        return (
+                            <Table_Entry eventEmitter={this.props.eventEmitter} context={this.context} key={key}
+                                         title={obj.title} username={obj.username}
+                                         password={obj.password}/>
+                        )
+                    }
+
+
                 }
             });
 
             return (
                 <div className="wraper container-fluid">
-                    <div className="row">
-                        <div className="col-sm-6">
-                            <div className="page-title">
-                                <h3 className="title">{this.state.active_name}</h3>
-                            </div>
+                    <div className="row page-title">
+                        <div className="col-sm-3 col-xs-3">
+                            <DropdownButton title={this.state.active_title} className="title" id="bg-nested-dropdown">
+                                <MenuItem eventKey="1"><i className="ion-pricetags"></i> Rename tag</MenuItem>
+                                <MenuItem eventKey="2"><i className="ion-loop"></i> Change icon</MenuItem>
+                                <MenuItem eventKey="3"><i className="ion-close"></i> Remove tag</MenuItem>
+                            </DropdownButton>
                         </div>
-                        <div className="col-sm-6 text-right">
+                        <div className="col-sm-6 col-xs-9">
+                            <Filter_Input eventEmitter={this.props.eventEmitter}/>
+                        </div>
+                        <div className="col-sm-3 col-xs-12 text-right">
+                            <button type="button" onClick={this.addNewEntry} className="blue-btn">Add entry</button>
                         </div>
                     </div>
                     <div className="row">
@@ -75,10 +103,9 @@ var React = require('react'),
                                 <table className="table">
                                     <thead>
                                     <tr>
-                                        <th>Name / URL</th>
+                                        <th>Title</th>
                                         <th>Username</th>
                                         <th>Password</th>
-                                        <th>Tags</th>
                                     </tr>
                                     </thead>
                                     <tbody>

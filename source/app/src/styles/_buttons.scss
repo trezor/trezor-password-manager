@@ -1,0 +1,15 @@
+button {
+  background-color: $c_black;
+  border: 1px solid $c_black;
+  color: $c_white;
+  outline: none !important;
+  padding: 6px 12px;
+  margin-bottom: 5px;
+  @include border-radius(2px);
+
+  &.blue-btn {
+    background-color: $c_blue;
+    border-color: $c_blue;
+  }
+}
+

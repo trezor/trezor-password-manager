@@ -9,7 +9,7 @@ class Store {
     }
 
     getTagById(id) {
-        return Object.getOwnPropertyDescriptor(this.data.tags, id).value.name
+        return Object.getOwnPropertyDescriptor(this.data.tags, id).value.title
     }
 
     toObject() {

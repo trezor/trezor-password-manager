@@ -43,6 +43,13 @@
   transition: $val;
 }
 
+@mixin transform($val) {
+  -webkit-transform: $val;
+  -moz-transform: $val;
+  -o-transform: $val;
+  transform: $val;
+}
+
 @mixin box-sizing($val) {
   -webkit-box-sizing: $val;
   -moz-box-sizing: $val;

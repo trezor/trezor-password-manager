@@ -22,6 +22,7 @@ var React = require('react'),
         },
 
         componentWillMount() {
+            eventEmitter.setMaxListeners(0);
             eventEmitter.on('update', this.contextReady);
             if (!this.isLogged(sessionStorage.getItem("public_key"))) {
                 this.transitionTo('home');

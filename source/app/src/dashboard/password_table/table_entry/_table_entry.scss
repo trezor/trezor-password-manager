@@ -1,0 +1,46 @@
+
+.dashboard {
+  width: 100%;
+  z-index: 0;
+  padding: 20px;
+  border: none;
+  border-top: 1px solid $c_grey_border;
+  background-color: $c_white;
+  margin-bottom: 20px;
+
+  .table > thead > tr > th {
+    font-weight: bold;
+    color: $c_grey_content_font;
+  }
+
+  .table > tbody > tr > td,
+  .table > tbody > tr > th,
+  .table > tfoot > tr > td,
+  .table > tfoot > tr > th,
+  .table > thead > tr > td,
+  .table > thead > tr > th {
+    padding: 14px !important;
+  }
+
+  .table > tbody > tr:hover {
+    @include transition(all 50ms ease-in-out);
+
+    &:hover {
+      background-color: rgba($c_grey_bg, .5);
+      z-index: 10;
+      @include box-shadow(0 0 6px 0 rgba(0, 0, 0, .34));
+      @include transform(scale(1.005));
+    }
+
+  }
+
+  .table > tbody > tr > td {
+    position: relative;
+    border-top: 1px solid rgba($c_grey_bg, .8);
+
+    & > span:hover {
+      cursor: pointer;
+    }
+  }
+
+}

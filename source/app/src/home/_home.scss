@@ -24,7 +24,7 @@
   width: 100%;
   height: 100%;
   z-index: 1;
-  @include background-gradient(180deg, $c_content_dark_blue_bg 10%, $c_blue_light 90%);
+  @include background-gradient(180deg, $c_blue_dark_very 10%, $c_blue 90%);
 }
 
 .home {

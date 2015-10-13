@@ -1,0 +1,32 @@
+form.filter {
+  display: block;
+  position: relative;
+
+  input {
+    outline: none;
+    background-color: $c_white;
+    border: 1px solid $c_grey_border;
+    padding-left: 35px;
+    @include box-shadow(none);
+    @include border-radius(34px);
+
+    &:focus {
+      outline: none;
+      outline-color: transparent;
+      outline-style: none;
+      -webkit-appearance: none;
+      border: 1px solid $c_grey_border;
+      @include box-shadow(none);
+    }
+  }
+
+  &:before {
+    display: block;
+    position: absolute;
+    top: 8px;
+    left: 15px;
+    content: "\f2f5";
+    font-size: 1.3em;
+    font-family: 'ionicons';
+  }
+}
