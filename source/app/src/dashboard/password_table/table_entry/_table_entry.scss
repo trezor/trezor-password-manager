@@ -8,39 +8,58 @@
   background-color: $c_white;
   margin-bottom: 20px;
 
-  .table > thead > tr > th {
-    font-weight: bold;
-    color: $c_grey_content_font;
-  }
-
-  .table > tbody > tr > td,
-  .table > tbody > tr > th,
-  .table > tfoot > tr > td,
-  .table > tfoot > tr > th,
-  .table > thead > tr > td,
-  .table > thead > tr > th {
-    padding: 14px !important;
-  }
-
-  .table > tbody > tr:hover {
+  .entry {
+    display: block;
+    position: relative;
+    width: 100%;
+    clear: both;
+    height: 70px;
+    cursor: pointer;
     @include transition(all 50ms ease-in-out);
 
     &:hover {
-      background-color: rgba($c_grey_bg, .5);
-      z-index: 10;
-      @include box-shadow(0 0 6px 0 rgba(0, 0, 0, .34));
-      @include transform(scale(1.005));
+
     }
 
-  }
+    .title {
+      padding-top: 10px;
+      padding-bottom: 5px;
+      font-size: 1.4em;
+      color: rgba($c_grey_content_font, .9);
+    }
 
-  .table > tbody > tr > td {
-    position: relative;
-    border-top: 1px solid rgba($c_grey_bg, .8);
+    .username {
+      font-size: 1.05em;
+      color: rgba($c_grey_content_font, .6);
+    }
 
-    & > span:hover {
-      cursor: pointer;
+    .avatar {
+      display: inline-block;
+      position: relative;
+      margin: 10px;
+      width: 50px;
+      height: 50px;
+      float: left;
+      background-color: $c_grey_bg;
+
+      img {
+        width: 50px;
+        height: 50px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 50px;
+      }
+
+      i {
+        font-size: 1.5em;
+        color: $c_white;
+        text-align: center;
+        width: 100%;
+        line-height: 50px;
+        vertical-align: middle;
+        display: inline-block;
+      }
     }
   }
-
 }

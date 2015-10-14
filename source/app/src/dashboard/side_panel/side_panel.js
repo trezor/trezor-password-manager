@@ -23,7 +23,7 @@ var React = require('react'),
             this.props.eventEmitter.emit('changeTag', e);
             this.setState({
                 active_id: parseInt(e),
-                active_title: this.context.getTagById(e)
+                active_title: this.context.getTagTitleById(e)
             });
         },
 
@@ -31,7 +31,7 @@ var React = require('react'),
             this.context = context;
             this.setState({
                 tags: this.context.data.tags,
-                active_title: this.context.getTagById(this.state.active_id)
+                active_title: this.context.getTagTitleById(this.state.active_id)
             });
         },
 

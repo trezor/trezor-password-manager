@@ -18,19 +18,107 @@
       "title": "Facebook.com",
       "username": "pietro.mak@gmail.com",
       "password": "nicetry",
-      "tags": [0, 1]
+      "tags": [
+        0,
+        1
+      ]
     },
     "1": {
       "title": "Kyberia.sk",
       "username": "kokot@gmail.com",
       "password": "nicetry",
-      "tags": [0, 1]
+      "tags": [
+        0,
+        1
+      ]
     },
     "2": {
       "title": "Mail",
       "username": "pietro.mak@gmail.com",
       "password": "nicetry",
-      "tags": [0, 2]
+      "tags": [
+        0,
+        2
+      ]
+    },
+    "3": {
+      "title": "Facebook.com",
+      "username": "pietro.mak@gmail.com",
+      "password": "nicetry",
+      "tags": [
+        0
+      ]
+    },
+    "4": {
+      "title": "Kyberia.sk",
+      "username": "kokot@gmail.com",
+      "password": "nicetry",
+      "tags": [
+        0,
+        1
+      ]
+    },
+    "5": {
+      "title": "Mail",
+      "username": "pietro.mak@gmail.com",
+      "password": "nicetry",
+      "tags": [
+        0,
+        2
+      ]
+    },
+    "6": {
+      "title": "http://getbootstrap.com/css/",
+      "username": "pietro.mak@gmail.com",
+      "password": "nicetry",
+      "tags": [
+        0,
+        1
+      ]
+    },
+    "7": {
+      "title": "Kyberia.sk",
+      "username": "kokot@gmail.com",
+      "password": "nicetry",
+      "tags": [
+        0,
+        1
+      ]
+    },
+    "8": {
+      "title": "Mail",
+      "username": "pietro.mak@gmail.com",
+      "password": "nicetry",
+      "tags": [
+        0,
+        2
+      ]
+    },
+    "9": {
+      "title": "Twitter.com",
+      "username": "pietro.mak",
+      "password": "nicetry",
+      "tags": [
+        0,
+        1
+      ]
+    },
+    "10": {
+      "title": "Kyberia.sk",
+      "username": "kokot@gmail.com",
+      "password": "nicetry",
+      "tags": [
+        0
+      ]
+    },
+    "11": {
+      "title": "Mail",
+      "username": "pietro.mak@gmail.com",
+      "password": "nicetry",
+      "tags": [
+        0,
+        2
+      ]
     }
   }
 }

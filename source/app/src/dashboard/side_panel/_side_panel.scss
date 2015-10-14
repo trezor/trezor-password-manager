@@ -3,24 +3,43 @@ aside.left-panel {
   color: $c_grey_content_font;
   overflow: hidden;
   outline: none;
-  width: 230px;
+  width: 220px;
   position: fixed;
   height: 100%;
   top: 0;
   left: 0;
   z-index: 100;
+
+  @media screen and (max-width: $break-small) {
+    width: 80px;
+  }
 }
+
+
 
 
 .logo {
   padding: 15px 20px;
   text-transform: uppercase;
 
+  @media screen and (max-width: $break-small) {
+    padding: 0;
+    text-align: center;
+    width: 80px;
+    line-height: 52px;
+    height: 52px;
+  }
+
   img{
     vertical-align: middle;
     text-align: left;
     margin-right: 10px;
     margin-top: -12px;
+
+    @media screen and (max-width: $break-small) {
+      margin: 0 auto;
+
+    }
   }
 
   span {
@@ -28,12 +47,21 @@ aside.left-panel {
     font-weight: 700;
     font-size: 1.9em;
     letter-spacing: .05em;
+
+    @media screen and (max-width: $break-small) {
+      display: none;
+    }
   }
 }
 
 
 .navigation {
   margin: 20px 0 20px;
+
+  @media screen and (max-width: $break-small) {
+    margin-top: 0;
+
+  }
 
   ul > li {
     position: relative;
@@ -55,6 +83,15 @@ aside.left-panel {
       outline: none !important;
       @include transition(all 0.3s);
 
+      @media screen and (max-width: $break-small) {
+        width: 80px;
+        height: 60px;
+        line-height: 60px;
+        padding: 0;
+        margin: 0;
+        text-align: center;
+      }
+
       &:hover{
         color: $c_white;
       }
@@ -68,6 +105,21 @@ aside.left-panel {
         font-size: 18px;
         width: 25px;
         float: left;
+
+        @media screen and (max-width: $break-small) {
+          width: 80px;
+          height: 60px;
+          padding: 0;
+          margin: 0;
+          text-align: center;
+        }
+        
+      }
+
+      span {
+        @media screen and (max-width: $break-small) {
+          display: none;
+        }
       }
     }
   }

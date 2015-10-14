@@ -8,8 +8,12 @@ class Store {
         this.eventEmitter.emit('update', this.data);
     }
 
-    getTagById(id) {
+    getTagTitleById(id) {
         return Object.getOwnPropertyDescriptor(this.data.tags, id).value.title
+    }
+
+    getTagIconById(id) {
+        return Object.getOwnPropertyDescriptor(this.data.tags, id).value.icon
     }
 
     toObject() {

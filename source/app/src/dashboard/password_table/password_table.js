@@ -40,7 +40,7 @@ var React = require('react'),
         changeTag(e) {
             this.setState({
                 active_id: parseInt(e),
-                active_title: this.context.getTagById(e)
+                active_title: this.context.getTagTitleById(e)
             });
         },
 
@@ -49,7 +49,7 @@ var React = require('react'),
             this.setState({
                 tags: this.context.data.tags,
                 passwords: this.context.data.passwords,
-                active_title: this.context.getTagById(this.state.active_id)
+                active_title: this.context.getTagTitleById(this.state.active_id)
             });
         },
 
@@ -64,15 +64,13 @@ var React = require('react'),
                             obj.username.toLowerCase().indexOf(this.state.filter) > -1) {
                             return (
                                 <Table_Entry eventEmitter={this.props.eventEmitter} context={this.context} key={key}
-                                             title={obj.title} username={obj.username}
-                                             password={obj.password}/>
+                                             title={obj.title} username={obj.username} tag={obj.tags[obj.tags.length-1]} />
                             )
                         }
                     } else {
                         return (
                             <Table_Entry eventEmitter={this.props.eventEmitter} context={this.context} key={key}
-                                         title={obj.title} username={obj.username}
-                                         password={obj.password}/>
+                                         title={obj.title} username={obj.username} tag={obj.tags[obj.tags.length-1]} />
                         )
                     }
 
@@ -100,18 +98,8 @@ var React = require('react'),
                     <div className="row">
                         <div className="col-md-12">
                             <div className='dashboard'>
-                                <table className="table">
-                                    <thead>
-                                    <tr>
-                                        <th>Title</th>
-                                        <th>Username</th>
-                                        <th>Password</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
+
                                     {password_table}
-                                    </tbody>
-                                </table>
 
                             </div>
                         </div>

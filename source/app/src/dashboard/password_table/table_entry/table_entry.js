@@ -1,51 +1,58 @@
 "use strict";
 
+require('whatwg-fetch');
 var React = require('react'),
     Router = require('react-router'),
-    OverlayTrigger = require('react-bootstrap').OverlayTrigger,
-    Tooltip = require('react-bootstrap').Tooltip,
     TableEntry = React.createClass({
 
-        render(){
-            var titleTooltip = (
-                    <Tooltip id="title-tooltip">Click to <strong>open</strong> URL.</Tooltip>
-                ),
+        getInitialState: function () {
+            return {image_src: 'dist/img/transparent.png'};
+        },
 
-                usernameTooltip = (
-                    <Tooltip id="username-tooltip"><strong>Copy</strong> username to clipboard.</Tooltip>
-                ),
+        extractDomain(url) {
+            var domain;
+            if (url.indexOf("://") > -1) {
+                domain = url.split('/')[2];
+            } else {
+                domain = url.split('/')[0];
+            }
+            domain = domain.split(':')[0];
+            return domain;
+        },
 
-                passwordTooltip = (
-                    <Tooltip id="password-tooltip"><strong>Copy</strong> password to clipboard.</Tooltip>
-                ),
+        componentDidMount() {
+            if (this.props.title.indexOf(".") > -1) {
+                this.setState({
+                    image_src: "https://logo.clearbit.com/" + this.extractDomain(this.props.title)
+                });
+            }
+        },
 
-                editTooltip = (
-                    <Tooltip id="edit-tooltip"><strong>Edit</strong> entry.</Tooltip>
-                );
+        handleError() {
+            this.setState({
+                image_src: 'dist/img/transparent.png'
+            });
+        },
 
+        render() {
 
             return (
-                <tr key={this.props.key}>
+                <div key={this.props.key} className="entry">
+                    <div className="avatar">
+                        <img src={this.state.image_src} onError={this.handleError}/>
+                        <i className={"icon ion-" + this.props.context.getTagIconById(this.props.tag % 5)}></i>
+                    </div>
+                    <div className="title">
+                        <span>{this.props.title}</span>
+                    </div>
 
-                    <td>
-                        <OverlayTrigger placement="top" overlay={titleTooltip}>
-                            <span>{this.props.title}</span>
-                        </OverlayTrigger>
-                    </td>
-
-                    <td>
-                        <OverlayTrigger placement="top" overlay={usernameTooltip}>
-                            <span>{this.props.username}</span>
-                        </OverlayTrigger>
-                    </td>
-                    <td>
-                        <OverlayTrigger placement="top" overlay={passwordTooltip}>
-                            <span>{this.props.password}</span>
-                        </OverlayTrigger>
-                    </td>
-                </tr>
+                    <div className="username">
+                        <span>{this.props.username}</span>
+                    </div>
+                </div>
             )
         }
-    });
+    })
+    ;
 
 module.exports = TableEntry;
