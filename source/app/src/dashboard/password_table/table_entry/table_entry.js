@@ -6,7 +6,11 @@ var React = require('react'),
     TableEntry = React.createClass({
 
         getInitialState: function () {
-            return {image_src: 'dist/img/transparent.png'};
+            return {
+                image_src: 'dist/img/transparent.png',
+                view: 'list-entry'
+
+            };
         },
 
         extractDomain(url) {
@@ -34,21 +38,37 @@ var React = require('react'),
             });
         },
 
+        changeView() {
+
+            if (this.state.view === 'list-entry') {
+                this.setState({
+                    view: 'edit-entry'
+                })
+            } else {
+                this.setState({
+                    view: 'list-entry'
+                })
+            }
+        },
+
         render() {
 
             return (
-                <div key={this.props.key} className="entry">
+                <div key={this.props.key} className={"entry col-xs-12 " + this.state.view}>
                     <div className="avatar">
                         <img src={this.state.image_src} onError={this.handleError}/>
                         <i className={"icon ion-" + this.props.context.getTagIconById(this.props.tag % 5)}></i>
                     </div>
                     <div className="title">
-                        <span>{this.props.title}</span>
+                        <span>Title </span><input type="text" value={this.props.title} disabled={this.state.view === 'list-entry' ? 'disabled' : false}  />
                     </div>
 
                     <div className="username">
-                        <span>{this.props.username}</span>
+                        <span>Username </span><input type="text" value={this.props.username} disabled={this.state.view === 'list-entry' ? 'disabled' : false} />
                     </div>
+                    <span className="edit" onClick={this.changeView}>
+                        <i className="ion-chevron-down"></i>
+                    </span>
                 </div>
             )
         }

@@ -64,13 +64,14 @@ var React = require('react'),
                             obj.username.toLowerCase().indexOf(this.state.filter) > -1) {
                             return (
                                 <Table_Entry eventEmitter={this.props.eventEmitter} context={this.context} key={key}
-                                             title={obj.title} username={obj.username} tag={obj.tags[obj.tags.length-1]} />
+                                             title={obj.title} username={obj.username}
+                                             tag={obj.tags[obj.tags.length-1]}/>
                             )
                         }
                     } else {
                         return (
                             <Table_Entry eventEmitter={this.props.eventEmitter} context={this.context} key={key}
-                                         title={obj.title} username={obj.username} tag={obj.tags[obj.tags.length-1]} />
+                                         title={obj.title} username={obj.username} tag={obj.tags[obj.tags.length-1]}/>
                         )
                     }
 
@@ -95,14 +96,9 @@ var React = require('react'),
                             <button type="button" onClick={this.addNewEntry} className="blue-btn">Add entry</button>
                         </div>
                     </div>
-                    <div className="row">
-                        <div className="col-md-12">
-                            <div className='dashboard'>
+                    <div className="row dashboard">
+                        {password_table}
 
-                                    {password_table}
-
-                            </div>
-                        </div>
                     </div>
                 </div>
             )
