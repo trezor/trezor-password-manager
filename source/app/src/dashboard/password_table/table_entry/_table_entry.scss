@@ -2,7 +2,7 @@
 .dashboard {
   width: 100%;
   z-index: 0;
-  padding: 20px;
+  padding: 20px 0;
   border: none;
   border-top: 1px solid $c_grey_border;
   background-color: $c_white;
@@ -12,52 +12,6 @@
     display: block;
     position: relative;
     @include transition(all 50ms ease-in-out);
-    margin-left: -10px;
-
-    &.list-entry {
-      height: 70px;
-      cursor: pointer;
-
-      .title {
-        span {
-          display: none;
-        }
-        padding-top: 5px;
-        font-size: 1.4em;
-        @include transition(all 50ms ease-in-out);
-        color: rgba($c_grey_content_font, .9);
-      }
-
-      .username {
-        padding-top: 0;
-        span {
-          display: none;
-        }
-        font-size: 1.05em;
-        color: rgba($c_grey_content_font, .6);
-      }
-
-      .title,.username {
-        input {
-          border: none;
-          outline: none;
-          cursor: pointer;
-        }
-      }
-
-      &:hover {
-        @include transform(scale(1.01));
-
-        .title {
-          color: $c_grey_content_font;
-        }
-        .username {
-          color: rgba($c_grey_content_font, .8);
-        }
-      }
-    }
-
-
 
     .avatar {
       display: inline-block;
@@ -90,7 +44,93 @@
       }
     }
 
-    .edit {
+    .password{
+      .button{
+        display: inline-block;
+        text-align:center;
+        width: 21px;
+        height: 21px;
+        padding: 0;
+        margin: 0 3px 0 3px;
+        line-height: 21px;
+        border-color: rgba($c_grey_content_font, .1);
+        background-color: $c_white;
+        color: $c_grey_content_font;
+        @include unselectable();
+      }
+    }
+
+    .form-buttons {
+      display: none;
+      text-align: right;
+    }
+
+    &.list-mode {
+      height: 70px;
+      cursor: pointer;
+
+      .title {
+        padding-top: 5px;
+        font-size: 1.4em;
+        @include transition(all 50ms ease-in-out);
+        color: rgba($c_grey_content_font, .9);
+
+        span {
+          display: inline-block;
+          width: 0;
+          overflow: hidden;
+        }
+      }
+
+      .username {
+        padding-top: 0;
+        font-size: 1.05em;
+        color: rgba($c_grey_content_font, .6);
+
+        span {
+          display: inline-block;
+          width: 0;
+          overflow: hidden;
+        }
+      }
+
+      .password, .tags {
+        display: none;
+      }
+
+      .title, .username {
+        input {
+          width: 100%;
+          max-width: 280px;
+          background: transparent;
+          border: none;
+          outline: none;
+          cursor: pointer;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          @include appearance-none();
+
+          &:focus, &:active {
+            @include appearance-none();
+          }
+        }
+      }
+
+      &:hover {
+        background: rgba($c_grey_bg, .5);
+
+        .title {
+          color: $c_grey_content_font;
+        }
+
+        .username {
+          color: rgba($c_grey_content_font, .8);
+        }
+      }
+    }
+
+    .edit-btn {
       display: block;
       width: 30px;
       height: 30px;
@@ -109,24 +149,48 @@
       }
     }
 
-    &.edit-entry {
-      height: 120px;
+    &.edit-mode {
+      border-top: 1px solid rgba($c_grey_content_font, .1);
+      border-bottom: 1px solid rgba($c_grey_content_font, .1);
+      box-shadow: inset 0 2px 10px rgba($c_grey_bg, .3), inset 0px -2px 10px rgba($c_grey_bg, .3);
+      padding-top: 10px;
+      padding-bottom: 10px;
+      height: 180px;
       cursor: default;
 
-      .title, .username {
+      .title {
+        padding-top: 10px;
+      }
+
+      .title, .username, .password, .tags {
         color: $c_grey_content_font;
+        padding-bottom: 3px;
+        margin-bottom: 3px;
 
         span {
           display: inline-block;
           text-transform: uppercase;
-          width: 100px;
-          font-size: 1em;
+          width: 70px;
+          font-size: .8em;
+          font-weight: bold;
+        }
+
+        input {
+          border: none;
+          width: 100%;
+          max-width: 210px;
+          padding: 4px 10px 4px 13px;
+          background-color: rgba($c_grey_bg_header_hover, .9);
+          outline: none;
+          font-size: 1.1em;
+          @include border-radius(1em);
         }
       }
 
       .avatar {
         width: 100px;
         height: 100px;
+        margin-right: 20px;
 
         i {
           line-height: 100px;
@@ -135,10 +199,16 @@
         }
       }
 
-      .edit {
-        @include transform(rotate(180deg));
+      .form-buttons {
+        display: block;
+        clear: both;
+        width: 100%;
+
       }
 
+      .edit-btn {
+        @include transform(rotate(180deg));
+      }
     }
   }
 }

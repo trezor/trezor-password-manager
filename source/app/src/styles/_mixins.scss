@@ -56,6 +56,13 @@
   box-sizing: $val;
 }
 
+@mixin transition-delay($val) {
+  -webkit-transition-delay: $val;
+  -moz-transition-delay: $val;
+  -o-transition-delay: $val;
+  transition-delay: $val;
+}
+
 
 @mixin z-depth-1() {
   @include shadows(0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12));

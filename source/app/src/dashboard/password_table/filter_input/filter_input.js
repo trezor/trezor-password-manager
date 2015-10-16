@@ -16,7 +16,6 @@ var React = require('react'),
             this.props.eventEmitter.emit('filter', event.target.value);
         },
 
-
         render(){
             return (
                 <span>

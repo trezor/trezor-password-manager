@@ -16,6 +16,14 @@ class Store {
         return Object.getOwnPropertyDescriptor(this.data.tags, id).value.icon
     }
 
+    getEntryTitleById(id) {
+        return Object.getOwnPropertyDescriptor(this.data.entries, id).value.title
+    }
+
+    saveDataToId(id, data){
+        return Object.defineProperty(this.data.entries, id, {value: data});
+    }
+
     toObject() {
         return this.data;
     }
