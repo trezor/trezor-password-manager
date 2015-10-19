@@ -11,6 +11,10 @@
     "2": {
       "title": "Email",
       "icon": "email"
+    },
+    "3": {
+      "title": "Personal",
+      "icon": "person"
     }
   },
   "entries": {
@@ -19,7 +23,6 @@
       "username": "pietro.mak@gmail.com",
       "password": "nicetry",
       "tags": [
-        0,
         1
       ],
       "note" : "random text"
@@ -29,7 +32,6 @@
       "username": "kokot@gmail.com",
       "password": "nicetry",
       "tags": [
-        0,
         1
       ],
       "note" : "random text"
@@ -39,17 +41,15 @@
       "username": "pietro.mak@gmail.com",
       "password": "nicetry",
       "tags": [
-        0,
         2
       ],
       "note" : "random text"
     },
     "3": {
       "title": "Facebook.com",
-      "username": "pietro.mak@gmail.com",
+      "username": "PETER.mak@gmail.com",
       "password": "nicetry",
       "tags": [
-        0
       ],
       "note" : "random text"
     },
@@ -58,7 +58,6 @@
       "username": "kokot@gmail.com",
       "password": "nicetry",
       "tags": [
-        0,
         1
       ],
       "note" : "random text"
@@ -68,7 +67,6 @@
       "username": "pietro.mak@gmail.com",
       "password": "nicetry",
       "tags": [
-        0,
         2
       ],
       "note" : "random text"
@@ -78,8 +76,8 @@
       "username": "pietro.mak@gmail.com",
       "password": "nicetry",
       "tags": [
-        0,
-        1
+        1,
+        2
       ],
       "note" : "random text asdf asfd"
     },
@@ -88,7 +86,6 @@
       "username": "kokot@gmail.com",
       "password": "nicetry",
       "tags": [
-        0,
         1
       ],
       "note" : "random text"
@@ -98,7 +95,7 @@
       "username": "pietro.mak@gmail.com",
       "password": "nicetry",
       "tags": [
-        0,
+        1,
         2
       ],
       "note" : "random text"
@@ -108,8 +105,9 @@
       "username": "pietro.mak",
       "password": "nicetry",
       "tags": [
-        0,
-        1
+        2,
+        1,
+        3
       ],
       "note" : "random text awerwerwer asdfasdf safsfasf "
     },
@@ -118,7 +116,7 @@
       "username": "kokot@gmail.com",
       "password": "nicetry",
       "tags": [
-        0
+        2
       ],
       "note" : "random text"
     },
@@ -127,7 +125,7 @@
       "username": "pietro.mak@gmail.com",
       "password": "nicetry",
       "tags": [
-        0,
+        1,
         2
       ],
       "note" : "random text"

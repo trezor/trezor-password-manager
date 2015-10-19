@@ -40,13 +40,15 @@ var React = require('react'),
                 var obj = this.state.tags[key];
                 obj.active = this.state.active_title === obj.title ? 'active' : '';
                 return (
-                    <li key={key} className={obj.active}><a data-tag-key={key} data-tag-name={obj.title}
-                                                            onClick={this.onClick.bind(null, key)}
-                                                            onTouchStart={this.onClick.bind(null, key)}><i
-                        className={"icon ion-" + obj.icon}></i> <span
-                        className="nav-label">{obj.title}</span></a></li>)
+                    <li key={key} className={obj.active}>
+                        <a data-tag-key={key}
+                           data-tag-name={obj.title}
+                           onClick={this.onClick.bind(null, key)}
+                           onTouchStart={this.onClick.bind(null, key)}>
+                            <i className={"icon ion-" + obj.icon}></i>
+                            <span className="nav-label">{obj.title}</span>
+                        </a></li>)
             });
-
 
             return (
                 <aside className="left-panel">

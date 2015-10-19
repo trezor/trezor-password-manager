@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var React = require('react'),
     Router = require('react-router'),
@@ -55,7 +55,7 @@ var React = require('react'),
         render(){
             var password_table = Object.keys(this.state.entries).map((key) => {
                 var obj = this.state.entries[key];
-                if (obj.tags.indexOf(this.state.active_id) > -1) {
+                if (obj.tags.indexOf(this.state.active_id) > -1 || this.state.active_id == 0) {
 
                     if (this.state.filter.length > 0) {
                         if (obj.title.toLowerCase().indexOf(this.state.filter) > -1 ||
@@ -89,24 +89,26 @@ var React = require('react'),
             });
 
             return (
-                <div className="wraper container-fluid">
-                    <div className="row page-title">
-                        <div className="col-sm-3 col-xs-3">
-                            <button type="button" onClick={this.addNewEntry} className="blue-btn add">Add entry</button>
+                <div className='wraper container-fluid'>
+                    <div className='row page-title'>
+                        <div className='col-sm-3 col-xs-3'>
+                            <button type='button'
+                                    onClick={this.addNewEntry}
+                                    className='blue-btn add'>Add entry</button>
                         </div>
-                        <div className="col-sm-6 col-xs-9">
+                        <div className='col-sm-6 col-xs-9'>
                             <Filter_Input eventEmitter={this.props.eventEmitter}/>
                         </div>
-                        <div className="col-sm-3 col-xs-3 text-right">
-                            <DropdownButton title="" className="title" noCaret pullRight id="dropdown-no-caret">
-                                <MenuItem eventKey="1"><i className="ion-pricetags"></i> Rename tag</MenuItem>
-                                <MenuItem eventKey="2"><i className="ion-loop"></i> Change icon</MenuItem>
-                                <MenuItem eventKey="3"><i className="ion-close"></i> Remove tag</MenuItem>
+                        <div className='col-sm-3 col-xs-3 text-right'>
+                            <DropdownButton title='' className='title' noCaret pullRight id='dropdown-no-caret'>
+                                <MenuItem eventKey='1'><i className='ion-pricetags'></i> Rename tag</MenuItem>
+                                <MenuItem eventKey='2'><i className='ion-loop'></i> Change icon</MenuItem>
+                                <MenuItem eventKey='3'><i className='ion-close'></i> Remove tag</MenuItem>
                             </DropdownButton>
                         </div>
 
                     </div>
-                    <div className="row dashboard">
+                    <div className='row dashboard'>
                         {password_table}
 
                     </div>

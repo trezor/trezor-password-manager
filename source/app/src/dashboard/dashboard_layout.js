@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var React = require('react'),
     Router = require('react-router'),
@@ -24,7 +24,7 @@ var React = require('react'),
         componentWillMount() {
             eventEmitter.setMaxListeners(0);
             eventEmitter.on('update', this.contextReady);
-            if (!this.isLogged(sessionStorage.getItem("public_key"))) {
+            if (!this.isLogged(sessionStorage.getItem('public_key'))) {
                 this.transitionTo('home');
             } else {
                 Service.getContextTest().then(response => {
@@ -56,7 +56,7 @@ var React = require('react'),
                             <Popup eventEmitter={eventEmitter} />
                             <SidePanel eventEmitter={eventEmitter} />
 
-                            <section className="content">
+                            <section className='content'>
                                 <PasswordTable eventEmitter={eventEmitter} />
                             </section>
                         </div>

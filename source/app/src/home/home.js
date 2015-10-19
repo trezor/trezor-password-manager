@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var React = require('react'),
     Router = require('react-router'),
@@ -21,13 +21,13 @@ var React = require('react'),
 
         trezorTest() {
             window.trezorResponse = {
-                'public_key': "0290f42cbf98744c95c2273694a5e9d1673dd68d05a87363f16dacaa1b756439a6",
-                'signature': "20133cb72c0847cfc84ee4f7493cd4ea04f39054639651069786646ba9fc25367e5939a7051217208df2c747717d6c6f8acbd9aa800f3871447a8f599441919b51",
+                'public_key': '0290f42cbf98744c95c2273694a5e9d1673dd68d05a87363f16dacaa1b756439a6',
+                'signature': '20133cb72c0847cfc84ee4f7493cd4ea04f39054639651069786646ba9fc25367e5939a7051217208df2c747717d6c6f8acbd9aa800f3871447a8f599441919b51',
                 'success': true,
                 'version': 2
             };
 
-            sessionStorage.setItem("public_key", window.trezorResponse.public_key);
+            sessionStorage.setItem('public_key', window.trezorResponse.public_key);
             this.transitionTo('dashboard');
         },
 

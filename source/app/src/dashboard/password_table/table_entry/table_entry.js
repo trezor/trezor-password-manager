@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 require('whatwg-fetch');
 var React = require('react'),
@@ -37,6 +37,7 @@ var React = require('react'),
                 .join('');
         }
     },
+
     TableEntry = React.createClass({
 
         getInitialState: function () {
@@ -47,14 +48,16 @@ var React = require('react'),
                 title: this.props.title,
                 username: this.props.username,
                 password: this.props.password,
-                tags: this.props.tags,
-                note: this.props.note
+                tags_id: this.props.tags,
+                tags_titles: this.props.context.getTagTitleArrayById(this.props.tags) || [],
+                note: this.props.note,
+                tag_globa_title_array: this.props.context.getTagTitleArray()
             };
         },
 
         extractDomain(url) {
             var domain;
-            if (url.indexOf("://") > -1) {
+            if (url.indexOf('://') > -1) {
                 domain = url.split('/')[2];
             } else {
                 domain = url.split('/')[0];
@@ -64,9 +67,9 @@ var React = require('react'),
         },
 
         componentDidMount() {
-            if (this.state.title.indexOf(".") > -1) {
+            if (this.state.title.indexOf('.') > -1) {
                 this.setState({
-                    image_src: "https://logo.clearbit.com/" + this.extractDomain(this.state.title)
+                    image_src: 'https://logo.clearbit.com/' + this.extractDomain(this.state.title)
                 });
             }
         },
@@ -87,9 +90,9 @@ var React = require('react'),
                     mode: 'edit-mode'
                 })
             } else {
-                if (this.state.title.indexOf(".") > -1) {
+                if (this.state.title.indexOf('.') > -1) {
                     this.setState({
-                        image_src: "https://logo.clearbit.com/" + this.extractDomain(this.state.title)
+                        image_src: 'https://logo.clearbit.com/' + this.extractDomain(this.state.title)
                     });
                 }
                 this.setState({
@@ -104,7 +107,7 @@ var React = require('react'),
                 title: this.state.title,
                 username: this.state.username,
                 password: this.state.password,
-                tags: this.state.tags,
+                tags: this.state.tags_id,
                 note: this.state.note
             };
             this.props.context.saveDataToId(this.state.key_value, data);
@@ -112,10 +115,14 @@ var React = require('react'),
         },
 
         titleOnBlur() {
-            if (this.state.title.indexOf(".") > -1
+            if (this.state.title.indexOf('.') > -1
                 && this.props.context.getEntryTitleById(this.state.key_value) != this.state.title) {
                 this.setState({
-                    image_src: "https://logo.clearbit.com/" + this.extractDomain(this.state.title)
+                    image_src: 'https://logo.clearbit.com/' + this.extractDomain(this.state.title)
+                });
+            } else {
+                this.setState({
+                    image_src: 'dist/img/transparent.png'
                 });
             }
         },
@@ -138,81 +145,88 @@ var React = require('react'),
 
         render() {
             var showPassword = (<Tooltip id='show'>Show/hide password.</Tooltip>),
-                generatePassword = (<Tooltip id='generate'>Generate password.</Tooltip>);
+                generatePassword = (<Tooltip id='generate'>Generate password.</Tooltip>),
+                tags = this.state.tags_titles.map((key) => {
+                    return (<span className='tagsinput-tag' key={key}>{ key }</span>)
+                });
+                tags.push(<span key={'tagsinput-input'+0}
+                                 name='taginput'
+                                 ref='taginput'
+                                 className='tagsinput-input'>+ Add</span>)
 
             return (
-                <div className={"entry col-xs-12 " + this.state.mode}>
+                <div className={'entry col-xs-12 ' + this.state.mode}>
                     <form onSubmit={this.saveEntry}>
-                        <div className="avatar">
+                        <div className='avatar'>
                             <img src={this.state.image_src}
                                  onError={this.handleError}/>
-                            <i className={"icon ion-" + this.props.context.getTagIconById(this.state.tags[this.state.tags.length-1] % 5)}></i>
+                            <i className={'icon ion-' + this.props.context.getTagIconById(this.state.tags_id[this.state.tags_id.length-1] % 5)}></i>
                         </div>
 
-                        <div className="title">
+                        <div className='title'>
                             <span>Title </span>
-                            <input type="text"
-                                   autoComplete="off"
+                            <input type='text'
+                                   autoComplete='off'
                                    value={this.state.title}
-                                   name="title"
+                                   name='title'
                                    onChange={this.handleChange}
                                    onBlur={this.titleOnBlur}
                                    disabled={this.state.mode === 'list-mode' ? 'disabled' : false}/>
                         </div>
 
-                        <div className="username">
+                        <div className='username'>
                             <span>Username </span>
-                            <input type="text"
-                                   autoComplete="off"
+                            <input type='text'
+                                   autoComplete='off'
                                    value={this.state.username}
-                                   name="username"
+                                   name='username'
                                    onChange={this.handleChange}
                                    disabled={this.state.mode === 'list-mode' ? 'disabled' : false}/>
                         </div>
 
-                        <div className="password">
+                        <div className='password'>
                             <span>Password </span>
-                            <input type="password"
-                                   autoComplete="off"
-                                   ref="password"
-                                   name="password"
+                            <input type='password'
+                                   autoComplete='off'
+                                   ref='password'
+                                   name='password'
                                    onChange={this.handleChange}
                                    value={this.state.password}/>
-                            <OverlayTrigger placement="top"
+                            <OverlayTrigger placement='top'
                                             overlay={showPassword}>
-                                <i className="button ion-eye" onClick={this.showPassword}></i>
+                                <i className='button ion-eye'
+                                   onClick={this.showPassword}></i>
                             </OverlayTrigger>
-                            <OverlayTrigger placement="top"
+                            <OverlayTrigger placement='top'
                                             overlay={generatePassword}>
-                                <i className="button ion-loop" onClick={this.generatePassword}></i>
+                                <i className='button ion-loop'
+                                   onClick={this.generatePassword}></i>
                             </OverlayTrigger>
                         </div>
 
-                        <div className="tags">
+                        <div className='tags'>
                             <span>Tags </span>
-                            <input type="text"
-                                   autoComplete="off"
-                                   value={this.state.tags}
-                                   name="tags"
-                                   disabled/>
+                            <span ref='tags'
+                                  className='tagsinput'>{tags}
+                            </span>
                         </div>
 
-                        <div className="note">
+                        <div className='note'>
                             <span>Note </span>
-                            <Textarea type="text"
-                                      autoComplete="off"
+                            <Textarea type='text'
+                                      autoComplete='off'
                                       onChange={this.handleChange}
                                       value={this.state.note}
                                       defaultValue={''}
-                                      name="note"></Textarea>
+                                      name='note'></Textarea>
                         </div>
 
-                        <span className="edit-btn" onClick={this.changeMode}>
-                        <i className="ion-chevron-down"></i>
+                        <span className='edit-btn' onClick={this.changeMode}>
+                        <i className='ion-chevron-down'></i>
                         </span>
 
-                        <div className="form-buttons">
-                            <button action="submit" className="green-btn">Save</button>
+                        <div className='form-buttons'>
+                            <button action='submit' className='green-btn'>Save</button>
                         </div>
 
                     </form>

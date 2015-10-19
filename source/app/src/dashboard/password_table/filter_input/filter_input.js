@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var React = require('react'),
     Router = require('react-router'),
@@ -19,8 +19,8 @@ var React = require('react'),
         render(){
             return (
                 <span>
-                    <form role="filter" className="filter">
-                        <input type="text" placeholder="Quick search ..." value={this.state.filter} onChange={this.handleChange} className="form-control" />
+                    <form role='filter' className='filter'>
+                        <input type='text' placeholder='Quick search ...' value={this.state.filter} onChange={this.handleChange} className='form-control' />
                     </form>
                 </span>
             )
