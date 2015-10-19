@@ -19,7 +19,9 @@ aside.left-panel {
 
 
 .logo {
-  padding: 15px 20px;
+  padding: 12px 25px;
+  line-height: 51px;
+  height: 51px;
   text-transform: uppercase;
 
   @media screen and (max-width: $break-small) {

@@ -57,7 +57,6 @@ var React = require('react'),
                             <SidePanel eventEmitter={eventEmitter} />
 
                             <section className="content">
-                                <Header eventEmitter={eventEmitter} />
                                 <PasswordTable eventEmitter={eventEmitter} />
                             </section>
                         </div>

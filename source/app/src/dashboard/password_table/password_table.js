@@ -87,18 +87,19 @@ var React = require('react'),
                 <div className="wraper container-fluid">
                     <div className="row page-title">
                         <div className="col-sm-3 col-xs-3">
-                            <DropdownButton title={this.state.active_title} className="title" noCaret id="dropdown-no-caret">
+                            <button type="button" onClick={this.addNewEntry} className="blue-btn add">Add entry</button>
+                        </div>
+                        <div className="col-sm-6 col-xs-9">
+                            <Filter_Input eventEmitter={this.props.eventEmitter}/>
+                        </div>
+                        <div className="col-sm-3 col-xs-3 text-right">
+                            <DropdownButton title="" className="title" noCaret pullRight id="dropdown-no-caret">
                                 <MenuItem eventKey="1"><i className="ion-pricetags"></i> Rename tag</MenuItem>
                                 <MenuItem eventKey="2"><i className="ion-loop"></i> Change icon</MenuItem>
                                 <MenuItem eventKey="3"><i className="ion-close"></i> Remove tag</MenuItem>
                             </DropdownButton>
                         </div>
-                        <div className="col-sm-6 col-xs-9">
-                            <Filter_Input eventEmitter={this.props.eventEmitter}/>
-                        </div>
-                        <div className="col-sm-3 col-xs-12 text-right">
-                            <button type="button" onClick={this.addNewEntry} className="blue-btn">Add entry</button>
-                        </div>
+
                     </div>
                     <div className="row dashboard">
                         {password_table}
