@@ -9,7 +9,7 @@
   margin: 0 0 20px 0;
 
   .entry {
-    padding-top: 10px;
+    padding-top: 5px;
     display: block;
     position: relative;
     @include transition(all 50ms ease-in-out);
@@ -21,7 +21,7 @@
       width: 50px;
       height: 50px;
       float: left;
-      background-color: $c_grey_bg;
+      background-color: rgba($c_grey_content_font, .4);
       @include transition(all 50ms ease-in-out);
 
       img {
@@ -74,7 +74,7 @@
         padding-top: 5px;
         font-size: 1.4em;
         @include transition(all 50ms ease-in-out);
-        color: rgba($c_grey_content_font, .9);
+        color: rgba($c_grey_content_font, 1);
 
         span {
           display: inline-block;

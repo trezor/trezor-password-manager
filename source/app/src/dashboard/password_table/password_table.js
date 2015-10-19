@@ -27,6 +27,7 @@ var React = require('react'),
             this.props.eventEmitter.on('changeTag', this.changeTag);
             this.props.eventEmitter.on('contextInit', this.saveContext);
             this.props.eventEmitter.on('filter', this.setupFilter);
+
         },
 
         setupFilter(filterVal) {

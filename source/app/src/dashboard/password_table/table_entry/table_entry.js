@@ -5,6 +5,8 @@ var React = require('react'),
     Router = require('react-router'),
     DropdownButton = require('react-bootstrap').DropdownButton,
     MenuItem = require('react-bootstrap').MenuItem,
+    Tooltip = require('react-bootstrap').Tooltip,
+    OverlayTrigger = require('react-bootstrap').OverlayTrigger,
     Password = {
         _pattern: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~',
         _getRandomByte: function () {
@@ -39,7 +41,7 @@ var React = require('react'),
         getInitialState: function () {
             return {
                 image_src: 'dist/img/transparent.png',
-                mode: 'list-mode',
+                mode: this.props.mode || 'list-mode',
                 key_value: this.props.key_value,
                 title: this.props.title,
                 username: this.props.username,
@@ -116,9 +118,9 @@ var React = require('react'),
         },
 
         showPassword() {
-            var input= React.findDOMNode(this.refs.password),
+            var input = React.findDOMNode(this.refs.password),
                 inputAttr = input.getAttribute('type');
-            if(inputAttr === 'text'){
+            if (inputAttr === 'text') {
                 input.setAttribute('type', 'password');
             } else {
                 input.setAttribute('type', 'text');
@@ -132,6 +134,9 @@ var React = require('react'),
         },
 
         render() {
+            var showPassword = (<Tooltip id='show'>Show/hide password.</Tooltip>),
+                generatePassword = (<Tooltip id='generate'>Generate password.</Tooltip>);
+
             return (
                 <div className={"entry col-xs-12 " + this.state.mode}>
                     <form onSubmit={this.saveEntry}>
@@ -159,8 +164,12 @@ var React = require('react'),
                             <input type="password" autoComplete="off" ref="password" name="password"
                                    onChange={this.handleChange}
                                    value={this.state.password}/>
-                            <i className="button ion-eye" onClick={this.showPassword}></i>
-                            <i className="button ion-loop" onClick={this.generatePassword}></i>
+                            <OverlayTrigger placement="top" overlay={showPassword}>
+                                <i className="button ion-eye" onClick={this.showPassword}></i>
+                            </OverlayTrigger>
+                            <OverlayTrigger placement="top" overlay={generatePassword}>
+                                <i className="button ion-loop" onClick={this.generatePassword}></i>
+                            </OverlayTrigger>
                         </div>
 
                         <div className="tags">
