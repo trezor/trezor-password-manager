@@ -21,7 +21,8 @@
       "tags": [
         0,
         1
-      ]
+      ],
+      "note" : "random text"
     },
     "1": {
       "title": "Kyberia.sk",
@@ -30,7 +31,8 @@
       "tags": [
         0,
         1
-      ]
+      ],
+      "note" : "random text"
     },
     "2": {
       "title": "Mail",
@@ -39,7 +41,8 @@
       "tags": [
         0,
         2
-      ]
+      ],
+      "note" : "random text"
     },
     "3": {
       "title": "Facebook.com",
@@ -47,7 +50,8 @@
       "password": "nicetry",
       "tags": [
         0
-      ]
+      ],
+      "note" : "random text"
     },
     "4": {
       "title": "Kyberia.sk",
@@ -56,7 +60,8 @@
       "tags": [
         0,
         1
-      ]
+      ],
+      "note" : "random text"
     },
     "5": {
       "title": "Mail",
@@ -65,7 +70,8 @@
       "tags": [
         0,
         2
-      ]
+      ],
+      "note" : "random text"
     },
     "6": {
       "title": "http://getbootstrap.com/css/",
@@ -74,7 +80,8 @@
       "tags": [
         0,
         1
-      ]
+      ],
+      "note" : "random text asdf asfd"
     },
     "7": {
       "title": "Kyberia.sk",
@@ -83,7 +90,8 @@
       "tags": [
         0,
         1
-      ]
+      ],
+      "note" : "random text"
     },
     "8": {
       "title": "Mail",
@@ -92,7 +100,8 @@
       "tags": [
         0,
         2
-      ]
+      ],
+      "note" : "random text"
     },
     "9": {
       "title": "Twitter.com",
@@ -101,7 +110,8 @@
       "tags": [
         0,
         1
-      ]
+      ],
+      "note" : "random text awerwerwer asdfasdf safsfasf "
     },
     "10": {
       "title": "Kyberia.sk",
@@ -109,7 +119,8 @@
       "password": "nicetry",
       "tags": [
         0
-      ]
+      ],
+      "note" : "random text"
     },
     "11": {
       "title": "Mail",
@@ -118,7 +129,8 @@
       "tags": [
         0,
         2
-      ]
+      ],
+      "note" : "random text"
     }
   }
 }

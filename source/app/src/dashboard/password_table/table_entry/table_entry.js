@@ -7,6 +7,7 @@ var React = require('react'),
     MenuItem = require('react-bootstrap').MenuItem,
     Tooltip = require('react-bootstrap').Tooltip,
     OverlayTrigger = require('react-bootstrap').OverlayTrigger,
+    Textarea = require('react-textarea-autosize'),
     Password = {
         _pattern: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~',
         _getRandomByte: function () {
@@ -46,7 +47,8 @@ var React = require('react'),
                 title: this.props.title,
                 username: this.props.username,
                 password: this.props.password,
-                tags: this.props.tags
+                tags: this.props.tags,
+                note: this.props.note
             };
         },
 
@@ -102,7 +104,8 @@ var React = require('react'),
                 title: this.state.title,
                 username: this.state.username,
                 password: this.state.password,
-                tags: this.state.tags
+                tags: this.state.tags,
+                note: this.state.note
             };
             this.props.context.saveDataToId(this.state.key_value, data);
             this.changeMode();
@@ -141,40 +144,67 @@ var React = require('react'),
                 <div className={"entry col-xs-12 " + this.state.mode}>
                     <form onSubmit={this.saveEntry}>
                         <div className="avatar">
-                            <img src={this.state.image_src} onError={this.handleError}/>
+                            <img src={this.state.image_src}
+                                 onError={this.handleError}/>
                             <i className={"icon ion-" + this.props.context.getTagIconById(this.state.tags[this.state.tags.length-1] % 5)}></i>
                         </div>
 
                         <div className="title">
                             <span>Title </span>
-                            <input type="text" autoComplete="off" value={this.state.title} name="title"
-                                   onChange={this.handleChange} onBlur={this.titleOnBlur}
+                            <input type="text"
+                                   autoComplete="off"
+                                   value={this.state.title}
+                                   name="title"
+                                   onChange={this.handleChange}
+                                   onBlur={this.titleOnBlur}
                                    disabled={this.state.mode === 'list-mode' ? 'disabled' : false}/>
                         </div>
 
                         <div className="username">
                             <span>Username </span>
-                            <input type="text" autoComplete="off" value={this.state.username} name="username"
+                            <input type="text"
+                                   autoComplete="off"
+                                   value={this.state.username}
+                                   name="username"
                                    onChange={this.handleChange}
                                    disabled={this.state.mode === 'list-mode' ? 'disabled' : false}/>
                         </div>
 
                         <div className="password">
                             <span>Password </span>
-                            <input type="password" autoComplete="off" ref="password" name="password"
+                            <input type="password"
+                                   autoComplete="off"
+                                   ref="password"
+                                   name="password"
                                    onChange={this.handleChange}
                                    value={this.state.password}/>
-                            <OverlayTrigger placement="top" overlay={showPassword}>
+                            <OverlayTrigger placement="top"
+                                            overlay={showPassword}>
                                 <i className="button ion-eye" onClick={this.showPassword}></i>
                             </OverlayTrigger>
-                            <OverlayTrigger placement="top" overlay={generatePassword}>
+                            <OverlayTrigger placement="top"
+                                            overlay={generatePassword}>
                                 <i className="button ion-loop" onClick={this.generatePassword}></i>
                             </OverlayTrigger>
                         </div>
 
                         <div className="tags">
                             <span>Tags </span>
-                            <input type="text" autoComplete="off" value={this.state.tags} name="tags" disabled/>
+                            <input type="text"
+                                   autoComplete="off"
+                                   value={this.state.tags}
+                                   name="tags"
+                                   disabled/>
+                        </div>
+
+                        <div className="note">
+                            <span>Note </span>
+                            <Textarea type="text"
+                                      autoComplete="off"
+                                      onChange={this.handleChange}
+                                      value={this.state.note}
+                                      defaultValue={''}
+                                      name="note"></Textarea>
                         </div>
 
                         <span className="edit-btn" onClick={this.changeMode}>

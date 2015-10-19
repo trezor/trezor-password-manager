@@ -53,7 +53,7 @@ var React = require('react'),
                     <div className="logo">
                         <a href="." className="logo-expanded">
                             <img src="dist/img/logo-mini.png" alt="logo"/>
-                            <span className="nav-label"><b>KEEZOR</b></span>
+                            <span className="nav-label"><b>TREZOR</b></span>
                         </a>
                     </div>
 

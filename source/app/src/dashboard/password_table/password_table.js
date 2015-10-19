@@ -67,7 +67,9 @@ var React = require('react'),
                                              title={obj.title}
                                              username={obj.username}
                                              password={obj.password}
-                                             tags={obj.tags}/>
+                                             tags={obj.tags}
+                                             note={obj.note}
+                                    />
                             )
                         }
                     } else {
@@ -78,7 +80,9 @@ var React = require('react'),
                                          password={obj.password}
                                          title={obj.title}
                                          username={obj.username}
-                                         tags={obj.tags}/>
+                                         tags={obj.tags}
+                                         note={obj.note}
+                                />
                         )
                     }
                 }
