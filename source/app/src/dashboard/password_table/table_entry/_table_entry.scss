@@ -72,6 +72,18 @@
       height: 85px;
       cursor: pointer;
 
+      &:hover {
+        background: rgba($c_grey_bg, .5);
+
+        .title {
+          color: $c_grey_content_font;
+        }
+
+        .username {
+          color: rgba($c_grey_content_font, .8);
+        }
+      }
+
       .title {
         padding-top: 5px;
         font-size: 1.4em;
@@ -120,16 +132,8 @@
         }
       }
 
-      &:hover {
-        background: rgba($c_grey_bg, .5);
-
-        .title {
-          color: $c_grey_content_font;
-        }
-
-        .username {
-          color: rgba($c_grey_content_font, .8);
-        }
+      .available-tags {
+        display: none;
       }
     }
 
@@ -193,6 +197,7 @@
 
         .tagsinput {
           padding: 1px !important;
+          min-height: 27px;
 
           span.tagsinput-tag {
             width: auto;
@@ -201,7 +206,21 @@
             background-color: $c_grey_font;
             padding: 4px 7px 4px 7px !important;
             margin: 2px 1px 2px 2px;
+            cursor: pointer;
             @include border-radius(2px);
+
+            span {
+              width: auto;
+              padding-right: 4px;
+            }
+
+            i {
+              font-size: .8em;
+            }
+
+            &:hover {
+              background-color: $c_grey_font_header_links;
+            }
           }
 
           span.tagsinput-input {
@@ -213,9 +232,28 @@
             max-width: none !important;
             float: left !important;;
             @include border-radius(2px);
+            @include unselectable();
           }
         }
+      }
 
+      .available-tags {
+        padding: 0 0 4px 200px;
+        margin-top: -5px;
+
+        span.tagsinput-available-tag {
+          line-height: 1.6em;
+          font-style: italic;
+          color: rgba(#3498db, .8);
+          padding-right: 7px;
+          cursor: pointer;
+
+          &:hover {
+            color: #3498db;
+            text-decoration: underline;
+          }
+
+        }
       }
 
       .avatar {

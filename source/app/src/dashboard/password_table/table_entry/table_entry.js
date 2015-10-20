@@ -51,7 +51,8 @@ var React = require('react'),
                 tags_id: this.props.tags,
                 tags_titles: this.props.context.getTagTitleArrayById(this.props.tags) || [],
                 note: this.props.note,
-                tag_globa_title_array: this.props.context.getTagTitleArray()
+                tag_globa_title_array: this.props.context.getTagTitleArray(),
+                tags_available: ''
             };
         },
 
@@ -143,16 +144,50 @@ var React = require('react'),
             });
         },
 
+        addPossibleTags() {
+            this.setState({
+                tags_available: this.props.context.getPossibleToAddTagsForEntry(this.state.key_value)
+            });
+        },
+
+        switchTag(tagTitle) {
+            var tagId = this.props.context.getTagIdByTitle(tagTitle);
+            if(this.state.tags_titles.indexOf(tagTitle) == -1){
+                // add tag
+                this.props.context.addTagToEntry(tagId, this.state.key_value);
+            } else {
+                // remove tag
+                this.props.context.removeTagFromEntry(tagId, this.state.key_value);
+            }
+            this.setState({
+                tags_titles: this.props.context.getTagTitleArrayById(this.props.tags),
+                tags_available: this.props.context.getPossibleToAddTagsForEntry(this.state.key_value)
+            });
+        },
+
         render() {
             var showPassword = (<Tooltip id='show'>Show/hide password.</Tooltip>),
                 generatePassword = (<Tooltip id='generate'>Generate password.</Tooltip>),
                 tags = this.state.tags_titles.map((key) => {
-                    return (<span className='tagsinput-tag' key={key}>{ key }</span>)
+                    return (<span className='tagsinput-tag'
+                                  onClick={this.switchTag.bind(null , key)}
+                                  key={key}>{key}<i className="icon ion-close"></i></span>)
                 });
+
+            if(this.state.tags_available.length > 0) {
+                var tags_available = this.state.tags_available.map((key) => {
+                    return (<span className='tagsinput-available-tag'
+                                  onClick={this.switchTag.bind(null , key)}
+                                  key={key}>{ key }</span>)
+                });
+            } else if(this.state.tag_globa_title_array.length !== this.state.tags_titles.length + 1 ){
                 tags.push(<span key={'tagsinput-input'+0}
-                                 name='taginput'
-                                 ref='taginput'
-                                 className='tagsinput-input'>+ Add</span>)
+                                name='taginput'
+                                ref='taginput'
+                                onClick={this.addPossibleTags}
+                                className='tagsinput-input'>+ Add</span>);
+            }
+
 
             return (
                 <div className={'entry col-xs-12 ' + this.state.mode}>
@@ -210,6 +245,9 @@ var React = require('react'),
                                   className='tagsinput'>{tags}
                             </span>
                         </div>
+
+                        <div className='available-tags'>{tags_available}</div>
+
 
                         <div className='note'>
                             <span>Note </span>
