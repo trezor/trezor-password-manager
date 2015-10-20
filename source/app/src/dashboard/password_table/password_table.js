@@ -52,6 +52,10 @@ var React = require('react'),
             });
         },
 
+        openTagEditor() {
+            this.props.eventEmitter.emit('openEditTag', this.state.active_id);
+        },
+
         render(){
             var password_table = Object.keys(this.state.entries).map((key) => {
                 var obj = this.state.entries[key];
@@ -100,9 +104,9 @@ var React = require('react'),
                             <Filter_Input eventEmitter={this.props.eventEmitter}/>
                         </div>
                         <div className='col-sm-3 col-xs-3 text-right'>
-                            <DropdownButton title='' className='title' noCaret pullRight id='dropdown-no-caret'>
-                                <MenuItem eventKey='1'><i className='ion-pricetags'></i> Rename tag</MenuItem>
-                                <MenuItem eventKey='2'><i className='ion-loop'></i> Change icon</MenuItem>
+                            <DropdownButton title='' className='title' noCaret pullRight id='dropdown-no-caret' >
+                                <MenuItem eventKey='1' onSelect={this.openTagEditor}><i className='ion-pricetags'></i> Rename tag</MenuItem>
+                                <MenuItem eventKey='2' onSelect={this.openTagEditor}><i className='ion-loop'></i> Change icon</MenuItem>
                                 <MenuItem eventKey='3'><i className='ion-close'></i> Remove tag</MenuItem>
                             </DropdownButton>
                         </div>

@@ -19,12 +19,16 @@ var React = require('react'),
             this.props.eventEmitter.on('contextInit', this.saveContext);
         },
 
-        onClick(e) {
+        changeTag(e) {
             this.props.eventEmitter.emit('changeTag', e);
             this.setState({
                 active_id: parseInt(e),
                 active_title: this.context.getTagTitleById(e)
             });
+        },
+
+        addTag() {
+            this.props.eventEmitter.emit('openAddTag');
         },
 
         saveContext(context) {
@@ -43,8 +47,8 @@ var React = require('react'),
                     <li key={key} className={obj.active}>
                         <a data-tag-key={key}
                            data-tag-name={obj.title}
-                           onClick={this.onClick.bind(null, key)}
-                           onTouchStart={this.onClick.bind(null, key)}>
+                           onClick={this.changeTag.bind(null, key)}
+                           onTouchStart={this.changeTag.bind(null, key)}>
                             <i className={"icon ion-" + obj.icon}></i>
                             <span className="nav-label">{obj.title}</span>
                         </a></li>)
@@ -62,6 +66,13 @@ var React = require('react'),
                     <nav className="navigation">
                         <ul className="list-unstyled">
                             {tag_array}
+
+                            <li className="add-tag-btn">
+                                <a onClick={this.addTag} onTouchStart={this.addTag}>
+                                    <i className="icon ion-plus-circled"></i>
+                                    <span className="nav-label">Add tag</span>
+                                </a>
+                            </li>
                         </ul>
                     </nav>
 

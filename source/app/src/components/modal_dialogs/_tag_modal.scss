@@ -1,0 +1,84 @@
+.modal-content {
+  @include border-radius(2px);
+}
+
+.modal-body {
+  padding: 0;
+  background-color: rgba($c_grey_bg_header_hover, .9);
+  height: 100px;
+
+  div {
+    .title {
+      color: $c_grey_content_font;
+
+      input {
+        display: inline-block;
+        background: transparent;
+        border: none;
+        max-width: 450px;
+        padding-left: 20px;
+        outline: none;
+        font-size: 3em;
+        height: 100px;
+        line-height: 100px;
+      }
+    }
+
+    .avatar {
+      width: auto;
+      display: inline-block;
+      position: relative;
+
+      a {
+        position: absolute;
+        text-align: left;
+        padding: 5px;
+        cursor: pointer;
+        top: 45%;
+        z-index: 1;
+        @include unselectable();
+
+        &.prev {
+          left: 0;
+        }
+
+        &.next {
+          right: 0;
+        }
+      }
+
+      span {
+        background: $c_blue_dark_very;
+        display: inline-block;
+        position: relative;
+        text-align: center;
+
+        i {
+          display: inline-block;
+          color: $c_white;
+          position: relative;
+          line-height: 100px;
+          font-size: 4em;
+          @include transition(all 50ms ease-in-out);
+          width: 100px;
+          height: 100px;
+        }
+      }
+    }
+
+    .close-btn {
+      display: block;
+      cursor: pointer;
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      z-index: 2;
+      color: $c_grey_content_font;
+
+      &:hover {
+        color: $c_grey_font_header_links;
+      }
+    }
+  }
+
+}

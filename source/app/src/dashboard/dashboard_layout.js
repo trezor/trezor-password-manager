@@ -7,13 +7,15 @@ var React = require('react'),
     Header = require('./header/header'),
     Store = require('../components/data_store'),
     Service = require('../components/data_service'),
-    Popup = require('../components/modal_dialogs/entry_popup'),
+    Tag_Modal = require('../components/modal_dialogs/tag_modal'),
     events = require('events'),
     eventEmitter = new events.EventEmitter(),
     {Link} = Router,
 
     DashboardLayout = React.createClass({
         mixins: [Router.Navigation],
+
+        context: {},
 
         getInitialState() {
             return {
@@ -28,8 +30,8 @@ var React = require('react'),
                 this.transitionTo('home');
             } else {
                 Service.getContextTest().then(response => {
-                    var Context = new Store(response, eventEmitter);
-                    eventEmitter.emit('contextInit', Context);
+                    this.context = new Store(response, eventEmitter);
+                    eventEmitter.emit('contextInit', this.context);
                 });
             }
         },
@@ -53,7 +55,7 @@ var React = require('react'),
                 <div>
                     {this.state.ready ?
                         <div>
-                            <Popup eventEmitter={eventEmitter} />
+                            <Tag_Modal eventEmitter={eventEmitter} />
                             <SidePanel eventEmitter={eventEmitter} />
 
                             <section className='content'>

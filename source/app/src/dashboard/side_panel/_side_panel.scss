@@ -59,6 +59,7 @@ aside.left-panel {
 
 .navigation {
   margin: 20px 0 20px;
+  height: 100%;
 
   @media screen and (max-width: $break-small) {
     margin-top: 0;
@@ -122,6 +123,17 @@ aside.left-panel {
         @media screen and (max-width: $break-small) {
           display: none;
         }
+      }
+    }
+
+    &.add-tag-btn {
+      position: absolute;
+      bottom: 0;
+      border-top: 1px solid $c_blue_dark_very_much;
+      width: 100%;
+
+      i {
+        color: $c_blue;
       }
     }
   }
