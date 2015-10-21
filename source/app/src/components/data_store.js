@@ -15,13 +15,12 @@ class Store {
     //////////
 
     getTagTitleById(tagId) {
-        tagId = tagId ? tagId : 0;
-        console.log(this.data.tags);
+        tagId = tagId ? parseInt(tagId) : 0;
         return Object.getOwnPropertyDescriptor(this.data.tags, tagId).value.title
     }
 
     getTagIdByTitle(title) {
-        var resultId;
+        var resultId = [];
         Object.keys(this.data.tags).map((key) => {
             if (this.data.tags[key].title === title) resultId = key;
         });
@@ -29,9 +28,7 @@ class Store {
     }
 
     getTagIconById(tagId) {
-        console.log(tagId);
-        tagId = tagId ? tagId : 0;
-        console.log(tagId);
+        tagId = tagId ? parseInt(tagId) : 0;
         return Object.getOwnPropertyDescriptor(this.data.tags, tagId).value.icon
     }
 
@@ -64,7 +61,6 @@ class Store {
         } else {
             return false;
         }
-
     }
 
     changeTagIconById(tagId, newTagIcon) {
@@ -84,7 +80,7 @@ class Store {
                 "title": newTitle,
                 "icon": newIcon
             },
-            newId = Object.keys(this.data.tags).length + 1,
+            newId = Object.keys(this.data.tags).length,
             oldTagTitleArray = this.getTagTitleArray();
         if (oldTagTitleArray.indexOf(newTitle) == -1) {
             this.data.tags[newId] = data;

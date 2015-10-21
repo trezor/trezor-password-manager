@@ -60,7 +60,8 @@ var React = require('react'),
         componentWillReceiveProps(nextProps){
             this.setState({
                 context: nextProps.context,
-                tag_globa_title_array: nextProps.context.getTagTitleArray(),
+                tags_id: nextProps.tags,
+                tag_globa_title_array: this.props.context.getTagTitleArray(),
                 tags_titles: nextProps.context.getTagTitleArrayById(this.props.tags)
             });
             if (this.state.tags_available !== '') {
@@ -204,14 +205,13 @@ var React = require('react'),
                                 className='tagsinput-input'>+ Add</span>);
             }
 
-
             return (
                 <div className={'entry col-xs-12 ' + this.state.mode}>
                     <form onSubmit={this.saveEntry}>
                         <div className='avatar'>
                             <img src={this.state.image_src}
                                  onError={this.handleError}/>
-                            <i className={'icon ion-' + this.state.context.getTagIconById(this.state.tags_id[this.state.tags_id.length-1] % 5)}></i>
+                            <i className={'icon ion-' + this.state.context.getTagIconById(this.state.tags_id[this.state.tags_id.length-1])}></i>
                         </div>
 
                         <div className='title'>
