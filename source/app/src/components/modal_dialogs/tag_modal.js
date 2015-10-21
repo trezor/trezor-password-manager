@@ -22,10 +22,9 @@ var React = require('react'),
     ],
     Tag_Modal = React.createClass({
 
-        context: {},
-
         getInitialState() {
             return {
+                context: {},
                 showModal: false,
                 newTagId: '',
                 newTagTitle: '',
@@ -39,12 +38,10 @@ var React = require('react'),
             this.props.eventEmitter.on('contextInit', this.saveContext);
         },
 
-        componentDidUpdate() {
-            if(this.state.newTagTitle === '') this.refs.newTagTitle.getDOMNode().focus();
-        },
-
         saveContext(context) {
-            this.context = context;
+            this.setState({
+               context: context 
+            });
         },
 
         close() {
@@ -63,10 +60,10 @@ var React = require('react'),
         },
 
         openEdit(entryId) {
-            var icon = this.context.getTagIconById(entryId);
+            var icon = this.state.context.getTagIconById(entryId);
             this.setState({
                 newTagId: entryId,
-                newTagTitle: this.context.getTagTitleById(entryId),
+                newTagTitle: this.state.context.getTagTitleById(entryId),
                 newIcon: icons[icons.indexOf(icon)],
                 showModal: true
             });
@@ -93,6 +90,28 @@ var React = require('react'),
             });
         },
 
+        saveTagChanges() {
+            this.state.context.changeTagTitleById(parseInt(this.state.newTagId), this.state.newTagTitle);
+            this.state.context.changeTagIconById(parseInt(this.state.newTagId), this.state.newIcon);
+        },
+
+        addNewTag() {
+            this.state.context.addNewTag(this.state.newTagTitle, this.state.newIcon);
+        },
+
+        handleKeyDown: function(e) {
+            var ENTER = 13;
+            if( e.keyCode == ENTER ) {
+                if(this.state.newTagId === '' && this.state.newTagTitle != ''){
+                    this.addNewTag();
+                }else{
+                    this.saveTagChanges();
+                }
+                this.close();
+            }
+
+        },
+
 
         render(){
             return (
@@ -100,7 +119,8 @@ var React = require('react'),
                     <Modal show={this.state.showModal} onHide={this.close}>
                         <Modal.Body>
                             <div>
-                                <a className='icon ion-close-round close-btn' onClick={this.close} />
+                                <a className='icon ion-close-round close-btn' onClick={this.close}/>
+
                                 <div className='avatar'>
                                     <a className='icon ion-chevron-left prev'
                                        onClick={this.prevIcon}></a>
@@ -111,10 +131,12 @@ var React = require('react'),
                                 <span className='title'>
                                     <input type='text'
                                            autofocus
+                                           autoComplete='off'
                                            name='newTagTitle'
                                            ref='newTagTitle'
                                            placeholder='New tag title'
                                            onChange={this.handleChange}
+                                           onKeyDown={this.handleKeyDown}
                                            value={this.state.newTagTitle}/>
                                 </span>
                             </div>

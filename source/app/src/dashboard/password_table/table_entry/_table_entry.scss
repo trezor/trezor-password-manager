@@ -238,10 +238,14 @@
       }
 
       .available-tags {
+        position: relative;
+        display: block;
         padding: 0 0 4px 200px;
         margin-top: -5px;
+        width: 410px;
 
         span.tagsinput-available-tag {
+          display: inline-block;
           line-height: 1.6em;
           font-style: italic;
           color: rgba(#3498db, .8);

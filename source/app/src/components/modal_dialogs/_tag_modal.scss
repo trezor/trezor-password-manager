@@ -11,17 +11,17 @@
     .title {
       color: $c_grey_content_font;
 
-      input {
-        display: inline-block;
-        background: transparent;
-        border: none;
-        max-width: 450px;
-        padding-left: 20px;
-        outline: none;
-        font-size: 3em;
-        height: 100px;
-        line-height: 100px;
-      }
+        input {
+          display: inline-block;
+          background: transparent;
+          border: none;
+          max-width: 450px;
+          padding-left: 20px;
+          outline: none;
+          font-size: 3em;
+          height: 100px;
+          line-height: 100px;
+        }
     }
 
     .avatar {
@@ -34,7 +34,7 @@
         text-align: left;
         padding: 5px;
         cursor: pointer;
-        top: 45%;
+        top: 40%;
         z-index: 1;
         @include unselectable();
 

@@ -11,15 +11,14 @@ var React = require('react'),
 
     PasswordTable = React.createClass({
 
-        context: {},
-
         getInitialState() {
             return {
                 active_id: 0,
                 active_title: '',
                 tags: {},
                 entries: {},
-                filter: ''
+                filter: '',
+                context: {}
             }
         },
 
@@ -39,16 +38,16 @@ var React = require('react'),
         changeTag(e) {
             this.setState({
                 active_id: parseInt(e),
-                active_title: this.context.getTagTitleById(e)
+                active_title: this.state.context.getTagTitleById(e)
             });
         },
 
         saveContext(context) {
-            this.context = context;
             this.setState({
-                tags: this.context.data.tags,
-                entries: this.context.data.entries,
-                active_title: this.context.getTagTitleById(this.state.active_id)
+                context: context,
+                tags: context.data.tags,
+                entries: context.data.entries,
+                active_title: context.getTagTitleById(this.state.active_id)
             });
         },
 
@@ -59,13 +58,14 @@ var React = require('react'),
         render(){
             var password_table = Object.keys(this.state.entries).map((key) => {
                 var obj = this.state.entries[key];
+
                 if (obj.tags.indexOf(this.state.active_id) > -1 || this.state.active_id == 0) {
 
                     if (this.state.filter.length > 0) {
                         if (obj.title.toLowerCase().indexOf(this.state.filter) > -1 ||
                             obj.username.toLowerCase().indexOf(this.state.filter) > -1) {
                             return (
-                                <Table_Entry context={this.context}
+                                <Table_Entry context={this.state.context}
                                              key={key}
                                              key_value={key}
                                              title={obj.title}
@@ -78,7 +78,7 @@ var React = require('react'),
                         }
                     } else {
                         return (
-                            <Table_Entry context={this.context}
+                            <Table_Entry context={this.state.context}
                                          key={key}
                                          key_value={key}
                                          password={obj.password}
@@ -90,7 +90,11 @@ var React = require('react'),
                         )
                     }
                 }
-            });
+            }),
+                dropdown = (<DropdownButton title='' className='dropdown' noCaret pullRight id='dropdown-no-caret'>
+                    <MenuItem eventKey='1' onSelect={this.openTagEditor}><i className='ion-edit'></i> Edit tag</MenuItem>
+                    <MenuItem eventKey='2'><i className='ion-close'></i> Remove tag</MenuItem>
+                </DropdownButton>);
 
             return (
                 <div className='wraper container-fluid'>
@@ -98,17 +102,14 @@ var React = require('react'),
                         <div className='col-sm-3 col-xs-3'>
                             <button type='button'
                                     onClick={this.addNewEntry}
-                                    className='blue-btn add'>Add entry</button>
+                                    className='blue-btn add'>Add entry
+                            </button>
                         </div>
                         <div className='col-sm-6 col-xs-9'>
                             <Filter_Input eventEmitter={this.props.eventEmitter}/>
                         </div>
                         <div className='col-sm-3 col-xs-3 text-right'>
-                            <DropdownButton title='' className='title' noCaret pullRight id='dropdown-no-caret' >
-                                <MenuItem eventKey='1' onSelect={this.openTagEditor}><i className='ion-pricetags'></i> Rename tag</MenuItem>
-                                <MenuItem eventKey='2' onSelect={this.openTagEditor}><i className='ion-loop'></i> Change icon</MenuItem>
-                                <MenuItem eventKey='3'><i className='ion-close'></i> Remove tag</MenuItem>
-                            </DropdownButton>
+                            {this.state.active_id != 0 ? dropdown : null}
                         </div>
 
                     </div>

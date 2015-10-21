@@ -42,6 +42,7 @@ var React = require('react'),
 
         getInitialState: function () {
             return {
+                context: this.props.context || {},
                 image_src: 'dist/img/transparent.png',
                 mode: this.props.mode || 'list-mode',
                 key_value: this.props.key_value,
@@ -54,6 +55,19 @@ var React = require('react'),
                 tag_globa_title_array: this.props.context.getTagTitleArray(),
                 tags_available: ''
             };
+        },
+
+        componentWillReceiveProps(nextProps){
+            this.setState({
+                context: nextProps.context,
+                tag_globa_title_array: nextProps.context.getTagTitleArray(),
+                tags_titles: nextProps.context.getTagTitleArrayById(this.props.tags)
+            });
+            if (this.state.tags_available !== '') {
+                this.setState({
+                    tags_available: nextProps.context.getPossibleToAddTagsForEntry(this.state.key_value)
+                });
+            }
         },
 
         extractDomain(url) {
@@ -111,13 +125,13 @@ var React = require('react'),
                 tags: this.state.tags_id,
                 note: this.state.note
             };
-            this.props.context.saveDataToId(this.state.key_value, data);
+            this.state.context.saveDataToEntryById(this.state.key_value, data);
             this.changeMode();
         },
 
         titleOnBlur() {
             if (this.state.title.indexOf('.') > -1
-                && this.props.context.getEntryTitleById(this.state.key_value) != this.state.title) {
+                && this.state.context.getEntryTitleById(this.state.key_value) != this.state.title) {
                 this.setState({
                     image_src: 'https://logo.clearbit.com/' + this.extractDomain(this.state.title)
                 });
@@ -146,41 +160,43 @@ var React = require('react'),
 
         addPossibleTags() {
             this.setState({
-                tags_available: this.props.context.getPossibleToAddTagsForEntry(this.state.key_value)
+                tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value)
             });
         },
 
         switchTag(tagTitle) {
-            var tagId = this.props.context.getTagIdByTitle(tagTitle);
-            if(this.state.tags_titles.indexOf(tagTitle) == -1){
+            var tagId = this.state.context.getTagIdByTitle(tagTitle);
+            if (this.state.tags_titles.indexOf(tagTitle) == -1) {
                 // add tag
-                this.props.context.addTagToEntry(tagId, this.state.key_value);
+                this.state.context.addTagToEntry(tagId, this.state.key_value);
             } else {
                 // remove tag
-                this.props.context.removeTagFromEntry(tagId, this.state.key_value);
+                this.state.context.removeTagFromEntry(tagId, this.state.key_value);
             }
             this.setState({
-                tags_titles: this.props.context.getTagTitleArrayById(this.props.tags),
-                tags_available: this.props.context.getPossibleToAddTagsForEntry(this.state.key_value)
+                tags_titles: this.state.context.getTagTitleArrayById(this.props.tags),
+                tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value)
             });
         },
 
         render() {
             var showPassword = (<Tooltip id='show'>Show/hide password.</Tooltip>),
                 generatePassword = (<Tooltip id='generate'>Generate password.</Tooltip>),
+                interator = 0,
                 tags = this.state.tags_titles.map((key) => {
                     return (<span className='tagsinput-tag'
                                   onClick={this.switchTag.bind(null , key)}
                                   key={key}>{key}<i className="icon ion-close"></i></span>)
                 });
 
-            if(this.state.tags_available.length > 0) {
+            if (this.state.tags_available.length > 0) {
                 var tags_available = this.state.tags_available.map((key) => {
+                    interator++;
                     return (<span className='tagsinput-available-tag'
                                   onClick={this.switchTag.bind(null , key)}
                                   key={key}>{ key }</span>)
                 });
-            } else if(this.state.tag_globa_title_array.length !== this.state.tags_titles.length + 1 ){
+            } else if (this.state.tag_globa_title_array.length !== this.state.tags_titles.length + 1) {
                 tags.push(<span key={'tagsinput-input'+0}
                                 name='taginput'
                                 ref='taginput'
@@ -195,7 +211,7 @@ var React = require('react'),
                         <div className='avatar'>
                             <img src={this.state.image_src}
                                  onError={this.handleError}/>
-                            <i className={'icon ion-' + this.props.context.getTagIconById(this.state.tags_id[this.state.tags_id.length-1] % 5)}></i>
+                            <i className={'icon ion-' + this.state.context.getTagIconById(this.state.tags_id[this.state.tags_id.length-1] % 5)}></i>
                         </div>
 
                         <div className='title'>

@@ -5,10 +5,10 @@ var React = require('react'),
     DataService = require('../../components/data_service'),
     SidePanel = React.createClass({
 
-        context: {},
 
         getInitialState() {
             return {
+                context: {},
                 tags: {},
                 active_id: 0,
                 active_title: ''
@@ -23,7 +23,7 @@ var React = require('react'),
             this.props.eventEmitter.emit('changeTag', e);
             this.setState({
                 active_id: parseInt(e),
-                active_title: this.context.getTagTitleById(e)
+                active_title: this.state.context.getTagTitleById(e)
             });
         },
 
@@ -32,17 +32,17 @@ var React = require('react'),
         },
 
         saveContext(context) {
-            this.context = context;
             this.setState({
-                tags: this.context.data.tags,
-                active_title: this.context.getTagTitleById(this.state.active_id)
+                context: context,
+                tags: context.data.tags,
+                active_title: context.getTagTitleById(this.state.active_id)
             });
         },
 
         render(){
             var tag_array = Object.keys(this.state.tags).map((key) => {
                 var obj = this.state.tags[key];
-                obj.active = this.state.active_title === obj.title ? 'active' : '';
+                obj.active = this.state.active_id == key ? 'active' : '';
                 return (
                     <li key={key} className={obj.active}>
                         <a data-tag-key={key}
