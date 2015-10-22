@@ -55,6 +55,10 @@ var React = require('react'),
             this.props.eventEmitter.emit('openEditTag', this.state.active_id);
         },
 
+        openDeleteTagModal() {
+            this.props.eventEmitter.emit('openRemoveTag', this.state.active_id);
+        },
+
         render(){
             var password_table = Object.keys(this.state.entries).map((key) => {
                 var obj = this.state.entries[key];
@@ -93,7 +97,7 @@ var React = require('react'),
             }),
                 dropdown = (<DropdownButton title='' className='dropdown' noCaret pullRight id='dropdown-no-caret'>
                     <MenuItem eventKey='1' onSelect={this.openTagEditor}><i className='ion-edit'></i> Edit tag</MenuItem>
-                    <MenuItem eventKey='2'><i className='ion-close'></i> Remove tag</MenuItem>
+                    <MenuItem eventKey='2' onSelect={this.openDeleteTagModal}><i className='ion-close'></i> Remove tag</MenuItem>
                 </DropdownButton>);
 
             return (
@@ -114,7 +118,7 @@ var React = require('react'),
 
                     </div>
                     <div className='row dashboard'>
-                        {password_table}
+                        {password_table.reverse()}
 
                     </div>
                 </div>

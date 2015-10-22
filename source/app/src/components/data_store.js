@@ -80,7 +80,7 @@ class Store {
                 "title": newTitle,
                 "icon": newIcon
             },
-            newId = Object.keys(this.data.tags).length,
+            newId = parseInt(Object.keys(this.data.tags)[parseInt(Object.keys(this.data.tags).length) - 1]) + 1,
             oldTagTitleArray = this.getTagTitleArray();
         if (oldTagTitleArray.indexOf(newTitle) == -1) {
             this.data.tags[newId] = data;
@@ -89,6 +89,24 @@ class Store {
         } else {
             return false;
         }
+    }
+
+    removeTag(tagId) {
+        Object.keys(this.data.entries).map((key) => {
+            var tags = this.data.entries[key].tags;
+            if (tags.indexOf(parseInt(tagId)) > -1) {
+                this.removeTagFromEntry(tagId, key);
+            }
+        });
+        this.eventEmitter.emit('changeTag', 0);
+
+        var tagArray = this.getTagIdArray();
+        tagArray.map((key) => {
+            if (key === tagId) {
+                delete this.data.tags[key];
+            }
+        });
+        this.eventEmitter.emit('update', this.data);
     }
 
     ///////////
@@ -129,6 +147,12 @@ class Store {
             }
         });
         return resultTagArray;
+    }
+
+    getAllEntries() {
+        return Object.keys(this.data.entries).map((key) => {
+            return this.data.entries[key]
+        });
     }
 
     toObject() {

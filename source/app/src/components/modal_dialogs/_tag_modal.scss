@@ -11,17 +11,41 @@
     .title {
       color: $c_grey_content_font;
 
-        input {
+      input {
+        display: inline-block;
+        background: transparent;
+        border: none;
+        max-width: 450px;
+        padding-left: 20px;
+        outline: none;
+        font-size: 3em;
+        height: 100px;
+        line-height: 100px;
+      }
+
+      .btn-controls {
+        position: absolute;
+        overflow: hidden;
+        bottom: -55px;
+        right: 0;
+        height: 0;
+        @include transition(all 0.3s ease-in-out);
+
+
+        button {
           display: inline-block;
-          background: transparent;
-          border: none;
-          max-width: 450px;
-          padding-left: 20px;
-          outline: none;
-          font-size: 3em;
-          height: 100px;
-          line-height: 100px;
+          margin-left: 10px;
+          position: relative;
+          @include transition(all 0.3s ease-in-out);
         }
+      }
+
+      &.edited {
+        .btn-controls {
+          height: 45px;
+          @include transition(all 0.3s ease-in-out);
+        }
+      }
     }
 
     .avatar {

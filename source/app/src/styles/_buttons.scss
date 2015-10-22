@@ -17,5 +17,10 @@ button, .button {
     background-color: $c_green;
     border-color: $c_green;
   }
+
+  &.red-btn {
+    background-color: $c_pink;
+    border-color: $c_pink;
+  }
 }
 

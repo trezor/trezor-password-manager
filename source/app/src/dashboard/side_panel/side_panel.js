@@ -17,9 +17,17 @@ var React = require('react'),
 
         componentWillMount() {
             this.props.eventEmitter.on('contextInit', this.saveContext);
+            this.props.eventEmitter.on('changeTag', this.changeTag);
         },
 
         changeTag(e) {
+            this.setState({
+                active_id: parseInt(e),
+                active_title: this.state.context.getTagTitleById(e)
+            });
+        },
+
+        changeTagAndEmitt(e) {
             this.props.eventEmitter.emit('changeTag', e);
             this.setState({
                 active_id: parseInt(e),
@@ -47,8 +55,8 @@ var React = require('react'),
                     <li key={key} className={obj.active}>
                         <a data-tag-key={key}
                            data-tag-name={obj.title}
-                           onClick={this.changeTag.bind(null, key)}
-                           onTouchStart={this.changeTag.bind(null, key)}>
+                           onClick={this.changeTagAndEmitt.bind(null, key)}
+                           onTouchStart={this.changeTagAndEmitt.bind(null, key)}>
                             <i className={"icon ion-" + obj.icon}></i>
                             <span className="nav-label">{obj.title}</span>
                         </a></li>)

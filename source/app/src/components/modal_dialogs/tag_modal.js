@@ -25,37 +25,48 @@ var React = require('react'),
         getInitialState() {
             return {
                 context: {},
-                showModal: false,
+                showEditModal: false,
+                showRemoveModal: false,
                 newTagId: '',
                 newTagTitle: '',
-                newIcon: icons[0]
+                newIcon: icons[0],
+                contentChanged: ''
+
             };
         },
 
         componentWillMount() {
-            this.props.eventEmitter.on('openAddTag', this.open);
+            this.props.eventEmitter.on('openAddTag', this.openEditModal);
             this.props.eventEmitter.on('openEditTag', this.openEdit);
+            this.props.eventEmitter.on('openRemoveTag', this.openRemoveModal);
             this.props.eventEmitter.on('contextInit', this.saveContext);
         },
 
         saveContext(context) {
             this.setState({
-               context: context 
+                context: context
             });
         },
 
-        close() {
+        /////////
+        //
+        // ADD / EDIT TAG
+        //
+        ////////
+
+        closeEditModal() {
             this.setState({
-                showModal: false
+                showEditModal: false
             });
         },
 
-        open() {
+        openEditModal() {
             this.setState({
                 newTagId: '',
                 newTagTitle: '',
                 newIcon: icons[0],
-                showModal: true
+                showEditModal: true,
+                contentChanged: ''
             });
         },
 
@@ -65,13 +76,17 @@ var React = require('react'),
                 newTagId: entryId,
                 newTagTitle: this.state.context.getTagTitleById(entryId),
                 newIcon: icons[icons.indexOf(icon)],
-                showModal: true
+                showEditModal: true,
+                contentChanged: ''
             });
 
         },
 
         handleChange: function (e) {
-            this.setState({[e.target.name]: e.target.value});
+            this.setState({
+                [e.target.name]: e.target.value,
+                contentChanged: 'edited'
+            });
         },
 
         nextIcon() {
@@ -99,27 +114,59 @@ var React = require('react'),
             this.state.context.addNewTag(this.state.newTagTitle, this.state.newIcon);
         },
 
-        handleKeyDown: function(e) {
+        handleKeyDown(e) {
             var ENTER = 13;
-            if( e.keyCode == ENTER ) {
-                if(this.state.newTagId === '' && this.state.newTagTitle != ''){
-                    this.addNewTag();
-                }else{
-                    this.saveTagChanges();
-                }
-                this.close();
+            if (e.keyCode == ENTER) {
+                this.saveEditModal();
             }
+        },
+
+        saveEditModal() {
+            if (this.state.newTagId === '' && this.state.newTagTitle != '') {
+                this.addNewTag();
+            } else {
+                this.saveTagChanges();
+            }
+            this.closeEditModal();
+        },
+
+        /////////
+        //
+        // ADD / EDIT TAG
+        //
+        ////////
+
+        openRemoveModal(entryId) {
+            var icon = this.state.context.getTagIconById(entryId);
+            this.setState({
+                newTagId: entryId,
+                newTagTitle: this.state.context.getTagTitleById(entryId),
+                newIcon: icons[icons.indexOf(icon)],
+                showRemoveModal: true
+            });
 
         },
 
+        closeRemoveModal() {
+            this.setState({
+                showRemoveModal: false
+            });
+        },
+
+        removeTagCloseModal() {
+            this.state.context.removeTag(this.state.newTagId);
+            this.setState({
+                showRemoveModal: false
+            });
+        },
 
         render(){
             return (
-                <div className='add-tag'>
-                    <Modal show={this.state.showModal} onHide={this.close}>
+                <div className='tag-modal'>
+                    <Modal show={this.state.showEditModal} onHide={this.closeEditModal}>
                         <Modal.Body>
                             <div>
-                                <a className='icon ion-close-round close-btn' onClick={this.close}/>
+                                <a className='icon ion-close-round close-btn' onClick={this.closeEditModal}/>
 
                                 <div className='avatar'>
                                     <a className='icon ion-chevron-left prev'
@@ -128,7 +175,7 @@ var React = require('react'),
                                     <a className='icon ion-chevron-right next'
                                        onClick={this.nextIcon}></a>
                                 </div>
-                                <span className='title'>
+                                <span className={'title ' + this.state.contentChanged}>
                                     <input type='text'
                                            autofocus
                                            autoComplete='off'
@@ -138,6 +185,34 @@ var React = require('react'),
                                            onChange={this.handleChange}
                                            onKeyDown={this.handleKeyDown}
                                            value={this.state.newTagTitle}/>
+                                    <div className='btn-controls'>
+                                        <button className="btn green-btn" onClick={this.saveEditModal}>Save</button>
+                                        <button className="btn red-btn" onClick={this.closeEditModal}>Discard</button>
+                                    </div>
+                                </span>
+                            </div>
+                        </Modal.Body>
+                    </Modal>
+
+                    <Modal show={this.state.showRemoveModal} onHide={this.closeRemoveModal}>
+                        <Modal.Body>
+                            <div>
+                                <a className='icon ion-close-round close-btn' onClick={this.closeRemoveModal}/>
+
+                                <div className='avatar'>
+                                    <span><i className={'icon ion-'+this.state.newIcon}></i></span>
+                                </div>
+                                <span className='title edited'>
+                                    <input type='text'
+                                           autoComplete='off'
+                                           name='removeTag'
+                                           ref='removeTag'
+                                           disabled
+                                           value={'Remove ' + this.state.newTagTitle + ' ?'}/>
+                                    <div className='btn-controls'>
+                                        <button className="btn  green-btn" onClick={this.removeTagCloseModal}>Yes, remove</button>
+                                        <button className="btn red-btn" onClick={this.closeRemoveModal}>No</button>
+                                    </div>
                                 </span>
                             </div>
                         </Modal.Body>
