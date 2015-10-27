@@ -53,7 +53,9 @@ var React = require('react'),
                 tags_titles: this.props.context.getTagTitleArrayById(this.props.tags) || [],
                 note: this.props.note,
                 tag_globa_title_array: this.props.context.getTagTitleArray(),
-                tags_available: ''
+                tags_available: this.props.context.getPossibleToAddTagsForEntry(this.props.key_value),
+                show_available: false,
+                content_changed: this.props.content_changed || ''
             };
         },
 
@@ -61,14 +63,11 @@ var React = require('react'),
             this.setState({
                 context: nextProps.context,
                 tags_id: nextProps.tags,
-                tag_globa_title_array: this.props.context.getTagTitleArray(),
-                tags_titles: nextProps.context.getTagTitleArrayById(this.props.tags)
+                tags_titles: nextProps.context.getTagTitleArrayById(nextProps.tags),
+                tag_globa_title_array: nextProps.context.getTagTitleArray(),
+                tags_available: nextProps.context.getPossibleToAddTagsForEntry(this.state.key_value)
+
             });
-            if (this.state.tags_available !== '') {
-                this.setState({
-                    tags_available: nextProps.context.getPossibleToAddTagsForEntry(this.state.key_value)
-                });
-            }
         },
 
         extractDomain(url) {
@@ -91,7 +90,16 @@ var React = require('react'),
         },
 
         handleChange: function (e) {
-            this.setState({[e.target.name]: e.target.value});
+            if (this.state.content_changed === '') {
+                this.setState({
+                    content_changed: 'edited',
+                    [e.target.name]: e.target.value
+                });
+            } else {
+                this.setState({
+                    [e.target.name]: e.target.value
+                });
+            }
         },
 
         handleError() {
@@ -119,15 +127,46 @@ var React = require('react'),
 
         saveEntry(e) {
             e.preventDefault();
+            var tags_id = [];
+            this.state.tags_titles.map((key) => {
+                tags_id.push(this.state.context.getTagIdByTitle(key));
+            });
+
             var data = {
                 title: this.state.title,
                 username: this.state.username,
                 password: this.state.password,
-                tags: this.state.tags_id,
+                tags: tags_id,
                 note: this.state.note
             };
+
             this.state.context.saveDataToEntryById(this.state.key_value, data);
-            this.changeMode();
+
+            this.setState({
+                content_changed: '',
+                tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value),
+                show_available: false
+
+            });
+        },
+
+        discardChanges() {
+            var oldValues = this.state.context.getEntryValuesById(this.state.key_value);
+            this.setState({
+                title: oldValues.title,
+                username: oldValues.username,
+                password: oldValues.password,
+                tags_id: oldValues.tags,
+                tags_titles: this.state.context.getTagTitleArrayById(oldValues.tags),
+                show_available: false,
+                tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value),
+                note: oldValues.note
+            });
+            if (this.state.content_changed === 'edited') {
+                this.setState({
+                    content_changed: ''
+                });
+            }
         },
 
         titleOnBlur() {
@@ -154,30 +193,52 @@ var React = require('react'),
         },
 
         generatePassword() {
-            this.setState({
-                password: Password.generate(16)
-            });
+            if (this.state.content_changed === '') {
+                this.setState({
+                    password: Password.generate(16),
+                    content_changed: 'edited'
+                });
+            } else {
+                this.setState({
+                    password: Password.generate(16)
+                });
+            }
         },
 
         addPossibleTags() {
             this.setState({
-                tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value)
+                show_available: true
             });
         },
 
         switchTag(tagTitle) {
-            var tagId = this.state.context.getTagIdByTitle(tagTitle);
-            if (this.state.tags_titles.indexOf(tagTitle) == -1) {
-                // add tag
-                this.state.context.addTagToEntry(tagId, this.state.key_value);
+            var tagTitleArray = this.state.tags_titles,
+                tagAvailableTitleArray = this.state.tags_available,
+                indexTitleArray = tagTitleArray.indexOf(tagTitle),
+                indexAvailableArray = tagAvailableTitleArray.indexOf(tagTitle);
+            if (indexTitleArray > -1) {
+                tagTitleArray.splice(indexTitleArray, 1);
+                tagAvailableTitleArray.push(tagTitle);
+                this.setState({
+                    show_available: true,
+                    tags_titles: tagTitleArray,
+                    tags_available: tagAvailableTitleArray
+                });
             } else {
-                // remove tag
-                this.state.context.removeTagFromEntry(tagId, this.state.key_value);
+                tagAvailableTitleArray.splice(indexAvailableArray, 1);
+                tagTitleArray.push(tagTitle);
+                this.setState({
+                    show_available: true,
+                    tags_titles: tagTitleArray,
+                    tags_available: tagAvailableTitleArray
+                });
             }
-            this.setState({
-                tags_titles: this.state.context.getTagTitleArrayById(this.props.tags),
-                tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value)
-            });
+
+            if (this.state.content_changed === '') {
+                this.setState({
+                    content_changed: 'edited'
+                });
+            }
         },
 
         render() {
@@ -190,7 +251,7 @@ var React = require('react'),
                                   key={key}>{key}<i className="icon ion-close"></i></span>)
                 });
 
-            if (this.state.tags_available.length > 0) {
+            if (this.state.show_available) {
                 var tags_available = this.state.tags_available.map((key) => {
                     interator++;
                     return (<span className='tagsinput-available-tag'
@@ -206,7 +267,7 @@ var React = require('react'),
             }
 
             return (
-                <div className={'entry col-xs-12 ' + this.state.mode}>
+                <div className={ this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}>
                     <form onSubmit={this.saveEntry}>
                         <div className='avatar'>
                             <img src={this.state.image_src}
@@ -275,12 +336,15 @@ var React = require('react'),
                                       name='note'></Textarea>
                         </div>
 
-                        <span className='edit-btn' onClick={this.changeMode}>
-                        <i className='ion-chevron-down'></i>
-                        </span>
-
                         <div className='form-buttons'>
-                            <button action='submit' className='green-btn'>Save</button>
+                            <span className='close-btn' onClick={this.changeMode}>
+                                <i className='ion-chevron-down'></i>
+                            </span>
+
+                            <div className='content-btns'>
+                                <span className='button green-btn' onClick={this.saveEntry}>Save</span>
+                                <span className='button red-btn' onClick={this.discardChanges}>Discard</span>
+                            </div>
                         </div>
 
                     </form>

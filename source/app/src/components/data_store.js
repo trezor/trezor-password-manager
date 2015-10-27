@@ -24,7 +24,7 @@ class Store {
         Object.keys(this.data.tags).map((key) => {
             if (this.data.tags[key].title === title) resultId = key;
         });
-        return resultId;
+        return parseInt(resultId);
     }
 
     getTagIconById(tagId) {
@@ -72,7 +72,6 @@ class Store {
 
     saveDataToTagById(tagId, data) {
         return Object.defineProperty(this.data.tags, tagId, {value: data});
-
     }
 
     addNewTag(newTitle, newIcon) {
@@ -115,12 +114,16 @@ class Store {
     //
     //////////
 
+    getEntryValuesById(entryId) {
+        return Object.getOwnPropertyDescriptor(this.data.entries, entryId).value
+    }
+
     getEntryTitleById(entryId) {
         return Object.getOwnPropertyDescriptor(this.data.entries, entryId).value.title
     }
 
     saveDataToEntryById(entryId, data) {
-        return Object.defineProperty(this.data.entries, entryId, {value: data});
+        return Object.defineProperty(this.data.entries, entryId, {value: data}) && this.eventEmitter.emit('changeTag');
     }
 
     addTagToEntry(tagId, entryId) {

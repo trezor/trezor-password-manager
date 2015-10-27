@@ -21,10 +21,17 @@ var React = require('react'),
         },
 
         changeTag(e) {
-            this.setState({
-                active_id: parseInt(e),
-                active_title: this.state.context.getTagTitleById(e)
-            });
+            if (!e) {
+                this.setState({
+                    active_id: this.state.active_id,
+                    active_title: this.state.active_title
+                });
+            } else {
+                this.setState({
+                    active_id: parseInt(e),
+                    active_title: this.state.context.getTagTitleById(e)
+                });
+            }
         },
 
         changeTagAndEmitt(e) {

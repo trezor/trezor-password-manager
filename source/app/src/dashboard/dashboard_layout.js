@@ -37,9 +37,11 @@ var React = require('react'),
         },
 
         contextReady() {
-            this.setState({
-                ready: true
-            });
+            if (!this.state.ready) {
+                this.setState({
+                    ready: true
+                });
+            }
         },
 
         isLogged(pubkey) {
@@ -55,11 +57,11 @@ var React = require('react'),
                 <div>
                     {this.state.ready ?
                         <div>
-                            <Tag_Modal eventEmitter={eventEmitter} />
-                            <SidePanel eventEmitter={eventEmitter} />
+                            <Tag_Modal eventEmitter={eventEmitter}/>
+                            <SidePanel eventEmitter={eventEmitter}/>
 
                             <section className='content'>
-                                <PasswordTable eventEmitter={eventEmitter} />
+                                <PasswordTable eventEmitter={eventEmitter}/>
                             </section>
                         </div>
                         :

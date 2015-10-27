@@ -84,9 +84,13 @@ var React = require('react'),
 
         handleChange: function (e) {
             this.setState({
-                [e.target.name]: e.target.value,
-                contentChanged: 'edited'
+                [e.target.name]: e.target.value
             });
+            if (this.state.content_changed === '') {
+                this.setState({
+                    contentChanged: 'edited'
+                });
+            }
         },
 
         nextIcon() {
@@ -175,7 +179,7 @@ var React = require('react'),
                                     <a className='icon ion-chevron-right next'
                                        onClick={this.nextIcon}></a>
                                 </div>
-                                <span className={'title ' + this.state.contentChanged}>
+                                <span className={'title ' + this.state.content_changed}>
                                     <input type='text'
                                            autofocus
                                            autoComplete='off'
@@ -210,7 +214,9 @@ var React = require('react'),
                                            disabled
                                            value={'Remove ' + this.state.newTagTitle + ' ?'}/>
                                     <div className='btn-controls'>
-                                        <button className="btn  green-btn" onClick={this.removeTagCloseModal}>Yes, remove</button>
+                                        <button className="btn  green-btn" onClick={this.removeTagCloseModal}>Yes,
+                                            remove
+                                        </button>
                                         <button className="btn red-btn" onClick={this.closeRemoveModal}>No</button>
                                     </div>
                                 </span>
