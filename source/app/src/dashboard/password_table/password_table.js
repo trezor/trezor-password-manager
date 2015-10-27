@@ -39,7 +39,7 @@ var React = require('react'),
         },
 
         changeTag(e) {
-            if (!e) {
+            if (e === undefined) {
                 this.setState({
                     active_id: this.state.active_id,
                     active_title: this.state.active_title

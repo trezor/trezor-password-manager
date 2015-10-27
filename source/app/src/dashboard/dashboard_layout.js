@@ -37,11 +37,9 @@ var React = require('react'),
         },
 
         contextReady() {
-            if (!this.state.ready) {
-                this.setState({
-                    ready: true
-                });
-            }
+            this.setState({
+                ready: true
+            });
         },
 
         isLogged(pubkey) {
