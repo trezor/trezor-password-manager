@@ -66,7 +66,7 @@ var React = require('react'),
                 newTagTitle: '',
                 newIcon: icons[0],
                 showEditModal: true,
-                contentChanged: ''
+                content_changed: ''
             });
         },
 
@@ -88,7 +88,7 @@ var React = require('react'),
             });
             if (this.state.content_changed === '') {
                 this.setState({
-                    contentChanged: 'edited'
+                    content_changed: 'edited'
                 });
             }
         },

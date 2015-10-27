@@ -115,7 +115,8 @@ class Store {
     //////////
 
     getEntryValuesById(entryId) {
-        return Object.getOwnPropertyDescriptor(this.data.entries, entryId).value
+        var entry = Object.getOwnPropertyDescriptor(this.data.entries, entryId);
+        return entry ? entry.value : false;
     }
 
     getEntryTitleById(entryId) {
@@ -140,16 +141,29 @@ class Store {
     }
 
     getPossibleToAddTagsForEntry(entryId) {
-        var entryData = Object.getOwnPropertyDescriptor(this.data.entries, entryId).value,
+        var entryData = Object.getOwnPropertyDescriptor(this.data.entries, entryId),
             allTags = this.getTagIdArray(),
             resultTagArray = [];
-        allTags.splice(0, 1);
-        allTags.map((key) => {
-            if (entryData.tags.indexOf(key) === -1) {
-                resultTagArray.push(this.getTagTitleById(key));
-            }
-        });
+        if (!entryData) {
+            var temp = this.getTagTitleArray();
+            temp.splice(0, 1);
+            resultTagArray = temp;
+        } else {
+            entryData = entryData.value;
+            allTags.splice(0, 1);
+            allTags.map((key) => {
+                if (entryData.tags.indexOf(key) === -1) {
+                    resultTagArray.push(this.getTagTitleById(key));
+                }
+            });
+        }
         return resultTagArray;
+    }
+
+    addNewEntry(data) {
+        var newId = parseInt(Object.keys(this.data.entries)[parseInt(Object.keys(this.data.entries).length) - 1]) + 1;
+        this.data.entries[newId] = data;
+        return this.eventEmitter.emit('hideOpenNewEntry', newId);
     }
 
     getAllEntries() {
@@ -160,6 +174,16 @@ class Store {
 
     toObject() {
         return this.data;
+    }
+
+    ///////////
+    //
+    // OTHERS
+    //
+    //////////
+
+    hideNewEntry() {
+        return this.eventEmitter.emit('hideNewEntry');
     }
 }
 

@@ -89,7 +89,7 @@ var React = require('react'),
             }
         },
 
-        handleChange: function (e) {
+        handleChange(e) {
             if (this.state.content_changed === '') {
                 this.setState({
                     content_changed: 'edited',
@@ -132,6 +132,7 @@ var React = require('react'),
                 tags_id.push(this.state.context.getTagIdByTitle(key));
             });
 
+
             var data = {
                 title: this.state.title,
                 username: this.state.username,
@@ -139,39 +140,44 @@ var React = require('react'),
                 tags: tags_id,
                 note: this.state.note
             };
+            if (this.state.key_value) {
+                this.state.context.saveDataToEntryById(this.state.key_value, data);
+                this.setState({
+                    content_changed: '',
+                    tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value),
+                    show_available: false
 
-            this.state.context.saveDataToEntryById(this.state.key_value, data);
-
-            this.setState({
-                content_changed: '',
-                tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value),
-                show_available: false
-
-            });
+                });
+            } else {
+                this.state.context.addNewEntry(data);
+            }
         },
 
         discardChanges() {
             var oldValues = this.state.context.getEntryValuesById(this.state.key_value);
-            this.setState({
-                title: oldValues.title,
-                username: oldValues.username,
-                password: oldValues.password,
-                tags_id: oldValues.tags,
-                tags_titles: this.state.context.getTagTitleArrayById(oldValues.tags),
-                show_available: false,
-                tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value),
-                note: oldValues.note
-            });
-            if (this.state.content_changed === 'edited') {
+            if (oldValues) {
                 this.setState({
-                    content_changed: ''
+                    title: oldValues.title,
+                    username: oldValues.username,
+                    password: oldValues.password,
+                    tags_id: oldValues.tags,
+                    tags_titles: this.state.context.getTagTitleArrayById(oldValues.tags),
+                    show_available: false,
+                    tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value),
+                    note: oldValues.note
                 });
+                if (this.state.content_changed === 'edited') {
+                    this.setState({
+                        content_changed: ''
+                    });
+                }
+            } else {
+                this.state.context.hideNewEntry();
             }
         },
 
         titleOnBlur() {
-            if (this.state.title.indexOf('.') > -1
-                && this.state.context.getEntryTitleById(this.state.key_value) != this.state.title) {
+            if (this.state.title.indexOf('.') > -1) {
                 this.setState({
                     image_src: 'https://logo.clearbit.com/' + this.extractDomain(this.state.title)
                 });

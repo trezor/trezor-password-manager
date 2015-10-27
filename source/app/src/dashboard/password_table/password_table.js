@@ -19,7 +19,8 @@ var React = require('react'),
                 entries: {},
                 filter: '',
                 context: {},
-                newEntry: false
+                newEntry: false,
+                newIdToOpen: ''
             }
         },
 
@@ -27,6 +28,8 @@ var React = require('react'),
             this.props.eventEmitter.on('changeTag', this.changeTag);
             this.props.eventEmitter.on('contextInit', this.saveContext);
             this.props.eventEmitter.on('filter', this.setupFilter);
+            this.props.eventEmitter.on('hideNewEntry', this.addNewEntry);
+            this.props.eventEmitter.on('hideOpenNewEntry', this.hideOpenNewEntry);
         },
 
         setupFilter(filterVal) {
@@ -71,12 +74,14 @@ var React = require('react'),
             this.state.newEntry ? this.setState({newEntry: false}) : this.setState({newEntry: true})
         },
 
+        hideOpenNewEntry(newId) {
+            this.state.newEntry ? this.setState({newEntry: false, newIdToOpen: newId}) : this.setState({newEntry: true})
+        },
+
         render(){
             var password_table = Object.keys(this.state.entries).map((key) => {
                     var obj = this.state.entries[key];
-
                     if (obj.tags.indexOf(this.state.active_id) > -1 || this.state.active_id == 0) {
-
                         if (this.state.filter.length > 0) {
                             if (obj.title.toLowerCase().indexOf(this.state.filter) > -1 ||
                                 obj.username.toLowerCase().indexOf(this.state.filter) > -1) {
@@ -89,6 +94,7 @@ var React = require('react'),
                                                  password={obj.password}
                                                  tags={obj.tags}
                                                  note={obj.note}
+                                                 mode={parseInt(key) === this.state.newIdToOpen ? 'edit-mode' : 'list-mode'}
                                         />
                                 )
                             }
@@ -102,6 +108,7 @@ var React = require('react'),
                                              username={obj.username}
                                              tags={obj.tags}
                                              note={obj.note}
+                                             mode={parseInt(key) === this.state.newIdToOpen ? 'edit-mode' : 'list-mode'}
                                     />
                             )
                         }
@@ -113,22 +120,6 @@ var React = require('react'),
                     <MenuItem eventKey='2' onSelect={this.openDeleteTagModal}><i className='ion-close'></i> Remove
                         tag</MenuItem>
                 </DropdownButton>);
-
-            if (this.state.newEntry) {
-                password_table.push(
-                    <Table_Entry context={this.state.context}
-                                 key={'00'}
-                                 key_value={'00'}
-                                 title={''}
-                                 username={''}
-                                 password={''}
-                                 tags={this.state.active_id}
-                                 note={''}
-                                 mode={'edit-mode'}
-                                 content_changed={'edited'}
-                        />
-                );
-            }
 
             return (
                 <div className='wraper container-fluid'>
@@ -145,9 +136,20 @@ var React = require('react'),
                         <div className='col-sm-3 col-xs-3 text-right'>
                             {this.state.active_id != 0 ? dropdown : null}
                         </div>
-
                     </div>
                     <div className='row dashboard'>
+                        {this.state.newEntry ?
+                            <Table_Entry context={this.state.context}
+                                         key={undefined}
+                                         key_value={undefined}
+                                         title={''}
+                                         username={''}
+                                         password={''}
+                                         tags={[]}
+                                         note={''}
+                                         mode={'edit-mode'}
+                                         content_changed={'edited'}
+                                /> : null }
                         {password_table.reverse()}
 
                     </div>
