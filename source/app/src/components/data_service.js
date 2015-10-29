@@ -35,7 +35,12 @@ var Service = {
 
     saveContext(data) {
         var pubkey = sessionStorage.getItem('public_key');
+        return localStorage.setItem(pubkey, JSON.stringify(data));
+    },
 
+    getContext() {
+        var pubkey = sessionStorage.getItem('public_key');
+        return JSON.parse(localStorage.getItem(pubkey));
     }
 };
 

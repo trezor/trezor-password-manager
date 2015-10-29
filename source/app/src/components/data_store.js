@@ -1,5 +1,7 @@
 'use strict';
 
+var Service = require('./data_service');
+
 class Store {
 
     constructor(data, eventEmitter) {
@@ -57,6 +59,7 @@ class Store {
             tagData.title = newTagTitle;
             this.saveDataToTagById(tagId, tagData);
             this.eventEmitter.emit('update', this.data);
+            Service.saveContext(this.data);
             return true;
         } else {
             return false;
@@ -68,6 +71,7 @@ class Store {
         tagData.icon = newTagIcon;
         this.saveDataToTagById(tagId, tagData);
         this.eventEmitter.emit('update', this.data);
+        Service.saveContext(this.data);
     }
 
     saveDataToTagById(tagId, data) {
@@ -84,6 +88,7 @@ class Store {
         if (oldTagTitleArray.indexOf(newTitle) == -1) {
             this.data.tags[newId] = data;
             this.eventEmitter.emit('update', this.data);
+            Service.saveContext(this.data);
             return true;
         } else {
             return false;
@@ -106,6 +111,7 @@ class Store {
             }
         });
         this.eventEmitter.emit('update', this.data);
+        Service.saveContext(this.data);
     }
 
     ///////////
@@ -131,6 +137,7 @@ class Store {
         var entryData = Object.getOwnPropertyDescriptor(this.data.entries, entryId).value;
         entryData.tags.push(parseInt(tagId));
         this.saveDataToEntryById(entryId, entryData);
+        Service.saveContext(this.data);
     }
 
     removeTagFromEntry(tagId, entryId) {
@@ -138,6 +145,7 @@ class Store {
         var index = entryData.tags.indexOf(parseInt(tagId));
         entryData.tags.splice(index, 1);
         this.saveDataToEntryById(entryId, entryData);
+        Service.saveContext(this.data);
     }
 
     getPossibleToAddTagsForEntry(entryId) {
@@ -162,7 +170,9 @@ class Store {
 
     addNewEntry(data) {
         var newId = parseInt(Object.keys(this.data.entries)[parseInt(Object.keys(this.data.entries).length) - 1]) + 1;
+        newId = isNaN(newId) ? 0 : newId;
         this.data.entries[newId] = data;
+        Service.saveContext(this.data);
         return this.eventEmitter.emit('hideOpenNewEntry', newId);
     }
 

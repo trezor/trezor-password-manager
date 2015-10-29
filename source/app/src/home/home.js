@@ -2,12 +2,23 @@
 
 var React = require('react'),
     Router = require('react-router'),
+    Trezor = require('trezor.js'),
     {Link} = Router,
     Home = React.createClass({
         mixins: [Router.Navigation],
 
         componentWillMount() {
             window.trezorConnect = this.trezorLogged;
+
+            if (window.opener) {
+                // try to initiate the handshake, but only if we can reach the opener
+                window.opener.postMessage('handshake', '*');
+            }
+        },
+
+        // window.addEventListener('message', this.onMessage);
+        onMessage(event) {
+            console.log(event);
         },
 
         // then replace trezorTest with <a onClick={TrezorConnect.requestLogin.bind(null, '', '', '', 'trezorConnect')}>

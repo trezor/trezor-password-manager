@@ -41,11 +41,7 @@ var React = require('react'),
         },
 
         isLogged(pubkey) {
-            if (pubkey != null) {
-                return true
-            } else {
-                return false;
-            }
+            return pubkey != null;
         },
 
         render(){
