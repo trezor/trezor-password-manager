@@ -11,10 +11,16 @@ var React = require('react'),
         },
 
         // then replace trezorTest with <a onClick={TrezorConnect.requestLogin.bind(null, '', '', '', 'trezorConnect')}>
+        //
+        // AND THIS IS FOR DROPBOX SOONISH IMPLEMENTATION
+        // Dropbox = require("dropbox"),
+        // client = new Dropbox.Client({ key: "PUTKEYHERE!" }),
+        //
 
         trezorLogged(trezorResponse){
             if (trezorResponse.success) {
                 window.trezorResponse = trezorResponse;
+                sessionStorage.setItem('public_key', window.trezorResponse.public_key);
                 this.transitionTo('dashboard');
             }
         },
@@ -26,7 +32,6 @@ var React = require('react'),
                 'success': true,
                 'version': 2
             };
-
             sessionStorage.setItem('public_key', window.trezorResponse.public_key);
             this.transitionTo('dashboard');
         },
@@ -38,7 +43,7 @@ var React = require('react'),
                     <div className='overlay-color'></div>
                     <div className='home'>
                         <h1>< img src='dist/img/logo.png'/></h1>
-                        <a onClick={this.trezorTest}>
+                        <a onClick={TrezorConnect.requestLogin.bind(null, '', '', '', 'trezorConnect')}>
                             <div className='dot'></div>
                             <div className='pulse'></div>
                         </a>

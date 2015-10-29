@@ -15,8 +15,6 @@ var React = require('react'),
     DashboardLayout = React.createClass({
         mixins: [Router.Navigation],
 
-        context: {},
-
         getInitialState() {
             return {
                 ready: false
@@ -43,7 +41,7 @@ var React = require('react'),
         },
 
         isLogged(pubkey) {
-            if (pubkey != null || pubkey != undefined) {
+            if (pubkey != null) {
                 return true
             } else {
                 return false;
