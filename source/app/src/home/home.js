@@ -16,10 +16,11 @@ var React = require('react'),
             }
         },
 
-        // window.addEventListener('message', this.onMessage);
-        onMessage(event) {
-            console.log(event);
+        componentWillUnmount() {
+            window.removeEventListener('message', this.onMessage);
         },
+
+
 
         // then replace trezorTest with <a onClick={TrezorConnect.requestLogin.bind(null, '', '', '', 'trezorConnect')}>
         //

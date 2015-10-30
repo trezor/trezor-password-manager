@@ -20,6 +20,11 @@ var React = require('react'),
             this.props.eventEmitter.on('changeTag', this.changeTag);
         },
 
+        componentWillUnmount() {
+            this.props.eventEmitter.removeListener('contextInit', this.saveContext);
+            this.props.eventEmitter.removeListener('changeTag', this.changeTag);
+        },
+
         changeTag(e) {
             if (e === undefined) {
                 this.setState({

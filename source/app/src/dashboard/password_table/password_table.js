@@ -32,6 +32,14 @@ var React = require('react'),
             this.props.eventEmitter.on('hideOpenNewEntry', this.hideOpenNewEntry);
         },
 
+        componentWillUnmount() {
+            this.props.eventEmitter.removeListener('changeTag', this.changeTag);
+            this.props.eventEmitter.removeListener('contextInit', this.saveContext);
+            this.props.eventEmitter.removeListener('filter', this.setupFilter);
+            this.props.eventEmitter.removeListener('hideNewEntry', this.addNewEntry);
+            this.props.eventEmitter.removeListener('hideOpenNewEntry', this.hideOpenNewEntry);
+        },
+
         setupFilter(filterVal) {
             this.setState({
                 filter: filterVal.toLowerCase()
@@ -42,12 +50,14 @@ var React = require('react'),
             if (e === undefined) {
                 this.setState({
                     active_id: this.state.active_id,
-                    active_title: this.state.active_title
+                    active_title: this.state.active_title,
+                    newIdToOpen: ''
                 });
             } else {
                 this.setState({
                     active_id: parseInt(e),
-                    active_title: this.state.context.getTagTitleById(e)
+                    active_title: this.state.context.getTagTitleById(e),
+                    newIdToOpen: ''
                 });
             }
 

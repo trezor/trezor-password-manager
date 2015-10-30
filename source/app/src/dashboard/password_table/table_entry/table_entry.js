@@ -247,6 +247,14 @@ var React = require('react'),
             }
         },
 
+        removeEntry() {
+
+        },
+
+        revertHistory() {
+
+        },
+
         render() {
             var showPassword = (<Tooltip id='show'>Show/hide password.</Tooltip>),
                 generatePassword = (<Tooltip id='generate'>Generate password.</Tooltip>),

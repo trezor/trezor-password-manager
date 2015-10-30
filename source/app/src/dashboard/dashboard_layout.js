@@ -34,6 +34,10 @@ var React = require('react'),
             }
         },
 
+        componentWillUnmount() {
+            eventEmitter.removeListener('update', this.contextReady);
+        },
+
         contextReady() {
             this.setState({
                 ready: true
