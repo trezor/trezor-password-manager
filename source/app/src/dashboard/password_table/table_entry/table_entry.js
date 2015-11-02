@@ -132,7 +132,6 @@ var React = require('react'),
                 tags_id.push(this.state.context.getTagIdByTitle(key));
             });
 
-
             var data = {
                 title: this.state.title,
                 username: this.state.username,
@@ -247,6 +246,18 @@ var React = require('react'),
             }
         },
 
+        keyPressed(event) {
+            if (event.keyCode == 27) {
+                if (this.state.content_changed === '') {
+                    this.setState({
+                        mode: 'list-mode'
+                    })
+                } else {
+                    this.discardChanges();
+                }
+            }
+        },
+
         removeEntry() {
             this.state.context.removeEntry(this.state.key_value);
         },
@@ -262,7 +273,7 @@ var React = require('react'),
                 tags = this.state.tags_titles.map((key) => {
                     return (<span className='tagsinput-tag'
                                   onClick={this.switchTag.bind(null , key)}
-                                  key={key}>{key}<i className="icon ion-close"></i></span>)
+                                  key={key}>{key}<i className='icon ion-close'></i></span>)
                 });
 
             if (this.state.show_available) {
@@ -296,6 +307,7 @@ var React = require('react'),
                                    value={this.state.title}
                                    name='title'
                                    onChange={this.handleChange}
+                                   onKeyUp={this.keyPressed}
                                    onBlur={this.titleOnBlur}
                                    disabled={this.state.mode === 'list-mode' ? 'disabled' : false}/>
                         </div>
@@ -307,6 +319,7 @@ var React = require('react'),
                                    value={this.state.username}
                                    name='username'
                                    onChange={this.handleChange}
+                                   onKeyUp={this.keyPressed}
                                    disabled={this.state.mode === 'list-mode' ? 'disabled' : false}/>
                         </div>
 
@@ -317,6 +330,7 @@ var React = require('react'),
                                    ref='password'
                                    name='password'
                                    onChange={this.handleChange}
+                                   onKeyUp={this.keyPressed}
                                    value={this.state.password}/>
                             <OverlayTrigger placement='top'
                                             overlay={showPassword}>
@@ -345,6 +359,7 @@ var React = require('react'),
                             <Textarea type='text'
                                       autoComplete='off'
                                       onChange={this.handleChange}
+                                      onKeyUp={this.keyPressed}
                                       value={this.state.note}
                                       defaultValue={''}
                                       name='note'></Textarea>
@@ -367,7 +382,7 @@ var React = require('react'),
                                 <span className='button red-btn' onClick={this.discardChanges}>Discard</span>
                             </div>
                         </div>
-
+                        <button type='submit' className='submit-btn'></button>
                     </form>
                 </div>
             )
