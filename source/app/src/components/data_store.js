@@ -130,14 +130,16 @@ class Store {
     }
 
     saveDataToEntryById(entryId, data) {
-        return Object.defineProperty(this.data.entries, entryId, {value: data}) && this.eventEmitter.emit('changeTag');
+        Object.defineProperty(this.data.entries, entryId, {value: data});
+        this.eventEmitter.emit('changeTag');
+        return Service.saveContext(this.data);
     }
 
     addTagToEntry(tagId, entryId) {
         var entryData = Object.getOwnPropertyDescriptor(this.data.entries, entryId).value;
         entryData.tags.push(parseInt(tagId));
         this.saveDataToEntryById(entryId, entryData);
-        Service.saveContext(this.data);
+        return Service.saveContext(this.data);
     }
 
     removeTagFromEntry(tagId, entryId) {
@@ -145,7 +147,7 @@ class Store {
         var index = entryData.tags.indexOf(parseInt(tagId));
         entryData.tags.splice(index, 1);
         this.saveDataToEntryById(entryId, entryData);
-        Service.saveContext(this.data);
+        return Service.saveContext(this.data);
     }
 
     getPossibleToAddTagsForEntry(entryId) {
@@ -178,6 +180,7 @@ class Store {
 
     removeEntry(entryId) {
         delete this.data.entries[entryId];
+        Service.saveContext(this.data);
         this.eventEmitter.emit('update', this.data);
     }
 
