@@ -1,0 +1,39 @@
+// v manifest JSONu muzou byt komentare :)
+
+{
+  "name": "Keezor",
+  "description": "Keezor",
+  "version": "1.0.6",
+  "author": "SatoshiLabs",
+  "short_name": "Keezor",
+
+  "manifest_version": 2,
+
+  // tohle je na ten popup
+  "browser_action": {
+    "default_icon": {  
+      "19": "icon19.png", 
+      "38": "icon38.png"
+    },
+    "default_title": "Keezor open",
+    "default_popup": "index.html"
+  },
+
+  // tohle je na injectovani na stranky
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content_script.js"]
+    }
+  ],
+
+  // tohle je background skript, co bezi fakticky furt
+  // (ale resetuje ho restart browseru a tak)
+  "background": {
+    "scripts": ["background.js"]
+    //nejde mít zároveň background skript a background page
+    //"page": "background.html"
+  },
+  "permissions": ["tabs"]
+
+}
