@@ -1,7 +1,6 @@
 
 .dashboard {
   width: 100%;
-  z-index: 0;
   padding: 0;
   border: none;
   border-top: 1px solid $c_grey_border;
@@ -49,6 +48,8 @@
 
     .password {
       .button {
+        position: relative;
+        z-index: 2;
         display: inline-block;
         text-align: center;
         width: 27px;
@@ -136,9 +137,8 @@
       position: absolute;
       top: 20px;
       right: 20px;
-      z-index: 0;
-      width: 150px;
-      height: 50px;
+      width: 250px;
+      height: 150px;
       overflow: hidden;
 
       .close-btn {
@@ -162,6 +162,40 @@
         }
       }
 
+      .dropdown {
+        position: absolute;
+        right: -150px;
+        top: 40px;
+        @include transition(all 0.2s ease-in-out);
+
+        button {
+          width: 30px;
+          height: 30px;
+          background-color: transparent;
+          border: 1px solid rgba($c_grey_content_font, .1);
+          outline: 0;
+          @include box-shadow(none);
+          @include border-radius(2px);
+
+          &:hover:after {
+            color: $c_grey_content_font;
+            @include transition(all 0.2s ease-in-out);
+          }
+
+          &:after {
+            position: absolute;
+            right: 7px;
+            bottom: .1em;
+            display: block;
+            color: rgba($c_grey_content_font, .5);
+            content: "\f43c";
+            font-size: 1.2em;
+            font-family: 'ionicons' !important;
+            @include transition(all 0.2s ease-in-out);
+          }
+        }
+      }
+
       .content-btns {
         position: absolute;
         margin-top: 10px;
@@ -172,6 +206,8 @@
           margin-left: 10px;
         }
       }
+
+
     }
 
     &.edited {
@@ -180,9 +216,11 @@
         .close-btn {
           right: -150;
         }
+
         .content-btns {
           right: 0;
         }
+
       }
 
     }
@@ -204,6 +242,7 @@
         color: $c_grey_content_font;
         padding-bottom: 3px;
         margin-bottom: 3px;
+        z-index: 1;
 
         span {
           display: inline-block;
@@ -317,6 +356,11 @@
 
       .close-btn {
         @include transform(rotate(180deg));
+      }
+
+      .dropdown {
+        right: 0;
+        @include transition(all 0.2s ease-in-out);
       }
     }
   }

@@ -103,13 +103,7 @@ class Store {
             }
         });
         this.eventEmitter.emit('changeTag', 0);
-
-        var tagArray = this.getTagIdArray();
-        tagArray.map((key) => {
-            if (key === tagId) {
-                delete this.data.tags[key];
-            }
-        });
+        delete this.data.tags[tagId];
         this.eventEmitter.emit('update', this.data);
         Service.saveContext(this.data);
     }
@@ -127,6 +121,12 @@ class Store {
 
     getEntryTitleById(entryId) {
         return Object.getOwnPropertyDescriptor(this.data.entries, entryId).value.title
+    }
+
+    getEntriesIdArray() {
+        return Object.keys(this.data.entries).map((key) => {
+            return parseInt(key)
+        });
     }
 
     saveDataToEntryById(entryId, data) {
@@ -174,6 +174,11 @@ class Store {
         this.data.entries[newId] = data;
         Service.saveContext(this.data);
         return this.eventEmitter.emit('hideOpenNewEntry', newId);
+    }
+
+    removeEntry(entryId) {
+        delete this.data.entries[entryId];
+        this.eventEmitter.emit('update', this.data);
     }
 
     getAllEntries() {

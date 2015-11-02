@@ -7,6 +7,7 @@ button, .button {
   margin-bottom: 5px;
   cursor: pointer;
   @include border-radius(2px);
+  @include transition(all 0.2s ease-in-out);
 
   &.blue-btn {
     background-color: $c_blue;
@@ -21,6 +22,10 @@ button, .button {
   &.red-btn {
     background-color: $c_pink;
     border-color: $c_pink;
+  }
+
+  &:disabled {
+    opacity: .5;
   }
 }
 

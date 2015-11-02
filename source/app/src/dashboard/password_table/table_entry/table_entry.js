@@ -248,7 +248,7 @@ var React = require('react'),
         },
 
         removeEntry() {
-
+            this.state.context.removeEntry(this.state.key_value);
         },
 
         revertHistory() {
@@ -354,6 +354,13 @@ var React = require('react'),
                             <span className='close-btn' onClick={this.changeMode}>
                                 <i className='ion-chevron-down'></i>
                             </span>
+
+                            {null != this.state.key_value &&
+                            <DropdownButton title='' noCaret pullRight id='dropdown-no-caret'>
+                                <MenuItem eventKey='1' onSelect={this.removeEntry}><i className='ion-close'></i> Remove
+                                    entry</MenuItem>
+                            </DropdownButton>
+                            }
 
                             <div className='content-btns'>
                                 <span className='button green-btn' onClick={this.saveEntry}>Save</span>

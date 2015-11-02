@@ -137,6 +137,7 @@ var React = require('react'),
                         <div className='col-sm-3 col-xs-3'>
                             <button type='button'
                                     onClick={this.addNewEntry}
+                                    disabled={this.state.newEntry}
                                     className='blue-btn add'>Add entry
                             </button>
                         </div>
