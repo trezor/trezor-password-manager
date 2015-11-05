@@ -81,6 +81,16 @@ var React = require('react'),
             return domain;
         },
 
+        isURL(str) {
+            var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
+                '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+                '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+                '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+            return pattern.test(str);
+        },
+
         componentDidMount() {
             if (this.state.title.indexOf('.') > -1) {
                 this.setState({
@@ -258,6 +268,14 @@ var React = require('react'),
             }
         },
 
+        openTab() {
+            if (this.state.mode === 'list-mode') {
+                if (this.isURL(this.state.title)) {
+                    chrome.tabs.create({url: this.state.title});
+                }
+            }
+        },
+
         removeEntry() {
             this.state.context.removeEntry(this.state.key_value);
         },
@@ -292,7 +310,8 @@ var React = require('react'),
             }
 
             return (
-                <div className={ this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}>
+                <div className={ this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}
+                     onClick={this.openTab}>
                     <form onSubmit={this.saveEntry}>
                         <div className='avatar'>
                             <img src={this.state.image_src}
