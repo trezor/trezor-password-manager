@@ -22,16 +22,18 @@ var React = require('react'),
         },
 
         componentWillMount() {
-            eventEmitter.setMaxListeners(0);
             eventEmitter.on('update', this.contextReady);
-            if (!this.isLogged(sessionStorage.getItem('public_key'))) {
+            window.eventEmitter = eventEmitter;
+            if (!this.isLogged(localStorage.getItem('public_key'))) {
                 this.transitionTo('home');
             } else {
-                Service.getContextTest().then(response => {
-                    this.context = new Store(response, eventEmitter);
-                    eventEmitter.emit('contextInit', this.context);
-                });
+                var responseData = Service.getContextTest();
+                this.contextStore = new Store(responseData);
             }
+        },
+
+        componentDidMount() {
+            eventEmitter.emit('contextInit', this.contextStore);
         },
 
         componentWillUnmount() {
@@ -49,15 +51,16 @@ var React = require('react'),
         },
 
         render(){
+
             return (
                 <div>
                     {this.state.ready ?
                         <div>
-                            <Tag_Modal eventEmitter={eventEmitter}/>
-                            <SidePanel eventEmitter={eventEmitter}/>
+                            <Tag_Modal />
+                            <SidePanel />
 
                             <section className='content'>
-                                <PasswordTable eventEmitter={eventEmitter}/>
+                                <PasswordTable />
                             </section>
                         </div>
                         :

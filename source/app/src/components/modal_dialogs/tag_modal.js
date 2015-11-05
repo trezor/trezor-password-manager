@@ -36,10 +36,10 @@ var React = require('react'),
         },
 
         componentWillMount() {
-            this.props.eventEmitter.on('openAddTag', this.openEditModal);
-            this.props.eventEmitter.on('openEditTag', this.openEdit);
-            this.props.eventEmitter.on('openRemoveTag', this.openRemoveModal);
-            this.props.eventEmitter.on('contextInit', this.saveContext);
+            window.eventEmitter.on('openAddTag', this.openEditModal);
+            window.eventEmitter.on('openEditTag', this.openEdit);
+            window.eventEmitter.on('openRemoveTag', this.openRemoveModal);
+            window.eventEmitter.on('contextInit', this.saveContext);
         },
 
         saveContext(context) {

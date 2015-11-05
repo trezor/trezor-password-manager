@@ -1,31 +1,53 @@
 "use strict";
-// funkce, co handluje message
 
-// at ta message prijde z pop-upu nebo ze skriptu ze stranky, vola se tohle
-// filtrovat ruzne message se musi tady
+var tempStorage = {
+        "tags": {
+            "0": {
+                "title": "All",
+                "icon": "home"
+            }
+        },
+        "entries": {}
+    },
+    trezorReady = false,
+    fillTestData = () => {
+        let pubkey = localStorage.getItem('public_key');
+        if (localStorage) {
+            if (!localStorage.getItem(pubkey)) {
+                localStorage.setItem(pubkey, JSON.stringify(tempStorage));
+            }
+        } else {
+            alert('localstorage not supported');
+        }
+    };
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  // vsechny console.log se v chrome://extension tabu hlasi jako "error".... :)
-  // console.log(request);
-  // console.log(sender); // v senderu se da poznat, odkud to slo, ale IMHO je lepsi to psat do requestu
+    switch (request) {
+        case 'initTrezorPlease':
+            if (!trezorReady) {
+                localStorage.setItem('public_key', '03e93d8b0582397fc4922eded9729b6939acdb047484c37df16ddfafa70');
+                fillTestData();
+                trezorReady = true;
+            }
+            chrome.runtime.sendMessage('trezorReady');
+            break;
 
-  if (request === "showDiv") {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-      chrome.tabs.sendMessage(tabs[0].id, "showDivContentScript");
-    });
-  }
+        case 'showDiv':
+            chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+                chrome.tabs.sendMessage(tabs[0].id, "showDivContentScript");
+            });
+            break;
 
-  // will ask the content script to tell me URL
-  if (request === "tellOpenPage") {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-      chrome.tabs.sendMessage(tabs[0].id, "tellOpenPageContentScript", function(response) {
-        sendResponse(response);
-      });
-    });
-  }
+        case 'tellOpenPage':
+            chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+                chrome.tabs.sendMessage(tabs[0].id, "tellOpenPageContentScript", function (response) {
+                    sendResponse(response);
+                });
+            });
+            break;
+    }
 
-  // kdyz chces odpovidat asynchronne, musi tahle vec koncit na "return true"
-  // je to trochu demence
-  // je to potreba, pokud chces zavolat sendResponse v callbacku apod.
-  return true;
+    // async response
+    return true;
 });
 

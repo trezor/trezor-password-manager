@@ -7,26 +7,28 @@ var React = require('react'),
     Home = React.createClass({
         mixins: [Router.Navigation],
 
-        componentWillMount() {
-            window.trezorConnect = this.trezorLogged;
+        componentDidMount() {
+            chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+                if (request === 'trezorReady') {
+                    this.trezorLoggedTest();
+                }
+                return true;
+            });
+            chrome.runtime.sendMessage('initTrezorPlease');
         },
 
-        trezorLogged(trezorResponse){
-            if (trezorResponse.success) {
-                window.trezorResponse = trezorResponse;
-                sessionStorage.setItem('public_key', window.trezorResponse.public_key);
-                this.transitionTo('dashboard');
-            }
+        trezorLoggedTest() {
+            this.transitionTo('dashboard');
         },
 
-        render(){
+        render() {
             return (
                 <div >
                     <div className='overlay-hill'></div>
                     <div className='overlay-color'></div>
                     <div className='home'>
                         <h1>< img src='dist/img/logo.png'/></h1>
-                        <a onClick={TrezorConnect.requestLogin.bind(null, '', '', '', 'trezorConnect')}>
+                        <a>
                             <div className='dot'></div>
                             <div className='pulse'></div>
                         </a>

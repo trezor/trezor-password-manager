@@ -16,13 +16,13 @@ var React = require('react'),
         },
 
         componentWillMount() {
-            this.props.eventEmitter.on('contextInit', this.saveContext);
-            this.props.eventEmitter.on('changeTag', this.changeTag);
+            window.eventEmitter.on('contextInit', this.saveContext);
+            window.eventEmitter.on('changeTag', this.changeTag);
         },
 
         componentWillUnmount() {
-            this.props.eventEmitter.removeListener('contextInit', this.saveContext);
-            this.props.eventEmitter.removeListener('changeTag', this.changeTag);
+            window.eventEmitter.removeListener('contextInit', this.saveContext);
+            window.eventEmitter.removeListener('changeTag', this.changeTag);
         },
 
         changeTag(e) {
@@ -40,7 +40,7 @@ var React = require('react'),
         },
 
         changeTagAndEmitt(e) {
-            this.props.eventEmitter.emit('changeTag', e);
+            window.eventEmitter.emit('changeTag', e);
             this.setState({
                 active_id: parseInt(e),
                 active_title: this.state.context.getTagTitleById(e)
@@ -48,7 +48,7 @@ var React = require('react'),
         },
 
         addTag() {
-            this.props.eventEmitter.emit('openAddTag');
+            window.eventEmitter.emit('openAddTag');
         },
 
         saveContext(context) {

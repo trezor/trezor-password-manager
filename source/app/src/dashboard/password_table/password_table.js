@@ -25,19 +25,19 @@ var React = require('react'),
         },
 
         componentWillMount() {
-            this.props.eventEmitter.on('changeTag', this.changeTag);
-            this.props.eventEmitter.on('contextInit', this.saveContext);
-            this.props.eventEmitter.on('filter', this.setupFilter);
-            this.props.eventEmitter.on('hideNewEntry', this.addNewEntry);
-            this.props.eventEmitter.on('hideOpenNewEntry', this.hideOpenNewEntry);
+            window.eventEmitter.on('changeTag', this.changeTag);
+            window.eventEmitter.on('contextInit', this.saveContext);
+            window.eventEmitter.on('filter', this.setupFilter);
+            window.eventEmitter.on('hideNewEntry', this.addNewEntry);
+            window.eventEmitter.on('hideOpenNewEntry', this.hideOpenNewEntry);
         },
 
         componentWillUnmount() {
-            this.props.eventEmitter.removeListener('changeTag', this.changeTag);
-            this.props.eventEmitter.removeListener('contextInit', this.saveContext);
-            this.props.eventEmitter.removeListener('filter', this.setupFilter);
-            this.props.eventEmitter.removeListener('hideNewEntry', this.addNewEntry);
-            this.props.eventEmitter.removeListener('hideOpenNewEntry', this.hideOpenNewEntry);
+            window.eventEmitter.removeListener('changeTag', this.changeTag);
+            window.eventEmitter.removeListener('contextInit', this.saveContext);
+            window.eventEmitter.removeListener('filter', this.setupFilter);
+            window.eventEmitter.removeListener('hideNewEntry', this.addNewEntry);
+            window.eventEmitter.removeListener('hideOpenNewEntry', this.hideOpenNewEntry);
         },
 
         setupFilter(filterVal) {
@@ -73,11 +73,11 @@ var React = require('react'),
         },
 
         openTagEditor() {
-            this.props.eventEmitter.emit('openEditTag', this.state.active_id);
+            window.eventEmitter.emit('openEditTag', this.state.active_id);
         },
 
         openDeleteTagModal() {
-            this.props.eventEmitter.emit('openRemoveTag', this.state.active_id);
+            window.eventEmitter.emit('openRemoveTag', this.state.active_id);
         },
 
         addNewEntry() {

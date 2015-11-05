@@ -11,9 +11,15 @@ var React = require('react'),
             }
         },
 
+        componentWillMount() {
+            //chrome.runtime.sendMessage("tellOpenPage", function(response) {
+            //    alert(response);
+            //});
+        },
+
         handleChange(event) {
             this.setState({filter: event.target.value});
-            this.props.eventEmitter.emit('filter', event.target.value);
+            window.eventEmitter.emit('filter', event.target.value);
         },
 
         render(){
