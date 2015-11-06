@@ -77,10 +77,10 @@ var React = require('react'),
             return (
                 <aside className="left-panel">
                     <div className="logo">
-                        <a href="." className="logo-expanded">
+                        <span className="logo-expanded">
                             <img src="dist/img/logo-mini.png" alt="logo"/>
                             <span className="nav-label"><b>TREZOR</b></span>
-                        </a>
+                        </span>
                     </div>
 
                     <nav className="navigation">

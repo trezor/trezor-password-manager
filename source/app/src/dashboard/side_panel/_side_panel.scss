@@ -15,9 +15,6 @@ aside.left-panel {
   }
 }
 
-
-
-
 .logo {
   padding: 12px 25px;
   line-height: 51px;
@@ -32,7 +29,7 @@ aside.left-panel {
     height: 52px;
   }
 
-  img{
+  img {
     vertical-align: middle;
     text-align: left;
     margin-right: 10px;
@@ -44,7 +41,7 @@ aside.left-panel {
     }
   }
 
-  span {
+  & > span {
     color: $c_white;
     font-weight: 700;
     font-size: 1.9em;
@@ -55,7 +52,6 @@ aside.left-panel {
     }
   }
 }
-
 
 .navigation {
   margin: 20px 0 20px;
@@ -95,7 +91,7 @@ aside.left-panel {
         text-align: center;
       }
 
-      &:hover{
+      &:hover {
         color: $c_white;
       }
 
@@ -116,7 +112,7 @@ aside.left-panel {
           margin: 0;
           text-align: center;
         }
-        
+
       }
 
       span {

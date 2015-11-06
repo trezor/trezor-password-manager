@@ -1,15 +1,15 @@
-"use strict";
+'use strict';
 
 var tempStorage = {
-        "tags": {
-            "0": {
-                "title": "All",
-                "icon": "home"
+        'tags': {
+            '0': {
+                'title': 'All',
+                'icon': 'home'
             }
         },
-        "entries": {}
+        'entries': {}
     },
-    trezorReady = false,
+    trezorReady = 'disconnected',
     fillTestData = () => {
         let pubkey = localStorage.getItem('public_key');
         if (localStorage) {
@@ -19,35 +19,44 @@ var tempStorage = {
         } else {
             alert('localstorage not supported');
         }
+    },
+    badgeState = {
+        ready: {color: [59, 192, 195, 100], defaultText: '\u0020'},
+        disconnected: {color: [237, 199, 85, 100], defaultText: '\u0020'},
+        throttled: {color: [255, 255, 0, 100], defaultText: '!'}
     };
+
+function updateStatus(status) {
+    chrome.browserAction.setBadgeText({text: badgeState[status].defaultText});
+    chrome.browserAction.setBadgeBackgroundColor(
+        {color: badgeState[status].color});
+}
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request) {
         case 'initTrezorPlease':
-            if (!trezorReady) {
+            if (trezorReady === 'disconnected') {
                 localStorage.setItem('public_key', '03e93d8b0582397fc4922eded9729b6939acdb047484c37df16ddfafa70');
                 fillTestData();
-                trezorReady = true;
+                trezorReady = 'ready';
+                updateStatus(trezorReady);
             }
             chrome.runtime.sendMessage('trezorReady');
             break;
 
         case 'showDiv':
             chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, "showDivContentScript");
+                chrome.tabs.sendMessage(tabs[0].id, 'showDivContentScript');
             });
             break;
 
         case 'tellOpenPage':
             chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, "tellOpenPageContentScript", function (response) {
+                chrome.tabs.sendMessage(tabs[0].id, 'tellOpenPageContentScript', function (response) {
                     sendResponse(response);
                 });
             });
             break;
     }
-
-    // async response
-    return true;
 });
 

@@ -270,9 +270,9 @@ var React = require('react'),
 
         openTab() {
             if (this.state.mode === 'list-mode') {
-                if (this.isURL(this.state.title)) {
+                /*if (this.isURL(this.state.title)) {
                     chrome.tabs.create({url: this.state.title});
-                }
+                }*/
             }
         },
 
