@@ -9,7 +9,7 @@ var tempStorage = {
         },
         'entries': {}
     },
-    trezorReady = 'disconnected',
+    trezorStatus = 'disconnected',
     fillTestData = () => {
         let pubkey = localStorage.getItem('public_key');
         if (localStorage) {
@@ -26,20 +26,24 @@ var tempStorage = {
         throttled: {color: [255, 255, 0, 100], defaultText: '!'}
     };
 
-function updateStatus(status) {
+function updateBadgeStatus(status) {
     chrome.browserAction.setBadgeText({text: badgeState[status].defaultText});
     chrome.browserAction.setBadgeBackgroundColor(
         {color: badgeState[status].color});
 }
 
+chrome.runtime.onLaunched.addLister(() => {
+
+});
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request) {
         case 'initTrezorPlease':
-            if (trezorReady === 'disconnected') {
+            if (trezorStatus === 'disconnected') {
                 localStorage.setItem('public_key', '03e93d8b0582397fc4922eded9729b6939acdb047484c37df16ddfafa70');
                 fillTestData();
-                trezorReady = 'ready';
-                updateStatus(trezorReady);
+                trezorStatus = 'ready';
+                updateBadgeStatus(trezorStatus);
             }
             chrome.runtime.sendMessage('trezorReady');
             break;
