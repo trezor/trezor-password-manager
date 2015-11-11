@@ -32,6 +32,6 @@
   "web_accessible_resources": [
     "html/chrome_oauth_receiver.html"
   ],
-  "permissions": ["tabs", "identity"]
+  "permissions": ["tabs"]
 
 }
