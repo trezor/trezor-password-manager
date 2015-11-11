@@ -56,7 +56,10 @@ var client = new Dropbox.Client({key: "k1qq2saf035rn7c"}),
     };
 
 client.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: "html/chrome_oauth_receiver.html"}));
-
+client.authenticate(function(error, data) {
+    if (error) { return handleError(error); }
+    console.log(client);
+});
 
 function updateBadgeStatus(status) {
     chrome.browserAction.setBadgeText({text: badgeState[status].defaultText});
