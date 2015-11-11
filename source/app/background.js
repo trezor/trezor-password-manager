@@ -1,6 +1,6 @@
 'use strict';
-
-var tempStorage = {
+var client = new Dropbox.Client({ key: "k1qq2saf035rn7c" }),
+    tempStorage = {
         'tags': {
             '0': {
                 'title': 'All',
@@ -31,10 +31,6 @@ function updateBadgeStatus(status) {
     chrome.browserAction.setBadgeBackgroundColor(
         {color: badgeState[status].color});
 }
-
-chrome.runtime.onLaunched.addLister(() => {
-
-});
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request) {

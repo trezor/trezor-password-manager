@@ -1,18 +1,18 @@
 {
-  "name": "Keezor",
+  "name": "TREZOR Password",
   "description": "Keezor",
-  "version": "1.0.6",
+  "version": "0.0.1",
   "author": "SatoshiLabs",
-  "short_name": "Keezor",
+  "short_name": "TREZOR Password",
 
   "manifest_version": 2,
 
   "browser_action": {
     "default_icon": {  
-      "19": "icon19.png", 
-      "38": "icon38.png"
+      "19": "images/icon19.png",
+      "38": "images/icon38.png"
     },
-    "default_title": "Keezor open",
+    "default_title": "TREZOR Password",
     "default_popup": "index.html"
   },
 
@@ -24,8 +24,11 @@
   ],
 
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["js/dropbox.min.js", "background.js"]
   },
-  "permissions": ["tabs"]
+  "web_accessible_resources": [
+    "html/chrome_oauth_receiver.html"
+  ],
+  "permissions": ["tabs", "identity"]
 
 }
