@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-"use strict";
+'use strict';
 
 var React = require('react'),
     Router = require('react-router'),
@@ -15,6 +15,11 @@ var React = require('react'),
         )
     );
 
+
+if (typeof window !== 'undefined') {
+    window.React = React;
+}
+
 Router.run(routes, function(Handler)  {
     React.render(React.createElement(Handler, null), document.body)
 });
@@ -22,47 +27,25 @@ Router.run(routes, function(Handler)  {
 
 },{"./components/layout":4,"./dashboard/dashboard_layout":6,"./home/home":12,"es6-promise":25,"react":459,"react-router":288}],2:[function(require,module,exports){
 'use strict';
-require('whatwg-fetch');
-var tempStorage = {
-    "tags": {
-        "0": {
-            "title": "All",
-            "icon": "home"
-        }
-    },
-    "entries": {}
-};
+
 var Service = {
 
     getContextTest:function() {
-        return fetch('./data.json', {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        }).then(function () {
-            var pubkey = sessionStorage.getItem('public_key');
-            if (localStorage) {
-                if (!localStorage.getItem(pubkey)) {
-                    localStorage.setItem(pubkey, JSON.stringify(tempStorage));
-                }
-                return JSON.parse(localStorage.getItem(pubkey));
-            } else {
-                alert('localstorage not supported');
-            }
-        }).catch(function (e) {
-            console.log('getTags err: ' + e);
-        });
+        var pubkey = localStorage.getItem('public_key');
+        if (localStorage) {
+            return JSON.parse(localStorage.getItem(pubkey));
+        } else {
+            alert('localstorage not supported');
+        }
     },
 
     saveContext:function(data) {
-        var pubkey = sessionStorage.getItem('public_key');
+        var pubkey = localStorage.getItem('public_key');
         return localStorage.setItem(pubkey, JSON.stringify(data));
     },
 
     getContext:function() {
-        var pubkey = sessionStorage.getItem('public_key');
+        var pubkey = localStorage.getItem('public_key');
         return JSON.parse(localStorage.getItem(pubkey));
     }
 };
@@ -70,24 +53,17 @@ var Service = {
 module.exports = Service;
 
 
-},{"whatwg-fetch":488}],3:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 'use strict';
 
 var Service = require('./data_service');
 
 
 
-    function Store(data, eventEmitter) {
+    function Store(data) {
         this.data = data;
-        this.eventEmitter = eventEmitter;
-        this.eventEmitter.emit('update', this.data);
+        window.eventEmitter.emit('update', this.data);
     }
-
-    ///////////
-    //
-    // TAGS
-    //
-    //////////
 
     Object.defineProperty(Store.prototype,"getTagTitleById",{writable:true,configurable:true,value:function(tagId) {
         tagId = tagId ? parseInt(tagId) : 0;
@@ -131,7 +107,7 @@ var Service = require('./data_service');
         if (oldTagTitleArray.indexOf(newTagTitle) == -1) {
             tagData.title = newTagTitle;
             this.saveDataToTagById(tagId, tagData);
-            this.eventEmitter.emit('update', this.data);
+            window.eventEmitter.emit('update', this.data);
             Service.saveContext(this.data);
             return true;
         } else {
@@ -143,7 +119,7 @@ var Service = require('./data_service');
         var tagData = Object.getOwnPropertyDescriptor(this.data.tags, tagId).value;
         tagData.icon = newTagIcon;
         this.saveDataToTagById(tagId, tagData);
-        this.eventEmitter.emit('update', this.data);
+        window.eventEmitter.emit('update', this.data);
         Service.saveContext(this.data);
     }});
 
@@ -160,7 +136,7 @@ var Service = require('./data_service');
             oldTagTitleArray = this.getTagTitleArray();
         if (oldTagTitleArray.indexOf(newTitle) == -1) {
             this.data.tags[newId] = data;
-            this.eventEmitter.emit('update', this.data);
+            window.eventEmitter.emit('update', this.data);
             Service.saveContext(this.data);
             return true;
         } else {
@@ -175,23 +151,11 @@ var Service = require('./data_service');
                 this.removeTagFromEntry(tagId, key);
             }
         }.bind(this));
-        this.eventEmitter.emit('changeTag', 0);
-
-        var tagArray = this.getTagIdArray();
-        tagArray.map(function(key)  {
-            if (key === tagId) {
-                delete this.data.tags[key];
-            }
-        }.bind(this));
-        this.eventEmitter.emit('update', this.data);
+        window.eventEmitter.emit('changeTag', 0);
+        delete this.data.tags[tagId];
+        window.eventEmitter.emit('update', this.data);
         Service.saveContext(this.data);
     }});
-
-    ///////////
-    //
-    // ENTRIES
-    //
-    //////////
 
     Object.defineProperty(Store.prototype,"getEntryValuesById",{writable:true,configurable:true,value:function(entryId) {
         var entry = Object.getOwnPropertyDescriptor(this.data.entries, entryId);
@@ -202,15 +166,23 @@ var Service = require('./data_service');
         return Object.getOwnPropertyDescriptor(this.data.entries, entryId).value.title
     }});
 
+    Object.defineProperty(Store.prototype,"getEntriesIdArray",{writable:true,configurable:true,value:function() {
+        return Object.keys(this.data.entries).map(function(key)  {
+            return parseInt(key)
+        });
+    }});
+
     Object.defineProperty(Store.prototype,"saveDataToEntryById",{writable:true,configurable:true,value:function(entryId, data) {
-        return Object.defineProperty(this.data.entries, entryId, {value: data}) && this.eventEmitter.emit('changeTag');
+        Object.defineProperty(this.data.entries, entryId, {value: data});
+        window.eventEmitter.emit('changeTag');
+        return Service.saveContext(this.data);
     }});
 
     Object.defineProperty(Store.prototype,"addTagToEntry",{writable:true,configurable:true,value:function(tagId, entryId) {
         var entryData = Object.getOwnPropertyDescriptor(this.data.entries, entryId).value;
         entryData.tags.push(parseInt(tagId));
         this.saveDataToEntryById(entryId, entryData);
-        Service.saveContext(this.data);
+        return Service.saveContext(this.data);
     }});
 
     Object.defineProperty(Store.prototype,"removeTagFromEntry",{writable:true,configurable:true,value:function(tagId, entryId) {
@@ -218,7 +190,7 @@ var Service = require('./data_service');
         var index = entryData.tags.indexOf(parseInt(tagId));
         entryData.tags.splice(index, 1);
         this.saveDataToEntryById(entryId, entryData);
-        Service.saveContext(this.data);
+        return Service.saveContext(this.data);
     }});
 
     Object.defineProperty(Store.prototype,"getPossibleToAddTagsForEntry",{writable:true,configurable:true,value:function(entryId) {
@@ -246,7 +218,13 @@ var Service = require('./data_service');
         newId = isNaN(newId) ? 0 : newId;
         this.data.entries[newId] = data;
         Service.saveContext(this.data);
-        return this.eventEmitter.emit('hideOpenNewEntry', newId);
+        return window.eventEmitter.emit('hideOpenNewEntry', newId);
+    }});
+
+    Object.defineProperty(Store.prototype,"removeEntry",{writable:true,configurable:true,value:function(entryId) {
+        delete this.data.entries[entryId];
+        Service.saveContext(this.data);
+        window.eventEmitter.emit('update', this.data);
     }});
 
     Object.defineProperty(Store.prototype,"getAllEntries",{writable:true,configurable:true,value:function() {
@@ -259,14 +237,8 @@ var Service = require('./data_service');
         return this.data;
     }});
 
-    ///////////
-    //
-    // OTHERS
-    //
-    //////////
-
     Object.defineProperty(Store.prototype,"hideNewEntry",{writable:true,configurable:true,value:function() {
-        return this.eventEmitter.emit('hideNewEntry');
+        return window.eventEmitter.emit('hideNewEntry');
     }});
 
 
@@ -330,10 +302,10 @@ var React = require('react'),
         },
 
         componentWillMount:function() {
-            this.props.eventEmitter.on('openAddTag', this.openEditModal);
-            this.props.eventEmitter.on('openEditTag', this.openEdit);
-            this.props.eventEmitter.on('openRemoveTag', this.openRemoveModal);
-            this.props.eventEmitter.on('contextInit', this.saveContext);
+            window.eventEmitter.on('openAddTag', this.openEditModal);
+            window.eventEmitter.on('openEditTag', this.openEdit);
+            window.eventEmitter.on('openRemoveTag', this.openRemoveModal);
+            window.eventEmitter.on('contextInit', this.saveContext);
         },
 
         saveContext:function(context) {
@@ -550,16 +522,18 @@ var React = require('react'),
         },
 
         componentWillMount:function() {
-            eventEmitter.setMaxListeners(0);
             eventEmitter.on('update', this.contextReady);
-            if (!this.isLogged(sessionStorage.getItem('public_key'))) {
+            window.eventEmitter = eventEmitter;
+            if (!this.isLogged(localStorage.getItem('public_key'))) {
                 this.transitionTo('home');
             } else {
-                Service.getContextTest().then(function(response)  {
-                    this.context = new Store(response, eventEmitter);
-                    eventEmitter.emit('contextInit', this.context);
-                }.bind(this));
+                var responseData = Service.getContextTest();
+                this.contextStore = new Store(responseData);
             }
+        },
+
+        componentDidMount:function() {
+            eventEmitter.emit('contextInit', this.contextStore);
         },
 
         componentWillUnmount:function() {
@@ -577,15 +551,16 @@ var React = require('react'),
         },
 
         render:function(){
+
             return (
                 React.createElement("div", null, 
                     this.state.ready ?
                         React.createElement("div", null, 
-                            React.createElement(Tag_Modal, {eventEmitter: eventEmitter}), 
-                            React.createElement(SidePanel, {eventEmitter: eventEmitter}), 
+                            React.createElement(Tag_Modal, null), 
+                            React.createElement(SidePanel, null), 
 
                             React.createElement("section", {className: "content"}, 
-                                React.createElement(PasswordTable, {eventEmitter: eventEmitter})
+                                React.createElement(PasswordTable, null)
                             )
                         )
                         :
@@ -645,9 +620,15 @@ var React = require('react'),
             }
         },
 
+        componentWillMount:function() {
+            //chrome.runtime.sendMessage("tellOpenPage", function(response) {
+            //    alert(response);
+            //});
+        },
+
         handleChange:function(event) {
             this.setState({filter: event.target.value});
-            this.props.eventEmitter.emit('filter', event.target.value);
+            window.eventEmitter.emit('filter', event.target.value);
         },
 
         render:function(){
@@ -692,19 +673,19 @@ var React = require('react'),
         },
 
         componentWillMount:function() {
-            this.props.eventEmitter.on('changeTag', this.changeTag);
-            this.props.eventEmitter.on('contextInit', this.saveContext);
-            this.props.eventEmitter.on('filter', this.setupFilter);
-            this.props.eventEmitter.on('hideNewEntry', this.addNewEntry);
-            this.props.eventEmitter.on('hideOpenNewEntry', this.hideOpenNewEntry);
+            window.eventEmitter.on('changeTag', this.changeTag);
+            window.eventEmitter.on('contextInit', this.saveContext);
+            window.eventEmitter.on('filter', this.setupFilter);
+            window.eventEmitter.on('hideNewEntry', this.addNewEntry);
+            window.eventEmitter.on('hideOpenNewEntry', this.hideOpenNewEntry);
         },
 
         componentWillUnmount:function() {
-            this.props.eventEmitter.removeListener('changeTag', this.changeTag);
-            this.props.eventEmitter.removeListener('contextInit', this.saveContext);
-            this.props.eventEmitter.removeListener('filter', this.setupFilter);
-            this.props.eventEmitter.removeListener('hideNewEntry', this.addNewEntry);
-            this.props.eventEmitter.removeListener('hideOpenNewEntry', this.hideOpenNewEntry);
+            window.eventEmitter.removeListener('changeTag', this.changeTag);
+            window.eventEmitter.removeListener('contextInit', this.saveContext);
+            window.eventEmitter.removeListener('filter', this.setupFilter);
+            window.eventEmitter.removeListener('hideNewEntry', this.addNewEntry);
+            window.eventEmitter.removeListener('hideOpenNewEntry', this.hideOpenNewEntry);
         },
 
         setupFilter:function(filterVal) {
@@ -740,11 +721,11 @@ var React = require('react'),
         },
 
         openTagEditor:function() {
-            this.props.eventEmitter.emit('openEditTag', this.state.active_id);
+            window.eventEmitter.emit('openEditTag', this.state.active_id);
         },
 
         openDeleteTagModal:function() {
-            this.props.eventEmitter.emit('openRemoveTag', this.state.active_id);
+            window.eventEmitter.emit('openRemoveTag', this.state.active_id);
         },
 
         addNewEntry:function() {
@@ -804,6 +785,7 @@ var React = require('react'),
                         React.createElement("div", {className: "col-sm-3 col-xs-3"}, 
                             React.createElement("button", {type: "button", 
                                     onClick: this.addNewEntry, 
+                                    disabled: this.state.newEntry, 
                                     className: "blue-btn add"}, "Add entry"
                             )
                         ), 
@@ -922,6 +904,16 @@ var React = require('react'),
             return domain;
         },
 
+        isURL:function(str) {
+            var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
+                '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+                '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+                '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+            return pattern.test(str);
+        },
+
         componentDidMount:function() {
             if (this.state.title.indexOf('.') > -1) {
                 this.setState({
@@ -972,7 +964,6 @@ var React = require('react'),
             this.state.tags_titles.map(function(key)  {
                 tags_id.push(this.state.context.getTagIdByTitle(key));
             }.bind(this));
-
 
             var data = {
                 title: this.state.title,
@@ -1088,8 +1079,28 @@ var React = require('react'),
             }
         },
 
-        removeEntry:function() {
+        keyPressed:function(event) {
+            if (event.keyCode == 27) {
+                if (this.state.content_changed === '') {
+                    this.setState({
+                        mode: 'list-mode'
+                    })
+                } else {
+                    this.discardChanges();
+                }
+            }
+        },
 
+        openTab:function() {
+            if (this.state.mode === 'list-mode') {
+                /*if (this.isURL(this.state.title)) {
+                    chrome.tabs.create({url: this.state.title});
+                }*/
+            }
+        },
+
+        removeEntry:function() {
+            this.state.context.removeEntry(this.state.key_value);
         },
 
         revertHistory:function() {
@@ -1122,7 +1133,8 @@ var React = require('react'),
             }
 
             return (
-                React.createElement("div", {className:  this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}, 
+                React.createElement("div", {className:  this.state.mode + ' entry col-xs-12 ' + this.state.content_changed, 
+                     onClick: this.openTab}, 
                     React.createElement("form", {onSubmit: this.saveEntry}, 
                         React.createElement("div", {className: "avatar"}, 
                             React.createElement("img", {src: this.state.image_src, 
@@ -1137,6 +1149,7 @@ var React = require('react'),
                                    value: this.state.title, 
                                    name: "title", 
                                    onChange: this.handleChange, 
+                                   onKeyUp: this.keyPressed, 
                                    onBlur: this.titleOnBlur, 
                                    disabled: this.state.mode === 'list-mode' ? 'disabled' : false})
                         ), 
@@ -1148,6 +1161,7 @@ var React = require('react'),
                                    value: this.state.username, 
                                    name: "username", 
                                    onChange: this.handleChange, 
+                                   onKeyUp: this.keyPressed, 
                                    disabled: this.state.mode === 'list-mode' ? 'disabled' : false})
                         ), 
 
@@ -1158,6 +1172,7 @@ var React = require('react'),
                                    ref: "password", 
                                    name: "password", 
                                    onChange: this.handleChange, 
+                                   onKeyUp: this.keyPressed, 
                                    value: this.state.password}), 
                             React.createElement(OverlayTrigger, {placement: "top", 
                                             overlay: showPassword}, 
@@ -1186,6 +1201,7 @@ var React = require('react'),
                             React.createElement(Textarea, {type: "text", 
                                       autoComplete: "off", 
                                       onChange: this.handleChange, 
+                                      onKeyUp: this.keyPressed, 
                                       value: this.state.note, 
                                       defaultValue: '', 
                                       name: "note"})
@@ -1196,12 +1212,19 @@ var React = require('react'),
                                 React.createElement("i", {className: "ion-chevron-down"})
                             ), 
 
+                            null != this.state.key_value &&
+                            React.createElement(DropdownButton, {title: "", noCaret: true, pullRight: true, id: "dropdown-no-caret"}, 
+                                React.createElement(MenuItem, {eventKey: "1", onSelect: this.removeEntry}, React.createElement("i", {className: "ion-close"}), " Remove" + ' ' +
+                                    "entry")
+                            ), 
+                            
+
                             React.createElement("div", {className: "content-btns"}, 
                                 React.createElement("span", {className: "button green-btn", onClick: this.saveEntry}, "Save"), 
                                 React.createElement("span", {className: "button red-btn", onClick: this.discardChanges}, "Discard")
                             )
-                        )
-
+                        ), 
+                        React.createElement("button", {type: "submit", className: "submit-btn"})
                     )
                 )
             )
@@ -1230,13 +1253,13 @@ var React = require('react'),
         },
 
         componentWillMount:function() {
-            this.props.eventEmitter.on('contextInit', this.saveContext);
-            this.props.eventEmitter.on('changeTag', this.changeTag);
+            window.eventEmitter.on('contextInit', this.saveContext);
+            window.eventEmitter.on('changeTag', this.changeTag);
         },
 
         componentWillUnmount:function() {
-            this.props.eventEmitter.removeListener('contextInit', this.saveContext);
-            this.props.eventEmitter.removeListener('changeTag', this.changeTag);
+            window.eventEmitter.removeListener('contextInit', this.saveContext);
+            window.eventEmitter.removeListener('changeTag', this.changeTag);
         },
 
         changeTag:function(e) {
@@ -1254,7 +1277,7 @@ var React = require('react'),
         },
 
         changeTagAndEmitt:function(e) {
-            this.props.eventEmitter.emit('changeTag', e);
+            window.eventEmitter.emit('changeTag', e);
             this.setState({
                 active_id: parseInt(e),
                 active_title: this.state.context.getTagTitleById(e)
@@ -1262,7 +1285,7 @@ var React = require('react'),
         },
 
         addTag:function() {
-            this.props.eventEmitter.emit('openAddTag');
+            window.eventEmitter.emit('openAddTag');
         },
 
         saveContext:function(context) {
@@ -1291,8 +1314,8 @@ var React = require('react'),
             return (
                 React.createElement("aside", {className: "left-panel"}, 
                     React.createElement("div", {className: "logo"}, 
-                        React.createElement("a", {href: ".", className: "logo-expanded"}, 
-                            React.createElement("img", {src: "dist/img/logo-mini.png", alt: "logo"}), 
+                        React.createElement("span", {className: "logo-expanded"}, 
+                            React.createElement("img", {src: "dist/app-images/logo-mini.png", alt: "logo"}), 
                             React.createElement("span", {className: "nav-label"}, React.createElement("b", null, "TREZOR"))
                         )
                     ), 
@@ -1328,28 +1351,60 @@ var React = require('react'),
     Home = React.createClass({displayName: "Home",
         mixins: [Router.Navigation],
 
-        componentWillMount:function() {
-            window.trezorConnect = this.trezorLogged;
+        getInitialState:function() {
+            return {
+                trezorReady: false,
+                dropboxReady: false
+            }
         },
 
-        trezorLogged:function(trezorResponse){
-            if (trezorResponse.success) {
-                window.trezorResponse = trezorResponse;
-                sessionStorage.setItem('public_key', window.trezorResponse.public_key);
+        componentDidMount:function() {
+            chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)  {
+                if (request === 'trezorReady') {
+                    this.setState({
+                        trezorReady: true
+                    });
+                }
+                if (request === 'dropboxReady') {
+                    this.setState({
+                        dropboxReady: true
+                    });
+                }
+                this.checkStates();
+            }.bind(this));
+        },
+
+        connectDropbox:function() {
+            chrome.runtime.sendMessage('connectDropbox');
+        },
+
+        connectTrezor:function() {
+            chrome.runtime.sendMessage('connectTrezor');
+        },
+
+        checkStates:function() {
+            if (this.state.trezorReady && this.state.dropboxReady) {
                 this.transitionTo('dashboard');
             }
         },
 
-        render:function(){
+        render:function() {
+            chrome.runtime.sendMessage('initPlease');
+            var dropboxStatus = this.state.dropboxReady ? 'Connected' : 'Disconnected',
+                trezorReady = this.state.trezorReady ? 'Connected' : 'Disconnected';
+
             return (
                 React.createElement("div", null, 
                     React.createElement("div", {className: "overlay-hill"}), 
                     React.createElement("div", {className: "overlay-color"}), 
                     React.createElement("div", {className: "home"}, 
-                        React.createElement("h1", null, React.createElement("img", {src: "dist/img/logo.png"})), 
-                        React.createElement("a", {onClick: TrezorConnect.requestLogin.bind(null, '', '', '', 'trezorConnect')}, 
-                            React.createElement("div", {className: "dot"}), 
-                            React.createElement("div", {className: "pulse"})
+                        React.createElement("div", {className: "panel dropbox", onClick: this.connectDropbox}, 
+                            React.createElement("img", {src: "dist/app-images/dropbox.svg"}), 
+                            React.createElement("span", null, dropboxStatus)
+                        ), 
+                        React.createElement("div", {className: "panel trezor", onClick: this.connectTrezor}, 
+                            React.createElement("img", {src: "dist/app-images/trezor.svg"}), 
+                            React.createElement("span", null, trezorReady)
                         )
                     )
                 )

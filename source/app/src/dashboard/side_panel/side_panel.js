@@ -78,7 +78,7 @@ var React = require('react'),
                 <aside className="left-panel">
                     <div className="logo">
                         <span className="logo-expanded">
-                            <img src="dist/img/logo-mini.png" alt="logo"/>
+                            <img src="dist/app-images/logo-mini.png" alt="logo"/>
                             <span className="nav-label"><b>TREZOR</b></span>
                         </span>
                     </div>

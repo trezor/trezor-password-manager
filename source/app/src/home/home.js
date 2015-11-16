@@ -7,31 +7,61 @@ var React = require('react'),
     Home = React.createClass({
         mixins: [Router.Navigation],
 
+        getInitialState() {
+            return {
+                trezorReady: false,
+                dropboxReady: false
+            }
+        },
+
         componentDidMount() {
             chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 if (request === 'trezorReady') {
-                    this.trezorLoggedTest();
+                    this.setState({
+                        trezorReady: true
+                    });
                 }
-                return true;
+                if (request === 'dropboxReady') {
+                    this.setState({
+                        dropboxReady: true
+                    });
+                }
+                this.checkStates();
             });
-            chrome.runtime.sendMessage('initTrezorPlease');
         },
 
-        trezorLoggedTest() {
-            this.transitionTo('dashboard');
+        connectDropbox() {
+            chrome.runtime.sendMessage('connectDropbox');
+        },
+
+        connectTrezor() {
+            chrome.runtime.sendMessage('connectTrezor');
+        },
+
+        checkStates() {
+            if (this.state.trezorReady && this.state.dropboxReady) {
+                this.transitionTo('dashboard');
+            }
         },
 
         render() {
+            chrome.runtime.sendMessage('initPlease');
+            var dropboxStatus = this.state.dropboxReady ? 'Connected' : 'Disconnected',
+                trezorReady = this.state.trezorReady ? 'Connected' : 'Disconnected';
+
             return (
-                <div >
+                <div>
                     <div className='overlay-hill'></div>
                     <div className='overlay-color'></div>
                     <div className='home'>
-                        <h1>< img src='dist/img/logo.png'/></h1>
-                        <a>
-                            <div className='dot'></div>
-                            <div className='pulse'></div>
-                        </a>
+                        <div className='panel dropbox' onClick={this.connectDropbox}>
+                            <img src="dist/app-images/dropbox.svg"/>
+                            <span>{dropboxStatus}</span>
+                        </div>
+                        <div className='panel trezor' onClick={this.connectTrezor}>
+                            <img src="dist/app-images/trezor.svg"/>
+                            <span>{trezorReady}</span>
+                        </div>
                     </div>
                 </div>
             )

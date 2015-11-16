@@ -3013,8 +3013,8 @@ table {
 
 html, body {
   box-sizing: border-box;
-  width: 100%;
-  height: 100%;
+  width: 800px;
+  height: 600px;
   min-height: 100%;
   margin: 0;
   line-height: 1;
@@ -3023,6 +3023,27 @@ html, body {
   background-color: #edf0f0;
   color: #797979;
   overflow-x: hidden; }
+
+ul.dropdown-menu {
+  border: 0;
+  outline: 0;
+  margin-top: 0;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  -ms-border-radius: 2px;
+  border-radius: 2px;
+  -webkit-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  -o-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); }
+  ul.dropdown-menu a {
+    padding: 10px 20px !important;
+    color: #979898; }
+    ul.dropdown-menu a i {
+      width: 38px;
+      margin-right: 10px;
+      text-align: center;
+      margin-top: 5px; }
 
 button, .button {
   background-color: #000;
@@ -3035,7 +3056,11 @@ button, .button {
   -webkit-border-radius: 2px;
   -moz-border-radius: 2px;
   -ms-border-radius: 2px;
-  border-radius: 2px; }
+  border-radius: 2px;
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out; }
   button.blue-btn, .button.blue-btn {
     background-color: #3498db;
     border-color: #3498db; }
@@ -3045,6 +3070,8 @@ button, .button {
   button.red-btn, .button.red-btn {
     background-color: #EF6088;
     border-color: #EF6088; }
+  button:disabled, .button:disabled {
+    opacity: .5; }
 
 .overlay-hill {
   position: absolute;
@@ -3055,7 +3082,7 @@ button, .button {
   width: 100%;
   height: 100%;
   z-index: 0;
-  background: url("img/bg.jpg") no-repeat center center fixed;
+  background: url("app-images/bg.jpg") no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -3083,80 +3110,21 @@ button, .button {
   width: 100%;
   text-align: center;
   z-index: 2; }
-  .home h1 img {
-    max-width: 250px; }
-  .home a {
-    cursor: pointer;
-    display: inline-block;
-    position: relative;
-    margin: 0 auto;
-    width: 30px;
-    height: 50px; }
-    .home a .pulse {
-      width: 30px;
-      height: 30px;
-      border: 5px solid #fff;
-      -webkit-border-radius: 50%;
-      -moz-border-radius: 50%;
-      -ms-border-radius: 50%;
-      border-radius: 50%;
-      background-color: transparent;
-      z-index: 10;
-      position: absolute; }
-    .home a .dot {
-      border: 20px solid #fff;
-      background: transparent;
-      height: 50px;
-      width: 50px;
-      -webkit-animation: pulse 2s ease-out;
-      -moz-animation: pulse 2s ease-out;
-      animation: pulse 2s ease-out;
-      -webkit-animation-iteration-count: infinite;
-      -moz-animation-iteration-count: infinite;
-      animation-iteration-count: infinite;
-      position: absolute;
-      top: -10px;
-      left: -10px;
-      z-index: 1;
-      opacity: 0;
-      -webkit-border-radius: 50%;
-      -moz-border-radius: 50%;
-      -ms-border-radius: 50%;
-      border-radius: 50%; }
-
-@-moz-keyframes pulse {
-  0% {
-    -moz-transform: scale(0);
-    opacity: 0.0; }
-  25% {
-    -moz-transform: scale(0);
-    opacity: 0.1; }
-  50% {
-    -moz-transform: scale(0.1);
-    opacity: 0.3; }
-  75% {
-    -moz-transform: scale(0.5);
-    opacity: 0.5; }
-  100% {
-    -moz-transform: scale(1);
-    opacity: 0.0; } }
-
-@-webkit-keyframes pulse {
-  0% {
-    -webkit-transform: scale(0);
-    opacity: 0.0; }
-  25% {
-    -webkit-transform: scale(0);
-    opacity: 0.1; }
-  50% {
-    -webkit-transform: scale(0.1);
-    opacity: 0.3; }
-  75% {
-    -webkit-transform: scale(0.5);
-    opacity: 0.5; }
-  100% {
-    -webkit-transform: scale(1);
-    opacity: 0.0; } }
+  .home .panel {
+    width: 120px;
+    height: 140px;
+    position: absolute;
+    padding: 10px;
+    top: 200px; }
+    .home .panel.dropbox {
+      left: 25%; }
+    .home .panel.trezor {
+      right: 25%; }
+      .home .panel.trezor img {
+        width: 60px; }
+    .home .panel img {
+      width: 90px;
+      margin-bottom: 10px; }
 
 .modal-content {
   -webkit-border-radius: 2px;
@@ -3288,13 +3256,13 @@ aside.left-panel {
     @media screen and (max-width: 768px) {
       .logo img {
         margin: 0 auto; } }
-  .logo span {
+  .logo > span {
     color: #fff;
     font-weight: 700;
     font-size: 1.9em;
     letter-spacing: .05em; }
     @media screen and (max-width: 768px) {
-      .logo span {
+      .logo > span {
         display: none; } }
 
 .navigation {
@@ -3410,30 +3378,9 @@ aside.left-panel {
           content: "\f43d";
           font-size: 1em;
           font-family: 'ionicons' !important; }
-      .content .wraper .page-title div ul.dropdown-menu {
-        border: 0;
-        outline: 0;
-        margin-top: -8px;
-        -webkit-border-radius: 2px;
-        -moz-border-radius: 2px;
-        -ms-border-radius: 2px;
-        border-radius: 2px;
-        -webkit-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        -moz-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        -o-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); }
-        .content .wraper .page-title div ul.dropdown-menu a {
-          padding: 10px 20px !important;
-          color: #979898; }
-          .content .wraper .page-title div ul.dropdown-menu a i {
-            width: 38px;
-            margin-right: 10px;
-            text-align: center;
-            margin-top: 5px; }
 
 .dashboard {
   width: 100%;
-  z-index: 0;
   padding: 0;
   border: none;
   border-top: 1px solid #ddd;
@@ -3487,6 +3434,8 @@ aside.left-panel {
         -o-transition: all 50ms ease-in-out;
         transition: all 50ms ease-in-out; }
     .dashboard .entry .password .button {
+      position: relative;
+      z-index: 2;
       display: inline-block;
       text-align: center;
       width: 27px;
@@ -3559,9 +3508,8 @@ aside.left-panel {
       position: absolute;
       top: 20px;
       right: 20px;
-      z-index: 0;
-      width: 150px;
-      height: 50px;
+      width: 250px;
+      height: 150px;
       overflow: hidden; }
       .dashboard .entry .form-buttons .close-btn {
         display: block;
@@ -3588,6 +3536,47 @@ aside.left-panel {
         transition: all 0.2s ease-in-out; }
         .dashboard .entry .form-buttons .close-btn:hover {
           color: #797979; }
+      .dashboard .entry .form-buttons .dropdown {
+        position: absolute;
+        right: -150px;
+        top: 40px;
+        -webkit-transition: all 0.2s ease-in-out;
+        -moz-transition: all 0.2s ease-in-out;
+        -o-transition: all 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out; }
+        .dashboard .entry .form-buttons .dropdown button {
+          width: 30px;
+          height: 30px;
+          background-color: transparent;
+          border: 1px solid rgba(121, 121, 121, 0.1);
+          outline: 0;
+          -webkit-box-shadow: none;
+          -moz-box-shadow: none;
+          -o-box-shadow: none;
+          box-shadow: none;
+          -webkit-border-radius: 2px;
+          -moz-border-radius: 2px;
+          -ms-border-radius: 2px;
+          border-radius: 2px; }
+          .dashboard .entry .form-buttons .dropdown button:hover:after {
+            color: #797979;
+            -webkit-transition: all 0.2s ease-in-out;
+            -moz-transition: all 0.2s ease-in-out;
+            -o-transition: all 0.2s ease-in-out;
+            transition: all 0.2s ease-in-out; }
+          .dashboard .entry .form-buttons .dropdown button:after {
+            position: absolute;
+            right: 7px;
+            bottom: .1em;
+            display: block;
+            color: rgba(121, 121, 121, 0.5);
+            content: "\f43c";
+            font-size: 1.2em;
+            font-family: 'ionicons' !important;
+            -webkit-transition: all 0.2s ease-in-out;
+            -moz-transition: all 0.2s ease-in-out;
+            -o-transition: all 0.2s ease-in-out;
+            transition: all 0.2s ease-in-out; }
       .dashboard .entry .form-buttons .content-btns {
         position: absolute;
         margin-top: 10px;
@@ -3615,7 +3604,8 @@ aside.left-panel {
       .dashboard .entry.edit-mode .title, .dashboard .entry.edit-mode .username, .dashboard .entry.edit-mode .password, .dashboard .entry.edit-mode .tags, .dashboard .entry.edit-mode .note {
         color: #797979;
         padding-bottom: 3px;
-        margin-bottom: 3px; }
+        margin-bottom: 3px;
+        z-index: 1; }
         .dashboard .entry.edit-mode .title span, .dashboard .entry.edit-mode .username span, .dashboard .entry.edit-mode .password span, .dashboard .entry.edit-mode .tags span, .dashboard .entry.edit-mode .note span {
           display: inline-block;
           vertical-align: middle;
@@ -3715,6 +3705,14 @@ aside.left-panel {
         -moz-transform: rotate(180deg);
         -o-transform: rotate(180deg);
         transform: rotate(180deg); }
+      .dashboard .entry.edit-mode .dropdown {
+        right: 0;
+        -webkit-transition: all 0.2s ease-in-out;
+        -moz-transition: all 0.2s ease-in-out;
+        -o-transition: all 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out; }
+    .dashboard .entry .submit-btn {
+      display: none; }
 
 form.filter {
   display: block;

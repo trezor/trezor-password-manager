@@ -1,6 +1,24 @@
 'use strict';
-var client = new Dropbox.Client({key: "k1qq2saf035rn7c"}),
-    handleError = function (error) {
+var dropboxClient = new Dropbox.Client({key: "k1qq2saf035rn7c"}),
+    tempStorage = {
+        'tags': {
+            '0': {
+                'title': 'All',
+                'icon': 'home'
+            }
+        },
+        'entries': {}
+    },
+    trezorStatus = 'disconnected',
+    dropboxStatus = 'disconnected',
+    badgeState = {
+        ready: {color: [59, 192, 195, 100], defaultText: '\u0020'},
+        waiting: {color: [237, 199, 85, 100], defaultText: '\u0020'},
+        disconnected: {color: [237, 199, 85, 100], defaultText: '\u0020'},
+        throttled: {color: [255, 255, 0, 100], defaultText: '!'}
+    },
+
+    handleError = (error) => {
         switch (error.status) {
             case Dropbox.ApiError.INVALID_TOKEN:
                 console.warn('user token expired ', error.status);
@@ -29,16 +47,7 @@ var client = new Dropbox.Client({key: "k1qq2saf035rn7c"}),
                 console.warn('network error, check connection ', error.status);
         }
     },
-    tempStorage = {
-        'tags': {
-            '0': {
-                'title': 'All',
-                'icon': 'home'
-            }
-        },
-        'entries': {}
-    },
-    trezorStatus = 'disconnected',
+
     fillTestData = () => {
         let pubkey = localStorage.getItem('public_key');
         if (localStorage) {
@@ -49,34 +58,80 @@ var client = new Dropbox.Client({key: "k1qq2saf035rn7c"}),
             alert('localstorage not supported');
         }
     },
-    badgeState = {
-        ready: {color: [59, 192, 195, 100], defaultText: '\u0020'},
-        disconnected: {color: [237, 199, 85, 100], defaultText: '\u0020'},
-        throttled: {color: [255, 255, 0, 100], defaultText: '!'}
+
+    updateBadgeStatus = (status) => {
+        chrome.browserAction.setBadgeText({text: badgeState[status].defaultText});
+        chrome.browserAction.setBadgeBackgroundColor(
+            {color: badgeState[status].color});
+    },
+
+    isDropboxLoggedIn = () => {
+        return dropboxClient.isAuthenticated();
+    },
+
+    connectToDropbox = () => {
+        dropboxClient.authenticate((error, data) => {
+            if (error) {
+                return handleError(error);
+            }
+            if(dropboxClient.isAuthenticated()) {
+                dropboxStatus = 'ready';
+                checkConnectionStatus();
+                chrome.runtime.sendMessage('dropboxReady');
+            }
+        });
+    },
+
+    isTrezorLoggedIn = () => {
+        return true;
+    },
+
+    checkConnectionStatus = () => {
+        if(dropboxClient.isAuthenticated() && isTrezorLoggedIn()){
+            updateBadgeStatus('ready');
+            return true;
+        } else {
+            updateBadgeStatus('waiting');
+            return false
+        }
+
     };
 
-client.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: "html/chrome_oauth_receiver.html"}));
-client.authenticate(function(error, data) {
-    if (error) { return handleError(error); }
-    console.log(client);
+dropboxClient.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: "html/chrome_oauth_receiver.html"}));
+dropboxClient.onError.addListener(function (error) {
+    if (window.console) {  // Skip the "if" in node.js code.
+        handleError(error);
+    }
 });
 
-function updateBadgeStatus(status) {
-    chrome.browserAction.setBadgeText({text: badgeState[status].defaultText});
-    chrome.browserAction.setBadgeBackgroundColor(
-        {color: badgeState[status].color});
-}
+// first check after reopen of browser or installation
+chrome.runtime.onStartup.addListener(checkConnectionStatus);
+chrome.runtime.onInstalled.addListener(checkConnectionStatus);
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request) {
-        case 'initTrezorPlease':
+        case 'initPlease':
             if (trezorStatus === 'disconnected') {
                 localStorage.setItem('public_key', '03e93d8b0582397fc4922eded9729b6939acdb047484c37df16ddfafa70');
                 fillTestData();
                 trezorStatus = 'ready';
-                updateBadgeStatus(trezorStatus);
             }
             chrome.runtime.sendMessage('trezorReady');
+            if (dropboxStatus === 'disconnected') {
+                if(!isDropboxLoggedIn()){
+                    connectToDropbox();
+                }
+            }
+            break;
+
+        case 'connectDropbox':
+            if (dropboxStatus === 'disconnected') {
+                if(!isDropboxLoggedIn()){
+                    connectToDropbox();
+                }
+            }
+            chrome.runtime.sendMessage('dropboxReady');
+            checkConnectionStatus();
             break;
 
         case 'showDiv':
