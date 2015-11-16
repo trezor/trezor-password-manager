@@ -117,10 +117,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 trezorStatus = 'ready';
             }
             chrome.runtime.sendMessage('trezorReady');
+
             if (dropboxStatus === 'disconnected') {
                 if(!isDropboxLoggedIn()){
                     connectToDropbox();
                 }
+            } else {
+                chrome.runtime.sendMessage('dropboxReady');
             }
             break;
 
