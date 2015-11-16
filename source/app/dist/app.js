@@ -866,7 +866,7 @@ var React = require('react'),
         getInitialState: function () {
             return {
                 context: this.props.context || {},
-                image_src: 'dist/img/transparent.png',
+                image_src: 'dist/app-images/transparent.png',
                 mode: this.props.mode || 'list-mode',
                 key_value: this.props.key_value,
                 title: this.props.title,

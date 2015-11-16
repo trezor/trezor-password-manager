@@ -73,12 +73,14 @@ var dropboxClient = new Dropbox.Client({key: "k1qq2saf035rn7c"}),
         dropboxClient.authenticate((error, data) => {
             if (error) {
                 return handleError(error);
+            } else {
+                if (dropboxClient.isAuthenticated()) {
+                    dropboxStatus = 'ready';
+                    checkConnectionStatus();
+                    chrome.runtime.sendMessage('dropboxReady');
+                }
             }
-            if(dropboxClient.isAuthenticated()) {
-                dropboxStatus = 'ready';
-                checkConnectionStatus();
-                chrome.runtime.sendMessage('dropboxReady');
-            }
+
         });
     },
 
@@ -87,7 +89,7 @@ var dropboxClient = new Dropbox.Client({key: "k1qq2saf035rn7c"}),
     },
 
     checkConnectionStatus = () => {
-        if(dropboxClient.isAuthenticated() && isTrezorLoggedIn()){
+        if (dropboxClient.isAuthenticated() && isTrezorLoggedIn()) {
             updateBadgeStatus('ready');
             return true;
         } else {
@@ -119,7 +121,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             chrome.runtime.sendMessage('trezorReady');
 
             if (dropboxStatus === 'disconnected') {
-                if(!isDropboxLoggedIn()){
+                if (!isDropboxLoggedIn()) {
                     connectToDropbox();
                 }
             } else {
@@ -129,7 +131,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         case 'connectDropbox':
             if (dropboxStatus === 'disconnected') {
-                if(!isDropboxLoggedIn()){
+                if (!isDropboxLoggedIn()) {
                     connectToDropbox();
                 }
             }
