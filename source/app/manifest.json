@@ -27,7 +27,7 @@
   ],
 
   "background": {
-    "scripts": ["js/dropbox.min.js", "background.js"]
+    "scripts": ["js/dropbox.min.js", "js/trezor.js", "background.js"]
   },
   "web_accessible_resources": [
     "html/chrome_oauth_receiver.html"

@@ -28,7 +28,6 @@
     "uglifyify": "~3.0.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.0.0",
-    "whatwg-fetch": "^0.9.0",
-    "trezor.js": "git://github.com/trezor/trezor.js"
+    "whatwg-fetch": "^0.9.0"
   }
 }
