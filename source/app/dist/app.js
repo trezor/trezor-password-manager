@@ -672,7 +672,7 @@ var React = require('react'),
             }
         },
 
-        componentWillMount:function() {
+        componentDidMount:function() {
             window.eventEmitter.on('changeTag', this.changeTag);
             window.eventEmitter.on('contextInit', this.saveContext);
             window.eventEmitter.on('filter', this.setupFilter);
@@ -1316,7 +1316,10 @@ var React = require('react'),
                     React.createElement("div", {className: "logo"}, 
                         React.createElement("span", {className: "logo-expanded"}, 
                             React.createElement("img", {src: "dist/app-images/logo-mini.png", alt: "logo"}), 
-                            React.createElement("span", {className: "nav-label"}, React.createElement("b", null, "TREZOR"))
+                            React.createElement("span", {className: "nav-label"}, 
+                                React.createElement("b", null, "TREZOR"), 
+                                React.createElement("span", null, "Guard")
+                            )
                         )
                     ), 
 
@@ -1372,6 +1375,8 @@ var React = require('react'),
                 }
                 this.checkStates();
             }.bind(this));
+
+            chrome.runtime.sendMessage('initPlease');
         },
 
         connectDropbox:function() {
@@ -1389,7 +1394,6 @@ var React = require('react'),
         },
 
         render:function() {
-            chrome.runtime.sendMessage('initPlease');
             var dropboxStatus = this.state.dropboxReady ? 'Connected' : 'Disconnected',
                 trezorReady = this.state.trezorReady ? 'Connected' : 'Disconnected';
 

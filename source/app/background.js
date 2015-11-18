@@ -17,7 +17,6 @@ var dropboxClient = new Dropbox.Client({key: "k1qq2saf035rn7c"}),
         disconnected: {color: [237, 199, 85, 100], defaultText: '\u0020'},
         throttled: {color: [255, 255, 0, 100], defaultText: '!'}
     },
-
     handleError = (error) => {
         switch (error.status) {
             case Dropbox.ApiError.INVALID_TOKEN:
@@ -47,7 +46,6 @@ var dropboxClient = new Dropbox.Client({key: "k1qq2saf035rn7c"}),
                 console.warn('network error, check connection ', error.status);
         }
     },
-
     fillTestData = () => {
         let pubkey = localStorage.getItem('public_key');
         if (localStorage) {
@@ -58,17 +56,14 @@ var dropboxClient = new Dropbox.Client({key: "k1qq2saf035rn7c"}),
             alert('localstorage not supported');
         }
     },
-
     updateBadgeStatus = (status) => {
         chrome.browserAction.setBadgeText({text: badgeState[status].defaultText});
         chrome.browserAction.setBadgeBackgroundColor(
             {color: badgeState[status].color});
     },
-
     isDropboxLoggedIn = () => {
         return dropboxClient.isAuthenticated();
     },
-
     connectToDropbox = () => {
         dropboxClient.authenticate((error, data) => {
             if (error) {
@@ -83,11 +78,9 @@ var dropboxClient = new Dropbox.Client({key: "k1qq2saf035rn7c"}),
 
         });
     },
-
     isTrezorLoggedIn = () => {
         return true;
     },
-
     checkConnectionStatus = () => {
         if (dropboxClient.isAuthenticated() && isTrezorLoggedIn()) {
             updateBadgeStatus('ready');
@@ -96,7 +89,6 @@ var dropboxClient = new Dropbox.Client({key: "k1qq2saf035rn7c"}),
             updateBadgeStatus('waiting');
             return false
         }
-
     };
 
 dropboxClient.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: "html/chrome_oauth_receiver.html"}));

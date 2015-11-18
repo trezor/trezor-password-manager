@@ -24,7 +24,7 @@ var React = require('react'),
             }
         },
 
-        componentWillMount() {
+        componentDidMount() {
             window.eventEmitter.on('changeTag', this.changeTag);
             window.eventEmitter.on('contextInit', this.saveContext);
             window.eventEmitter.on('filter', this.setupFilter);

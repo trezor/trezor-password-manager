@@ -28,6 +28,8 @@ var React = require('react'),
                 }
                 this.checkStates();
             });
+
+            chrome.runtime.sendMessage('initPlease');
         },
 
         connectDropbox() {
@@ -45,7 +47,6 @@ var React = require('react'),
         },
 
         render() {
-            chrome.runtime.sendMessage('initPlease');
             var dropboxStatus = this.state.dropboxReady ? 'Connected' : 'Disconnected',
                 trezorReady = this.state.trezorReady ? 'Connected' : 'Disconnected';
 

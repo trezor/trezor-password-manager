@@ -3237,7 +3237,7 @@ aside.left-panel {
       width: 80px; } }
 
 .logo {
-  padding: 12px 25px;
+  padding: 20px 25px;
   line-height: 51px;
   height: 51px;
   text-transform: uppercase; }
@@ -3251,16 +3251,27 @@ aside.left-panel {
   .logo img {
     vertical-align: middle;
     text-align: left;
-    margin-right: 10px;
-    margin-top: -12px; }
+    display: inline-block;
+    float: left;
+    margin-right: 10px; }
     @media screen and (max-width: 768px) {
       .logo img {
         margin: 0 auto; } }
   .logo > span {
-    color: #fff;
-    font-weight: 700;
-    font-size: 1.9em;
-    letter-spacing: .05em; }
+    display: inline-block;
+    float: left;
+    color: #b4b6bd;
+    font-weight: 300;
+    font-size: 1em;
+    line-height: 1.1em;
+    letter-spacing: .85em; }
+    .logo > span b {
+      display: inline-block;
+      clear: right;
+      font-weight: 700;
+      color: #fff;
+      font-size: 1.7em;
+      letter-spacing: .05em; }
     @media screen and (max-width: 768px) {
       .logo > span {
         display: none; } }
