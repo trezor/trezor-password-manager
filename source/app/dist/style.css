@@ -3109,22 +3109,36 @@ button, .button {
   position: relative;
   width: 100%;
   text-align: center;
+  color: #fff;
+  font-weight: 100;
   z-index: 2; }
-  .home .panel {
-    width: 120px;
-    height: 140px;
-    position: absolute;
-    padding: 10px;
-    top: 200px; }
-    .home .panel.dropbox {
-      left: 25%; }
-    .home .panel.trezor {
-      right: 25%; }
-      .home .panel.trezor img {
-        width: 60px; }
-    .home .panel img {
-      width: 90px;
-      margin-bottom: 10px; }
+  .home .hidden_dialog {
+    display: none; }
+  .home .connect_trezor {
+    padding-top: 2em;
+    font-size: 3em; }
+    .home .connect_trezor img {
+      display: inline-block;
+      text-align: right;
+      vertical-align: top;
+      padding: 3px;
+      margin-right: 20px;
+      border: 2px solid #fff;
+      -webkit-border-radius: 50%;
+      -moz-border-radius: 50%;
+      -ms-border-radius: 50%;
+      border-radius: 50%;
+      -webkit-transition: rotate(360deg);
+      -moz-transition: rotate(360deg);
+      -o-transition: rotate(360deg);
+      transition: rotate(360deg); }
+    .home .connect_trezor div {
+      display: inline-block;
+      text-align: left;
+      line-height: 1.2em;
+      vertical-align: middle; }
+      .home .connect_trezor div strong {
+        font-weight: 700; }
 
 .modal-content {
   -webkit-border-radius: 2px;

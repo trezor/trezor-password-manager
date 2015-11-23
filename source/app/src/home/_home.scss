@@ -32,30 +32,38 @@
   position: relative;
   width: 100%;
   text-align: center;
+  color: $c_white;
+  font-weight: 100;
   z-index: 2;
 
-  .panel {
-    width: 120px;
-    height: 140px;
-    position: absolute;
-    padding: 10px;
-    top: 200px;
+  .hidden_dialog {
+    display: none;
+  }
 
-    &.dropbox {
-      left: 25%;
-    }
-
-    &.trezor {
-      right: 25%;
-
-      img {
-        width: 60px;
-      }
-    }
+  .connect_trezor {
+    padding-top: 2em;
+    font-size: 3em;
 
     img {
-      width: 90px;
-      margin-bottom: 10px;
+      display: inline-block;
+      text-align: right;
+      vertical-align: top;
+      padding: 3px;
+      margin-right: 20px;
+      border: 2px solid $c_white;
+      @include border-radius(50%);
+      @include transition(rotate(360deg));
+    }
+    div {
+      display: inline-block;
+      text-align: left;
+      line-height: 1.2em;
+      vertical-align: middle;
+
+      strong {
+        font-weight: 700;
+      }
     }
   }
+
 }

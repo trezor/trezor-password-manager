@@ -2,7 +2,6 @@
 
 var React = require('react'),
     Router = require('react-router'),
-    Trezor = require('trezor.js'),
     {Link} = Router,
     Home = React.createClass({
         mixins: [Router.Navigation],
@@ -10,34 +9,47 @@ var React = require('react'),
         getInitialState() {
             return {
                 trezorReady: false,
-                dropboxReady: false
+                dropboxReady: false,
+                deviceStatus: 'disconnected',
+                dialog: 'connect_trezor'
             }
         },
 
         componentDidMount() {
             chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-                if (request === 'trezorReady') {
+
+                if (request.type === 'trezorConnected') {
                     this.setState({
-                        trezorReady: true
+                       dialog: 'pin_dialog'
                     });
                 }
-                if (request === 'dropboxReady') {
+
+                if (request.type === 'trezorDisconnected') {
+                    console.log('trezorDisconnected');
+                    this.setState({
+                        trezorReady: false,
+                        dialog: 'connect_trezor'
+                    });
+                }
+
+                if (request.type === 'dropboxConnected') {
                     this.setState({
                         dropboxReady: true
                     });
                 }
+
                 this.checkStates();
             });
 
-            chrome.runtime.sendMessage('initPlease');
+            chrome.runtime.sendMessage({type: 'initPlease'});
         },
 
         connectDropbox() {
-            chrome.runtime.sendMessage('connectDropbox');
+            chrome.runtime.sendMessage({type: 'connectDropbox'});
         },
 
         connectTrezor() {
-            chrome.runtime.sendMessage('connectTrezor');
+            chrome.runtime.sendMessage({type: 'connectTrezor'});
         },
 
         checkStates() {
@@ -47,22 +59,41 @@ var React = require('react'),
         },
 
         render() {
-            var dropboxStatus = this.state.dropboxReady ? 'Connected' : 'Disconnected',
-                trezorReady = this.state.trezorReady ? 'Connected' : 'Disconnected';
+
+            //find proper dialog and show it
 
             return (
                 <div>
                     <div className='overlay-hill'></div>
                     <div className='overlay-color'></div>
                     <div className='home'>
-                        <div className='panel dropbox' onClick={this.connectDropbox}>
-                            <img src="dist/app-images/dropbox.svg"/>
-                            <span>{dropboxStatus}</span>
+
+                        <div className={this.state.dialog === 'connect_trezor' ? 'connect_trezor' : 'hidden_dialog'}>
+                            <img src='dist/app-images/trezor_connect.png'/>
+
+                            <div>Connect your<br/> <strong className='smallcaps'>TREZOR</strong> device.</div>
                         </div>
-                        <div className='panel trezor' onClick={this.connectTrezor}>
-                            <img src="dist/app-images/trezor.svg"/>
-                            <span>{trezorReady}</span>
+
+                        <div className={this.state.dialog === 'pin_dialog' ? 'pin_dialog' : 'hidden_dialog'}>
+                            <div className='pin_table'>
+                                <div>
+                                    <button type='button' key='7' onclick='pinAdd(this);'>&#8226;</button>
+                                    <button type='button' key='8' onclick='pinAdd(this);'>&#8226;</button>
+                                    <button type='button' key='9' onclick='pinAdd(this);'>&#8226;</button>
+                                </div>
+                                <div>
+                                    <button type='button' key='4' onclick='pinAdd(this);'>&#8226;</button>
+                                    <button type='button' key='5' onclick='pinAdd(this);'>&#8226;</button>
+                                    <button type='button' key='6' onclick='pinAdd(this);'>&#8226;</button>
+                                </div>
+                                <div>
+                                    <button type='button' key='1' onclick='pinAdd(this);'>&#8226;</button>
+                                    <button type='button' key='2' onclick='pinAdd(this);'>&#8226;</button>
+                                    <button type='button' key='3' onclick='pinAdd(this);'>&#8226;</button>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             )

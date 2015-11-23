@@ -22,12 +22,12 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["content_script.js"]
+      "js": ["js/content_script.js"]
     }
   ],
 
   "background": {
-    "scripts": ["js/dropbox.min.js", "js/trezor.js", "background.js"]
+    "scripts": ["js/dropbox.min.js", "js/trezor.js", "js/background.js"]
   },
   "web_accessible_resources": [
     "html/chrome_oauth_receiver.html"
