@@ -3139,6 +3139,87 @@ button, .button {
       vertical-align: middle; }
       .home .connect_trezor div strong {
         font-weight: 700; }
+  .home .pin_dialog {
+    margin-top: -30px; }
+    .home .pin_dialog .pin_table_header {
+      font-size: 2em;
+      color: #fff; }
+    .home .pin_dialog .pin_table_subheader {
+      margin-top: 10px;
+      font-size: 1.09em; }
+    .home .pin_dialog .pin_password {
+      padding: 30px; }
+      .home .pin_dialog .pin_password .password_text {
+        font-size: 4em;
+        line-height: 0;
+        vertical-align: middle; }
+      .home .pin_dialog .pin_password .blinking_cursor {
+        content: '';
+        display: inline-block;
+        width: 4px;
+        height: 36px;
+        background-color: #fff;
+        -webkit-animation: 1s blink step-end infinite;
+        -moz-animation: 1s blink step-end infinite;
+        -ms-animation: 1s blink step-end infinite;
+        -o-animation: 1s blink step-end infinite;
+        animation: 1s blink step-end infinite; }
+    .home .pin_dialog .pin_table button {
+      background-color: transparent;
+      border: 2px solid #fff;
+      width: 70px;
+      height: 70px;
+      display: inline-block;
+      font-size: 1.7em;
+      margin: 5px;
+      opacity: .6;
+      -webkit-border-radius: 7px;
+      -moz-border-radius: 7px;
+      -ms-border-radius: 7px;
+      border-radius: 7px; }
+      .home .pin_dialog .pin_table button:hover {
+        -webkit-box-shadow: 0px 0px 8px -1px rgba(0, 0, 0, 0.35);
+        -moz-box-shadow: 0px 0px 8px -1px rgba(0, 0, 0, 0.35);
+        -o-box-shadow: 0px 0px 8px -1px rgba(0, 0, 0, 0.35);
+        box-shadow: 0px 0px 8px -1px rgba(0, 0, 0, 0.35);
+        opacity: 1; }
+      .home .pin_dialog .pin_table button.active {
+        background-color: #fff;
+        opacity: 1; }
+    .home .pin_dialog .pin_footer #enter {
+      background-color: #fff;
+      border: 2px solid #fff;
+      color: #3498db;
+      font-weight: bold;
+      opacity: .9;
+      margin-right: 5px;
+      width: 152px;
+      height: 70px;
+      -webkit-border-radius: 7px;
+      -moz-border-radius: 7px;
+      -ms-border-radius: 7px;
+      border-radius: 7px; }
+    .home .pin_dialog .pin_footer #backspace {
+      background-color: transparent;
+      border: 2px solid #fff;
+      width: 70px;
+      height: 70px;
+      font-size: 1.5em;
+      opacity: .6;
+      margin: 5px;
+      -webkit-border-radius: 7px;
+      -moz-border-radius: 7px;
+      -ms-border-radius: 7px;
+      border-radius: 7px; }
+      .home .pin_dialog .pin_footer #backspace.active {
+        background-color: #fff;
+        opacity: 1; }
+
+@keyframes blink {
+  from, to {
+    background-color: transparent; }
+  50% {
+    background-color: #fff; } }
 
 .modal-content {
   -webkit-border-radius: 2px;

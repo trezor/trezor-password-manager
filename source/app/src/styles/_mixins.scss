@@ -36,6 +36,14 @@
   appearance: none;
 }
 
+@mixin animation($val) {
+  -webkit-animation: $val;
+  -moz-animation: $val;
+  -ms-animation: $val;
+  -o-animation: $val;
+  animation: $val;
+}
+
 @mixin transition($val) {
   -webkit-transition: $val;
   -moz-transition: $val;
