@@ -19,7 +19,7 @@ var React = require('react'),
         componentDidMount() {
             chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
-                if (request.type === 'trezorConnected') {
+                if (request.type === 'showPinDialog') {
                     this.setState({
                         dialog: 'pin_dialog'
                     });

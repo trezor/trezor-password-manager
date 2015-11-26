@@ -79,13 +79,15 @@ var dropboxClient = new Dropbox.Client({key: "k1qq2saf035rn7c"}),
         });
     },
     pinCallback = (type, callback) => {
+        chrome.runtime.sendMessage({type: 'showPinDialog'});
         trezorDevice.callback = callback;
+        console.log(trezorDevice);
     },
     buttonCallback = (code) => {
-      console.log(code);
+        console.log(code);
     },
     pinEnter = (pin) => {
-
+        trezorDevice.callback(null, pin);
     },
     isTrezorLoggedIn = () => {
         return false;
@@ -108,23 +110,28 @@ dropboxClient.onError.addListener(function (error) {
 });
 
 deviceList.on('connect', function (device) {
+
     trezorDevice = device;
     trezorStatus = 'connected';
+    console.log('Connected a device:', device);
+    console.log('Devices:', deviceList.asArray());
     chrome.runtime.sendMessage({type: 'trezorConnected'});
 
-    trezorDevice.on('button', buttonCallback);
-    trezorDevice.on('pin', pinCallback);
+    device.on('button', buttonCallback);
+    device.on('pin', pinCallback);
 
-    trezorDevice.on('disconnect', function () {
+    device.on('disconnect', function () {
         console.log('Disconnected an opened device');
         trezorDevice = null;
         trezorStatus = 'disconnected';
         chrome.runtime.sendMessage({type: 'trezorDisconnected'});
     });
 
-    if (trezorDevice.isBootloader()) {
+    if (device.isBootloader()) {
         throw new Error('Device is in bootloader mode, re-connected it');
     }
+
+    device.session.cipherKeyValue([47, 0, 0], "Encrypting!", "deadbeeffaceb00cc0ffee00fee1dead", true, true, true);
 
 });
 
@@ -135,6 +142,13 @@ chrome.runtime.onInstalled.addListener(checkConnectionStatus);
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
         case 'initPlease':
+            if (dropboxStatus === 'disconnected') {
+                if (!isDropboxLoggedIn()) {
+                    connectToDropbox();
+                }
+            } else {
+                chrome.runtime.sendMessage({type: 'dropboxConnected'});
+            }
 
             if (trezorStatus === 'disconnected') {
                 localStorage.setItem('public_key', '03e93d8b0582397fc4922eded9729b6939acdb047484c37df16ddfafa70');
@@ -144,13 +158,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 chrome.runtime.sendMessage({type: 'trezorConnected'});
             }
 
-            if (dropboxStatus === 'disconnected') {
-                if (!isDropboxLoggedIn()) {
-                    connectToDropbox();
-                }
-            } else {
-                chrome.runtime.sendMessage({type: 'dropboxConnected'});
-            }
             break;
 
         case 'connectDropbox':
