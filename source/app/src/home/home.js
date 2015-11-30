@@ -10,14 +10,32 @@ var React = require('react'),
             return {
                 trezorReady: false,
                 dropboxReady: false,
+                dropboxUsername: '',
                 deviceStatus: 'disconnected',
-                dialog: 'connect_trezor',
+                dialog: 'connect_dropbox',
                 pin: ''
             }
         },
 
         componentDidMount() {
             chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+
+                // DROPBOX PHASE
+
+                if (request.type === 'dropboxConnected') {
+                    this.setState({
+                        dropboxReady: true
+                    });
+                }
+
+                if(request.type === 'setDropboxUsername') {
+                    this.setState({
+                        dialog: 'accept_dropbox_user',
+                        dropboxUsername: request.content
+                    });
+                }
+
+                // TREZOR PHASE
 
                 if (request.type === 'showPinDialog') {
                     this.setState({
@@ -33,24 +51,24 @@ var React = require('react'),
                     });
                 }
 
-                if (request.type === 'dropboxConnected') {
-                    this.setState({
-                        dropboxReady: true
-                    });
-                }
-
-                this.checkStates();
             });
 
-            chrome.runtime.sendMessage({type: 'initPlease'});
+            // RUN INIT!
+
+            this.sendMessage('initPlease');
+        },
+
+        sendMessage(msgType, msgContent) {
+            console.log('[app] msg send:', msgType, msgContent);
+            chrome.runtime.sendMessage({type: msgType, content: msgContent});
         },
 
         connectDropbox() {
-            chrome.runtime.sendMessage({type: 'connectDropbox'});
+            this.sendMessage('connectDropbox');
         },
 
         connectTrezor() {
-            chrome.runtime.sendMessage({type: 'connectTrezor'});
+            this.sendMessage('connectTrezor');
         },
 
         checkStates() {
@@ -104,7 +122,7 @@ var React = require('react'),
         },
 
         submitPin() {
-            chrome.runtime.sendMessage({type: 'trezorPin', content: this.state.pin});
+            this.sendMessage('trezorPin', this.state.pin);
         },
 
         render() {
@@ -117,6 +135,21 @@ var React = require('react'),
                     <div className='overlay-hill'></div>
                     <div className='overlay-color'></div>
                     <div className='home'>
+
+                        <div className={this.state.dialog === 'connect_dropbox' ? 'connect_dropbox' : 'hidden_dialog'}>
+                            <img src='dist/app-images/dropbox.svg'/>
+
+                            <div>Connect with your<br/> <strong className='smallcaps'>Dropbox</strong> account.</div>
+                        </div>
+
+                        <div
+                            className={this.state.dialog === 'accept_dropbox_user' ? 'connect_dropbox' : 'hidden_dialog'}>
+                            <div>
+                                <button>{'Continue as ' + this.state.dropboxUsername}</button>
+                                <br />
+                                <button>Switch user</button>
+                            </div>
+                        </div>
 
                         <div className={this.state.dialog === 'connect_trezor' ? 'connect_trezor' : 'hidden_dialog'}>
                             <img src='dist/app-images/trezor_connect.png'/>

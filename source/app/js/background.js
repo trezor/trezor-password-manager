@@ -1,7 +1,8 @@
 'use strict';
-var dropboxClient = new Dropbox.Client({key: "k1qq2saf035rn7c"}),
-    deviceList = new trezor.DeviceList(),
-    trezorDevice = null,
+var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
+
+// GENERIC STUFF
+
     tempStorage = {
         'tags': {
             '0': {
@@ -11,15 +12,40 @@ var dropboxClient = new Dropbox.Client({key: "k1qq2saf035rn7c"}),
         },
         'entries': {}
     },
-    trezorStatus = 'disconnected',
-    dropboxStatus = 'disconnected',
     badgeState = {
         ready: {color: [59, 192, 195, 100], defaultText: '\u0020'},
         waiting: {color: [237, 199, 85, 100], defaultText: '\u0020'},
         disconnected: {color: [237, 199, 85, 100], defaultText: '\u0020'},
         throttled: {color: [255, 255, 0, 100], defaultText: '!'}
     },
-    handleError = (error) => {
+
+    fillTestData = () => {
+        let pubkey = localStorage.getItem('public_key');
+        if (localStorage) {
+            if (!localStorage.getItem(pubkey)) {
+                localStorage.setItem(pubkey, JSON.stringify(tempStorage));
+            }
+        }
+    },
+
+    updateBadgeStatus = (status) => {
+        chrome.browserAction.setBadgeText({text: badgeState[status].defaultText});
+        chrome.browserAction.setBadgeBackgroundColor(
+            {color: badgeState[status].color});
+    },
+
+    sendMessage = (msgType, msgContent) => {
+        console.log('[background] ' + PHASE + ': msg send : ', msgType, msgContent);
+        chrome.runtime.sendMessage({type: msgType, content: msgContent});
+    },
+
+// DROPBOX PHASE
+
+    dropboxClient = {},
+    dropboxUsername = '',
+    dropboxUsernameAccepted = false,
+
+    handleDropboxError = (error) => {
         switch (error.status) {
             case Dropbox.ApiError.INVALID_TOKEN:
                 console.warn('user token expired ', error.status);
@@ -48,144 +74,125 @@ var dropboxClient = new Dropbox.Client({key: "k1qq2saf035rn7c"}),
                 console.warn('network error, check connection ', error.status);
         }
     },
-    fillTestData = () => {
-        let pubkey = localStorage.getItem('public_key');
-        if (localStorage) {
-            if (!localStorage.getItem(pubkey)) {
-                localStorage.setItem(pubkey, JSON.stringify(tempStorage));
-            }
-        }
-    },
-    updateBadgeStatus = (status) => {
-        chrome.browserAction.setBadgeText({text: badgeState[status].defaultText});
-        chrome.browserAction.setBadgeBackgroundColor(
-            {color: badgeState[status].color});
-    },
-    isDropboxLoggedIn = () => {
-        return dropboxClient.isAuthenticated();
-    },
+
     connectToDropbox = () => {
+        dropboxClient = new Dropbox.Client({key: "k1qq2saf035rn7c"});
+        dropboxClient.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: "/html/chrome_oauth_receiver.html"}));
+        dropboxClient.onError.addListener(function (error) {
+            handleDropboxError(error);
+        });
         dropboxClient.authenticate((error, data) => {
             if (error) {
-                return handleError(error);
+                return handleDropboxError(error);
             } else {
                 if (dropboxClient.isAuthenticated()) {
-                    dropboxStatus = 'ready';
-                    checkConnectionStatus();
-                    chrome.runtime.sendMessage({type: 'dropboxConnected'});
+                    setDropboxUsername();
+                    sendMessage('dropboxConnected');
                 }
             }
 
         });
     },
+
+    setDropboxUsername = () => {
+        dropboxClient.getAccountInfo(function (error, accountInfo) {
+            if (error) {
+                handleDropboxError(error);
+                connectToDropbox();
+            }
+            sendMessage('setDropboxUsername', accountInfo.name);
+        });
+    },
+
+// TREZOR PHASE
+
+    deviceList = new trezor.DeviceList(),
+    trezorDevice = null,
+    trezorKey = '',
+
     pinCallback = (type, callback) => {
-        chrome.runtime.sendMessage({type: 'showPinDialog'});
-        trezorDevice.callback = callback;
-        console.log(trezorDevice);
+        sendMessage('showPinDialog');
+        trezorDevice.pinCallback = callback;
     },
-    buttonCallback = (code) => {
-        console.log(code);
-    },
+
     pinEnter = (pin) => {
-        trezorDevice.callback(null, pin);
+        trezorDevice.pinCallback(null, pin);
     },
-    isTrezorLoggedIn = () => {
-        return false;
+
+    passphraseCallback = (type, callback) => {
+        sendMessage('showPassphraseDialog');
+        trezorDevice.passphraseCallback = callback;
     },
-    checkConnectionStatus = () => {
-        if (dropboxClient.isAuthenticated() && isTrezorLoggedIn()) {
-            updateBadgeStatus('ready');
-            return true;
-        } else {
-            updateBadgeStatus('waiting');
-            return false
-        }
+
+    passphrasEnter = (phrase) => {
+        trezorDevice.passphraseCallback(null, phrase);
+    },
+
+    buttonCallback = (type, callback) => {
+        sendMessage('showButtonDialog');
+        trezorDevice.buttonCallback = callback;
+    },
+
+    buttonEnter = (code) => {
+        trezorDevice.buttonCallback(null, code);
     };
 
-dropboxClient.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: "../html/chrome_oauth_receiver.html"}));
-dropboxClient.onError.addListener(function (error) {
-    if (window.console) {  // Skip the "if" in node.js code.
-        handleError(error);
-    }
-});
-
-deviceList.on('connect', function (device) {
-
-    trezorDevice = device;
-    trezorStatus = 'connected';
-    console.log('Connected a device:', device);
-    console.log('Devices:', deviceList.asArray());
-    chrome.runtime.sendMessage({type: 'trezorConnected'});
-
-    device.on('button', buttonCallback);
-    device.on('pin', pinCallback);
-
-    device.on('disconnect', function () {
-        console.log('Disconnected an opened device');
-        trezorDevice = null;
-        trezorStatus = 'disconnected';
-        chrome.runtime.sendMessage({type: 'trezorDisconnected'});
-    });
-
-    if (device.isBootloader()) {
-        throw new Error('Device is in bootloader mode, re-connected it');
-    }
-
-    device.session.cipherKeyValue([47, 0, 0], "Encrypting!", "deadbeeffaceb00cc0ffee00fee1dead", true, true, true);
-
-});
-
-// first check after reopen of browser or installation
-chrome.runtime.onStartup.addListener(checkConnectionStatus);
-chrome.runtime.onInstalled.addListener(checkConnectionStatus);
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
         case 'initPlease':
-            if (dropboxStatus === 'disconnected') {
-                if (!isDropboxLoggedIn()) {
+            if (PHASE === 'DROPBOX') {
+                if (dropboxUsername === '' && !dropboxUsernameAccepted) {
                     connectToDropbox();
-                }
-            } else {
-                chrome.runtime.sendMessage({type: 'dropboxConnected'});
-            }
-
-            if (trezorStatus === 'disconnected') {
-                localStorage.setItem('public_key', '03e93d8b0582397fc4922eded9729b6939acdb047484c37df16ddfafa70');
-                fillTestData();
-                trezorStatus = 'ready';
-            } else if (trezorStatus === 'connected') {
-                chrome.runtime.sendMessage({type: 'trezorConnected'});
-            }
-
-            break;
-
-        case 'connectDropbox':
-            if (dropboxStatus === 'disconnected') {
-                if (!isDropboxLoggedIn()) {
-                    connectToDropbox();
+                } else {
+                    PHASE = 'TREZOR';
                 }
             }
-            chrome.runtime.sendMessage({type: 'dropboxConnected'});
-            checkConnectionStatus();
+
+            if (PHASE === 'TREZOR') {
+                if (trezorKey === '') {
+                    deviceList.on('connect', function (device) {
+                        trezorDevice = device;
+                        sendMessage('trezorConnected');
+                        device.on('pin', pinCallback);
+                        device.on('passphrase', passphraseCallback);
+                        device.on('button', buttonCallback);
+                        device.on('disconnect', function () {
+                            console.log('[background] Disconnected an opened device');
+                            trezorDevice = null;
+                            sendMessage('trezorDisconnected');
+                        });
+
+                        if (device.isBootloader()) {
+                            throw new Error('Device is in bootloader mode, re-connected it');
+                        }
+
+                        console.log('[background] Connected a device:', device);
+                        console.log('[background] Devices:', deviceList.asArray());
+                        device.session.cipherKeyValue([1047, 0, 0], "Activate TREZOR Guard?", "deadbeeffaceb00cc0ffee00fee1dead", true, true, true);
+                    });
+                } else {
+                    PHASE = 'READY'
+                }
+
+            }
+
+            if (PHASE === 'READY') {
+
+            }
+
             break;
 
         case 'trezorPin':
             pinEnter(request.content);
             break;
 
-        case 'showDiv':
-            chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, 'showDivContentScript');
-            });
+        case 'trezorPassphrase':
+            passphrasEnter(request.content);
             break;
 
-        case 'tellOpenPage':
-            chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, 'tellOpenPageContentScript', function (response) {
-                    sendResponse(response);
-                });
-            });
+        default:
+            console.log('[background] ' + PHASE + ': unknown msg received : ', request.type, request.content);
             break;
     }
 });

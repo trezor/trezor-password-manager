@@ -40,12 +40,14 @@
     display: none;
   }
 
-  .connect_trezor {
+  .connect_trezor, .connect_dropbox {
     padding-top: 2em;
     font-size: 3em;
 
     img {
       display: inline-block;
+      width: 110px;
+      height: 110px;
       text-align: right;
       vertical-align: top;
       padding: 3px;

@@ -3114,11 +3114,13 @@ button, .button {
   z-index: 2; }
   .home .hidden_dialog {
     display: none; }
-  .home .connect_trezor {
+  .home .connect_trezor, .home .connect_dropbox {
     padding-top: 2em;
     font-size: 3em; }
-    .home .connect_trezor img {
+    .home .connect_trezor img, .home .connect_dropbox img {
       display: inline-block;
+      width: 110px;
+      height: 110px;
       text-align: right;
       vertical-align: top;
       padding: 3px;
@@ -3132,12 +3134,12 @@ button, .button {
       -moz-transition: rotate(360deg);
       -o-transition: rotate(360deg);
       transition: rotate(360deg); }
-    .home .connect_trezor div {
+    .home .connect_trezor div, .home .connect_dropbox div {
       display: inline-block;
       text-align: left;
       line-height: 1.2em;
       vertical-align: middle; }
-      .home .connect_trezor div strong {
+      .home .connect_trezor div strong, .home .connect_dropbox div strong {
         font-weight: 700; }
   .home .pin_dialog {
     margin-top: -30px; }

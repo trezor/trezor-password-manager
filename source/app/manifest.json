@@ -11,34 +11,37 @@
     "128": "images/icon128.png"
   },
   "browser_action": {
-    "default_icon": {  
+    "default_icon": {
       "19": "images/icon19.png",
       "38": "images/icon38.png"
     },
     "default_title": "TREZOR Password",
     "default_popup": "index.html"
   },
-
-  "content_scripts": [
-    {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": ["js/content_script.js"]
-    }
-  ],
-
   "background": {
-    "scripts": ["js/dropbox.min.js", "js/trezor.js", "js/background.js"]
+    "persistent": true,
+    "scripts": [
+      "js/dropbox.min.js",
+      "js/trezor.js",
+      "js/background.js"
+    ]
   },
   "web_accessible_resources": [
     "html/chrome_oauth_receiver.html"
   ],
+  "externally_connectable": {
+    "ids": [
+      "jcjjhjgimijdkoamemaghajlhegmoclj"
+    ]
+  },
   "permissions": [
     "<all_urls>",
     "chrome://favicon/",
     "storage",
+    "background",
+    "nativeMessaging",
     "unlimitedStorage",
     "https://*.dropbox.com/*",
     "tabs"
   ]
-
 }
