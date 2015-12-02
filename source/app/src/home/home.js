@@ -20,41 +20,55 @@ var React = require('react'),
         componentDidMount() {
             chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
-                // DROPBOX PHASE
+                switch (request.type) {
 
-                if (request.type === 'dropboxConnected') {
-                    this.setState({
-                        dropboxReady: true
-                    });
+                    // DROPBOX PHASE
+
+                    case 'dropboxConnected':
+                        this.setState({
+                            dropboxReady: true
+                        });
+                        break;
+
+                    case 'dropboxDisconnected':
+                        this.setState({
+                            dialog: 'connect_dropbox',
+                            dropboxUsername: '',
+                            dropboxReady: false
+                        });
+                        break;
+
+                    case 'setDropboxUsername':
+                        this.setState({
+                            dialog: 'accept_dropbox_user',
+                            dropboxUsername: request.content
+                        });
+                        break;
+
+                    // TREZOR PHASE
+
+                    case 'showPinDialog':
+                        this.setState({
+                            dialog: 'pin_dialog'
+                        });
+                        break;
+
+                    case 'showButtonDialog':
+                        this.setState({
+                            dialog: 'button_dialog'
+                        });
+                        break;
+
+                    case 'trezorDisconnected':
+                        this.setState({
+                            trezorReady: false,
+                            dialog: 'connect_trezor'
+                        });
+                        break;
                 }
-
-                if(request.type === 'setDropboxUsername') {
-                    this.setState({
-                        dialog: 'accept_dropbox_user',
-                        dropboxUsername: request.content
-                    });
-                }
-
-                // TREZOR PHASE
-
-                if (request.type === 'showPinDialog') {
-                    this.setState({
-                        dialog: 'pin_dialog'
-                    });
-                }
-
-                if (request.type === 'trezorDisconnected') {
-                    console.log('trezorDisconnected');
-                    this.setState({
-                        trezorReady: false,
-                        dialog: 'connect_trezor'
-                    });
-                }
-
             });
 
             // RUN INIT!
-
             this.sendMessage('initPlease');
         },
 
@@ -67,8 +81,12 @@ var React = require('react'),
             this.sendMessage('connectDropbox');
         },
 
-        connectTrezor() {
-            this.sendMessage('connectTrezor');
+        disconnectDropbox() {
+            this.sendMessage('disconnectDropbox');
+        },
+
+        initTrezorPhase() {
+            this.sendMessage('initTrezorPhase');
         },
 
         checkStates() {
@@ -126,7 +144,7 @@ var React = require('react'),
         },
 
         render() {
-
+            console.log('STATE: ', this.state.dialog);
             //add listener for input keys:
             if (this.state.dialog === 'pin_dialog') window.addEventListener('keydown', this.pinKeydownHandler);
 
@@ -137,24 +155,31 @@ var React = require('react'),
                     <div className='home'>
 
                         <div className={this.state.dialog === 'connect_dropbox' ? 'connect_dropbox' : 'hidden_dialog'}>
-                            <img src='dist/app-images/dropbox.svg'/>
+                            <img src='dist/app-images/trezor.svg' className='no-circle'/>
 
-                            <div>Connect with your<br/> <strong className='smallcaps'>Dropbox</strong> account.</div>
+                            <div className='dialog-content'>
+                                <h1>Welcome to <br/> <b>TREZOR</b> GUARD</h1>
+                                <button className='dropbox-login' onClick={this.connectDropbox}>Sign in with Dropbox
+                                </button>
+                            </div>
                         </div>
 
                         <div
-                            className={this.state.dialog === 'accept_dropbox_user' ? 'connect_dropbox' : 'hidden_dialog'}>
+                            className={this.state.dialog === 'accept_dropbox_user' ? 'accept_dropbox_user' : 'hidden_dialog'}>
+                            <img src='dist/app-images/dropbox.svg'/>
+
                             <div>
-                                <button>{'Continue as ' + this.state.dropboxUsername}</button>
+                                <button onClick={this.initTrezorPhase} className='accept-btn'>Continue as <b> {this.state.dropboxUsername}</b>
+                                </button>
                                 <br />
-                                <button>Switch user</button>
+                                <button className='no-style' onClick={this.disconnectDropbox}>Switch user</button>
                             </div>
                         </div>
 
                         <div className={this.state.dialog === 'connect_trezor' ? 'connect_trezor' : 'hidden_dialog'}>
                             <img src='dist/app-images/trezor_connect.png'/>
 
-                            <div>Connect your<br/> <strong className='smallcaps'>TREZOR</strong> device.</div>
+                            <h1>Connect your <br/> <b className='smallcaps'>TREZOR</b> device.</h1>
                         </div>
 
                         <div className={this.state.dialog === 'pin_dialog' ? 'pin_dialog' : 'hidden_dialog'}>
@@ -189,6 +214,11 @@ var React = require('react'),
                                 <button type='button' id='enter' onClick={this.submitPin}>ENTER</button>
                                 <button type='button' id='backspace' onClick={this.pinBackspace}>&#9003;</button>
 
+                            </div>
+
+                            <div className={this.state.dialog === 'button_dialog' ? 'button_dialog' : 'hidden_dialog'}>
+                                <img src='dist/app-images/trezor_button.png'/>
+                                <h1>Follow instructions on your <br/> <b className='smallcaps'>TREZOR</b> device.</h1>
                             </div>
                         </div>
 

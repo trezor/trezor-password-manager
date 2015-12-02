@@ -40,30 +40,98 @@
     display: none;
   }
 
-  .connect_trezor, .connect_dropbox {
-    padding-top: 2em;
-    font-size: 3em;
+  .accept_dropbox_user, .connect_trezor, .connect_dropbox, .button_dialog {
+
+    h1 {
+      color: $c_white;
+      font-size: 2.6em;
+      margin-bottom: 25px;
+
+      b {
+        font-weight: 700;
+        word-spacing: 1px;
+      }
+    }
+
+    span {
+      max-width: 290px;
+      color: rgba($c_white, .9);
+      font-size: 1.2em;
+    }
+
+
 
     img {
       display: inline-block;
       width: 110px;
       height: 110px;
-      text-align: right;
+      text-align: center;
       vertical-align: top;
       padding: 3px;
-      margin-right: 20px;
+      margin-bottom: 30px;
       border: 2px solid $c_white;
       @include border-radius(50%);
       @include transition(rotate(360deg));
-    }
-    div {
-      display: inline-block;
-      text-align: left;
-      line-height: 1.2em;
-      vertical-align: middle;
 
-      strong {
-        font-weight: 700;
+      &.no-circle {
+        border: none;
+      }
+    }
+
+    button {
+      background-color: $c_white;
+      border: 2px solid $c_white;
+      word-spacing: 2px;
+      letter-spacing: -.1px;
+      color: $c_blue;
+      width: auto;
+      height: auto;
+      padding: 12px 32px;
+      display: inline-block;
+      line-height: 1.3em;
+      font-size: 1.2em;
+      font-weight: 400;
+      margin: 15px;
+      white-space: nowrap;
+      @include border-radius(7px);
+
+      &:hover {
+        @include box-shadow(0px 0px 8px -1px rgba(0, 0, 0, 0.35));
+      }
+
+      span {
+        color: $c_blue;
+        word-spacing: 2px;
+        letter-spacing: -.1px;
+      }
+
+      b {
+        font-weight: 600;
+        word-spacing: 1px;
+      }
+
+      &.no-style {
+        background-color: transparent;
+        border: none;
+        color: $c_white;
+
+        &:hover {
+          @include box-shadow(none);
+          text-decoration: underline;
+        }
+      }
+
+      &.dropbox-login {
+        padding-left: 60px;
+        background: url(app-images/dropbox-blue.svg) no-repeat top left;
+        background-color: $c_white;
+        background-position: 20px 8px;
+        background-size: 30px 30px;
+      }
+
+      &.accept-btn {
+        font-weight: 400;
+        font-size: 1em;
       }
     }
   }
