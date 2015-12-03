@@ -1487,6 +1487,9 @@ var React = require('react'),
         },
 
         submitPin:function() {
+            this.setState({
+                dialog: 'loading_dialog'
+            });
             this.sendMessage('trezorPin', this.state.pin);
         },
 
@@ -1507,7 +1510,9 @@ var React = require('react'),
                             React.createElement("div", {className: "dialog-content"}, 
                                 React.createElement("h1", null, "Welcome to ", React.createElement("br", null), " ", React.createElement("b", null, "TREZOR"), " GUARD"), 
                                 React.createElement("button", {className: "dropbox-login", onClick: this.connectDropbox}, "Sign in with Dropbox"
-                                )
+                                ), 
+                                React.createElement("br", null), 
+                                React.createElement("button", {className: "no-style"}, React.createElement("a", {href: "https://www.dropbox.com", target: "_blank"}, "I don't have Dropbox account"))
                             )
                         ), 
 
@@ -1519,7 +1524,7 @@ var React = require('react'),
                                 React.createElement("button", {onClick: this.initTrezorPhase, className: "accept-btn"}, "Continue as ", React.createElement("b", null, " ", this.state.dropboxUsername)
                                 ), 
                                 React.createElement("br", null), 
-                                React.createElement("button", {className: "no-style", onClick: this.disconnectDropbox}, "Switch user")
+                                React.createElement("button", {className: "no-style", onClick: this.disconnectDropbox}, "Sign with different user")
                             )
                         ), 
 
@@ -1560,14 +1565,20 @@ var React = require('react'),
                             React.createElement("div", {className: "pin_footer"}, 
                                 React.createElement("button", {type: "button", id: "enter", onClick: this.submitPin}, "ENTER"), 
                                 React.createElement("button", {type: "button", id: "backspace", onClick: this.pinBackspace}, "⌫")
-
-                            ), 
-
-                            React.createElement("div", {className: this.state.dialog === 'button_dialog' ? 'button_dialog' : 'hidden_dialog'}, 
-                                React.createElement("img", {src: "dist/app-images/trezor_button.png"}), 
-                                React.createElement("h1", null, "Follow instructions on your ", React.createElement("br", null), " ", React.createElement("b", {className: "smallcaps"}, "TREZOR"), " device.")
                             )
+                        ), 
+
+                        React.createElement("div", {className: this.state.dialog === 'loading_dialog' ? 'loading_dialog' : 'hidden_dialog'}, 
+                            React.createElement("img", {src: "dist/app-images/trezor.svg", className: "no-circle"}), 
+                            React.createElement("h1", null, "Loading ...")
+                        ), 
+
+                        React.createElement("div", {className: this.state.dialog === 'button_dialog' ? 'button_dialog' : 'hidden_dialog'}, 
+                            React.createElement("img", {src: "dist/app-images/trezor_button.png"}), 
+                            React.createElement("h1", null, "Follow instructions on your ", React.createElement("br", null), " ", React.createElement("b", {className: "smallcaps"}, "TREZOR"), " device.")
                         )
+
+
 
                     )
                 )

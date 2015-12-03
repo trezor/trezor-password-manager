@@ -140,6 +140,9 @@ var React = require('react'),
         },
 
         submitPin() {
+            this.setState({
+                dialog: 'loading_dialog'
+            });
             this.sendMessage('trezorPin', this.state.pin);
         },
 
@@ -155,12 +158,14 @@ var React = require('react'),
                     <div className='home'>
 
                         <div className={this.state.dialog === 'connect_dropbox' ? 'connect_dropbox' : 'hidden_dialog'}>
-                            <img src='dist/app-images/trezor.svg' className='no-circle'/>
+                            <img src='dist/app-images/trezor.svg' className='no-circle' />
 
                             <div className='dialog-content'>
                                 <h1>Welcome to <br/> <b>TREZOR</b> GUARD</h1>
                                 <button className='dropbox-login' onClick={this.connectDropbox}>Sign in with Dropbox
                                 </button>
+                                <br />
+                                <button className='no-style' ><a href='https://www.dropbox.com' target='_blank'>I don't have Dropbox account</a></button>
                             </div>
                         </div>
 
@@ -172,7 +177,7 @@ var React = require('react'),
                                 <button onClick={this.initTrezorPhase} className='accept-btn'>Continue as <b> {this.state.dropboxUsername}</b>
                                 </button>
                                 <br />
-                                <button className='no-style' onClick={this.disconnectDropbox}>Switch user</button>
+                                <button className='no-style' onClick={this.disconnectDropbox}>Sign with different user</button>
                             </div>
                         </div>
 
@@ -213,14 +218,20 @@ var React = require('react'),
                             <div className='pin_footer'>
                                 <button type='button' id='enter' onClick={this.submitPin}>ENTER</button>
                                 <button type='button' id='backspace' onClick={this.pinBackspace}>&#9003;</button>
-
-                            </div>
-
-                            <div className={this.state.dialog === 'button_dialog' ? 'button_dialog' : 'hidden_dialog'}>
-                                <img src='dist/app-images/trezor_button.png'/>
-                                <h1>Follow instructions on your <br/> <b className='smallcaps'>TREZOR</b> device.</h1>
                             </div>
                         </div>
+
+                        <div className={this.state.dialog === 'loading_dialog' ? 'loading_dialog' : 'hidden_dialog'}>
+                            <img src='dist/app-images/trezor.svg' className='no-circle' />
+                            <h1>Loading ...</h1>
+                        </div>
+
+                        <div className={this.state.dialog === 'button_dialog' ? 'button_dialog' : 'hidden_dialog'}>
+                            <img src='dist/app-images/trezor_button.png'/>
+                            <h1>Follow instructions on your <br/> <b className='smallcaps'>TREZOR</b> device.</h1>
+                        </div>
+
+
 
                     </div>
                 </div>

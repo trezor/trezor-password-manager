@@ -40,7 +40,11 @@
     display: none;
   }
 
-  .accept_dropbox_user, .connect_trezor, .connect_dropbox, .button_dialog {
+  .accept_dropbox_user,
+  .connect_trezor,
+  .connect_dropbox,
+  .loading_dialog,
+  .button_dialog {
 
     h1 {
       color: $c_white;
@@ -58,8 +62,6 @@
       color: rgba($c_white, .9);
       font-size: 1.2em;
     }
-
-
 
     img {
       display: inline-block;
@@ -103,6 +105,15 @@
         color: $c_blue;
         word-spacing: 2px;
         letter-spacing: -.1px;
+      }
+
+      a {
+        color: $c_white;
+
+        &:hover {
+          color: $c_white;
+          text-decoration: underline;
+        }
       }
 
       b {
@@ -224,11 +235,26 @@
   }
 }
 
+.loading_dialog {
+  img {
+    @include animation(3s rotateplane infinite ease-in-out);
+  }
+}
+
 @keyframes blink {
   from, to {
     background-color: transparent;
   }
   50% {
     background-color: $c_white;
+  }
+}
+
+@keyframes rotateplane {
+  0% {
+    -webkit-transform: perspective(120px) rotateY(0deg)
+  }
+  50% {
+    -webkit-transform: perspective(120px) rotateY(360deg)
   }
 }

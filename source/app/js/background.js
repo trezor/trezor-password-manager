@@ -1,9 +1,10 @@
 'use strict';
+
 var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
 
 // GENERAL STUFF
 
-    tempStorage = {
+    basicObjectBlob = {
         'tags': {
             '0': {
                 'title': 'All',
@@ -17,7 +18,7 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
         let pubkey = localStorage.getItem('public_key');
         if (localStorage) {
             if (!localStorage.getItem(pubkey)) {
-                localStorage.setItem(pubkey, JSON.stringify(tempStorage));
+                localStorage.setItem(pubkey, JSON.stringify(basicObjectBlob));
             }
         }
     },
@@ -65,6 +66,7 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
     dropboxClient = {},
     dropboxUsername = '',
     dropboxUsernameAccepted = false,
+    dropboxUid = {},
 
     handleDropboxError = (error) => {
         switch (error.status) {
@@ -103,8 +105,8 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
     },
 
     connectToDropbox = () => {
-        dropboxClient = new Dropbox.Client({key: "k1qq2saf035rn7c"});
-        dropboxClient.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: "/html/chrome_oauth_receiver.html"}));
+        dropboxClient = new Dropbox.Client({key: 'k1qq2saf035rn7c'});
+        dropboxClient.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: '/html/chrome_oauth_receiver.html'}));
         dropboxClient.onError.addListener(function (error) {
             handleDropboxError(error);
         });
@@ -128,7 +130,7 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
                 connectToDropbox();
             }
             dropboxUsername = accountInfo.name;
-            /// console.log(accountInfo);
+            dropboxUid = accountInfo.uid;
             trezorDevice = null;
             deviceList = null;
             sendMessage('setDropboxUsername', accountInfo.name);
@@ -148,11 +150,23 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
         });
     },
 
+    loadFile = () => {
+
+    },
+
+    saveFile = () => {
+
+    },
+
 // TREZOR PHASE
 
     deviceList = null,
     trezorDevice = null,
     trezorKey = '',
+    HD_HARDENED = 0x80000000,
+    ENC_KEY = 'Activate TREZOR Guard?',
+    ENC_VALUE = 'deadbeeffaceb00cc0ffee00fee1dead',
+
 
     connectTrezor = () => {
         deviceList = new trezor.DeviceList();
@@ -169,7 +183,20 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
         if (trezorDevice.isBootloader()) {
             throw new Error('Device is in bootloader mode, re-connected it');
         }
-        trezorDevice.session.cipherKeyValue([1047, 0, 0], "Activate TREZOR Guard?", "deadbeeffaceb00cc0ffee00fee1dead", true, true, true);
+
+        // FIX ME down here! (hint: make nice hardended path:)
+        trezorDevice.session.cipherKeyValue([(1047 | HD_HARDENED) >>> 0, 0, 0], ENC_KEY, ENC_VALUE, true, true, true).then( (result) => {
+            trezorKey = result.message.value;
+        });
+
+    },
+
+    encryptFile = () => {
+
+    },
+
+    decryptFile = () => {
+
     },
 
     pinCallback = (type, callback) => {
