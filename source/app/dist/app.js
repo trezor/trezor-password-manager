@@ -1531,7 +1531,9 @@ var React = require('react'),
                         React.createElement("div", {className: this.state.dialog === 'connect_trezor' ? 'connect_trezor' : 'hidden_dialog'}, 
                             React.createElement("img", {src: "dist/app-images/trezor_connect.png"}), 
 
-                            React.createElement("h1", null, "Connect your ", React.createElement("br", null), " ", React.createElement("b", {className: "smallcaps"}, "TREZOR"), " device.")
+                            React.createElement("h1", null, "Connect your ", React.createElement("br", null), " ", React.createElement("b", {className: "smallcaps"}, "TREZOR"), " device."), 
+                            React.createElement("br", null), 
+                            React.createElement("button", {className: "no-style"}, React.createElement("a", {href: "https://www.buytrezor.com", target: "_blank"}, "I don't have Trezor device"))
                         ), 
 
                         React.createElement("div", {className: this.state.dialog === 'pin_dialog' ? 'pin_dialog' : 'hidden_dialog'}, 

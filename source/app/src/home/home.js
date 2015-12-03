@@ -185,6 +185,8 @@ var React = require('react'),
                             <img src='dist/app-images/trezor_connect.png'/>
 
                             <h1>Connect your <br/> <b className='smallcaps'>TREZOR</b> device.</h1>
+                            <br />
+                            <button className='no-style' ><a href='https://www.buytrezor.com' target='_blank'>I don't have Trezor device</a></button>
                         </div>
 
                         <div className={this.state.dialog === 'pin_dialog' ? 'pin_dialog' : 'hidden_dialog'}>
