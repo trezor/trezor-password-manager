@@ -36,7 +36,7 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
 
     init = function()  {
         if (PHASE === 'READY') {
-
+            loadFile();
         }
 
         if (PHASE === 'DROPBOX') {
@@ -53,6 +53,25 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
             }
         }
     },
+
+    toArrayBuffer = function(buffer)  {
+        var ab = new ArrayBuffer(buffer.length);
+        var view = new Uint8Array(ab);
+        for (var i = 0; i < buffer.length; ++i) {
+            view[i] = buffer[i];
+        }
+        return ab;
+    },
+
+    toBuffer = function(ab)  {
+        var buffer = new Buffer(ab.byteLength);
+        var view = new Uint8Array(ab);
+        for (var i = 0; i < buffer.length; ++i) {
+            buffer[i] = view[i];
+        }
+        return buffer;
+    },
+
 
 // DROPBOX PHASE
 
@@ -71,7 +90,7 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
 
             case Dropbox.ApiError.NOT_FOUND:
                 console.warn('File or dir not found ', error.status);
-                saveFile(JSON.stringify(basicObjectBlob));
+                encryptData(basicObjectBlob);
                 sendMessage('errorMsg', 'File or dir not found.');
                 break;
 
@@ -114,7 +133,6 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
                     sendMessage('dropboxConnected');
                 }
             }
-
         });
     },
 
@@ -149,14 +167,20 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
         try {
             // creating filename
             if (!FILENAME) {
-                FILENAME = dropboxUid + fullKey.toString('utf8').substring(0, fullKey.length / 2) + '.txt';
+                let key = fullKey.toString('utf8').substring(0, fullKey.length / 2);
+                FILENAME = crypto.createHmac('sha1', key).update(dropboxUid).digest('hex') + '.txt';
             }
 
-            dropboxClient.readFile(FILENAME, function (error, data) {
+            dropboxClient.readFile(FILENAME, {arrayBuffer: true}, function(error, data)  {
                 if (error) {
                     return handleDropboxError(error);
+                } else {
+                    var res = toBuffer(data);
+                    if (!(Buffer.isBuffer(res))) {
+                        reject("Not a buffer");
+                    }
+                    decryptData(res);
                 }
-                console.log(data);
             });
         } catch (err) {
 
@@ -164,11 +188,11 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
     },
 
     saveFile = function(data)  {
-        dropboxClient.writeFile(FILENAME, encryptData(data), function (error, stat) {
+        dropboxClient.writeFile(FILENAME, toArrayBuffer(data), function (error, stat) {
             if (error) {
                 return handleDropboxError(error);
             } else {
-
+                loadFile();
             }
         });
     },
@@ -183,6 +207,7 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
     ENC_KEY = 'Activate TREZOR Guard?',
     ENC_VALUE = 'deadbeeffaceb00cc0ffee00fee1deadbaddeadbeeffaceb00cc0ffee00fee1e',
     CIPHER_IVSIZE = 96 / 8,
+    AUTH_SIZE = 128 / 8,
     CIPHER_TYPE = 'aes-256-gcm',
 
     connectTrezor = function()  {
@@ -216,24 +241,29 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
 
     encryptData = function(data)  {
 
-        return randomInputVector().then( function(iv)  {
+        randomInputVector().then(function(iv)  {
             var stringified = JSON.stringify(data),
                 buffer = new Buffer(stringified, 'utf8'),
                 cipher = crypto.createCipheriv(CIPHER_TYPE, encryptionKey, iv),
-                startCText = cipher.update(buffer, 'utf8'),
-                endCText = cipher.final(),
-                authTag = cipher.getAuthTag(),
-                res = Buffer.concat([iv, authTag, startCText, endCText]);
-            console.log('iv lng ', iv.length);
-            console.log('CIPHER_IVSIZE lng ', CIPHER_IVSIZE);
-            console.log('authtag lng ', authTag.length);
-            console.log('res ', res);
-            return res.toArrayBuffer();
+                startCText = new Buffer(cipher.update(buffer), 'utf8'),
+                endCText = new Buffer(cipher.final(), 'utf8'),
+                auth_tag = new Buffer(cipher.getAuthTag(), 'utf8');
+            saveFile(Buffer.concat([iv, auth_tag, startCText, endCText]));
         });
     },
 
     decryptData = function(data)  {
-
+        var iv = data.slice(0, CIPHER_IVSIZE),
+            auth_tag = data.slice(CIPHER_IVSIZE, CIPHER_IVSIZE + AUTH_SIZE),
+            cText = data.slice(CIPHER_IVSIZE + AUTH_SIZE),
+            decipher = crypto.createDecipheriv(CIPHER_TYPE, encryptionKey, iv),
+            start = decipher.update(cText);
+        decipher.setAuthTag(auth_tag);
+        var end = decipher.final(),
+            res = Buffer.concat([start, end]),
+            stringifiedContent = res.toString('utf8');
+        sendMessage('decryptedContent', stringifiedContent);
+        PHASE = 'READY';
     },
 
     pinCallback = function(type, callback)  {
@@ -316,6 +346,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)  {
 
         case 'disconnectDropbox':
             signOutDropbox();
+            break;
+
+        case 'loadContent':
+            loadFile();
+            break;
+
+        case 'saveContent':
+            encryptData(request.content);
             break;
     }
 });

@@ -12,13 +12,11 @@ var Service = {
     },
 
     saveContext(data) {
-        var pubkey = localStorage.getItem('public_key');
-        return localStorage.setItem(pubkey, JSON.stringify(data));
+        chrome.runtime.sendMessage({type: 'saveContent', content: data});
     },
 
     getContext() {
-        var pubkey = localStorage.getItem('public_key');
-        return JSON.parse(localStorage.getItem(pubkey));
+        return JSON.parse(window.decryptedContent);
     }
 };
 

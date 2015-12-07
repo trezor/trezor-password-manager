@@ -65,6 +65,11 @@ var React = require('react'),
                             dialog: 'connect_trezor'
                         });
                         break;
+
+                    case 'decryptedContent':
+                        window.decryptedContent = request.content;
+                        this.transitionTo('dashboard');
+                        break;
                 }
             });
 

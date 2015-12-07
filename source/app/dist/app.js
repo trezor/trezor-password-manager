@@ -40,13 +40,11 @@ var Service = {
     },
 
     saveContext:function(data) {
-        var pubkey = localStorage.getItem('public_key');
-        return localStorage.setItem(pubkey, JSON.stringify(data));
+        chrome.runtime.sendMessage({type: 'saveContent', content: data});
     },
 
     getContext:function() {
-        var pubkey = localStorage.getItem('public_key');
-        return JSON.parse(localStorage.getItem(pubkey));
+        return JSON.parse(window.decryptedContent);
     }
 };
 
@@ -524,15 +522,27 @@ var React = require('react'),
         componentWillMount:function() {
             eventEmitter.on('update', this.contextReady);
             window.eventEmitter = eventEmitter;
-            if (!this.isLogged(localStorage.getItem('public_key'))) {
+            if (!this.hasContent()) {
                 this.transitionTo('home');
             } else {
-                var responseData = Service.getContextTest();
+                var responseData = Service.getContext();
                 this.contextStore = new Store(responseData);
             }
         },
 
         componentDidMount:function() {
+            chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)  {
+                switch (request.type) {
+                    case 'trezorDisconnected':
+                        window.decryptedContent = null;
+                        this.setState({
+                            ready: false
+                        });
+                        this.transitionTo('home');
+                        break;
+                }
+            }.bind(this));
+
             eventEmitter.emit('contextInit', this.contextStore);
         },
 
@@ -546,8 +556,8 @@ var React = require('react'),
             });
         },
 
-        isLogged:function(pubkey) {
-            return pubkey != null;
+        hasContent:function() {
+            return window.decryptedContent != null;
         },
 
         render:function(){
@@ -1411,6 +1421,11 @@ var React = require('react'),
                             trezorReady: false,
                             dialog: 'connect_trezor'
                         });
+                        break;
+
+                    case 'decryptedContent':
+                        window.decryptedContent = request.content;
+                        this.transitionTo('dashboard');
                         break;
                 }
             }.bind(this));

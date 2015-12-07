@@ -24,15 +24,27 @@ var React = require('react'),
         componentWillMount() {
             eventEmitter.on('update', this.contextReady);
             window.eventEmitter = eventEmitter;
-            if (!this.isLogged(localStorage.getItem('public_key'))) {
+            if (!this.hasContent()) {
                 this.transitionTo('home');
             } else {
-                var responseData = Service.getContextTest();
+                var responseData = Service.getContext();
                 this.contextStore = new Store(responseData);
             }
         },
 
         componentDidMount() {
+            chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+                switch (request.type) {
+                    case 'trezorDisconnected':
+                        window.decryptedContent = null;
+                        this.setState({
+                            ready: false
+                        });
+                        this.transitionTo('home');
+                        break;
+                }
+            });
+
             eventEmitter.emit('contextInit', this.contextStore);
         },
 
@@ -46,8 +58,8 @@ var React = require('react'),
             });
         },
 
-        isLogged(pubkey) {
-            return pubkey != null;
+        hasContent() {
+            return window.decryptedContent != null;
         },
 
         render(){
