@@ -79,6 +79,7 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
     dropboxUsername = '',
     dropboxUsernameAccepted = false,
     dropboxUid = {},
+    FILENAME_MESS = 'deadbeeffaceb00cc0ffee00fee1deadbaddeadbeeffaceb00cc0ffee00fee1e',
     FILENAME = false,
 
     handleDropboxError = function(error)  {
@@ -168,7 +169,7 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
             // creating filename
             if (!FILENAME) {
                 let key = fullKey.toString('utf8').substring(0, fullKey.length / 2);
-                FILENAME = crypto.createHmac('sha1', key).update(dropboxUid).digest('hex') + '.txt';
+                FILENAME = crypto.createHmac('sha1', key).update(dropboxUid + FILENAME_MESS).digest('hex') + '.txt';
             }
 
             dropboxClient.readFile(FILENAME, {arrayBuffer: true}, function(error, data)  {
@@ -205,7 +206,7 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
     encryptionKey = '',
     HD_HARDENED = 0x80000000,
     ENC_KEY = 'Activate TREZOR Guard?',
-    ENC_VALUE = 'deadbeeffaceb00cc0ffee00fee1deadbaddeadbeeffaceb00cc0ffee00fee1e',
+    ENC_VALUE = 'deadbeec1cada53301f001edc1a551f1edc0de51111ea11c1afee1fee1fade51',
     CIPHER_IVSIZE = 96 / 8,
     AUTH_SIZE = 128 / 8,
     CIPHER_TYPE = 'aes-256-gcm',

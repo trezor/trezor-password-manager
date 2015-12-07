@@ -24,7 +24,7 @@
   width: 100%;
   height: 100%;
   z-index: 1;
-  @include background-gradient(180deg, $c_blue_dark_very 10%, $c_blue 90%);
+  @include background-gradient(180deg, $c_blue_dark_very_much 13%, $c_blue 100%);
 }
 
 .home {
@@ -98,7 +98,7 @@
       @include border-radius(7px);
 
       &:hover {
-        @include box-shadow(0px 0px 8px -1px rgba(0, 0, 0, 0.35));
+        @include box-shadow(0px 0px 10px -1px rgba(0, 0, 0, 0.65));
       }
 
       span {
