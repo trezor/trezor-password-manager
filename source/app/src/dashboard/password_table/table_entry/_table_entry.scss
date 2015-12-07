@@ -137,9 +137,8 @@
       position: absolute;
       top: 20px;
       right: 20px;
-      width: 250px;
+      width: 50px;
       height: 150px;
-      overflow: hidden;
 
       .close-btn {
         display: block;
@@ -199,7 +198,7 @@
       .content-btns {
         position: absolute;
         margin-top: 10px;
-        right: -150px;
+        right: -250px;
         @include transition(all 0.2s ease-in-out);
 
         .button {

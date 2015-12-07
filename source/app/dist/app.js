@@ -30,15 +30,6 @@ Router.run(routes, function(Handler)  {
 
 var Service = {
 
-    getContextTest:function() {
-        var pubkey = localStorage.getItem('public_key');
-        if (localStorage) {
-            return JSON.parse(localStorage.getItem(pubkey));
-        } else {
-            alert('localstorage not supported');
-        }
-    },
-
     saveContext:function(data) {
         chrome.runtime.sendMessage({type: 'saveContent', content: data});
     },

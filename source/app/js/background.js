@@ -227,8 +227,8 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
             if (trezorDevice.isBootloader()) {
                 throw new Error('Device is in bootloader mode, re-connected it');
             }
-            // FIX ME down here! (hint: make nice hardended path:)
-            trezorDevice.session.cipherKeyValue([(1047 | HD_HARDENED) >>> 0, 0, 0], ENC_KEY, ENC_VALUE, true, true, true).then(function(result)  {
+
+            trezorDevice.session.cipherKeyValue(getPath(), ENC_KEY, ENC_VALUE, true, true, true).then(function(result)  {
                 fullKey = result.message.value;
                 encryptionKey = fullKey.toString('utf8').substring(fullKey.length / 2, fullKey.length);
                 loadFile();
@@ -265,6 +265,11 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
             stringifiedContent = res.toString('utf8');
         sendMessage('decryptedContent', stringifiedContent);
         PHASE = 'READY';
+    },
+
+    // FIX ME down here! (hint: make nice hardended path:)
+    getPath = function()  {
+        return [(1047 | HD_HARDENED) >>> 0, (1047 | HD_HARDENED) >>> 0, 0]
     },
 
     pinCallback = function(type, callback)  {

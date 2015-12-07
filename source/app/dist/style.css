@@ -3747,9 +3747,8 @@ aside.left-panel {
       position: absolute;
       top: 20px;
       right: 20px;
-      width: 250px;
-      height: 150px;
-      overflow: hidden; }
+      width: 50px;
+      height: 150px; }
       .dashboard .entry .form-buttons .close-btn {
         display: block;
         width: 30px;
@@ -3819,7 +3818,7 @@ aside.left-panel {
       .dashboard .entry .form-buttons .content-btns {
         position: absolute;
         margin-top: 10px;
-        right: -150px;
+        right: -250px;
         -webkit-transition: all 0.2s ease-in-out;
         -moz-transition: all 0.2s ease-in-out;
         -o-transition: all 0.2s ease-in-out;
