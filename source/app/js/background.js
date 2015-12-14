@@ -1,7 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
-var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
+let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
     Buffer = require('buffer/').Buffer,
     crypto = require('crypto'),
 
@@ -35,22 +35,22 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
     },
 
     init = function()  {
-        if (PHASE === 'READY') {
-            loadFile();
-        }
-
-        if (PHASE === 'DROPBOX') {
-            if (dropboxUsername !== '') {
-                setDropboxUsername();
-            }
-        }
-
-        if (PHASE === 'TREZOR') {
-            if (trezorKey === '') {
-                connectTrezor();
-            } else {
-                PHASE = 'READY'
-            }
+        switch (PHASE) {
+            case 'READY':
+                loadFile();
+                break;
+            case 'DROPBOX':
+                if (dropboxUsername !== '') {
+                    setDropboxUsername();
+                }
+                break;
+            case 'TREZOR':
+                if (trezorKey === '') {
+                    connectTrezor();
+                } else {
+                    PHASE = 'READY'
+                }
+                break;
         }
     },
 
@@ -70,16 +70,17 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
             buffer[i] = view[i];
         }
         return buffer;
-    },
+    };
 
 
 // DROPBOX PHASE
 
-    dropboxClient = {},
+const FILENAME_MESS = 'deadbeeffaceb00cc0ffee00fee1deadbaddeadbeeffaceb00cc0ffee00fee1e';
+
+let dropboxClient = {},
     dropboxUsername = '',
     dropboxUsernameAccepted = false,
     dropboxUid = {},
-    FILENAME_MESS = 'deadbeeffaceb00cc0ffee00fee1deadbaddeadbeeffaceb00cc0ffee00fee1e',
     FILENAME = false,
 
     handleDropboxError = function(error)  {
@@ -92,7 +93,6 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
             case Dropbox.ApiError.NOT_FOUND:
                 console.warn('File or dir not found ', error.status);
                 encryptData(basicObjectBlob);
-                sendMessage('errorMsg', 'File or dir not found.');
                 break;
 
             case Dropbox.ApiError.OVER_QUOTA:
@@ -169,7 +169,7 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
             // creating filename
             if (!FILENAME) {
                 let key = fullKey.toString('utf8').substring(0, fullKey.length / 2);
-                FILENAME = crypto.createHmac('sha1', key).update(dropboxUid + FILENAME_MESS).digest('hex') + '.txt';
+                FILENAME = crypto.createHmac('sha256', key).update(dropboxUid + FILENAME_MESS).digest('hex') + '.txt';
             }
 
             dropboxClient.readFile(FILENAME, {arrayBuffer: true}, function(error, data)  {
@@ -196,20 +196,49 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
                 loadFile();
             }
         });
-    },
+    };
 
 // TREZOR PHASE
 
-    deviceList = null,
-    trezorDevice = null,
-    fullKey = '',
-    encryptionKey = '',
-    HD_HARDENED = 0x80000000,
+const HD_HARDENED = 0x80000000,
     ENC_KEY = 'Activate TREZOR Guard?',
     ENC_VALUE = 'deadbeec1cada53301f001edc1a551f1edc0de51111ea11c1afee1fee1fade51',
     CIPHER_IVSIZE = 96 / 8,
     AUTH_SIZE = 128 / 8,
-    CIPHER_TYPE = 'aes-256-gcm',
+    CIPHER_TYPE = 'aes-256-gcm';
+
+let deviceList = null,
+    trezorDevice = null,
+    fullKey = '',
+    encryptionKey = '',
+
+    handleTrezorError = function(error)  {
+        switch (error) {
+            case NO_TRANSPORT:
+                break;
+
+            case DEVICE_IS_EMPTY:
+                break;
+
+            case FIRMWARE_IS_OLD:
+                break;
+
+            case NO_CONNECTED_DEVICES:
+                break;
+
+            case DEVICE_IS_BOOTLOADER:
+                break;
+
+            case INSUFFICIENT_FUNDS:
+                break;
+        }
+
+        switch (error.code) {
+            case 'Failure_PinInvalid':
+                console.log('zly pin pyco!');
+                break;
+        }
+    },
 
     connectTrezor = function()  {
         deviceList = new trezor.DeviceList();
@@ -224,6 +253,7 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
             trezorDevice.on('passphrase', passphraseCallback);
             trezorDevice.on('button', buttonCallback);
             trezorDevice.on('disconnect', disconnectCallback);
+
             if (trezorDevice.isBootloader()) {
                 throw new Error('Device is in bootloader mode, re-connected it');
             }
@@ -234,30 +264,30 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
                 loadFile();
             });
         } catch (err) {
-
+            console.log('errroor: ', err);
         }
     },
 
     encryptData = function(data)  {
         randomInputVector().then(function(iv)  {
-            var stringified = JSON.stringify(data),
+            let stringified = JSON.stringify(data),
                 buffer = new Buffer(stringified, 'utf8'),
                 cipher = crypto.createCipheriv(CIPHER_TYPE, encryptionKey, iv),
-                startCText = new Buffer(cipher.update(buffer), 'utf8'),
-                endCText = new Buffer(cipher.final(), 'utf8'),
-                auth_tag = new Buffer(cipher.getAuthTag(), 'utf8');
+                startCText = cipher.update(buffer),
+                endCText = cipher.final(),
+                auth_tag = cipher.getAuthTag();
             saveFile(Buffer.concat([iv, auth_tag, startCText, endCText]));
         });
     },
 
     decryptData = function(data)  {
-        var iv = data.slice(0, CIPHER_IVSIZE),
+        let iv = data.slice(0, CIPHER_IVSIZE),
             auth_tag = data.slice(CIPHER_IVSIZE, CIPHER_IVSIZE + AUTH_SIZE),
             cText = data.slice(CIPHER_IVSIZE + AUTH_SIZE),
             decipher = crypto.createDecipheriv(CIPHER_TYPE, encryptionKey, iv),
             start = decipher.update(cText);
         decipher.setAuthTag(auth_tag);
-        var end = decipher.final(),
+        let end = decipher.final(),
             res = Buffer.concat([start, end]),
             stringifiedContent = res.toString('utf8');
         sendMessage('decryptedContent', stringifiedContent);
@@ -265,20 +295,20 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
     },
 
     passwordCrypto = function(pwd, keyVal)  {
-        var key = 'Encrypt/decrypt value id ' + keyVal;
+        var key = 'Decrypt value id ' + keyVal;
         trezorDevice.session.cipherKeyValue(getPath(), key, pwd, true, false, true).then(function(result)  {
             console.log('effin cypher value: ', result, keyVal);
         });
     },
 
-    // FIX ME down here! (hint: make nice hardended path:)
+// FIX ME down here! (hint: make nice hardended path:)
     getPath = function()  {
         return [(1047 | HD_HARDENED) >>> 0, (1047 | HD_HARDENED) >>> 0, 0]
     },
 
     pinCallback = function(type, callback)  {
-        sendMessage('showPinDialog');
         trezorDevice.pinCallback = callback;
+        sendMessage('showPinDialog');
     },
 
     pinEnter = function(pin)  {

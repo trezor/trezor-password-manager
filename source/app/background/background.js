@@ -34,22 +34,22 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
     },
 
     init = () => {
-        if (PHASE === 'READY') {
-            loadFile();
-        }
-
-        if (PHASE === 'DROPBOX') {
-            if (dropboxUsername !== '') {
-                setDropboxUsername();
-            }
-        }
-
-        if (PHASE === 'TREZOR') {
-            if (trezorKey === '') {
-                connectTrezor();
-            } else {
-                PHASE = 'READY'
-            }
+        switch (PHASE) {
+            case 'READY':
+                loadFile();
+                break;
+            case 'DROPBOX':
+                if (dropboxUsername !== '') {
+                    setDropboxUsername();
+                }
+                break;
+            case 'TREZOR':
+                if (trezorKey === '') {
+                    connectTrezor();
+                } else {
+                    PHASE = 'READY'
+                }
+                break;
         }
     },
 
@@ -69,16 +69,17 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
             buffer[i] = view[i];
         }
         return buffer;
-    },
+    };
 
 
 // DROPBOX PHASE
 
-    dropboxClient = {},
+const FILENAME_MESS = 'deadbeeffaceb00cc0ffee00fee1deadbaddeadbeeffaceb00cc0ffee00fee1e';
+
+let dropboxClient = {},
     dropboxUsername = '',
     dropboxUsernameAccepted = false,
     dropboxUid = {},
-    FILENAME_MESS = 'deadbeeffaceb00cc0ffee00fee1deadbaddeadbeeffaceb00cc0ffee00fee1e',
     FILENAME = false,
 
     handleDropboxError = (error) => {
@@ -91,7 +92,6 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
             case Dropbox.ApiError.NOT_FOUND:
                 console.warn('File or dir not found ', error.status);
                 encryptData(basicObjectBlob);
-                sendMessage('errorMsg', 'File or dir not found.');
                 break;
 
             case Dropbox.ApiError.OVER_QUOTA:
@@ -195,20 +195,49 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
                 loadFile();
             }
         });
-    },
+    };
 
 // TREZOR PHASE
 
-    deviceList = null,
-    trezorDevice = null,
-    fullKey = '',
-    encryptionKey = '',
-    HD_HARDENED = 0x80000000,
+const HD_HARDENED = 0x80000000,
     ENC_KEY = 'Activate TREZOR Guard?',
     ENC_VALUE = 'deadbeec1cada53301f001edc1a551f1edc0de51111ea11c1afee1fee1fade51',
     CIPHER_IVSIZE = 96 / 8,
     AUTH_SIZE = 128 / 8,
-    CIPHER_TYPE = 'aes-256-gcm',
+    CIPHER_TYPE = 'aes-256-gcm';
+
+let deviceList = null,
+    trezorDevice = null,
+    fullKey = '',
+    encryptionKey = '',
+
+    handleTrezorError = (error) => {
+        switch (error) {
+            case NO_TRANSPORT:
+                break;
+
+            case DEVICE_IS_EMPTY:
+                break;
+
+            case FIRMWARE_IS_OLD:
+                break;
+
+            case NO_CONNECTED_DEVICES:
+                break;
+
+            case DEVICE_IS_BOOTLOADER:
+                break;
+
+            case INSUFFICIENT_FUNDS:
+                break;
+        }
+
+        switch (error.code) {
+            case 'Failure_PinInvalid':
+                console.log('zly pin pyco!');
+                break;
+        }
+    },
 
     connectTrezor = () => {
         deviceList = new trezor.DeviceList();
@@ -223,6 +252,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
             trezorDevice.on('passphrase', passphraseCallback);
             trezorDevice.on('button', buttonCallback);
             trezorDevice.on('disconnect', disconnectCallback);
+
             if (trezorDevice.isBootloader()) {
                 throw new Error('Device is in bootloader mode, re-connected it');
             }
@@ -233,30 +263,30 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
                 loadFile();
             });
         } catch (err) {
-
+            console.log('errroor: ', err);
         }
     },
 
     encryptData = (data) => {
         randomInputVector().then((iv) => {
-            var stringified = JSON.stringify(data),
+            let stringified = JSON.stringify(data),
                 buffer = new Buffer(stringified, 'utf8'),
                 cipher = crypto.createCipheriv(CIPHER_TYPE, encryptionKey, iv),
-                startCText = new Buffer(cipher.update(buffer), 'utf8'),
-                endCText = new Buffer(cipher.final(), 'utf8'),
-                auth_tag = new Buffer(cipher.getAuthTag(), 'utf8');
+                startCText = cipher.update(buffer),
+                endCText = cipher.final(),
+                auth_tag = cipher.getAuthTag();
             saveFile(Buffer.concat([iv, auth_tag, startCText, endCText]));
         });
     },
 
     decryptData = (data) => {
-        var iv = data.slice(0, CIPHER_IVSIZE),
+        let iv = data.slice(0, CIPHER_IVSIZE),
             auth_tag = data.slice(CIPHER_IVSIZE, CIPHER_IVSIZE + AUTH_SIZE),
             cText = data.slice(CIPHER_IVSIZE + AUTH_SIZE),
             decipher = crypto.createDecipheriv(CIPHER_TYPE, encryptionKey, iv),
             start = decipher.update(cText);
         decipher.setAuthTag(auth_tag);
-        var end = decipher.final(),
+        let end = decipher.final(),
             res = Buffer.concat([start, end]),
             stringifiedContent = res.toString('utf8');
         sendMessage('decryptedContent', stringifiedContent);
@@ -264,20 +294,20 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
     },
 
     passwordCrypto = (pwd, keyVal) => {
-        var key = 'Encrypt/decrypt value id ' + keyVal;
+        var key = 'Decrypt value id ' + keyVal;
         trezorDevice.session.cipherKeyValue(getPath(), key, pwd, true, false, true).then((result) => {
             console.log('effin cypher value: ', result, keyVal);
         });
     },
 
-    // FIX ME down here! (hint: make nice hardended path:)
+// FIX ME down here! (hint: make nice hardended path:)
     getPath = () => {
         return [(1047 | HD_HARDENED) >>> 0, (1047 | HD_HARDENED) >>> 0, 0]
     },
 
     pinCallback = (type, callback) => {
-        sendMessage('showPinDialog');
         trezorDevice.pinCallback = callback;
+        sendMessage('showPinDialog');
     },
 
     pinEnter = (pin) => {

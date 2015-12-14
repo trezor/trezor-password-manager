@@ -3262,9 +3262,7 @@ button, .button {
     .home .loading_dialog button.dropbox-login,
     .home .button_dialog button.dropbox-login {
       padding-left: 60px;
-      background: url(app-images/dropbox-blue.svg) no-repeat top left;
-      background-color: #fff;
-      background-position: 20px 8px;
+      background: #fff url(app-images/dropbox-blue.svg) no-repeat 20px 8px;
       background-size: 30px 30px; }
     .home .error button.accept-btn,
     .home .accept_dropbox_user button.accept-btn,
