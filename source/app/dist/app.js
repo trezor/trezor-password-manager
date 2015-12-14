@@ -1370,6 +1370,13 @@ var React = require('react'),
 
                 switch (request.type) {
 
+                    case 'errorMsg':
+                        this.setState({
+                            dialog: 'error',
+                            errorMsg: request.content
+                        });
+                        break;
+
                     // DROPBOX PHASE
 
                     case 'dropboxConnected':
@@ -1509,6 +1516,14 @@ var React = require('react'),
                     React.createElement("div", {className: "overlay-hill"}), 
                     React.createElement("div", {className: "overlay-color"}), 
                     React.createElement("div", {className: "home"}, 
+
+                        React.createElement("div", {className: this.state.dialog === 'error' ? 'error' : 'hidden_dialog'}, 
+                            React.createElement("img", {src: "dist/app-images/trezor_connect.png"}), 
+
+                            React.createElement("h1", null, "Murphy's law: ", React.createElement("br", null), " Something just go wrong."), 
+                            React.createElement("br", null), 
+                            React.createElement("button", {className: "no-style"}, React.createElement("a", {href: "https://www.buytrezor.com", target: "_blank"}, "I don't have Trezor device"))
+                        ), 
 
                         React.createElement("div", {className: this.state.dialog === 'connect_dropbox' ? 'connect_dropbox' : 'hidden_dialog'}, 
                             React.createElement("img", {src: "dist/app-images/trezor.svg", className: "no-circle"}), 

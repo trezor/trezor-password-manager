@@ -22,6 +22,13 @@ var React = require('react'),
 
                 switch (request.type) {
 
+                    case 'errorMsg':
+                        this.setState({
+                            dialog: 'error',
+                            errorMsg: request.content
+                        });
+                        break;
+
                     // DROPBOX PHASE
 
                     case 'dropboxConnected':
@@ -161,6 +168,14 @@ var React = require('react'),
                     <div className='overlay-hill'></div>
                     <div className='overlay-color'></div>
                     <div className='home'>
+
+                        <div className={this.state.dialog === 'error' ? 'error' : 'hidden_dialog'}>
+                            <img src='dist/app-images/trezor_connect.png'/>
+
+                            <h1>Murphy's law: <br/> Something just go wrong.</h1>
+                            <br />
+                            <button className='no-style' ><a href='https://www.buytrezor.com' target='_blank'>I don't have Trezor device</a></button>
+                        </div>
 
                         <div className={this.state.dialog === 'connect_dropbox' ? 'connect_dropbox' : 'hidden_dialog'}>
                             <img src='dist/app-images/trezor.svg' className='no-circle' />

@@ -40,6 +40,7 @@
     display: none;
   }
 
+  .error,
   .accept_dropbox_user,
   .connect_trezor,
   .connect_dropbox,
@@ -134,9 +135,7 @@
 
       &.dropbox-login {
         padding-left: 60px;
-        background: url(app-images/dropbox-blue.svg) no-repeat top left;
-        background-color: $c_white;
-        background-position: 20px 8px;
+        background: $c_white url(app-images/dropbox-blue.svg) no-repeat 20px 8px;
         background-size: 30px 30px;
       }
 

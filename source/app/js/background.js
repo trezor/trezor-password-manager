@@ -236,12 +236,9 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
         } catch (err) {
 
         }
-
-
     },
 
     encryptData = function(data)  {
-
         randomInputVector().then(function(iv)  {
             var stringified = JSON.stringify(data),
                 buffer = new Buffer(stringified, 'utf8'),
@@ -267,6 +264,13 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
         PHASE = 'READY';
     },
 
+    passwordCrypto = function(pwd, keyVal)  {
+        var key = 'Encrypt/decrypt value id ' + keyVal;
+        trezorDevice.session.cipherKeyValue(getPath(), key, pwd, true, false, true).then(function(result)  {
+            console.log('effin cypher value: ', result, keyVal);
+        });
+    },
+
     // FIX ME down here! (hint: make nice hardended path:)
     getPath = function()  {
         return [(1047 | HD_HARDENED) >>> 0, (1047 | HD_HARDENED) >>> 0, 0]
@@ -281,7 +285,7 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
         trezorDevice.pinCallback(null, pin);
     },
 
-    passphraseCallback = function(type, callback)  {
+    passphraseCallback = function(callback)  {
         callback(null, '');
     },
 

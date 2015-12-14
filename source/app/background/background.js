@@ -1,6 +1,6 @@
 'use strict';
 
-var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
+let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
     Buffer = require('buffer/').Buffer,
     crypto = require('crypto'),
 
@@ -168,7 +168,7 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
             // creating filename
             if (!FILENAME) {
                 let key = fullKey.toString('utf8').substring(0, fullKey.length / 2);
-                FILENAME = crypto.createHmac('sha1', key).update(dropboxUid + FILENAME_MESS).digest('hex') + '.txt';
+                FILENAME = crypto.createHmac('sha256', key).update(dropboxUid + FILENAME_MESS).digest('hex') + '.txt';
             }
 
             dropboxClient.readFile(FILENAME, {arrayBuffer: true}, (error, data) => {
@@ -235,12 +235,9 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
         } catch (err) {
 
         }
-
-
     },
 
     encryptData = (data) => {
-
         randomInputVector().then((iv) => {
             var stringified = JSON.stringify(data),
                 buffer = new Buffer(stringified, 'utf8'),
@@ -266,6 +263,13 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
         PHASE = 'READY';
     },
 
+    passwordCrypto = (pwd, keyVal) => {
+        var key = 'Encrypt/decrypt value id ' + keyVal;
+        trezorDevice.session.cipherKeyValue(getPath(), key, pwd, true, false, true).then((result) => {
+            console.log('effin cypher value: ', result, keyVal);
+        });
+    },
+
     // FIX ME down here! (hint: make nice hardended path:)
     getPath = () => {
         return [(1047 | HD_HARDENED) >>> 0, (1047 | HD_HARDENED) >>> 0, 0]
@@ -280,7 +284,7 @@ var PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
         trezorDevice.pinCallback(null, pin);
     },
 
-    passphraseCallback = (type, callback) => {
+    passphraseCallback = (callback) => {
         callback(null, '');
     },
 
