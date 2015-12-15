@@ -142,6 +142,7 @@ var React = require('react'),
                 tags_id.push(this.state.context.getTagIdByTitle(key));
             });
 
+
             var data = {
                 title: this.state.title,
                 username: this.state.username,
@@ -149,16 +150,34 @@ var React = require('react'),
                 tags: tags_id,
                 note: this.state.note
             };
-            if (this.state.key_value) {
-                this.state.context.saveDataToEntryById(this.state.key_value, data);
-                this.setState({
-                    content_changed: '',
-                    tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value),
-                    show_available: false
 
+
+            if (this.state.key_value) {
+                var oldValues = this.state.context.getEntryValuesById(this.state.key_value);
+
+                if(oldValues.username !== data.username || oldValues.title !== data.title) {
+                    data.oldUsername = oldValues.username;
+                    data.oldTitle = oldValues.title;
+                }
+
+                chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, (response) => {
+                    data.password = response.content;
+                    this.state.context.saveDataToEntryById(this.state.key_value, data);
+                    this.setState({
+                        content_changed: '',
+                        tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value),
+                        show_available: false
+
+                    });
                 });
+
+
+
             } else {
-                this.state.context.addNewEntry(data);
+                chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, (response) => {
+                    data.password = response.content;
+                    this.state.context.addNewEntry(data);
+                });
             }
         },
 
@@ -271,8 +290,8 @@ var React = require('react'),
         openTab() {
             if (this.state.mode === 'list-mode') {
                 /*if (this.isURL(this.state.title)) {
-                    chrome.tabs.create({url: this.state.title});
-                }*/
+                 chrome.tabs.create({url: this.state.title});
+                 }*/
             }
         },
 

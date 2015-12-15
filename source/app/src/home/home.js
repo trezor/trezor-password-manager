@@ -84,8 +84,11 @@ var React = require('react'),
             this.sendMessage('initPlease');
         },
 
+        componentWillUnmount() {
+            window.removeEventListener('keydown', this.pinKeydownHandler);
+        },
+
         sendMessage(msgType, msgContent) {
-            console.log('[app] msg send:', msgType, msgContent);
             chrome.runtime.sendMessage({type: msgType, content: msgContent});
         },
 
@@ -161,7 +164,9 @@ var React = require('react'),
         render() {
             console.log('STATE: ', this.state.dialog);
             //add listener for input keys:
-            if (this.state.dialog === 'pin_dialog') window.addEventListener('keydown', this.pinKeydownHandler);
+            if (this.state.dialog === 'pin_dialog') {
+                window.addEventListener('keydown', this.pinKeydownHandler);
+            }
 
             return (
                 <div>

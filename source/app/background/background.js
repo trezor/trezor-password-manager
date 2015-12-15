@@ -54,8 +54,8 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
     },
 
     toArrayBuffer = (buffer) => {
-        var ab = new ArrayBuffer(buffer.length);
-        var view = new Uint8Array(ab);
+        let ab = new ArrayBuffer(buffer.length),
+            view = new Uint8Array(ab);
         for (var i = 0; i < buffer.length; ++i) {
             view[i] = buffer[i];
         }
@@ -63,12 +63,53 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
     },
 
     toBuffer = (ab) => {
-        var buffer = new Buffer(ab.byteLength);
-        var view = new Uint8Array(ab);
+        let buffer = new Buffer(ab.byteLength),
+            view = new Uint8Array(ab);
         for (var i = 0; i < buffer.length; ++i) {
             buffer[i] = view[i];
         }
         return buffer;
+    },
+
+    toHex = (pwd)  => {
+        let result = new Buffer(pwd, 'utf8').toString('hex'),
+            check = new Buffer(result, 'hex').toString('utf8');
+        try {
+            if(check === pwd) {
+                return result;
+            } else {
+                // fix later!
+                throw new Error('Whoops!');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    },
+
+    fromHex = (hex) => {
+        let pwd = new Buffer(result, 'hex').toString('utf8'),
+            check = new Buffer(pwd, 'utf8').toString('hex');
+        try {
+            if(hex === check) {
+                return pwd;
+            } else {
+                // fix later!
+                throw new Error('Whoops!');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    },
+
+    addPaddingTail = (hex) => {
+        let paddingNumber = 16 - (hex.length % 16),
+            tail = new Array(paddingNumber + 1).join((paddingNumber - 1).toString(16));
+        return hex + tail;
+    },
+
+    removePaddingTail = (hex) => {
+        let paddingNumber = parseInt(hex.charAt(hex.length - 1), 16) + 1;
+        return hex.slice(0, -paddingNumber);
     };
 
 
@@ -170,7 +211,6 @@ let dropboxClient = {},
                 let key = fullKey.toString('utf8').substring(0, fullKey.length / 2);
                 FILENAME = crypto.createHmac('sha256', key).update(dropboxUid + FILENAME_MESS).digest('hex') + '.txt';
             }
-
             dropboxClient.readFile(FILENAME, {arrayBuffer: true}, (error, data) => {
                 if (error) {
                     return handleDropboxError(error);
@@ -210,8 +250,8 @@ let deviceList = null,
     trezorDevice = null,
     fullKey = '',
     encryptionKey = '',
-
     handleTrezorError = (error) => {
+        console.log('error happend! ', error);
         switch (error) {
             case NO_TRANSPORT:
                 break;
@@ -231,7 +271,6 @@ let deviceList = null,
             case INSUFFICIENT_FUNDS:
                 break;
         }
-
         switch (error.code) {
             case 'Failure_PinInvalid':
                 console.log('zly pin pyco!');
@@ -242,6 +281,9 @@ let deviceList = null,
     connectTrezor = () => {
         deviceList = new trezor.DeviceList();
         deviceList.on('connect', initTrezorDevice);
+        deviceList.on('error', (error) => {
+            console.error('List error:', error);
+        });
     },
 
     initTrezorDevice = (device) => {
@@ -252,19 +294,18 @@ let deviceList = null,
             trezorDevice.on('passphrase', passphraseCallback);
             trezorDevice.on('button', buttonCallback);
             trezorDevice.on('disconnect', disconnectCallback);
-
             if (trezorDevice.isBootloader()) {
                 throw new Error('Device is in bootloader mode, re-connected it');
             }
-
             trezorDevice.session.cipherKeyValue(getPath(), ENC_KEY, ENC_VALUE, true, true, true).then((result) => {
                 fullKey = result.message.value;
                 encryptionKey = fullKey.toString('utf8').substring(fullKey.length / 2, fullKey.length);
                 loadFile();
             });
-        } catch (err) {
-            console.log('errroor: ', err);
+        } catch (error) {
+            console.error('Device error:', error);
         }
+
     },
 
     encryptData = (data) => {
@@ -293,10 +334,11 @@ let deviceList = null,
         PHASE = 'READY';
     },
 
-    passwordCrypto = (pwd, keyVal) => {
-        var key = 'Decrypt value id ' + keyVal;
-        trezorDevice.session.cipherKeyValue(getPath(), key, pwd, true, false, true).then((result) => {
-            console.log('effin cypher value: ', result, keyVal);
+    passwordCrypto = (pwd, title, username) => {
+        let key = 'Decrypt ' + title + ' with ' + username + ' username?',
+            tailedHex = toHex(addPaddingTail(pwd));
+        trezorDevice.session.cipherKeyValue(getPath(), key, tailedHex, true, false, true).then((result) => {
+            return removePaddingTail(fromHex(result));
         });
     },
 
@@ -393,6 +435,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         case 'saveContent':
             encryptData(request.content);
+            break;
+
+        case 'encryptPassword':
+            let data = request.content;
+            if (data.oldUsername) {
+                var pwd = passwordCrypto(data.password, data.oldTitle, data.oldUsername);
+                sendResponse({content: passwordCrypto(pwd, data.title, data.username)});
+
+            } else {
+                sendResponse({content: passwordCrypto(data.password, data.title, data.username)});
+            }
             break;
     }
 });

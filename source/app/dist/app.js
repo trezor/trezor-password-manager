@@ -966,6 +966,7 @@ var React = require('react'),
                 tags_id.push(this.state.context.getTagIdByTitle(key));
             }.bind(this));
 
+
             var data = {
                 title: this.state.title,
                 username: this.state.username,
@@ -973,16 +974,34 @@ var React = require('react'),
                 tags: tags_id,
                 note: this.state.note
             };
-            if (this.state.key_value) {
-                this.state.context.saveDataToEntryById(this.state.key_value, data);
-                this.setState({
-                    content_changed: '',
-                    tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value),
-                    show_available: false
 
-                });
+
+            if (this.state.key_value) {
+                var oldValues = this.state.context.getEntryValuesById(this.state.key_value);
+
+                if(oldValues.username !== data.username || oldValues.title !== data.title) {
+                    data.oldUsername = oldValues.username;
+                    data.oldTitle = oldValues.title;
+                }
+
+                chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, function(response)  {
+                    data.password = response.content;
+                    this.state.context.saveDataToEntryById(this.state.key_value, data);
+                    this.setState({
+                        content_changed: '',
+                        tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value),
+                        show_available: false
+
+                    });
+                }.bind(this));
+
+
+
             } else {
-                this.state.context.addNewEntry(data);
+                chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, function(response)  {
+                    data.password = response.content;
+                    this.state.context.addNewEntry(data);
+                }.bind(this));
             }
         },
 
@@ -1095,8 +1114,8 @@ var React = require('react'),
         openTab:function() {
             if (this.state.mode === 'list-mode') {
                 /*if (this.isURL(this.state.title)) {
-                    chrome.tabs.create({url: this.state.title});
-                }*/
+                 chrome.tabs.create({url: this.state.title});
+                 }*/
             }
         },
 
@@ -1432,8 +1451,11 @@ var React = require('react'),
             this.sendMessage('initPlease');
         },
 
+        componentWillUnmount:function() {
+            window.removeEventListener('keydown', this.pinKeydownHandler);
+        },
+
         sendMessage:function(msgType, msgContent) {
-            console.log('[app] msg send:', msgType, msgContent);
             chrome.runtime.sendMessage({type: msgType, content: msgContent});
         },
 
@@ -1509,7 +1531,9 @@ var React = require('react'),
         render:function() {
             console.log('STATE: ', this.state.dialog);
             //add listener for input keys:
-            if (this.state.dialog === 'pin_dialog') window.addEventListener('keydown', this.pinKeydownHandler);
+            if (this.state.dialog === 'pin_dialog') {
+                window.addEventListener('keydown', this.pinKeydownHandler);
+            }
 
             return (
                 React.createElement("div", null, 
