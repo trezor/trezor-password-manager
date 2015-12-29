@@ -1,6 +1,6 @@
 'use strict';
 
-let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
+let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     Buffer = require('buffer/').Buffer,
     crypto = require('crypto'),
 
@@ -17,7 +17,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
     },
 
     badgeState = {
-        ready: {color: [59, 192, 195, 100], defaultText: '\u0020'},
+        loaded: {color: [59, 192, 195, 100], defaultText: '\u0020'},
         waiting: {color: [237, 199, 85, 100], defaultText: '\u0020'},
         disconnected: {color: [237, 199, 85, 100], defaultText: '\u0020'},
         throttled: {color: [255, 255, 0, 100], defaultText: '!'}
@@ -35,7 +35,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
 
     init = () => {
         switch (PHASE) {
-            case 'READY':
+            case 'LOADED':
                 loadFile();
                 break;
             case 'DROPBOX':
@@ -47,7 +47,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
                 if (trezorKey === '') {
                     connectTrezor();
                 } else {
-                    PHASE = 'READY'
+                    PHASE = 'LOADED'
                 }
                 break;
         }
@@ -72,10 +72,10 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
     },
 
     toHex = (pwd)  => {
-        let result = new Buffer(pwd, 'utf8').toString('hex'),
-            check = new Buffer(result, 'hex').toString('utf8');
         try {
-            if(check === pwd) {
+            let result = new Buffer(pwd, 'utf8').toString('hex'),
+                check = new Buffer(result, 'hex').toString('utf8');
+            if (check === pwd) {
                 return result;
             } else {
                 // fix later!
@@ -87,10 +87,10 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, READY */
     },
 
     fromHex = (hex) => {
-        let pwd = new Buffer(result, 'hex').toString('utf8'),
-            check = new Buffer(pwd, 'utf8').toString('hex');
         try {
-            if(hex === check) {
+            let pwd = new Buffer(hex, 'hex').toString('utf8'),
+                check = new Buffer(pwd, 'utf8').toString('hex');
+            if (hex === check) {
                 return pwd;
             } else {
                 // fix later!
@@ -273,7 +273,7 @@ let deviceList = null,
         }
         switch (error.code) {
             case 'Failure_PinInvalid':
-                console.log('zly pin pyco!');
+                console.log('wrong pin!');
                 break;
         }
     },
@@ -331,14 +331,21 @@ let deviceList = null,
             res = Buffer.concat([start, end]),
             stringifiedContent = res.toString('utf8');
         sendMessage('decryptedContent', stringifiedContent);
-        PHASE = 'READY';
+        PHASE = 'LOADED';
     },
 
-    passwordCrypto = (pwd, title, username) => {
-        let key = 'Decrypt ' + title + ' with ' + username + ' username?',
-            tailedHex = toHex(addPaddingTail(pwd));
+    encryptEntry = (data, callback) => {
+        let key = 'Unlock ' + data.title + ' with ' + data.username + ' username?',
+            tailedHex = toHex(addPaddingTail(toHex(data.password)));
         trezorDevice.session.cipherKeyValue(getPath(), key, tailedHex, true, false, true).then((result) => {
-            return removePaddingTail(fromHex(result));
+            callback({content: result.message.value});
+        });
+    },
+
+    decryptEntry = (data, callback) => {
+        let key = 'Unlock ' + data.title + ' with ' + data.username + ' username?';
+        trezorDevice.session.cipherKeyValue(getPath(), key, data.password, false, false, true).then((result) => {
+            callback({content: fromHex(removePaddingTail(fromHex(result.message.value)))});
         });
     },
 
@@ -438,15 +445,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             break;
 
         case 'encryptPassword':
-            let data = request.content;
-            if (data.oldUsername) {
-                var pwd = passwordCrypto(data.password, data.oldTitle, data.oldUsername);
-                sendResponse({content: passwordCrypto(pwd, data.title, data.username)});
+            encryptEntry(request.content, sendResponse);
+            break;
 
-            } else {
-                sendResponse({content: passwordCrypto(data.password, data.title, data.username)});
-            }
+        case 'decryptPassword':
+            decryptEntry(request.content, sendResponse);
             break;
     }
+    return true;
 });
 

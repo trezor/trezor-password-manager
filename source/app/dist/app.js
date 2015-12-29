@@ -938,23 +938,35 @@ var React = require('react'),
 
         handleError:function() {
             this.setState({
-                image_src: 'dist/img/transparent.png'
+                image_src: 'dist/app-images/transparent.png'
             });
         },
 
         changeMode:function() {
             if (this.state.mode === 'list-mode') {
-                this.setState({
-                    mode: 'edit-mode'
-                })
+                console.log('switch to edit mode');
+                var data = {
+                    title: this.state.title,
+                    username: this.state.username,
+                    password: this.state.password
+                };
+                chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, function(response)  {
+                    this.setState({
+                        password: response.content,
+                        mode: 'edit-mode'
+                    });
+                }.bind(this));
             } else {
+                console.log('switch to list mode');
+                var oldValues = this.state.context.getEntryValuesById(this.state.key_value);
                 if (this.state.title.indexOf('.') > -1) {
                     this.setState({
                         image_src: 'https://logo.clearbit.com/' + this.extractDomain(this.state.title)
                     });
                 }
                 this.setState({
-                    mode: 'list-mode'
+                    mode: 'list-mode',
+                    password: oldValues.password
                 })
             }
         },
@@ -979,13 +991,15 @@ var React = require('react'),
             if (this.state.key_value) {
                 var oldValues = this.state.context.getEntryValuesById(this.state.key_value);
 
-                if(oldValues.username !== data.username || oldValues.title !== data.title) {
+                if (oldValues.username !== data.username || oldValues.title !== data.title) {
                     data.oldUsername = oldValues.username;
                     data.oldTitle = oldValues.title;
                 }
 
                 chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, function(response)  {
                     data.password = response.content;
+                    console.log('password 0 ', response);
+                    console.log('password 1 ', data.password);
                     this.state.context.saveDataToEntryById(this.state.key_value, data);
                     this.setState({
                         content_changed: '',
@@ -995,12 +1009,13 @@ var React = require('react'),
                     });
                 }.bind(this));
 
-
-
             } else {
                 chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, function(response)  {
                     data.password = response.content;
                     this.state.context.addNewEntry(data);
+                    this.setState({
+                        mode: 'list-mode'
+                    });
                 }.bind(this));
             }
         },
@@ -1035,7 +1050,7 @@ var React = require('react'),
                 });
             } else {
                 this.setState({
-                    image_src: 'dist/img/transparent.png'
+                    image_src: 'dist/app-images/transparent.png'
                 });
             }
         },
@@ -1229,7 +1244,7 @@ var React = require('react'),
 
                         React.createElement("div", {className: "form-buttons"}, 
                             React.createElement("span", {className: "close-btn", onClick: this.changeMode}, 
-                                React.createElement("i", {className: "ion-chevron-down"})
+                                React.createElement("i", {className: "ion-ios-locked-outline"})
                             ), 
 
                             null != this.state.key_value &&
