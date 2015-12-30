@@ -981,9 +981,7 @@ var React = require('react'),
             };
 
             chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, function(response)  {
-                console.log('data1 ', data);
                 data.password = response.content;
-                console.log('data2 ', data);
                 if (this.state.key_value) {
                     this.setState({
                         mode: 'list-mode',
@@ -1231,7 +1229,7 @@ var React = require('react'),
                             React.createElement(OverlayTrigger, {placement: "top", 
                                             overlay: unlockEntry}, 
                             React.createElement("span", {className: "close-btn", onClick: this.changeMode}, 
-                                React.createElement("i", {className: "ion-ios-locked-outline"})
+                                React.createElement("i", null)
                             )
                             ), 
 

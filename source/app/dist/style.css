@@ -3766,8 +3766,7 @@ aside.left-panel {
         display: block;
         width: 30px;
         height: 30px;
-        color: rgba(121, 121, 121, 0.5);
-        border: 1px solid rgba(121, 121, 121, 0.1);
+        border: 1px solid transparent;
         line-height: 30px;
         text-align: center;
         position: absolute;
@@ -3786,7 +3785,25 @@ aside.left-panel {
         -o-transition: all 0.2s ease-in-out;
         transition: all 0.2s ease-in-out; }
         .dashboard .entry .form-buttons .close-btn:hover {
-          color: #797979; }
+          color: #797979;
+          border: 1px solid rgba(121, 121, 121, 0.1);
+          background: #fff; }
+          .dashboard .entry .form-buttons .close-btn:hover i:after {
+            content: "\f4c8";
+            color: #797979; }
+        .dashboard .entry .form-buttons .close-btn i:after {
+          font-family: 'ionicons' !important;
+          color: rgba(121, 121, 121, 0.5);
+          content: "\f457";
+          font-size: 1.2em;
+          display: block;
+          width: 30px;
+          height: 30px;
+          line-height: 30px;
+          position: absolute;
+          top: 0;
+          right: 0;
+          left: 0; }
       .dashboard .entry .form-buttons .dropdown {
         position: absolute;
         right: -150px;

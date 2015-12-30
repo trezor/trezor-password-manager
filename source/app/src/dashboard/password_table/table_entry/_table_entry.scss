@@ -144,8 +144,7 @@
         display: block;
         width: 30px;
         height: 30px;
-        color: rgba($c_grey_content_font, .5);
-        border: 1px solid rgba($c_grey_content_font, .1);
+        border: 1px solid transparent;
         line-height: 30px;
         text-align: center;
         position: absolute;
@@ -158,6 +157,28 @@
 
         &:hover {
           color: $c_grey_content_font;
+          border: 1px solid rgba($c_grey_content_font, .1);
+          background: $c_white;
+
+          i:after {
+            content: "\f4c8";
+            color: $c_grey_content_font;
+          }
+        }
+
+        i:after {
+          font-family: 'ionicons' !important;
+          color: rgba($c_grey_content_font, .5);
+          content: "\f457";
+          font-size: 1.2em;
+          display: block;
+          width: 30px;
+          height: 30px;
+          line-height: 30px;
+          position: absolute;
+          top: 0;
+          right: 0;
+          left: 0;
         }
       }
 
