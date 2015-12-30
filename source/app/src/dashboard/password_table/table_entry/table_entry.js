@@ -119,8 +119,8 @@ var React = require('react'),
         },
 
         changeMode() {
+            this.hidePassword();
             if (this.state.mode === 'list-mode') {
-                console.log('switch to edit mode');
                 var data = {
                     title: this.state.title,
                     username: this.state.username,
@@ -133,7 +133,6 @@ var React = require('react'),
                     });
                 });
             } else {
-                console.log('switch to list mode');
                 var oldValues = this.state.context.getEntryValuesById(this.state.key_value);
                 if (this.state.title.indexOf('.') > -1) {
                     this.setState({
@@ -154,7 +153,6 @@ var React = require('react'),
                 tags_id.push(this.state.context.getTagIdByTitle(key));
             });
 
-
             var data = {
                 title: this.state.title,
                 username: this.state.username,
@@ -163,37 +161,21 @@ var React = require('react'),
                 note: this.state.note
             };
 
-
-            if (this.state.key_value) {
-                var oldValues = this.state.context.getEntryValuesById(this.state.key_value);
-
-                if (oldValues.username !== data.username || oldValues.title !== data.title) {
-                    data.oldUsername = oldValues.username;
-                    data.oldTitle = oldValues.title;
-                }
-
-                chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, (response) => {
-                    data.password = response.content;
-                    console.log('password 0 ', response);
-                    console.log('password 1 ', data.password);
-                    this.state.context.saveDataToEntryById(this.state.key_value, data);
+            chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, (response) => {
+                console.log('data1 ', data);
+                data.password = response.content;
+                console.log('data2 ', data);
+                if (this.state.key_value) {
                     this.setState({
+                        mode: 'list-mode',
                         content_changed: '',
-                        tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value),
-                        show_available: false
-
+                        password: response.content
                     });
-                });
-
-            } else {
-                chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, (response) => {
-                    data.password = response.content;
+                    this.state.context.saveDataToEntryById(this.state.key_value, data);
+                } else {
                     this.state.context.addNewEntry(data);
-                    this.setState({
-                        mode: 'list-mode'
-                    });
-                });
-            }
+                }
+            });
         },
 
         discardChanges() {
@@ -207,7 +189,8 @@ var React = require('react'),
                     tags_titles: this.state.context.getTagTitleArrayById(oldValues.tags),
                     show_available: false,
                     tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value),
-                    note: oldValues.note
+                    note: oldValues.note,
+                    mode: 'list-mode'
                 });
                 if (this.state.content_changed === 'edited') {
                     this.setState({
@@ -239,6 +222,11 @@ var React = require('react'),
             } else {
                 input.setAttribute('type', 'text');
             }
+        },
+
+        hidePassword() {
+            var input = React.findDOMNode(this.refs.password);
+            input.setAttribute('type', 'password');
         },
 
         generatePassword() {
@@ -319,8 +307,9 @@ var React = require('react'),
         },
 
         render() {
-            var showPassword = (<Tooltip id='show'>Show/hide password.</Tooltip>),
-                generatePassword = (<Tooltip id='generate'>Generate password.</Tooltip>),
+            var showPassword = (<Tooltip id='show'>Show/hide password</Tooltip>),
+                generatePassword = (<Tooltip id='generate'>Generate password</Tooltip>),
+                unlockEntry = (<Tooltip id='unlock'>Unlock and edit</Tooltip>),
                 interator = 0,
                 tags = this.state.tags_titles.map((key) => {
                     return (<span className='tagsinput-tag'
@@ -419,9 +408,13 @@ var React = require('react'),
                         </div>
 
                         <div className='form-buttons'>
+
+                            <OverlayTrigger placement='top'
+                                            overlay={unlockEntry}>
                             <span className='close-btn' onClick={this.changeMode}>
                                 <i className='ion-ios-locked-outline'></i>
                             </span>
+                            </OverlayTrigger>
 
                             {null != this.state.key_value &&
                             <DropdownButton title='' noCaret pullRight id='dropdown-no-caret'>

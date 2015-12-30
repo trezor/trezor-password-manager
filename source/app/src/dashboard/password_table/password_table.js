@@ -19,8 +19,7 @@ var React = require('react'),
                 entries: {},
                 filter: '',
                 context: {},
-                newEntry: false,
-                newIdToOpen: ''
+                newEntry: false
             }
         },
 
@@ -50,14 +49,12 @@ var React = require('react'),
             if (e === undefined) {
                 this.setState({
                     active_id: this.state.active_id,
-                    active_title: this.state.active_title,
-                    newIdToOpen: ''
+                    active_title: this.state.active_title
                 });
             } else {
                 this.setState({
                     active_id: parseInt(e),
-                    active_title: this.state.context.getTagTitleById(e),
-                    newIdToOpen: ''
+                    active_title: this.state.context.getTagTitleById(e)
                 });
             }
 
@@ -84,8 +81,8 @@ var React = require('react'),
             this.state.newEntry ? this.setState({newEntry: false}) : this.setState({newEntry: true})
         },
 
-        hideOpenNewEntry(newId) {
-            this.state.newEntry ? this.setState({newEntry: false, newIdToOpen: newId}) : this.setState({newEntry: true})
+        hideOpenNewEntry() {
+            this.state.newEntry ? this.setState({newEntry: false}) : this.setState({newEntry: true})
         },
 
         render(){
@@ -104,7 +101,6 @@ var React = require('react'),
                                                  password={obj.password}
                                                  tags={obj.tags}
                                                  note={obj.note}
-                                                 mode={parseInt(key) === this.state.newIdToOpen ? 'edit-mode' : 'list-mode'}
                                         />
                                 )
                             }
@@ -118,7 +114,6 @@ var React = require('react'),
                                              username={obj.username}
                                              tags={obj.tags}
                                              note={obj.note}
-                                             mode={parseInt(key) === this.state.newIdToOpen ? 'edit-mode' : 'list-mode'}
                                     />
                             )
                         }

@@ -668,8 +668,7 @@ var React = require('react'),
                 entries: {},
                 filter: '',
                 context: {},
-                newEntry: false,
-                newIdToOpen: ''
+                newEntry: false
             }
         },
 
@@ -699,14 +698,12 @@ var React = require('react'),
             if (e === undefined) {
                 this.setState({
                     active_id: this.state.active_id,
-                    active_title: this.state.active_title,
-                    newIdToOpen: ''
+                    active_title: this.state.active_title
                 });
             } else {
                 this.setState({
                     active_id: parseInt(e),
-                    active_title: this.state.context.getTagTitleById(e),
-                    newIdToOpen: ''
+                    active_title: this.state.context.getTagTitleById(e)
                 });
             }
 
@@ -733,8 +730,8 @@ var React = require('react'),
             this.state.newEntry ? this.setState({newEntry: false}) : this.setState({newEntry: true})
         },
 
-        hideOpenNewEntry:function(newId) {
-            this.state.newEntry ? this.setState({newEntry: false, newIdToOpen: newId}) : this.setState({newEntry: true})
+        hideOpenNewEntry:function() {
+            this.state.newEntry ? this.setState({newEntry: false}) : this.setState({newEntry: true})
         },
 
         render:function(){
@@ -752,8 +749,7 @@ var React = require('react'),
                                                  username: obj.username, 
                                                  password: obj.password, 
                                                  tags: obj.tags, 
-                                                 note: obj.note, 
-                                                 mode: parseInt(key) === this.state.newIdToOpen ? 'edit-mode' : 'list-mode'}
+                                                 note: obj.note}
                                         )
                                 )
                             }
@@ -766,8 +762,7 @@ var React = require('react'),
                                              title: obj.title, 
                                              username: obj.username, 
                                              tags: obj.tags, 
-                                             note: obj.note, 
-                                             mode: parseInt(key) === this.state.newIdToOpen ? 'edit-mode' : 'list-mode'}
+                                             note: obj.note}
                                     )
                             )
                         }
@@ -943,8 +938,8 @@ var React = require('react'),
         },
 
         changeMode:function() {
+            this.hidePassword();
             if (this.state.mode === 'list-mode') {
-                console.log('switch to edit mode');
                 var data = {
                     title: this.state.title,
                     username: this.state.username,
@@ -957,7 +952,6 @@ var React = require('react'),
                     });
                 }.bind(this));
             } else {
-                console.log('switch to list mode');
                 var oldValues = this.state.context.getEntryValuesById(this.state.key_value);
                 if (this.state.title.indexOf('.') > -1) {
                     this.setState({
@@ -978,7 +972,6 @@ var React = require('react'),
                 tags_id.push(this.state.context.getTagIdByTitle(key));
             }.bind(this));
 
-
             var data = {
                 title: this.state.title,
                 username: this.state.username,
@@ -987,37 +980,21 @@ var React = require('react'),
                 note: this.state.note
             };
 
-
-            if (this.state.key_value) {
-                var oldValues = this.state.context.getEntryValuesById(this.state.key_value);
-
-                if (oldValues.username !== data.username || oldValues.title !== data.title) {
-                    data.oldUsername = oldValues.username;
-                    data.oldTitle = oldValues.title;
-                }
-
-                chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, function(response)  {
-                    data.password = response.content;
-                    console.log('password 0 ', response);
-                    console.log('password 1 ', data.password);
-                    this.state.context.saveDataToEntryById(this.state.key_value, data);
+            chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, function(response)  {
+                console.log('data1 ', data);
+                data.password = response.content;
+                console.log('data2 ', data);
+                if (this.state.key_value) {
                     this.setState({
+                        mode: 'list-mode',
                         content_changed: '',
-                        tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value),
-                        show_available: false
-
+                        password: response.content
                     });
-                }.bind(this));
-
-            } else {
-                chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, function(response)  {
-                    data.password = response.content;
+                    this.state.context.saveDataToEntryById(this.state.key_value, data);
+                } else {
                     this.state.context.addNewEntry(data);
-                    this.setState({
-                        mode: 'list-mode'
-                    });
-                }.bind(this));
-            }
+                }
+            }.bind(this));
         },
 
         discardChanges:function() {
@@ -1031,7 +1008,8 @@ var React = require('react'),
                     tags_titles: this.state.context.getTagTitleArrayById(oldValues.tags),
                     show_available: false,
                     tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value),
-                    note: oldValues.note
+                    note: oldValues.note,
+                    mode: 'list-mode'
                 });
                 if (this.state.content_changed === 'edited') {
                     this.setState({
@@ -1063,6 +1041,11 @@ var React = require('react'),
             } else {
                 input.setAttribute('type', 'text');
             }
+        },
+
+        hidePassword:function() {
+            var input = React.findDOMNode(this.refs.password);
+            input.setAttribute('type', 'password');
         },
 
         generatePassword:function() {
@@ -1143,8 +1126,9 @@ var React = require('react'),
         },
 
         render:function() {
-            var showPassword = (React.createElement(Tooltip, {id: "show"}, "Show/hide password.")),
-                generatePassword = (React.createElement(Tooltip, {id: "generate"}, "Generate password.")),
+            var showPassword = (React.createElement(Tooltip, {id: "show"}, "Show/hide password")),
+                generatePassword = (React.createElement(Tooltip, {id: "generate"}, "Generate password")),
+                unlockEntry = (React.createElement(Tooltip, {id: "unlock"}, "Unlock and edit")),
                 interator = 0,
                 tags = this.state.tags_titles.map(function(key)  {
                     return (React.createElement("span", {className: "tagsinput-tag", 
@@ -1243,8 +1227,12 @@ var React = require('react'),
                         ), 
 
                         React.createElement("div", {className: "form-buttons"}, 
+
+                            React.createElement(OverlayTrigger, {placement: "top", 
+                                            overlay: unlockEntry}, 
                             React.createElement("span", {className: "close-btn", onClick: this.changeMode}, 
                                 React.createElement("i", {className: "ion-ios-locked-outline"})
+                            )
                             ), 
 
                             null != this.state.key_value &&
