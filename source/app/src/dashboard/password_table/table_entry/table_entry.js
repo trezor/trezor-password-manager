@@ -55,7 +55,8 @@ var React = require('react'),
                 tag_globa_title_array: this.props.context.getTagTitleArray(),
                 tags_available: this.props.context.getPossibleToAddTagsForEntry(this.props.key_value),
                 show_available: false,
-                content_changed: this.props.content_changed || ''
+                content_changed: this.props.content_changed || '',
+                waiting_trezor: ''
             };
         },
 
@@ -121,12 +122,14 @@ var React = require('react'),
         changeMode() {
             this.hidePassword();
             if (this.state.mode === 'list-mode') {
+                this.setTrezorWaitingBackface(true);
                 var data = {
                     title: this.state.title,
                     username: this.state.username,
                     password: this.state.password
                 };
                 chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
+                    this.setTrezorWaitingBackface(false);
                     this.setState({
                         password: response.content,
                         mode: 'edit-mode'
@@ -143,6 +146,14 @@ var React = require('react'),
                     mode: 'list-mode',
                     password: oldValues.password
                 })
+            }
+        },
+
+        setTrezorWaitingBackface(isWaiting) {
+            if(isWaiting) {
+                this.setState({waiting_trezor: 'waiting'});
+            } else {
+                this.setState({waiting_trezor: ' '});
             }
         },
 
@@ -331,71 +342,72 @@ var React = require('react'),
             }
 
             return (
-                <div className={ this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}
-                     onClick={this.openTab}>
-                    <form onSubmit={this.saveEntry}>
-                        <div className='avatar'>
-                            <img src={this.state.image_src}
-                                 onError={this.handleError}/>
-                            <i className={'icon ion-' + this.state.context.getTagIconById(this.state.tags_id[this.state.tags_id.length-1])}></i>
-                        </div>
+                <div className={'card ' + this.state.waiting_trezor}>
+                    <div className={ this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}
+                         onClick={this.openTab}>
+                        <form onSubmit={this.saveEntry}>
+                            <div className='avatar'>
+                                <img src={this.state.image_src}
+                                     onError={this.handleError}/>
+                                <i className={'icon ion-' + this.state.context.getTagIconById(this.state.tags_id[this.state.tags_id.length-1])}></i>
+                            </div>
 
-                        <div className='title'>
-                            <span>Title </span>
-                            <input type='text'
-                                   autoComplete='off'
-                                   value={this.state.title}
-                                   name='title'
-                                   onChange={this.handleChange}
-                                   onKeyUp={this.keyPressed}
-                                   onBlur={this.titleOnBlur}
-                                   disabled={this.state.mode === 'list-mode' ? 'disabled' : false}/>
-                        </div>
+                            <div className='title'>
+                                <span>Title </span>
+                                <input type='text'
+                                       autoComplete='off'
+                                       value={this.state.title}
+                                       name='title'
+                                       onChange={this.handleChange}
+                                       onKeyUp={this.keyPressed}
+                                       onBlur={this.titleOnBlur}
+                                       disabled={this.state.mode === 'list-mode' ? 'disabled' : false}/>
+                            </div>
 
-                        <div className='username'>
-                            <span>Username </span>
-                            <input type='text'
-                                   autoComplete='off'
-                                   value={this.state.username}
-                                   name='username'
-                                   onChange={this.handleChange}
-                                   onKeyUp={this.keyPressed}
-                                   disabled={this.state.mode === 'list-mode' ? 'disabled' : false}/>
-                        </div>
+                            <div className='username'>
+                                <span>Username </span>
+                                <input type='text'
+                                       autoComplete='off'
+                                       value={this.state.username}
+                                       name='username'
+                                       onChange={this.handleChange}
+                                       onKeyUp={this.keyPressed}
+                                       disabled={this.state.mode === 'list-mode' ? 'disabled' : false}/>
+                            </div>
 
-                        <div className='password'>
-                            <span>Password </span>
-                            <input type='password'
-                                   autoComplete='off'
-                                   ref='password'
-                                   name='password'
-                                   onChange={this.handleChange}
-                                   onKeyUp={this.keyPressed}
-                                   value={this.state.password}/>
-                            <OverlayTrigger placement='top'
-                                            overlay={showPassword}>
-                                <i className='button ion-eye'
-                                   onClick={this.showPassword}></i>
-                            </OverlayTrigger>
-                            <OverlayTrigger placement='top'
-                                            overlay={generatePassword}>
-                                <i className='button ion-loop'
-                                   onClick={this.generatePassword}></i>
-                            </OverlayTrigger>
-                        </div>
+                            <div className='password'>
+                                <span>Password </span>
+                                <input type='password'
+                                       autoComplete='off'
+                                       ref='password'
+                                       name='password'
+                                       onChange={this.handleChange}
+                                       onKeyUp={this.keyPressed}
+                                       value={this.state.password}/>
+                                <OverlayTrigger placement='top'
+                                                overlay={showPassword}>
+                                    <i className='button ion-eye'
+                                       onClick={this.showPassword}></i>
+                                </OverlayTrigger>
+                                <OverlayTrigger placement='top'
+                                                overlay={generatePassword}>
+                                    <i className='button ion-loop'
+                                       onClick={this.generatePassword}></i>
+                                </OverlayTrigger>
+                            </div>
 
-                        <div className='tags'>
-                            <span>Tags </span>
+                            <div className='tags'>
+                                <span>Tags </span>
                             <span ref='tags'
                                   className='tagsinput'>{tags}
                             </span>
-                        </div>
+                            </div>
 
-                        <div className='available-tags'>{tags_available}</div>
+                            <div className='available-tags'>{tags_available}</div>
 
 
-                        <div className='note'>
-                            <span>Note </span>
+                            <div className='note'>
+                                <span>Note </span>
                             <Textarea type='text'
                                       autoComplete='off'
                                       onChange={this.handleChange}
@@ -403,31 +415,36 @@ var React = require('react'),
                                       value={this.state.note}
                                       defaultValue={''}
                                       name='note'></Textarea>
-                        </div>
+                            </div>
 
-                        <div className='form-buttons'>
+                            <div className='form-buttons'>
 
-                            <OverlayTrigger placement='top'
-                                            overlay={unlockEntry}>
+                                <OverlayTrigger placement='top'
+                                                overlay={unlockEntry}>
                             <span className='close-btn' onClick={this.changeMode}>
                                 <i></i>
                             </span>
-                            </OverlayTrigger>
+                                </OverlayTrigger>
 
-                            {null != this.state.key_value &&
-                            <DropdownButton title='' noCaret pullRight id='dropdown-no-caret'>
-                                <MenuItem eventKey='1' onSelect={this.removeEntry}><i className='ion-close'></i> Remove
-                                    entry</MenuItem>
-                            </DropdownButton>
-                            }
+                                {null != this.state.key_value &&
+                                <DropdownButton title='' noCaret pullRight id='dropdown-no-caret'>
+                                    <MenuItem eventKey='1' onSelect={this.removeEntry}><i className='ion-close'></i>
+                                        Remove
+                                        entry</MenuItem>
+                                </DropdownButton>
+                                }
 
-                            <div className='content-btns'>
-                                <span className='button green-btn' onClick={this.saveEntry}>Save</span>
-                                <span className='button red-btn' onClick={this.discardChanges}>Discard</span>
+                                <div className='content-btns'>
+                                    <span className='button green-btn' onClick={this.saveEntry}>Save</span>
+                                    <span className='button red-btn' onClick={this.discardChanges}>Discard</span>
+                                </div>
                             </div>
-                        </div>
-                        <button type='submit' className='submit-btn'></button>
-                    </form>
+                            <button type='submit' className='submit-btn'></button>
+                        </form>
+                    </div>
+                    <div className='backface'>
+                        <p>Waiting for Trezor input</p>
+                    </div>
                 </div>
             )
         }

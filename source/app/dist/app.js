@@ -874,7 +874,8 @@ var React = require('react'),
                 tag_globa_title_array: this.props.context.getTagTitleArray(),
                 tags_available: this.props.context.getPossibleToAddTagsForEntry(this.props.key_value),
                 show_available: false,
-                content_changed: this.props.content_changed || ''
+                content_changed: this.props.content_changed || '',
+                waiting_trezor: ''
             };
         },
 
@@ -940,12 +941,14 @@ var React = require('react'),
         changeMode:function() {
             this.hidePassword();
             if (this.state.mode === 'list-mode') {
+                this.setTrezorWaitingBackface(true);
                 var data = {
                     title: this.state.title,
                     username: this.state.username,
                     password: this.state.password
                 };
                 chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, function(response)  {
+                    this.setTrezorWaitingBackface(false);
                     this.setState({
                         password: response.content,
                         mode: 'edit-mode'
@@ -962,6 +965,14 @@ var React = require('react'),
                     mode: 'list-mode',
                     password: oldValues.password
                 })
+            }
+        },
+
+        setTrezorWaitingBackface:function(isWaiting) {
+            if(isWaiting) {
+                this.setState({waiting_trezor: 'waiting'});
+            } else {
+                this.setState({waiting_trezor: ' '});
             }
         },
 
@@ -1150,71 +1161,72 @@ var React = require('react'),
             }
 
             return (
-                React.createElement("div", {className:  this.state.mode + ' entry col-xs-12 ' + this.state.content_changed, 
-                     onClick: this.openTab}, 
-                    React.createElement("form", {onSubmit: this.saveEntry}, 
-                        React.createElement("div", {className: "avatar"}, 
-                            React.createElement("img", {src: this.state.image_src, 
-                                 onError: this.handleError}), 
-                            React.createElement("i", {className: 'icon ion-' + this.state.context.getTagIconById(this.state.tags_id[this.state.tags_id.length-1])})
-                        ), 
-
-                        React.createElement("div", {className: "title"}, 
-                            React.createElement("span", null, "Title "), 
-                            React.createElement("input", {type: "text", 
-                                   autoComplete: "off", 
-                                   value: this.state.title, 
-                                   name: "title", 
-                                   onChange: this.handleChange, 
-                                   onKeyUp: this.keyPressed, 
-                                   onBlur: this.titleOnBlur, 
-                                   disabled: this.state.mode === 'list-mode' ? 'disabled' : false})
-                        ), 
-
-                        React.createElement("div", {className: "username"}, 
-                            React.createElement("span", null, "Username "), 
-                            React.createElement("input", {type: "text", 
-                                   autoComplete: "off", 
-                                   value: this.state.username, 
-                                   name: "username", 
-                                   onChange: this.handleChange, 
-                                   onKeyUp: this.keyPressed, 
-                                   disabled: this.state.mode === 'list-mode' ? 'disabled' : false})
-                        ), 
-
-                        React.createElement("div", {className: "password"}, 
-                            React.createElement("span", null, "Password "), 
-                            React.createElement("input", {type: "password", 
-                                   autoComplete: "off", 
-                                   ref: "password", 
-                                   name: "password", 
-                                   onChange: this.handleChange, 
-                                   onKeyUp: this.keyPressed, 
-                                   value: this.state.password}), 
-                            React.createElement(OverlayTrigger, {placement: "top", 
-                                            overlay: showPassword}, 
-                                React.createElement("i", {className: "button ion-eye", 
-                                   onClick: this.showPassword})
+                React.createElement("div", {className: 'card ' + this.state.waiting_trezor}, 
+                    React.createElement("div", {className:  this.state.mode + ' entry col-xs-12 ' + this.state.content_changed, 
+                         onClick: this.openTab}, 
+                        React.createElement("form", {onSubmit: this.saveEntry}, 
+                            React.createElement("div", {className: "avatar"}, 
+                                React.createElement("img", {src: this.state.image_src, 
+                                     onError: this.handleError}), 
+                                React.createElement("i", {className: 'icon ion-' + this.state.context.getTagIconById(this.state.tags_id[this.state.tags_id.length-1])})
                             ), 
-                            React.createElement(OverlayTrigger, {placement: "top", 
-                                            overlay: generatePassword}, 
-                                React.createElement("i", {className: "button ion-loop", 
-                                   onClick: this.generatePassword})
-                            )
-                        ), 
 
-                        React.createElement("div", {className: "tags"}, 
-                            React.createElement("span", null, "Tags "), 
+                            React.createElement("div", {className: "title"}, 
+                                React.createElement("span", null, "Title "), 
+                                React.createElement("input", {type: "text", 
+                                       autoComplete: "off", 
+                                       value: this.state.title, 
+                                       name: "title", 
+                                       onChange: this.handleChange, 
+                                       onKeyUp: this.keyPressed, 
+                                       onBlur: this.titleOnBlur, 
+                                       disabled: this.state.mode === 'list-mode' ? 'disabled' : false})
+                            ), 
+
+                            React.createElement("div", {className: "username"}, 
+                                React.createElement("span", null, "Username "), 
+                                React.createElement("input", {type: "text", 
+                                       autoComplete: "off", 
+                                       value: this.state.username, 
+                                       name: "username", 
+                                       onChange: this.handleChange, 
+                                       onKeyUp: this.keyPressed, 
+                                       disabled: this.state.mode === 'list-mode' ? 'disabled' : false})
+                            ), 
+
+                            React.createElement("div", {className: "password"}, 
+                                React.createElement("span", null, "Password "), 
+                                React.createElement("input", {type: "password", 
+                                       autoComplete: "off", 
+                                       ref: "password", 
+                                       name: "password", 
+                                       onChange: this.handleChange, 
+                                       onKeyUp: this.keyPressed, 
+                                       value: this.state.password}), 
+                                React.createElement(OverlayTrigger, {placement: "top", 
+                                                overlay: showPassword}, 
+                                    React.createElement("i", {className: "button ion-eye", 
+                                       onClick: this.showPassword})
+                                ), 
+                                React.createElement(OverlayTrigger, {placement: "top", 
+                                                overlay: generatePassword}, 
+                                    React.createElement("i", {className: "button ion-loop", 
+                                       onClick: this.generatePassword})
+                                )
+                            ), 
+
+                            React.createElement("div", {className: "tags"}, 
+                                React.createElement("span", null, "Tags "), 
                             React.createElement("span", {ref: "tags", 
                                   className: "tagsinput"}, tags
                             )
-                        ), 
+                            ), 
 
-                        React.createElement("div", {className: "available-tags"}, tags_available), 
+                            React.createElement("div", {className: "available-tags"}, tags_available), 
 
 
-                        React.createElement("div", {className: "note"}, 
-                            React.createElement("span", null, "Note "), 
+                            React.createElement("div", {className: "note"}, 
+                                React.createElement("span", null, "Note "), 
                             React.createElement(Textarea, {type: "text", 
                                       autoComplete: "off", 
                                       onChange: this.handleChange, 
@@ -1222,30 +1234,35 @@ var React = require('react'),
                                       value: this.state.note, 
                                       defaultValue: '', 
                                       name: "note"})
-                        ), 
+                            ), 
 
-                        React.createElement("div", {className: "form-buttons"}, 
+                            React.createElement("div", {className: "form-buttons"}, 
 
-                            React.createElement(OverlayTrigger, {placement: "top", 
-                                            overlay: unlockEntry}, 
+                                React.createElement(OverlayTrigger, {placement: "top", 
+                                                overlay: unlockEntry}, 
                             React.createElement("span", {className: "close-btn", onClick: this.changeMode}, 
                                 React.createElement("i", null)
                             )
-                            ), 
+                                ), 
 
-                            null != this.state.key_value &&
-                            React.createElement(DropdownButton, {title: "", noCaret: true, pullRight: true, id: "dropdown-no-caret"}, 
-                                React.createElement(MenuItem, {eventKey: "1", onSelect: this.removeEntry}, React.createElement("i", {className: "ion-close"}), " Remove" + ' ' +
-                                    "entry")
-                            ), 
-                            
+                                null != this.state.key_value &&
+                                React.createElement(DropdownButton, {title: "", noCaret: true, pullRight: true, id: "dropdown-no-caret"}, 
+                                    React.createElement(MenuItem, {eventKey: "1", onSelect: this.removeEntry}, React.createElement("i", {className: "ion-close"}), 
+                                        "Remove" + ' ' +
+                                        "entry")
+                                ), 
+                                
 
-                            React.createElement("div", {className: "content-btns"}, 
-                                React.createElement("span", {className: "button green-btn", onClick: this.saveEntry}, "Save"), 
-                                React.createElement("span", {className: "button red-btn", onClick: this.discardChanges}, "Discard")
-                            )
-                        ), 
-                        React.createElement("button", {type: "submit", className: "submit-btn"})
+                                React.createElement("div", {className: "content-btns"}, 
+                                    React.createElement("span", {className: "button green-btn", onClick: this.saveEntry}, "Save"), 
+                                    React.createElement("span", {className: "button red-btn", onClick: this.discardChanges}, "Discard")
+                                )
+                            ), 
+                            React.createElement("button", {type: "submit", className: "submit-btn"})
+                        )
+                    ), 
+                    React.createElement("div", {className: "backface"}, 
+                        React.createElement("p", null, "Waiting for Trezor input")
                     )
                 )
             )

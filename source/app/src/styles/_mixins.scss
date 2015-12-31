@@ -58,6 +58,19 @@
   transform: $val;
 }
 
+@mixin transform-style($val) {
+  -webkit-transform-style: $val;
+  -moz-transform-style: $val;
+  -o-transform-style: $val;
+  transform-style: $val;
+}
+
+@mixin backface-visibility($val) {
+  -webkit-backface-visibility: $val;
+  -moz-backface-visibility: $val;
+  -ms-backface-visibility: $val;
+}
+
 @mixin box-sizing($val) {
   -webkit-box-sizing: $val;
   -moz-box-sizing: $val;
@@ -70,7 +83,6 @@
   -o-transition-delay: $val;
   transition-delay: $val;
 }
-
 
 @mixin z-depth-1() {
   @include shadows(0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12));
