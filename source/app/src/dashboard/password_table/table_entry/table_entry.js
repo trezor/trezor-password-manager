@@ -150,7 +150,7 @@ var React = require('react'),
         },
 
         setTrezorWaitingBackface(isWaiting) {
-            if(isWaiting) {
+            if (isWaiting) {
                 this.setState({waiting_trezor: 'waiting'});
             } else {
                 this.setState({waiting_trezor: ' '});
@@ -443,7 +443,10 @@ var React = require('react'),
                         </form>
                     </div>
                     <div className='backface'>
-                        <p>Waiting for Trezor input</p>
+                        <span className='text'>
+                            <span className='spinner'></span>
+                            Waiting for Trezor input
+                        </span>
                     </div>
                 </div>
             )

@@ -16,6 +16,20 @@
       .backface {
         @include backface-visibility(visible);
         @include transform(rotateX(0deg));
+
+        .text {
+          .spinner {
+            height: 45px;
+            width: 45px;
+            animation: rotate 0.8s infinite linear;
+            border: 5px solid $c_blue;
+            border-right-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 5px;
+          }
+        }
       }
 
       .entry {
@@ -30,11 +44,13 @@
       @include transition(all 150ms ease-in-out);
       @include transform-style(preserve-3d);
 
-      p {
+      .text {
         position: relative;
-        top: 20px;
-        left: 20px;
+        top: -50px;
+        left: 30px;
+        color: $c_grey_content_font;
       }
+
     }
 
     .entry {
@@ -432,5 +448,13 @@
       }
     }
   }
+}
 
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

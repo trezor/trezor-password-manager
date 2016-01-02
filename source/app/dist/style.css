@@ -3650,6 +3650,16 @@ aside.left-panel {
       -moz-transform: rotateX(0deg);
       -o-transform: rotateX(0deg);
       transform: rotateX(0deg); }
+      .dashboard .card.waiting .backface .text .spinner {
+        height: 45px;
+        width: 45px;
+        animation: rotate 0.8s infinite linear;
+        border: 5px solid #3498db;
+        border-right-color: transparent;
+        border-radius: 50%;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 5px; }
     .dashboard .card.waiting .entry {
       -webkit-backface-visibility: hidden;
       -moz-backface-visibility: hidden;
@@ -3674,10 +3684,11 @@ aside.left-panel {
       -moz-transform-style: preserve-3d;
       -o-transform-style: preserve-3d;
       transform-style: preserve-3d; }
-      .dashboard .card .backface p {
+      .dashboard .card .backface .text {
         position: relative;
-        top: 20px;
-        left: 20px; }
+        top: -50px;
+        left: 30px;
+        color: #797979; }
     .dashboard .card .entry {
       display: block;
       position: relative;
@@ -4037,6 +4048,12 @@ aside.left-panel {
           transition: all 0.2s ease-in-out; }
       .dashboard .card .entry .submit-btn {
         display: none; }
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg); }
+  100% {
+    transform: rotate(360deg); } }
 
 form.filter {
   display: block;

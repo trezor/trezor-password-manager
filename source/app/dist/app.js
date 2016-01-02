@@ -969,7 +969,7 @@ var React = require('react'),
         },
 
         setTrezorWaitingBackface:function(isWaiting) {
-            if(isWaiting) {
+            if (isWaiting) {
                 this.setState({waiting_trezor: 'waiting'});
             } else {
                 this.setState({waiting_trezor: ' '});
@@ -1262,7 +1262,8 @@ var React = require('react'),
                         )
                     ), 
                     React.createElement("div", {className: "backface"}, 
-                        React.createElement("p", null, "Waiting for Trezor input")
+                        React.createElement("span", {className: "text"}, 
+                        React.createElement("span", {className: "spinner"}), " Waiting for Trezor input")
                     )
                 )
             )
