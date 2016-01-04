@@ -1263,7 +1263,9 @@ var React = require('react'),
                     ), 
                     React.createElement("div", {className: "backface"}, 
                         React.createElement("span", {className: "text"}, 
-                        React.createElement("span", {className: "spinner"}), " Waiting for Trezor input")
+                            React.createElement("span", {className: "spinner"}), 
+                            "Waiting for Trezor input"
+                        )
                     )
                 )
             )

@@ -27,7 +27,7 @@
             border-radius: 50%;
             display: inline-block;
             vertical-align: middle;
-            margin-right: 5px;
+            margin-right: 10px;
           }
         }
       }
@@ -39,6 +39,7 @@
     }
 
     .backface {
+      height: 85px;
       @include backface-visibility(hidden);
       @include transform(rotateX(180deg));
       @include transition(all 150ms ease-in-out);
@@ -46,7 +47,7 @@
 
       .text {
         position: relative;
-        top: -50px;
+        top: -65px;
         left: 30px;
         color: $c_grey_content_font;
       }

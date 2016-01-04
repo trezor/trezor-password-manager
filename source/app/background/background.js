@@ -250,6 +250,7 @@ let deviceList = null,
     trezorDevice = null,
     fullKey = '',
     encryptionKey = '',
+    displayPhrase = (title, username) => {return 'Unlock ' + title + ' under ' + username + ' username?'},
     handleTrezorError = (error) => {
         console.log('error happend! ', error);
         switch (error) {
@@ -335,7 +336,7 @@ let deviceList = null,
     },
 
     encryptEntry = (data, callback) => {
-        let key = 'Unlock ' + data.title + ' with ' + data.username + ' username?',
+        let key = displayPhrase(data.title, data.username),
             tailedHex = toHex(addPaddingTail(toHex(data.password)));
         trezorDevice.session.cipherKeyValue(getPath(), key, tailedHex, true, false, true).then((result) => {
             callback({content: result.message.value});
@@ -343,7 +344,7 @@ let deviceList = null,
     },
 
     decryptEntry = (data, callback) => {
-        let key = 'Unlock ' + data.title + ' with ' + data.username + ' username?';
+        let key = displayPhrase(data.title, data.username);
         trezorDevice.session.cipherKeyValue(getPath(), key, data.password, false, false, true).then((result) => {
             callback({content: fromHex(removePaddingTail(fromHex(result.message.value)))});
         });

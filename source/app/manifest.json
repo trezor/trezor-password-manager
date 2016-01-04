@@ -40,7 +40,6 @@
     "storage",
     "background",
     "nativeMessaging",
-    "unlimitedStorage",
     "https://*.dropbox.com/*",
     "tabs"
   ]

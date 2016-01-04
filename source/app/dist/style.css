@@ -3659,7 +3659,7 @@ aside.left-panel {
         border-radius: 50%;
         display: inline-block;
         vertical-align: middle;
-        margin-right: 5px; }
+        margin-right: 10px; }
     .dashboard .card.waiting .entry {
       -webkit-backface-visibility: hidden;
       -moz-backface-visibility: hidden;
@@ -3669,6 +3669,7 @@ aside.left-panel {
       -o-transform: rotateX(180deg);
       transform: rotateX(180deg); }
     .dashboard .card .backface {
+      height: 85px;
       -webkit-backface-visibility: hidden;
       -moz-backface-visibility: hidden;
       -ms-backface-visibility: hidden;
@@ -3686,7 +3687,7 @@ aside.left-panel {
       transform-style: preserve-3d; }
       .dashboard .card .backface .text {
         position: relative;
-        top: -50px;
+        top: -65px;
         left: 30px;
         color: #797979; }
     .dashboard .card .entry {
