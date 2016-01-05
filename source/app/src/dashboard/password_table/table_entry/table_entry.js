@@ -71,27 +71,6 @@ var React = require('react'),
             });
         },
 
-        extractDomain(url) {
-            var domain;
-            if (url.indexOf('://') > -1) {
-                domain = url.split('/')[2];
-            } else {
-                domain = url.split('/')[0];
-            }
-            domain = domain.split(':')[0];
-            return domain;
-        },
-
-        isURL(str) {
-            var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
-                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
-                '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-                '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-                '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
-            return pattern.test(str);
-        },
-
         componentDidMount() {
             if (this.state.title.indexOf('.') > -1) {
                 this.setState({
@@ -131,7 +110,7 @@ var React = require('react'),
                 chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
                     this.setTrezorWaitingBackface(false);
                     this.setState({
-                        password: response.content,
+                        password: response.content.password,
                         mode: 'edit-mode'
                     });
                 });
@@ -147,6 +126,35 @@ var React = require('react'),
                     password: oldValues.password
                 })
             }
+        },
+
+        extractDomain(url) {
+            var domain;
+            if (url.indexOf('://') > -1) {
+                domain = url.split('/')[2];
+            } else {
+                domain = url.split('/')[0];
+            }
+            domain = domain.split(':')[0];
+            return domain;
+        },
+
+        isUrl(url){
+            return url.indexOf('.') > -1
+        },
+
+        decomposeUrl(url) {
+            var title = {index: url.indexOf('://')};
+            if (title.index > -1) {
+                title.protocol = url.substring(0, title.index + 3);
+                title.domain = url.split('/')[2];
+                title.path = url.slice(title.protocol.length + title.domain.length, url.length);
+            } else {
+                title.protocol = false;
+                title.domain = url.split('/')[0];
+                title.path = url.slice(title.domain.length, url.length);
+            }
+            return title;
         },
 
         setTrezorWaitingBackface(isWaiting) {
@@ -173,12 +181,12 @@ var React = require('react'),
             };
 
             chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, (response) => {
-                data.password = response.content;
+                data.password = response.content.password;
                 if (this.state.key_value) {
                     this.setState({
                         mode: 'list-mode',
                         content_changed: '',
-                        password: response.content
+                        password: response.content.password
                     });
                     this.state.context.saveDataToEntryById(this.state.key_value, data);
                 } else {
@@ -300,11 +308,16 @@ var React = require('react'),
         },
 
         openTab() {
-            if (this.state.mode === 'list-mode') {
-                /*if (this.isURL(this.state.title)) {
-                 chrome.tabs.create({url: this.state.title});
-                 }*/
-            }
+            this.setTrezorWaitingBackface(true);
+            var data = {
+                title: this.state.title,
+                username: this.state.username,
+                password: this.state.password
+            };
+            chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
+                chrome.runtime.sendMessage({type: 'openTab', content: response.content});
+                this.setTrezorWaitingBackface(false);
+            });
         },
 
         removeEntry() {
@@ -318,8 +331,26 @@ var React = require('react'),
         render() {
             var showPassword = (<Tooltip id='show'>Show/hide password</Tooltip>),
                 generatePassword = (<Tooltip id='generate'>Generate password</Tooltip>),
-                unlockEntry = (<Tooltip id='unlock'>Unlock and edit</Tooltip>),
+                openEntryTab = (<Tooltip id='open'>Open and login</Tooltip>),
+                unlockEntry = this.state.mode === 'list-mode' ? (<Tooltip id='unlock'>Unlock and edit</Tooltip>) : (
+                    <Tooltip id='unlock'>Lock entry</Tooltip>),
                 interator = 0,
+                title = this.state.mode === 'list-mode' ?
+                    (<input type='text'
+                            autoComplete='off'
+                            value={this.decomposeUrl(this.state.title).domain}
+                            name='title'
+                            className='title-input'
+                            disabled='disabled'/>
+                    ) : (
+                    <input type='text'
+                           autoComplete='off'
+                           value={this.state.title}
+                           name='title'
+                           onChange={this.handleChange}
+                           onKeyUp={this.keyPressed}
+                           onBlur={this.titleOnBlur}/>),
+
                 tags = this.state.tags_titles.map((key) => {
                     return (<span className='tagsinput-tag'
                                   onClick={this.switchTag.bind(null , key)}
@@ -343,8 +374,7 @@ var React = require('react'),
 
             return (
                 <div className={'card ' + this.state.waiting_trezor}>
-                    <div className={ this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}
-                         onClick={this.openTab}>
+                    <div className={ this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}>
                         <form onSubmit={this.saveEntry}>
                             <div className='avatar'>
                                 <img src={this.state.image_src}
@@ -354,14 +384,7 @@ var React = require('react'),
 
                             <div className='title'>
                                 <span>Title </span>
-                                <input type='text'
-                                       autoComplete='off'
-                                       value={this.state.title}
-                                       name='title'
-                                       onChange={this.handleChange}
-                                       onKeyUp={this.keyPressed}
-                                       onBlur={this.titleOnBlur}
-                                       disabled={this.state.mode === 'list-mode' ? 'disabled' : false}/>
+                                {title}
                             </div>
 
                             <div className='username'>
@@ -384,23 +407,17 @@ var React = require('react'),
                                        onChange={this.handleChange}
                                        onKeyUp={this.keyPressed}
                                        value={this.state.password}/>
-                                <OverlayTrigger placement='top'
-                                                overlay={showPassword}>
-                                    <i className='button ion-eye'
-                                       onClick={this.showPassword}></i>
+                                <OverlayTrigger placement='top' overlay={showPassword}>
+                                    <i className='button ion-eye' onClick={this.showPassword}></i>
                                 </OverlayTrigger>
-                                <OverlayTrigger placement='top'
-                                                overlay={generatePassword}>
-                                    <i className='button ion-loop'
-                                       onClick={this.generatePassword}></i>
+                                <OverlayTrigger placement='top' overlay={generatePassword}>
+                                    <i className='button ion-loop' onClick={this.generatePassword}></i>
                                 </OverlayTrigger>
                             </div>
 
                             <div className='tags'>
                                 <span>Tags </span>
-                            <span ref='tags'
-                                  className='tagsinput'>{tags}
-                            </span>
+                                <span ref='tags' className='tagsinput'>{tags}</span>
                             </div>
 
                             <div className='available-tags'>{tags_available}</div>
@@ -418,19 +435,25 @@ var React = require('react'),
                             </div>
 
                             <div className='form-buttons'>
-
-                                <OverlayTrigger placement='top'
-                                                overlay={unlockEntry}>
-                            <span className='close-btn' onClick={this.changeMode}>
-                                <i></i>
-                            </span>
+                                <OverlayTrigger placement='top' overlay={unlockEntry}>
+                                    <span className='btn lock-btn' onClick={this.changeMode}>
+                                        <i></i>
+                                    </span>
                                 </OverlayTrigger>
 
-                                {null != this.state.key_value &&
+                                {this.isUrl(this.state.title) &&
+                                <OverlayTrigger placement='top' overlay={openEntryTab}>
+                                    <span className='btn open-tab-btn' onClick={this.openTab}>
+                                        <i></i>
+                                    </span>
+                                </OverlayTrigger>
+                                }
+
+
+                                {this.state.key_value != null &&
                                 <DropdownButton title='' noCaret pullRight id='dropdown-no-caret'>
                                     <MenuItem eventKey='1' onSelect={this.removeEntry}><i className='ion-close'></i>
-                                        Remove
-                                        entry</MenuItem>
+                                        Remove entry</MenuItem>
                                 </DropdownButton>
                                 }
 

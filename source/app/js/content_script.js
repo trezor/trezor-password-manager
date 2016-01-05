@@ -4,7 +4,7 @@ let inserted = false;
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
-    switch (request) {
+    switch (request.type) {
         case 'showDivContentScript':
             if (!inserted) {
                 const div = document.createElement('div');

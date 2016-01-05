@@ -890,27 +890,6 @@ var React = require('react'),
             });
         },
 
-        extractDomain:function(url) {
-            var domain;
-            if (url.indexOf('://') > -1) {
-                domain = url.split('/')[2];
-            } else {
-                domain = url.split('/')[0];
-            }
-            domain = domain.split(':')[0];
-            return domain;
-        },
-
-        isURL:function(str) {
-            var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
-                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
-                '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-                '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-                '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
-            return pattern.test(str);
-        },
-
         componentDidMount:function() {
             if (this.state.title.indexOf('.') > -1) {
                 this.setState({
@@ -950,7 +929,7 @@ var React = require('react'),
                 chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, function(response)  {
                     this.setTrezorWaitingBackface(false);
                     this.setState({
-                        password: response.content,
+                        password: response.content.password,
                         mode: 'edit-mode'
                     });
                 }.bind(this));
@@ -966,6 +945,35 @@ var React = require('react'),
                     password: oldValues.password
                 })
             }
+        },
+
+        extractDomain:function(url) {
+            var domain;
+            if (url.indexOf('://') > -1) {
+                domain = url.split('/')[2];
+            } else {
+                domain = url.split('/')[0];
+            }
+            domain = domain.split(':')[0];
+            return domain;
+        },
+
+        isUrl:function(url){
+            return url.indexOf('.') > -1
+        },
+
+        decomposeUrl:function(url) {
+            var title = {index: url.indexOf('://')};
+            if (title.index > -1) {
+                title.protocol = url.substring(0, title.index + 3);
+                title.domain = url.split('/')[2];
+                title.path = url.slice(title.protocol.length + title.domain.length, url.length);
+            } else {
+                title.protocol = false;
+                title.domain = url.split('/')[0];
+                title.path = url.slice(title.domain.length, url.length);
+            }
+            return title;
         },
 
         setTrezorWaitingBackface:function(isWaiting) {
@@ -992,12 +1000,12 @@ var React = require('react'),
             };
 
             chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, function(response)  {
-                data.password = response.content;
+                data.password = response.content.password;
                 if (this.state.key_value) {
                     this.setState({
                         mode: 'list-mode',
                         content_changed: '',
-                        password: response.content
+                        password: response.content.password
                     });
                     this.state.context.saveDataToEntryById(this.state.key_value, data);
                 } else {
@@ -1119,11 +1127,16 @@ var React = require('react'),
         },
 
         openTab:function() {
-            if (this.state.mode === 'list-mode') {
-                /*if (this.isURL(this.state.title)) {
-                 chrome.tabs.create({url: this.state.title});
-                 }*/
-            }
+            this.setTrezorWaitingBackface(true);
+            var data = {
+                title: this.state.title,
+                username: this.state.username,
+                password: this.state.password
+            };
+            chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, function(response)  {
+                chrome.runtime.sendMessage({type: 'openTab', content: response.content});
+                this.setTrezorWaitingBackface(false);
+            }.bind(this));
         },
 
         removeEntry:function() {
@@ -1137,8 +1150,26 @@ var React = require('react'),
         render:function() {
             var showPassword = (React.createElement(Tooltip, {id: "show"}, "Show/hide password")),
                 generatePassword = (React.createElement(Tooltip, {id: "generate"}, "Generate password")),
-                unlockEntry = (React.createElement(Tooltip, {id: "unlock"}, "Unlock and edit")),
+                openEntryTab = (React.createElement(Tooltip, {id: "open"}, "Open and login")),
+                unlockEntry = this.state.mode === 'list-mode' ? (React.createElement(Tooltip, {id: "unlock"}, "Unlock and edit")) : (
+                    React.createElement(Tooltip, {id: "unlock"}, "Lock entry")),
                 interator = 0,
+                title = this.state.mode === 'list-mode' ?
+                    (React.createElement("input", {type: "text", 
+                            autoComplete: "off", 
+                            value: this.decomposeUrl(this.state.title).domain, 
+                            name: "title", 
+                            className: "title-input", 
+                            disabled: "disabled"})
+                    ) : (
+                    React.createElement("input", {type: "text", 
+                           autoComplete: "off", 
+                           value: this.state.title, 
+                           name: "title", 
+                           onChange: this.handleChange, 
+                           onKeyUp: this.keyPressed, 
+                           onBlur: this.titleOnBlur})),
+
                 tags = this.state.tags_titles.map(function(key)  {
                     return (React.createElement("span", {className: "tagsinput-tag", 
                                   onClick: this.switchTag.bind(null , key), 
@@ -1162,8 +1193,7 @@ var React = require('react'),
 
             return (
                 React.createElement("div", {className: 'card ' + this.state.waiting_trezor}, 
-                    React.createElement("div", {className:  this.state.mode + ' entry col-xs-12 ' + this.state.content_changed, 
-                         onClick: this.openTab}, 
+                    React.createElement("div", {className:  this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}, 
                         React.createElement("form", {onSubmit: this.saveEntry}, 
                             React.createElement("div", {className: "avatar"}, 
                                 React.createElement("img", {src: this.state.image_src, 
@@ -1173,14 +1203,7 @@ var React = require('react'),
 
                             React.createElement("div", {className: "title"}, 
                                 React.createElement("span", null, "Title "), 
-                                React.createElement("input", {type: "text", 
-                                       autoComplete: "off", 
-                                       value: this.state.title, 
-                                       name: "title", 
-                                       onChange: this.handleChange, 
-                                       onKeyUp: this.keyPressed, 
-                                       onBlur: this.titleOnBlur, 
-                                       disabled: this.state.mode === 'list-mode' ? 'disabled' : false})
+                                title
                             ), 
 
                             React.createElement("div", {className: "username"}, 
@@ -1203,23 +1226,17 @@ var React = require('react'),
                                        onChange: this.handleChange, 
                                        onKeyUp: this.keyPressed, 
                                        value: this.state.password}), 
-                                React.createElement(OverlayTrigger, {placement: "top", 
-                                                overlay: showPassword}, 
-                                    React.createElement("i", {className: "button ion-eye", 
-                                       onClick: this.showPassword})
+                                React.createElement(OverlayTrigger, {placement: "top", overlay: showPassword}, 
+                                    React.createElement("i", {className: "button ion-eye", onClick: this.showPassword})
                                 ), 
-                                React.createElement(OverlayTrigger, {placement: "top", 
-                                                overlay: generatePassword}, 
-                                    React.createElement("i", {className: "button ion-loop", 
-                                       onClick: this.generatePassword})
+                                React.createElement(OverlayTrigger, {placement: "top", overlay: generatePassword}, 
+                                    React.createElement("i", {className: "button ion-loop", onClick: this.generatePassword})
                                 )
                             ), 
 
                             React.createElement("div", {className: "tags"}, 
                                 React.createElement("span", null, "Tags "), 
-                            React.createElement("span", {ref: "tags", 
-                                  className: "tagsinput"}, tags
-                            )
+                                React.createElement("span", {ref: "tags", className: "tagsinput"}, tags)
                             ), 
 
                             React.createElement("div", {className: "available-tags"}, tags_available), 
@@ -1237,19 +1254,25 @@ var React = require('react'),
                             ), 
 
                             React.createElement("div", {className: "form-buttons"}, 
-
-                                React.createElement(OverlayTrigger, {placement: "top", 
-                                                overlay: unlockEntry}, 
-                            React.createElement("span", {className: "close-btn", onClick: this.changeMode}, 
-                                React.createElement("i", null)
-                            )
+                                React.createElement(OverlayTrigger, {placement: "top", overlay: unlockEntry}, 
+                                    React.createElement("span", {className: "btn lock-btn", onClick: this.changeMode}, 
+                                        React.createElement("i", null)
+                                    )
                                 ), 
 
-                                null != this.state.key_value &&
+                                this.isUrl(this.state.title) &&
+                                React.createElement(OverlayTrigger, {placement: "top", overlay: openEntryTab}, 
+                                    React.createElement("span", {className: "btn open-tab-btn", onClick: this.openTab}, 
+                                        React.createElement("i", null)
+                                    )
+                                ), 
+                                
+
+
+                                this.state.key_value != null &&
                                 React.createElement(DropdownButton, {title: "", noCaret: true, pullRight: true, id: "dropdown-no-caret"}, 
                                     React.createElement(MenuItem, {eventKey: "1", onSelect: this.removeEntry}, React.createElement("i", {className: "ion-close"}), 
-                                        "Remove" + ' ' +
-                                        "entry")
+                                        "Remove entry")
                                 ), 
                                 
 

@@ -110,6 +110,18 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     removePaddingTail = (hex) => {
         let paddingNumber = parseInt(hex.charAt(hex.length - 1), 16) + 1;
         return hex.slice(0, -paddingNumber);
+    },
+
+    setProtocolPrefix = (url) => {
+        return url.indexOf('://') > -1 ? url : 'https://' + url;
+    },
+
+    openTab = (data) => {
+        chrome.tabs.create({url: setProtocolPrefix(data.title)}, (tab) => {
+            chrome.tabs.executeScript(tab.id, {file: 'js/content_script.js'}, (tab) => {
+                chrome.tabs.sendMessage(tab.id, {type: 'showDivContentScript'});
+            });
+        });
     };
 
 
@@ -250,7 +262,9 @@ let deviceList = null,
     trezorDevice = null,
     fullKey = '',
     encryptionKey = '',
-    displayPhrase = (title, username) => {return 'Unlock ' + title + ' under ' + username + ' username?'},
+    displayPhrase = (title, username) => {
+        return 'Unlock ' + title + ' under ' + username + ' username?'
+    },
     handleTrezorError = (error) => {
         console.log('error happend! ', error);
         switch (error) {
@@ -339,14 +353,20 @@ let deviceList = null,
         let key = displayPhrase(data.title, data.username),
             tailedHex = toHex(addPaddingTail(toHex(data.password)));
         trezorDevice.session.cipherKeyValue(getPath(), key, tailedHex, true, false, true).then((result) => {
-            callback({content: result.message.value});
+            callback({content: {title: data.title, username: data.username, password: result.message.value}});
         });
     },
 
     decryptEntry = (data, callback) => {
         let key = displayPhrase(data.title, data.username);
         trezorDevice.session.cipherKeyValue(getPath(), key, data.password, false, false, true).then((result) => {
-            callback({content: fromHex(removePaddingTail(fromHex(result.message.value)))});
+            callback({
+                content: {
+                    title: data.title,
+                    username: data.username,
+                    password: fromHex(removePaddingTail(fromHex(result.message.value)))
+                }
+            });
         });
     },
 
@@ -451,6 +471,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         case 'decryptPassword':
             decryptEntry(request.content, sendResponse);
+            break;
+
+        case 'openTab':
+            openTab(request.content);
             break;
     }
     return true;

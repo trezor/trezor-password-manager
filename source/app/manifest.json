@@ -39,8 +39,10 @@
     "chrome://favicon/",
     "storage",
     "background",
+    "tabs",
+    "activeTab",
     "nativeMessaging",
-    "https://*.dropbox.com/*",
-    "tabs"
+    "https://*.dropbox.com/*"
+
   ]
 }
