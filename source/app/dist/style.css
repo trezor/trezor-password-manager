@@ -3814,8 +3814,11 @@ aside.left-panel {
           appearance: none; }
       .dashboard .card .entry.list-mode .available-tags {
         display: none; }
+      .dashboard .card .entry:hover .form-buttons {
+        visibility: visible; }
       .dashboard .card .entry .form-buttons {
         position: absolute;
+        visibility: hidden;
         top: 20px;
         right: 20px;
         width: 50px;
@@ -3871,11 +3874,19 @@ aside.left-panel {
               color: #797979; }
           .dashboard .card .entry .form-buttons .btn.open-tab-btn {
             top: 0;
-            right: 40px; }
+            right: 80px; }
             .dashboard .card .entry .form-buttons .btn.open-tab-btn i:after {
               content: "\f39c"; }
             .dashboard .card .entry .form-buttons .btn.open-tab-btn:hover i:after {
               content: "\f39c";
+              color: #797979; }
+          .dashboard .card .entry .form-buttons .btn.clipboard-btn {
+            top: 0;
+            right: 40px; }
+            .dashboard .card .entry .form-buttons .btn.clipboard-btn i:after {
+              content: "\f41b"; }
+            .dashboard .card .entry .form-buttons .btn.clipboard-btn:hover i:after {
+              content: "\f41b";
               color: #797979; }
         .dashboard .card .entry .form-buttons .dropdown {
           position: absolute;
@@ -3929,7 +3940,7 @@ aside.left-panel {
           .dashboard .card .entry .form-buttons .content-btns .button {
             margin-left: 10px; }
       .dashboard .card .entry.edited .form-buttons .lock-btn {
-        right: -150; }
+        right: -150px; }
       .dashboard .card .entry.edited .form-buttons .content-btns {
         right: 0; }
       .dashboard .card .entry.edit-mode {
@@ -4041,31 +4052,35 @@ aside.left-panel {
             padding-top: 6px; }
           .dashboard .card .entry.edit-mode .note textarea {
             resize: none; }
-        .dashboard .card .entry.edit-mode .form-buttons .lock-btn {
-          -webkit-transform: rotateY(180deg);
-          -moz-transform: rotateY(180deg);
-          -o-transform: rotateY(180deg);
-          transform: rotateY(180deg);
-          border: 1px solid rgba(121, 121, 121, 0.1); }
-          .dashboard .card .entry.edit-mode .form-buttons .lock-btn i:after {
-            content: "\f4c8";
-            color: #797979; }
-          .dashboard .card .entry.edit-mode .form-buttons .lock-btn:hover i:after {
-            content: "\f457";
-            color: #797979; }
-        .dashboard .card .entry.edit-mode .form-buttons .open-tab-btn {
-          right: -150px; }
-        .dashboard .card .entry.edit-mode .form-buttons .dropdown {
-          right: 30px;
-          -webkit-transition: all 0.2s ease-in-out;
-          -moz-transition: all 0.2s ease-in-out;
-          -o-transition: all 0.2s ease-in-out;
-          transition: all 0.2s ease-in-out; }
-          .dashboard .card .entry.edit-mode .form-buttons .dropdown:hover {
-            -webkit-box-shadow: 0px 0px 4px -1px rgba(180, 182, 189, 0.5);
-            -moz-box-shadow: 0px 0px 4px -1px rgba(180, 182, 189, 0.5);
-            -o-box-shadow: 0px 0px 4px -1px rgba(180, 182, 189, 0.5);
-            box-shadow: 0px 0px 4px -1px rgba(180, 182, 189, 0.5); }
+        .dashboard .card .entry.edit-mode .form-buttons {
+          visibility: visible; }
+          .dashboard .card .entry.edit-mode .form-buttons .lock-btn {
+            -webkit-transform: rotateY(180deg);
+            -moz-transform: rotateY(180deg);
+            -o-transform: rotateY(180deg);
+            transform: rotateY(180deg);
+            border: 1px solid rgba(121, 121, 121, 0.1); }
+            .dashboard .card .entry.edit-mode .form-buttons .lock-btn i:after {
+              content: "\f4c8";
+              color: #797979; }
+            .dashboard .card .entry.edit-mode .form-buttons .lock-btn:hover i:after {
+              content: "\f457";
+              color: #797979; }
+          .dashboard .card .entry.edit-mode .form-buttons .open-tab-btn {
+            right: -150px; }
+          .dashboard .card .entry.edit-mode .form-buttons .clipboard-btn {
+            right: -180px; }
+          .dashboard .card .entry.edit-mode .form-buttons .dropdown {
+            right: 30px;
+            -webkit-transition: all 0.2s ease-in-out;
+            -moz-transition: all 0.2s ease-in-out;
+            -o-transition: all 0.2s ease-in-out;
+            transition: all 0.2s ease-in-out; }
+            .dashboard .card .entry.edit-mode .form-buttons .dropdown:hover {
+              -webkit-box-shadow: 0px 0px 4px -1px rgba(180, 182, 189, 0.5);
+              -moz-box-shadow: 0px 0px 4px -1px rgba(180, 182, 189, 0.5);
+              -o-box-shadow: 0px 0px 4px -1px rgba(180, 182, 189, 0.5);
+              box-shadow: 0px 0px 4px -1px rgba(180, 182, 189, 0.5); }
       .dashboard .card .entry .submit-btn {
         display: none; }
 

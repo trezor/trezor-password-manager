@@ -162,8 +162,6 @@ var React = require('react'),
         },
 
         render() {
-            console.log('STATE: ', this.state.dialog);
-            //add listener for input keys:
             if (this.state.dialog === 'pin_dialog') {
                 window.addEventListener('keydown', this.pinKeydownHandler);
             }

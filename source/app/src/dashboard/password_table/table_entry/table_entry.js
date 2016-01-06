@@ -8,6 +8,7 @@ var React = require('react'),
     Tooltip = require('react-bootstrap').Tooltip,
     OverlayTrigger = require('react-bootstrap').OverlayTrigger,
     Textarea = require('react-textarea-autosize'),
+    Clipboard = require('clipboard-js'),
     Password = {
         _pattern: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~',
         _getRandomByte: function () {
@@ -56,7 +57,8 @@ var React = require('react'),
                 tags_available: this.props.context.getPossibleToAddTagsForEntry(this.props.key_value),
                 show_available: false,
                 content_changed: this.props.content_changed || '',
-                waiting_trezor: ''
+                waiting_trezor: '',
+                waiting_trezor_msg: ''
             };
         },
 
@@ -101,7 +103,7 @@ var React = require('react'),
         changeMode() {
             this.hidePassword();
             if (this.state.mode === 'list-mode') {
-                this.setTrezorWaitingBackface(true);
+                this.setTrezorWaitingBackface(true, 'Edit entry');
                 var data = {
                     title: this.state.title,
                     username: this.state.username,
@@ -157,9 +159,12 @@ var React = require('react'),
             return title;
         },
 
-        setTrezorWaitingBackface(isWaiting) {
+        setTrezorWaitingBackface(isWaiting, msg) {
             if (isWaiting) {
-                this.setState({waiting_trezor: 'waiting'});
+                this.setState({
+                    waiting_trezor: 'waiting',
+                    waiting_trezor_msg: msg
+                });
             } else {
                 this.setState({waiting_trezor: ' '});
             }
@@ -308,7 +313,7 @@ var React = require('react'),
         },
 
         openTab() {
-            this.setTrezorWaitingBackface(true);
+            this.setTrezorWaitingBackface(true, 'Open Tab');
             var data = {
                 title: this.state.title,
                 username: this.state.username,
@@ -317,6 +322,19 @@ var React = require('react'),
             chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
                 chrome.runtime.sendMessage({type: 'openTab', content: response.content});
                 this.setTrezorWaitingBackface(false);
+            });
+        },
+
+        copyToClipboard() {
+            this.setTrezorWaitingBackface(true, 'Copy password to clipboard');
+            var data = {
+                title: this.state.title,
+                username: this.state.username,
+                password: this.state.password
+            };
+            chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
+                this.setTrezorWaitingBackface(false);
+                Clipboard.copy(response.content.password);
             });
         },
 
@@ -332,6 +350,7 @@ var React = require('react'),
             var showPassword = (<Tooltip id='show'>Show/hide password</Tooltip>),
                 generatePassword = (<Tooltip id='generate'>Generate password</Tooltip>),
                 openEntryTab = (<Tooltip id='open'>Open and login</Tooltip>),
+                copyClipboard = (<Tooltip id='clipboard'>Copy to clipboard</Tooltip>),
                 unlockEntry = this.state.mode === 'list-mode' ? (<Tooltip id='unlock'>Unlock and edit</Tooltip>) : (
                     <Tooltip id='unlock'>Lock entry</Tooltip>),
                 interator = 0,
@@ -435,13 +454,24 @@ var React = require('react'),
                             </div>
 
                             <div className='form-buttons'>
+
+                                {this.state.key_value != null &&
                                 <OverlayTrigger placement='top' overlay={unlockEntry}>
                                     <span className='btn lock-btn' onClick={this.changeMode}>
                                         <i></i>
                                     </span>
                                 </OverlayTrigger>
+                                }
 
-                                {this.isUrl(this.state.title) &&
+                                {this.state.key_value != null &&
+                                <OverlayTrigger placement='top' overlay={copyClipboard}>
+                                    <span className='btn clipboard-btn' onClick={this.copyToClipboard}>
+                                        <i></i>
+                                    </span>
+                                </OverlayTrigger>
+                                }
+
+                                {this.isUrl(this.state.title) && this.state.key_value != null &&
                                 <OverlayTrigger placement='top' overlay={openEntryTab}>
                                     <span className='btn open-tab-btn' onClick={this.openTab}>
                                         <i></i>
@@ -468,7 +498,7 @@ var React = require('react'),
                     <div className='backface'>
                         <span className='text'>
                             <span className='spinner'></span>
-                            Waiting for Trezor input
+                            <strong>{this.state.waiting_trezor_msg}</strong> Waiting for Trezor input
                         </span>
                     </div>
                 </div>

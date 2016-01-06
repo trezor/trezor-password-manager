@@ -179,9 +179,14 @@
           display: none;
         }
       }
-
+      &:hover {
+        .form-buttons {
+          visibility: visible;
+        }
+      }
       .form-buttons {
         position: absolute;
+        visibility: hidden;
         top: 20px;
         right: 20px;
         width: 50px;
@@ -241,7 +246,7 @@
 
           &.open-tab-btn {
             top: 0;
-            right: 40px;
+            right: 80px;
             i:after {
               content: "\f39c";
 
@@ -249,6 +254,21 @@
             &:hover {
               i:after {
                 content: "\f39c";
+                color: $c_grey_content_font;
+              }
+            }
+          }
+
+          &.clipboard-btn {
+            top: 0;
+            right: 40px;
+            i:after {
+              content: "\f41b";
+
+            }
+            &:hover {
+              i:after {
+                content: "\f41b";
                 color: $c_grey_content_font;
               }
             }
@@ -305,8 +325,9 @@
       &.edited {
 
         .form-buttons {
+
           .lock-btn {
-            right: -150;
+            right: -150px;
           }
 
           .content-btns {
@@ -447,6 +468,8 @@
         }
 
         .form-buttons {
+          visibility: visible;
+          
           .lock-btn {
             @include transform(rotateY(180deg));
             border: 1px solid rgba($c_grey_content_font, .1);
@@ -465,6 +488,10 @@
 
           .open-tab-btn {
             right: -150px;
+          }
+          
+          .clipboard-btn {
+            right: -180px;
           }
 
           .dropdown {
