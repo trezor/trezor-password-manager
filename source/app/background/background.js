@@ -117,9 +117,23 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
     openTab = (data) => {
+        var tabId;
         chrome.tabs.create({url: setProtocolPrefix(data.title)}, (tab) => {
-            chrome.tabs.executeScript(tab.id, {file: 'js/content_script.js'}, (tab) => {
-                chrome.tabs.sendMessage(tab.id, {type: 'showDivContentScript'});
+            var tabId = tab.id;
+            chrome.tabs.executeScript(tab.id, {file: 'js/content_script.js', runAt: "document_start"}, () => {
+                chrome.tabs.sendMessage(tabId, {type: 'isScriptExecuted'}, (response) => {
+                    if (response.type === 'scriptReady') {
+                        chrome.tabs.sendMessage(tabId, {type: 'fillData', content: data});
+                    } else {
+                        chrome.tabs.executeScript(tabId, {file: 'js/content_script.js'}, () => {
+                            if (chrome.runtime.lastError) {
+                                console.error(chrome.runtime.lastError);
+                                throw Error("Unable to inject script into tab " + tabId);
+                            }
+                            chrome.tabs.sendMessage(tabId, {type: 'fillData', content: data});
+                        });
+                    }
+                });
             });
         });
     };

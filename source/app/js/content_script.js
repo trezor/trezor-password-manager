@@ -1,33 +1,69 @@
 'use strict';
 
-let inserted = false;
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
-    switch (request.type) {
-        case 'showDivContentScript':
-            if (!inserted) {
-                const div = document.createElement('div');
-                div.innerHTML = 'THIS IS A BIG DIV';
-                const body = document.getElementsByTagName('body')[0];
-                body.insertBefore(div, body.firstChild);
-                div.style.position = 'fixed';
-                div.style.top = '0px';
-                div.style.width = '100%';
-                div.style.height = '60px';
-                div.style.backgroundColor = 'red';
-                div.style.zIndex = '500000000';
-                div.style.fontSize = '30px';
-                div.style.color = 'black';
-                inserted = true;
+    let getLoginForm = () => {
+            var tempFormArr = document.getElementsByTagName('FORM');
+            var loginForm = '';
+            for (var i = 0; i < tempFormArr.length; i++) {
+                var inputs = tempFormArr[i].getElementsByTagName('input');
+                var pwdInputs = [];
+                for (var j = 0; j < inputs.length; j++) {
+                    if (inputs[j].type.toLowerCase() === 'password') {
+                        pwdInputs.push(inputs[j]);
+                    }
+                }
+                console.log(inputs, pwdInputs);
+                console.log(loginForm.getElementsByTagName('input').length > tempFormArr[i].getElementsByTagName('input').length);
+                if (pwdInputs.length == 1) {
+                    if (loginForm === '') {
+                        loginForm = tempFormArr[i];
+                    } else if (loginForm.getElementsByTagName('input').length > tempFormArr[i].getElementsByTagName('input').length) {
+                        loginForm = tempFormArr[i];
+                    }
+                }
             }
+            return loginForm;
+        },
+
+        setInputValues = (content) => {
+            var loginForm = getLoginForm();
+            var inputs = loginForm.getElementsByTagName('INPUT');
+            for (var j = 0; j < inputs.length; j++) {
+                if (inputs[j].type.toLowerCase() === 'password') {
+                    inputs[j].value = content.password;
+                }
+            }
+            for (var j = 0; j < inputs.length; j++) {
+                if (inputs[j].type.toLowerCase() === 'email') {
+                    inputs[j].value = content.username;
+                }
+            }
+            for (var j = 0; j < inputs.length; j++) {
+                if (inputs[j].type.toLowerCase() === 'text') {
+                    inputs[j].value = content.username;
+                }
+            }
+            /*
+             setTimeout(()=> {
+             loginForm.submit();
+             }, 250);
+             */
+        };
+
+    switch (request.type) {
+        case 'fillData':
+            document.addEventListener("DOMContentLoaded", function () {
+                setInputValues(request.content);
+            });
             break;
 
-        case 'tellOpenPageContentScript':
-            sendResponse(window.location.href);
+        case 'isScriptExecuted':
+            sendResponse({type: 'scriptReady'});
             break;
 
         default:
             console.warn('Unknown msg ', request, sender);
     }
+    return true;
 });
