@@ -3,8 +3,8 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     let getLoginForm = () => {
-            var tempFormArr = document.getElementsByTagName('FORM');
-            var loginForm = '';
+            var tempFormArr = document.getElementsByTagName('FORM'),
+                loginFormsArr = [];
             for (var i = 0; i < tempFormArr.length; i++) {
                 var inputs = tempFormArr[i].getElementsByTagName('input');
                 var pwdInputs = [];
@@ -13,17 +13,27 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         pwdInputs.push(inputs[j]);
                     }
                 }
-                console.log(inputs, pwdInputs);
-                console.log(loginForm.getElementsByTagName('input').length > tempFormArr[i].getElementsByTagName('input').length);
+
                 if (pwdInputs.length == 1) {
-                    if (loginForm === '') {
-                        loginForm = tempFormArr[i];
-                    } else if (loginForm.getElementsByTagName('input').length > tempFormArr[i].getElementsByTagName('input').length) {
-                        loginForm = tempFormArr[i];
-                    }
+                    loginFormsArr.push(tempFormArr[i]);
+
                 }
             }
-            return loginForm;
+
+            if (loginFormsArr.length == 1) {
+                return loginFormsArr[0]
+            } else if (loginFormsArr.length > 1) {
+                var winnerArr = loginFormsArr[0];
+                for (i = 1; i < loginFormsArr.length; i++) {
+                    var winnerCount = winnerArr.getElementsByTagName('input').length,
+                        competitorCount = loginFormsArr[i].getElementsByTagName('input').length;
+                    console.log(winnerCount, competitorCount);
+                    if(competitorCount < winnerCount) {
+                        winnerArr = loginFormsArr[i];
+                    }
+                }
+                return winnerArr;
+            }
         },
 
         setInputValues = (content) => {
@@ -32,14 +42,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             for (var j = 0; j < inputs.length; j++) {
                 if (inputs[j].type.toLowerCase() === 'password') {
                     inputs[j].value = content.password;
+                    inputs[j].focus();
                 }
             }
-            for (var j = 0; j < inputs.length; j++) {
+            for (j = 0; j < inputs.length; j++) {
                 if (inputs[j].type.toLowerCase() === 'email') {
                     inputs[j].value = content.username;
                 }
             }
-            for (var j = 0; j < inputs.length; j++) {
+            for (j = 0; j < inputs.length; j++) {
                 if (inputs[j].type.toLowerCase() === 'text') {
                     inputs[j].value = content.username;
                 }
