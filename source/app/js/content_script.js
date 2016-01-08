@@ -2,57 +2,73 @@
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
-    let getLoginForm = () => {
-            var tempFormArr = document.getElementsByTagName('FORM'),
-                loginFormsArr = [];
-            for (var i = 0; i < tempFormArr.length; i++) {
-                var inputs = tempFormArr[i].getElementsByTagName('input');
-                var pwdInputs = [];
-                for (var j = 0; j < inputs.length; j++) {
-                    if (inputs[j].type.toLowerCase() === 'password') {
-                        pwdInputs.push(inputs[j]);
-                    }
-                }
-
-                if (pwdInputs.length == 1) {
-                    loginFormsArr.push(tempFormArr[i]);
-
+    let countVisibleInputs = (inputs) => {
+            var visibleInputs = 0;
+            for (var j = 0; j < inputs.length; j++) {
+                if (inputs[j].type.toLowerCase() === 'email' || inputs[j].type.toLowerCase() === 'text' ) {
+                    visibleInputs++;
                 }
             }
-
-            if (loginFormsArr.length == 1) {
-                return loginFormsArr[0]
-            } else if (loginFormsArr.length > 1) {
-                var winnerArr = loginFormsArr[0];
-                for (i = 1; i < loginFormsArr.length; i++) {
-                    var winnerCount = winnerArr.getElementsByTagName('input').length,
-                        competitorCount = loginFormsArr[i].getElementsByTagName('input').length;
-                    console.log(winnerCount, competitorCount);
-                    if(competitorCount < winnerCount) {
-                        winnerArr = loginFormsArr[i];
-                    }
-                }
-                return winnerArr;
-            }
+            return visibleInputs == 1;
         },
 
-        setInputValues = (content) => {
-            var loginForm = getLoginForm();
-            var inputs = loginForm.getElementsByTagName('INPUT');
+        hasOnePasswordInput = (inputs) => {
+            var passwordInputsNo = 0;
             for (var j = 0; j < inputs.length; j++) {
                 if (inputs[j].type.toLowerCase() === 'password') {
-                    inputs[j].value = content.password;
-                    inputs[j].focus();
+                    passwordInputsNo++;
                 }
             }
-            for (j = 0; j < inputs.length; j++) {
-                if (inputs[j].type.toLowerCase() === 'email') {
-                    inputs[j].value = content.username;
+            return passwordInputsNo == 1
+        },
+
+        hasSubmitElement = (form) => {
+            var allChildElements = form.getElementsByTagName('*'),
+                submitElement = 0;
+            for (var j = 0; j < allChildElements.length; j++) {
+                if (typeof(allChildElements[j].type) !== 'undefined') {
+                    console.log('was here', allChildElements[j].type);
+                    if (allChildElements[j].type.toLowerCase() === 'submit') {
+                        submitElement++;
+                    }
                 }
             }
-            for (j = 0; j < inputs.length; j++) {
-                if (inputs[j].type.toLowerCase() === 'text') {
-                    inputs[j].value = content.username;
+            return submitElement > 0;
+        },
+
+        getLoginForm = () => {
+            var tempFormArr = document.getElementsByTagName('FORM'),
+                loginFormsArrs = [];
+            for (var i = 0; i < tempFormArr.length; i++) {
+                var inputs = tempFormArr[i].getElementsByTagName('input'),
+                    visibleInputs = countVisibleInputs(inputs),
+                    hasPwdInput = hasOnePasswordInput(inputs),
+                    hasSubmit = hasSubmitElement(tempFormArr[i]);
+                if (hasPwdInput && hasSubmit&& visibleInputs) {
+                    loginFormsArrs.push(tempFormArr[i]);
+                }
+            }
+            return loginFormsArrs;
+        },
+
+
+
+        setInputValues = (content) => {
+            var loginForms = getLoginForm();
+            console.log(loginForms);
+            for (var i = 0; i < loginForms.length; i++) {
+                var inputs = loginForms[i].getElementsByTagName('input');
+                for (var j = 0; j < inputs.length; j++) {
+                    if (inputs[j].type.toLowerCase() === 'email') {
+                        inputs[j].value = content.username;
+                    }
+                    if (inputs[j].type.toLowerCase() === 'text') {
+                        inputs[j].value = content.username;
+                    }
+                    if (inputs[j].type.toLowerCase() === 'password') {
+                        inputs[j].value = content.password;
+                        inputs[j].focus();
+                    }
                 }
             }
             /*
