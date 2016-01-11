@@ -27,13 +27,25 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 submitElement = 0;
             for (var j = 0; j < allChildElements.length; j++) {
                 if (typeof(allChildElements[j].type) !== 'undefined') {
-                    console.log('was here', allChildElements[j].type);
                     if (allChildElements[j].type.toLowerCase() === 'submit') {
                         submitElement++;
                     }
                 }
             }
             return submitElement > 0;
+        },
+
+        getSubmitElement = (form) => {
+            var allChildElements = form.getElementsByTagName('*'),
+                submitElement = 0;
+            for (var j = 0; j < allChildElements.length; j++) {
+                if (typeof(allChildElements[j].type) !== 'undefined') {
+                    if (allChildElements[j].type.toLowerCase() === 'submit') {
+                        submitElement++;
+                    }
+                }
+            }
+            return submitElement;
         },
 
         getLoginForm = () => {
@@ -54,7 +66,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         setInputValues = (content) => {
             var loginForms = getLoginForm();
-            console.log(loginForms);
             for (var i = 0; i < loginForms.length; i++) {
                 var inputs = loginForms[i].getElementsByTagName('input');
                 for (var j = 0; j < inputs.length; j++) {
@@ -72,11 +83,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     }
                 }
             }
-            /*
-             setTimeout(()=> {
-             loginForm.submit();
-             }, 250);
-             */
+
         };
 
     switch (request.type) {

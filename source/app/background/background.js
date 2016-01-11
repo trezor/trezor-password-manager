@@ -141,7 +141,9 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
 
 // DROPBOX PHASE
 
-const FILENAME_MESS = 'deadbeeffaceb00cc0ffee00fee1deadbaddeadbeeffaceb00cc0ffee00fee1e';
+const FILENAME_MESS = 'deadbeeffaceb00cc0ffee00fee1deadbaddeadbeeffaceb00cc0ffee00fee1e',
+    receiverRelativePath = '/html/chrome_oauth_receiver.html',
+    dropboxApiKey = 'k1qq2saf035rn7c';
 
 let dropboxClient = {},
     dropboxUsername = '',
@@ -186,8 +188,8 @@ let dropboxClient = {},
     },
 
     connectToDropbox = () => {
-        dropboxClient = new Dropbox.Client({key: 'k1qq2saf035rn7c'});
-        dropboxClient.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: '/html/chrome_oauth_receiver.html'}));
+        dropboxClient = new Dropbox.Client({key: dropboxApiKey});
+        dropboxClient.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: receiverRelativePath}));
         dropboxClient.onError.addListener(function (error) {
             handleDropboxError(error);
         });
