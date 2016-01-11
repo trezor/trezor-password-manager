@@ -285,7 +285,7 @@ var React = require('react'),
                 newTagId: '',
                 newTagTitle: '',
                 newIcon: icons[0],
-                contentChanged: ''
+                content_changed: ''
 
             };
         },
@@ -332,7 +332,7 @@ var React = require('react'),
                 newTagTitle: this.state.context.getTagTitleById(entryId),
                 newIcon: icons[icons.indexOf(icon)],
                 showEditModal: true,
-                contentChanged: ''
+                content_changed: ''
             });
 
         },
@@ -352,7 +352,8 @@ var React = require('react'),
             var index = icons.indexOf(this.state.newIcon) + 1;
             if (index >= icons.length) index = 0;
             this.setState({
-                newIcon: icons[index]
+                newIcon: icons[index],
+                content_changed: 'edited'
             });
         },
 
@@ -360,7 +361,8 @@ var React = require('react'),
             var index = icons.indexOf(this.state.newIcon) - 1;
             if (index < 0) index = icons.length - 1;
             this.setState({
-                newIcon: icons[index]
+                newIcon: icons[index],
+                content_changed: 'edited'
             });
         },
 

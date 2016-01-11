@@ -210,7 +210,6 @@ let dropboxClient = {},
                 connectToDropbox();
             }
             dropboxUsername = accountInfo.name;
-            dropboxUid = accountInfo.uid;
             trezorDevice = null;
             sendMessage('setDropboxUsername', accountInfo.name);
         });
@@ -234,7 +233,7 @@ let dropboxClient = {},
             // creating filename
             if (!FILENAME) {
                 let key = fullKey.toString('utf8').substring(0, fullKey.length / 2);
-                FILENAME = crypto.createHmac('sha256', key).update(dropboxUid + FILENAME_MESS).digest('hex') + '.txt';
+                FILENAME = crypto.createHmac('sha256', key).update(FILENAME_MESS).digest('hex') + '.txt';
             }
             dropboxClient.readFile(FILENAME, {arrayBuffer: true}, (error, data) => {
                 if (error) {
