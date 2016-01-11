@@ -212,7 +212,6 @@ let dropboxClient = {},
             dropboxUsername = accountInfo.name;
             dropboxUid = accountInfo.uid;
             trezorDevice = null;
-            deviceList = null;
             sendMessage('setDropboxUsername', accountInfo.name);
         });
     },
@@ -272,7 +271,7 @@ const HD_HARDENED = 0x80000000,
     AUTH_SIZE = 128 / 8,
     CIPHER_TYPE = 'aes-256-gcm';
 
-let deviceList = null,
+let deviceList = new trezor.DeviceList(),
     trezorDevice = null,
     fullKey = '',
     encryptionKey = '',
@@ -308,7 +307,6 @@ let deviceList = null,
     },
 
     connectTrezor = () => {
-        deviceList = new trezor.DeviceList();
         deviceList.on('connect', initTrezorDevice);
         deviceList.on('error', (error) => {
             console.error('List error:', error);
@@ -412,13 +410,7 @@ let deviceList = null,
     },
 
     disconnectCallback = () => {
-        trezorDevice.removeListener('pin', pinCallback);
-        trezorDevice.removeListener('passphrase', passphraseCallback);
-        trezorDevice.removeListener('button', buttonCallback);
-        trezorDevice.removeListener('disconnect', disconnectCallback);
-        trezorDevice = {};
         deviceList.removeListener('connect', initTrezorDevice);
-        deviceList = {};
         dropboxUsernameAccepted = false;
         sendMessage('trezorDisconnected');
         PHASE = 'DROPBOX';

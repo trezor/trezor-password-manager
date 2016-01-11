@@ -5,7 +5,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     let countVisibleInputs = (inputs) => {
             var visibleInputs = 0;
             for (var j = 0; j < inputs.length; j++) {
-                if (inputs[j].type.toLowerCase() === 'email' || inputs[j].type.toLowerCase() === 'text' ) {
+                if (inputs[j].type.toLowerCase() === 'email' || inputs[j].type.toLowerCase() === 'text') {
                     visibleInputs++;
                 }
             }
@@ -44,13 +44,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     visibleInputs = countVisibleInputs(inputs),
                     hasPwdInput = hasOnePasswordInput(inputs),
                     hasSubmit = hasSubmitElement(tempFormArr[i]);
-                if (hasPwdInput && hasSubmit&& visibleInputs) {
+                if (hasPwdInput && hasSubmit && visibleInputs) {
                     loginFormsArrs.push(tempFormArr[i]);
                 }
             }
             return loginFormsArrs;
         },
-
 
 
         setInputValues = (content) => {
@@ -59,15 +58,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             for (var i = 0; i < loginForms.length; i++) {
                 var inputs = loginForms[i].getElementsByTagName('input');
                 for (var j = 0; j < inputs.length; j++) {
-                    if (inputs[j].type.toLowerCase() === 'email') {
-                        inputs[j].value = content.username;
-                    }
-                    if (inputs[j].type.toLowerCase() === 'text') {
-                        inputs[j].value = content.username;
-                    }
-                    if (inputs[j].type.toLowerCase() === 'password') {
-                        inputs[j].value = content.password;
-                        inputs[j].focus();
+                    switch (inputs[j].type.toLowerCase()) {
+                        case 'email':
+                            inputs[j].value = content.username;
+                            break;
+                        case 'text':
+                            inputs[j].value = content.username;
+                            break;
+                        case 'password':
+                            inputs[j].value = content.password;
+                            inputs[j].focus();
+                            break;
                     }
                 }
             }

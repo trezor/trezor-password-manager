@@ -111,13 +111,17 @@ var React = require('react'),
         },
 
         pinKeydownHandler(ev) {
-            if ((ev.keyCode > 48 && ev.keyCode < 58) || (ev.keyCode > 96 && ev.keyCode < 106)) {
-                this.pinAdd(String.fromCharCode(ev.keyCode));
+            var keyCode = ev.keyCode;
+            if (keyCode > 96 && keyCode < 106) {
+                keyCode = keyCode - 48;
             }
-            if (ev.keyCode == 8) {
+            if (keyCode > 48 && keyCode < 58) {
+                this.pinAdd(String.fromCharCode(keyCode));
+            }
+            if (keyCode == 8) {
                 this.pinBackspace();
             }
-            if (ev.keyCode == 13) {
+            if (keyCode == 13) {
                 this.submitPin();
             }
         },
@@ -177,18 +181,20 @@ var React = require('react'),
 
                             <h1>Murphy's law: <br/> Something just go wrong.</h1>
                             <br />
-                            <button className='no-style' ><a href='https://www.buytrezor.com' target='_blank'>I don't have Trezor device</a></button>
+                            <button className='no-style'><a href='https://www.buytrezor.com' target='_blank'>I don't
+                                have Trezor device</a></button>
                         </div>
 
                         <div className={this.state.dialog === 'connect_dropbox' ? 'connect_dropbox' : 'hidden_dialog'}>
-                            <img src='dist/app-images/trezor.svg' className='no-circle' />
+                            <img src='dist/app-images/trezor.svg' className='no-circle'/>
 
                             <div className='dialog-content'>
                                 <h1>Welcome to <br/> <b>TREZOR</b> GUARD</h1>
                                 <button className='dropbox-login' onClick={this.connectDropbox}>Sign in with Dropbox
                                 </button>
                                 <br />
-                                <button className='no-style' ><a href='https://www.dropbox.com' target='_blank'>I don't have Dropbox account</a></button>
+                                <button className='no-style'><a href='https://www.dropbox.com' target='_blank'>I don't
+                                    have Dropbox account</a></button>
                             </div>
                         </div>
 
@@ -197,10 +203,12 @@ var React = require('react'),
                             <img src='dist/app-images/dropbox.svg'/>
 
                             <div>
-                                <button onClick={this.initTrezorPhase} className='accept-btn'>Continue as <b> {this.state.dropboxUsername}</b>
+                                <button onClick={this.initTrezorPhase} className='accept-btn'>Continue as
+                                    <b> {this.state.dropboxUsername}</b>
                                 </button>
                                 <br />
-                                <button className='no-style' onClick={this.disconnectDropbox}>Sign with different user</button>
+                                <button className='no-style' onClick={this.disconnectDropbox}>Sign with different user
+                                </button>
                             </div>
                         </div>
 
@@ -209,7 +217,8 @@ var React = require('react'),
 
                             <h1>Connect your <br/> <b className='smallcaps'>TREZOR</b> device.</h1>
                             <br />
-                            <button className='no-style' ><a href='https://www.buytrezor.com' target='_blank'>I don't have Trezor device</a></button>
+                            <button className='no-style'><a href='https://www.buytrezor.com' target='_blank'>I don't
+                                have Trezor device</a></button>
                         </div>
 
                         <div className={this.state.dialog === 'pin_dialog' ? 'pin_dialog' : 'hidden_dialog'}>
@@ -247,15 +256,16 @@ var React = require('react'),
                         </div>
 
                         <div className={this.state.dialog === 'loading_dialog' ? 'loading_dialog' : 'hidden_dialog'}>
-                            <img src='dist/app-images/trezor.svg' className='no-circle' />
+                            <img src='dist/app-images/trezor.svg' className='no-circle'/>
+
                             <h1>Loading ...</h1>
                         </div>
 
                         <div className={this.state.dialog === 'button_dialog' ? 'button_dialog' : 'hidden_dialog'}>
                             <img src='dist/app-images/trezor_button.png'/>
+
                             <h1>Follow instructions on your <br/> <b className='smallcaps'>TREZOR</b> device.</h1>
                         </div>
-
 
 
                     </div>
