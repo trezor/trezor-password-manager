@@ -632,10 +632,14 @@ var React = require('react'),
             window.eventEmitter.emit('filter', event.target.value);
         },
 
+        submitForm:function(event) {
+            event.preventDefault();
+        },
+
         render:function(){
             return (
                 React.createElement("span", null, 
-                    React.createElement("form", {role: "filter", className: "filter"}, 
+                    React.createElement("form", {role: "filter", className: "filter", onSubmit: this.submitForm}, 
                         React.createElement("input", {type: "text", ref: "filter", placeholder: "Quick search ...", value: this.state.filter, onChange: this.handleChange, className: "form-control"})
                     )
                 )

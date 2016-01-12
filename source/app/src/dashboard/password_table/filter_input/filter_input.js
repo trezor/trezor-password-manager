@@ -20,10 +20,14 @@ var React = require('react'),
             window.eventEmitter.emit('filter', event.target.value);
         },
 
+        submitForm(event) {
+            event.preventDefault();
+        },
+
         render(){
             return (
                 <span>
-                    <form role='filter' className='filter'>
+                    <form role='filter' className='filter' onSubmit={this.submitForm}>
                         <input type='text' ref='filter' placeholder='Quick search ...' value={this.state.filter} onChange={this.handleChange} className='form-control' />
                     </form>
                 </span>
