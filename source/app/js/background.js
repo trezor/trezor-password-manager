@@ -277,9 +277,32 @@ let deviceList = new trezor.DeviceList(),
     trezorDevice = null,
     fullKey = '',
     encryptionKey = '',
+
+    isUrl = function(url)  {
+        return url.indexOf('.') > -1
+    },
+
+    decomposeUrl = function(url)  {
+        var title = {index: url.indexOf('://')};
+        if (title.index > -1) {
+            title.protocol = url.substring(0, title.index + 3);
+            title.domain = url.split('/')[2];
+            title.path = url.slice(title.protocol.length + title.domain.length, url.length);
+        } else {
+            title.protocol = false;
+            title.domain = url.split('/')[0];
+            title.path = url.slice(title.domain.length, url.length);
+        }
+        return title;
+    },
+
     displayPhrase = function(title, username)  {
+        if(isUrl(title)) {
+            title = decomposeUrl(title).domain;
+        }
         return 'Unlock ' + title + ' under ' + username + ' username?'
     },
+
     handleTrezorError = function(error)  {
         console.log('error happend! ', error);
         switch (error) {
