@@ -11,10 +11,8 @@ var React = require('react'),
             }
         },
 
-        componentWillMount() {
-            //chrome.runtime.sendMessage("tellOpenPage", function(response) {
-            //    alert(response);
-            //});
+        componentDidMount() {
+            React.findDOMNode(this.refs.filter).focus();
         },
 
         handleChange(event) {
@@ -26,7 +24,7 @@ var React = require('react'),
             return (
                 <span>
                     <form role='filter' className='filter'>
-                        <input type='text' placeholder='Quick search ...' value={this.state.filter} onChange={this.handleChange} className='form-control' />
+                        <input type='text' ref='filter' placeholder='Quick search ...' value={this.state.filter} onChange={this.handleChange} className='form-control' />
                     </form>
                 </span>
             )

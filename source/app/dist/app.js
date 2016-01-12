@@ -623,10 +623,8 @@ var React = require('react'),
             }
         },
 
-        componentWillMount:function() {
-            //chrome.runtime.sendMessage("tellOpenPage", function(response) {
-            //    alert(response);
-            //});
+        componentDidMount:function() {
+            React.findDOMNode(this.refs.filter).focus();
         },
 
         handleChange:function(event) {
@@ -638,7 +636,7 @@ var React = require('react'),
             return (
                 React.createElement("span", null, 
                     React.createElement("form", {role: "filter", className: "filter"}, 
-                        React.createElement("input", {type: "text", placeholder: "Quick search ...", value: this.state.filter, onChange: this.handleChange, className: "form-control"})
+                        React.createElement("input", {type: "text", ref: "filter", placeholder: "Quick search ...", value: this.state.filter, onChange: this.handleChange, className: "form-control"})
                     )
                 )
             )

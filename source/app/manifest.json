@@ -4,7 +4,14 @@
   "version": "0.0.1",
   "author": "SatoshiLabs",
   "short_name": "TREZOR Guard",
-  "manifest_version": 2,
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Alt+Shift+G"
+      },
+      "description": "Open TREZOR Guard app window."
+    }
+  },
   "icons": {
     "16": "images/icon16.png",
     "48": "images/icon48.png",
@@ -34,6 +41,7 @@
       "jcjjhjgimijdkoamemaghajlhegmoclj"
     ]
   },
+  "manifest_version": 2,
   "permissions": [
     "<all_urls>",
     "chrome://favicon/",
@@ -43,6 +51,5 @@
     "activeTab",
     "nativeMessaging",
     "https://*.dropbox.com/*"
-
   ]
 }
