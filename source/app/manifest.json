@@ -12,6 +12,9 @@
       "description": "Open TREZOR Guard app window."
     }
   },
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
   "icons": {
     "16": "images/icon16.png",
     "48": "images/icon48.png",

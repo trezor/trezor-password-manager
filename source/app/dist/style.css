@@ -3013,9 +3013,10 @@ table {
 
 html, body {
   box-sizing: border-box;
-  width: 800px;
-  height: 600px;
-  min-height: 100%;
+  width: 100%;
+  min-width: 800px;
+  height: 100%;
+  min-height: 600px;
   margin: 0;
   line-height: 1;
   font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
