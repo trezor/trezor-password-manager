@@ -1321,7 +1321,7 @@ var React = require('react'),
                     React.createElement("div", {className: "backface"}, 
                         React.createElement("span", {className: "text"}, 
                             React.createElement("span", {className: "spinner"}), 
-                            React.createElement("strong", null, this.state.waiting_trezor_msg), " Waiting for Trezor input"
+                            React.createElement("strong", null, this.state.waiting_trezor_msg), " Waiting for TREZOR input"
                         )
                     )
                 )
@@ -1627,7 +1627,7 @@ var React = require('react'),
                             React.createElement("h1", null, "Murphy's law: ", React.createElement("br", null), " Something just go wrong."), 
                             React.createElement("br", null), 
                             React.createElement("button", {className: "no-style"}, React.createElement("a", {href: "https://www.buytrezor.com", target: "_blank"}, "I don't" + ' ' +
-                                "have Trezor device"))
+                                "have a TREZOR device"))
                         ), 
 
                         React.createElement("div", {className: this.state.dialog === 'connect_dropbox' ? 'connect_dropbox' : 'hidden_dialog'}, 
@@ -1639,7 +1639,7 @@ var React = require('react'),
                                 ), 
                                 React.createElement("br", null), 
                                 React.createElement("button", {className: "no-style"}, React.createElement("a", {href: "https://www.dropbox.com", target: "_blank"}, "I don't" + ' ' +
-                                    "have Dropbox account"))
+                                    "have a Dropbox account"))
                             )
                         ), 
 
@@ -1652,7 +1652,7 @@ var React = require('react'),
                                     React.createElement("b", null, " ", this.state.dropboxUsername)
                                 ), 
                                 React.createElement("br", null), 
-                                React.createElement("button", {className: "no-style", onClick: this.disconnectDropbox}, "Sign with different user"
+                                React.createElement("button", {className: "no-style", onClick: this.disconnectDropbox}, "Sign with a different account"
                                 )
                             )
                         ), 
@@ -1663,7 +1663,7 @@ var React = require('react'),
                             React.createElement("h1", null, "Connect your ", React.createElement("br", null), " ", React.createElement("b", {className: "smallcaps"}, "TREZOR"), " device."), 
                             React.createElement("br", null), 
                             React.createElement("button", {className: "no-style"}, React.createElement("a", {href: "https://www.buytrezor.com", target: "_blank"}, "I don't" + ' ' +
-                                "have Trezor device"))
+                                "have a TREZOR device"))
                         ), 
 
                         React.createElement("div", {className: this.state.dialog === 'pin_dialog' ? 'pin_dialog' : 'hidden_dialog'}, 
