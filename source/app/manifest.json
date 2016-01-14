@@ -1,6 +1,6 @@
 {
   "name": "TREZOR Guard",
-  "description": "Really good and secure password manager working with your TREZOR device. All files synced and encrypted on Dropbox. Is there anything better? Enjoy!",
+  "description": "Really secure password manager using TREZOR. All data is securely encrypted using the device and synchronized via cloud.",
   "version": "0.0.1",
   "author": "SatoshiLabs",
   "short_name": "TREZOR Guard",
