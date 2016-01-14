@@ -498,7 +498,7 @@ var React = require('react'),
                     <div className='backface'>
                         <span className='text'>
                             <span className='spinner'></span>
-                            <strong>{this.state.waiting_trezor_msg}</strong> Waiting for Trezor input
+                            <strong>{this.state.waiting_trezor_msg}</strong> Waiting for TREZOR input
                         </span>
                     </div>
                 </div>
