@@ -272,7 +272,7 @@ const HD_HARDENED = 0x80000000,
     AUTH_SIZE = 128 / 8,
     CIPHER_TYPE = 'aes-256-gcm',
 
-    //errors
+//errors
     NO_TRANSPORT = new Error('No trezor.js transport is available'),
     NO_CONNECTED_DEVICES = new Error('No connected devices'),
     DEVICE_IS_BOOTLOADER = new Error('Connected device is in bootloader mode'),
@@ -343,8 +343,8 @@ let deviceList = new trezor.DeviceList(),
             }
             switch (error.code) {
                 case 'Failure_PinInvalid':
-                    console.log('wrong pin!');
-                    return resolveAfter(500).then(retry);
+                    sendMessage('wrongPin');
+
                     break;
             }
         }
@@ -354,12 +354,6 @@ let deviceList = new trezor.DeviceList(),
         deviceList.on('connect', initTrezorDevice);
         deviceList.on('error', (error) => {
             console.error('List error:', error);
-        });
-    },
-
-    resolveAfter = (msec, value) => {
-        return new Promise((resolve) => {
-            setTimeout(resolve, msec, value);
         });
     },
 
@@ -379,7 +373,7 @@ let deviceList = new trezor.DeviceList(),
                 encryptionKey = fullKey.toString('utf8').substring(fullKey.length / 2, fullKey.length);
                 loadFile();
             });
-            return result.catch(handleTrezorError());
+            return result.catch(handleTrezorError(result));
         } catch (error) {
             console.error('Device error:', error);
         }

@@ -60,6 +60,12 @@ var React = require('react'),
                         });
                         break;
 
+                    case 'wrongPin':
+                        this.setState({
+                            dialog: 'wrong_pin'
+                        });
+                        break;
+
                     case 'showButtonDialog':
                         this.setState({
                             dialog: 'button_dialog'
@@ -227,6 +233,40 @@ var React = require('react'),
                             </div>
                             <div className="pin_table_subheader">
                                 Look at the device for number positions.
+                            </div>
+                            <div className='pin_password'>
+                                <span className='password_text'>{this.hideText(this.state.pin)}</span>
+                                <span className='blinking_cursor'></span>
+                            </div>
+                            <div className='pin_table'>
+                                <div>
+                                    <button type='button' id='7' onClick={this.pinAdd.bind(null, 7)}>&#8226;</button>
+                                    <button type='button' id='8' onClick={this.pinAdd.bind(null, 8)}>&#8226;</button>
+                                    <button type='button' id='9' onClick={this.pinAdd.bind(null, 9)}>&#8226;</button>
+                                </div>
+                                <div>
+                                    <button type='button' id='4' onClick={this.pinAdd.bind(null, 4)}>&#8226;</button>
+                                    <button type='button' id='5' onClick={this.pinAdd.bind(null, 5)}>&#8226;</button>
+                                    <button type='button' id='6' onClick={this.pinAdd.bind(null, 6)}>&#8226;</button>
+                                </div>
+                                <div>
+                                    <button type='button' id='1' onClick={this.pinAdd.bind(null, 1)}>&#8226;</button>
+                                    <button type='button' id='2' onClick={this.pinAdd.bind(null, 2)}>&#8226;</button>
+                                    <button type='button' id='3' onClick={this.pinAdd.bind(null, 3)}>&#8226;</button>
+                                </div>
+                            </div>
+                            <div className='pin_footer'>
+                                <button type='button' id='enter' onClick={this.submitPin}>ENTER</button>
+                                <button type='button' id='backspace' onClick={this.pinBackspace}>&#9003;</button>
+                            </div>
+                        </div>
+
+                        <div className={this.state.dialog === 'wrong_pin' ? 'wrong_pin' : 'hidden_dialog'}>
+                            <div className='pin_table_header'>
+                                Wrong PIN.
+                            </div>
+                            <div className="pin_table_subheader">
+                                Amigo, let's try again!
                             </div>
                             <div className='pin_password'>
                                 <span className='password_text'>{this.hideText(this.state.pin)}</span>

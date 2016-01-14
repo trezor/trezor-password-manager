@@ -1505,6 +1505,12 @@ var React = require('react'),
                         });
                         break;
 
+                    case 'wrongPin':
+                        this.setState({
+                            dialog: 'wrong_pin'
+                        });
+                        break;
+
                     case 'showButtonDialog':
                         this.setState({
                             dialog: 'button_dialog'
@@ -1672,6 +1678,40 @@ var React = require('react'),
                             ), 
                             React.createElement("div", {className: "pin_table_subheader"}, 
                                 "Look at the device for number positions."
+                            ), 
+                            React.createElement("div", {className: "pin_password"}, 
+                                React.createElement("span", {className: "password_text"}, this.hideText(this.state.pin)), 
+                                React.createElement("span", {className: "blinking_cursor"})
+                            ), 
+                            React.createElement("div", {className: "pin_table"}, 
+                                React.createElement("div", null, 
+                                    React.createElement("button", {type: "button", id: "7", onClick: this.pinAdd.bind(null, 7)}, "•"), 
+                                    React.createElement("button", {type: "button", id: "8", onClick: this.pinAdd.bind(null, 8)}, "•"), 
+                                    React.createElement("button", {type: "button", id: "9", onClick: this.pinAdd.bind(null, 9)}, "•")
+                                ), 
+                                React.createElement("div", null, 
+                                    React.createElement("button", {type: "button", id: "4", onClick: this.pinAdd.bind(null, 4)}, "•"), 
+                                    React.createElement("button", {type: "button", id: "5", onClick: this.pinAdd.bind(null, 5)}, "•"), 
+                                    React.createElement("button", {type: "button", id: "6", onClick: this.pinAdd.bind(null, 6)}, "•")
+                                ), 
+                                React.createElement("div", null, 
+                                    React.createElement("button", {type: "button", id: "1", onClick: this.pinAdd.bind(null, 1)}, "•"), 
+                                    React.createElement("button", {type: "button", id: "2", onClick: this.pinAdd.bind(null, 2)}, "•"), 
+                                    React.createElement("button", {type: "button", id: "3", onClick: this.pinAdd.bind(null, 3)}, "•")
+                                )
+                            ), 
+                            React.createElement("div", {className: "pin_footer"}, 
+                                React.createElement("button", {type: "button", id: "enter", onClick: this.submitPin}, "ENTER"), 
+                                React.createElement("button", {type: "button", id: "backspace", onClick: this.pinBackspace}, "⌫")
+                            )
+                        ), 
+
+                        React.createElement("div", {className: this.state.dialog === 'wrong_pin' ? 'wrong_pin' : 'hidden_dialog'}, 
+                            React.createElement("div", {className: "pin_table_header"}, 
+                                "Wrong PIN."
+                            ), 
+                            React.createElement("div", {className: "pin_table_subheader"}, 
+                                "Amigo, let's try again!"
                             ), 
                             React.createElement("div", {className: "pin_password"}, 
                                 React.createElement("span", {className: "password_text"}, this.hideText(this.state.pin)), 

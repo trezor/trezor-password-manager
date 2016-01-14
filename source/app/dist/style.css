@@ -3273,21 +3273,21 @@ button, .button {
     .home .button_dialog button.accept-btn {
       font-weight: 400;
       font-size: 1em; }
-  .home .pin_dialog {
+  .home .pin_dialog, .home .wrong_pin {
     margin-top: -30px; }
-    .home .pin_dialog .pin_table_header {
+    .home .pin_dialog .pin_table_header, .home .wrong_pin .pin_table_header {
       font-size: 2em;
       color: #fff; }
-    .home .pin_dialog .pin_table_subheader {
+    .home .pin_dialog .pin_table_subheader, .home .wrong_pin .pin_table_subheader {
       margin-top: 10px;
       font-size: 1.09em; }
-    .home .pin_dialog .pin_password {
+    .home .pin_dialog .pin_password, .home .wrong_pin .pin_password {
       padding: 30px; }
-      .home .pin_dialog .pin_password .password_text {
+      .home .pin_dialog .pin_password .password_text, .home .wrong_pin .pin_password .password_text {
         font-size: 4em;
         line-height: 0;
         vertical-align: middle; }
-      .home .pin_dialog .pin_password .blinking_cursor {
+      .home .pin_dialog .pin_password .blinking_cursor, .home .wrong_pin .pin_password .blinking_cursor {
         content: '';
         display: inline-block;
         width: 4px;
@@ -3298,7 +3298,7 @@ button, .button {
         -ms-animation: 1s blink step-end infinite;
         -o-animation: 1s blink step-end infinite;
         animation: 1s blink step-end infinite; }
-    .home .pin_dialog .pin_table button {
+    .home .pin_dialog .pin_table button, .home .wrong_pin .pin_table button {
       background-color: transparent;
       border: 2px solid #fff;
       width: 70px;
@@ -3311,16 +3311,16 @@ button, .button {
       -moz-border-radius: 7px;
       -ms-border-radius: 7px;
       border-radius: 7px; }
-      .home .pin_dialog .pin_table button:hover {
+      .home .pin_dialog .pin_table button:hover, .home .wrong_pin .pin_table button:hover {
         -webkit-box-shadow: 0px 0px 8px -1px rgba(0, 0, 0, 0.35);
         -moz-box-shadow: 0px 0px 8px -1px rgba(0, 0, 0, 0.35);
         -o-box-shadow: 0px 0px 8px -1px rgba(0, 0, 0, 0.35);
         box-shadow: 0px 0px 8px -1px rgba(0, 0, 0, 0.35);
         opacity: 1; }
-      .home .pin_dialog .pin_table button.active {
+      .home .pin_dialog .pin_table button.active, .home .wrong_pin .pin_table button.active {
         background-color: #fff;
         opacity: 1; }
-    .home .pin_dialog .pin_footer #enter {
+    .home .pin_dialog .pin_footer #enter, .home .wrong_pin .pin_footer #enter {
       background-color: #fff;
       border: 2px solid #fff;
       color: #3498db;
@@ -3333,7 +3333,7 @@ button, .button {
       -moz-border-radius: 7px;
       -ms-border-radius: 7px;
       border-radius: 7px; }
-    .home .pin_dialog .pin_footer #backspace {
+    .home .pin_dialog .pin_footer #backspace, .home .wrong_pin .pin_footer #backspace {
       background-color: transparent;
       border: 2px solid #fff;
       width: 70px;
@@ -3345,7 +3345,7 @@ button, .button {
       -moz-border-radius: 7px;
       -ms-border-radius: 7px;
       border-radius: 7px; }
-      .home .pin_dialog .pin_footer #backspace.active {
+      .home .pin_dialog .pin_footer #backspace.active, .home .wrong_pin .pin_footer #backspace.active {
         background-color: #fff;
         opacity: 1; }
 
