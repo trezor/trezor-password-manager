@@ -62,7 +62,8 @@ var React = require('react'),
 
                     case 'wrongPin':
                         this.setState({
-                            dialog: 'wrong_pin'
+                            dialog: 'wrong_pin',
+                            pin: ''
                         });
                         break;
 

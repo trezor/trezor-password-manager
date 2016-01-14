@@ -117,6 +117,24 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
         return url.indexOf('://') > -1 ? url : 'https://' + url;
     },
 
+    isUrl = function(url)  {
+        return url.indexOf('.') > -1
+    },
+
+    decomposeUrl = function(url)  {
+        var title = {index: url.indexOf('://')};
+        if (title.index > -1) {
+            title.protocol = url.substring(0, title.index + 3);
+            title.domain = url.split('/')[2];
+            title.path = url.slice(title.protocol.length + title.domain.length, url.length);
+        } else {
+            title.protocol = false;
+            title.domain = url.split('/')[0];
+            title.path = url.slice(title.domain.length, url.length);
+        }
+        return title;
+    },
+
     openTab = function(data)  {
         var tabId;
         chrome.tabs.create({url: setProtocolPrefix(data.title)}, function(tab)  {
@@ -286,29 +304,19 @@ let deviceList = new trezor.DeviceList(),
     fullKey = '',
     encryptionKey = '',
 
-    isUrl = function(url)  {
-        return url.indexOf('.') > -1
-    },
-
-    decomposeUrl = function(url)  {
-        var title = {index: url.indexOf('://')};
-        if (title.index > -1) {
-            title.protocol = url.substring(0, title.index + 3);
-            title.domain = url.split('/')[2];
-            title.path = url.slice(title.protocol.length + title.domain.length, url.length);
-        } else {
-            title.protocol = false;
-            title.domain = url.split('/')[0];
-            title.path = url.slice(title.domain.length, url.length);
-        }
-        return title;
-    },
-
     displayPhrase = function(title, username)  {
         if (isUrl(title)) {
             title = decomposeUrl(title).domain;
         }
         return 'Unlock ' + title + ' under ' + username + ' username?'
+    },
+
+    getEncryptionKey = function()  {
+        return trezorDevice.session.cipherKeyValue(getPath(), ENC_KEY, ENC_VALUE, true, true, true).then(function(result)  {
+            fullKey = result.message.value;
+            encryptionKey = fullKey.toString('utf8').substring(fullKey.length / 2, fullKey.length);
+            loadFile();
+        });
     },
 
     handleTrezorError = function(retry)  {
@@ -344,8 +352,10 @@ let deviceList = new trezor.DeviceList(),
             }
             switch (error.code) {
                 case 'Failure_PinInvalid':
-                    sendMessage('wrongPin');
-
+                    setTimeout(function()  {
+                        retry();
+                        sendMessage('wrongPin');
+                    }, 1800);
                     break;
             }
         }
@@ -369,12 +379,8 @@ let deviceList = new trezor.DeviceList(),
             if (trezorDevice.isBootloader()) {
                 throw new Error('Device is in bootloader mode, re-connected it');
             }
-            let result = trezorDevice.session.cipherKeyValue(getPath(), ENC_KEY, ENC_VALUE, true, true, true).then(function(result)  {
-                fullKey = result.message.value;
-                encryptionKey = fullKey.toString('utf8').substring(fullKey.length / 2, fullKey.length);
-                loadFile();
-            });
-            return result.catch(handleTrezorError(result));
+            let result = getEncryptionKey();
+            return result.catch(handleTrezorError(getEncryptionKey));
         } catch (error) {
             console.error('Device error:', error);
         }
