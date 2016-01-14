@@ -1,5 +1,7 @@
 'use strict';
 
+let injected = false;
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     let countVisibleInputs = (inputs) => {
@@ -84,13 +86,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 }
             }
 
+        },
+
+        proceedInjection = () => {
+            if (!injected) {
+                injected = true;
+                setInputValues(request.content);
+            }
         };
 
     switch (request.type) {
         case 'fillData':
-            document.addEventListener("DOMContentLoaded", function () {
-                setInputValues(request.content);
-            });
+            if (document.addEventListener) {
+                document.addEventListener("DOMContentLoaded", proceedInjection, false);
+                window.addEventListener("load", proceedInjection, false);
+            }
             break;
 
         case 'isScriptExecuted':

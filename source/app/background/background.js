@@ -270,7 +270,15 @@ const HD_HARDENED = 0x80000000,
     ENC_VALUE = 'deadbeec1cada53301f001edc1a551f1edc0de51111ea11c1afee1fee1fade51',
     CIPHER_IVSIZE = 96 / 8,
     AUTH_SIZE = 128 / 8,
-    CIPHER_TYPE = 'aes-256-gcm';
+    CIPHER_TYPE = 'aes-256-gcm',
+
+    //errors
+    NO_TRANSPORT = new Error('No trezor.js transport is available'),
+    NO_CONNECTED_DEVICES = new Error('No connected devices'),
+    DEVICE_IS_BOOTLOADER = new Error('Connected device is in bootloader mode'),
+    DEVICE_IS_EMPTY = new Error('Connected device is not initialized'),
+    FIRMWARE_IS_OLD = new Error('Firmware of connected device is too old'),
+    INSUFFICIENT_FUNDS = new Error('Insufficient funds');
 
 let deviceList = new trezor.DeviceList(),
     trezorDevice = null,
@@ -296,37 +304,49 @@ let deviceList = new trezor.DeviceList(),
     },
 
     displayPhrase = (title, username) => {
-        if(isUrl(title)) {
+        if (isUrl(title)) {
             title = decomposeUrl(title).domain;
         }
         return 'Unlock ' + title + ' under ' + username + ' username?'
     },
 
-    handleTrezorError = (error) => {
-        console.log('error happend! ', error);
-        switch (error) {
-            case NO_TRANSPORT:
-                break;
+    handleTrezorError = (retry) => {
+        return (error) => {
 
-            case DEVICE_IS_EMPTY:
-                break;
+            let never = new Promise(() => {
+            });
 
-            case FIRMWARE_IS_OLD:
-                break;
+            switch (error) {
+                case NO_TRANSPORT:
+                    return never;
+                    break;
 
-            case NO_CONNECTED_DEVICES:
-                break;
+                case DEVICE_IS_EMPTY:
+                    return never;
+                    break;
 
-            case DEVICE_IS_BOOTLOADER:
-                break;
+                case FIRMWARE_IS_OLD:
+                    return never;
+                    break;
 
-            case INSUFFICIENT_FUNDS:
-                break;
-        }
-        switch (error.code) {
-            case 'Failure_PinInvalid':
-                console.log('wrong pin!');
-                break;
+                case NO_CONNECTED_DEVICES:
+                    return never;
+                    break;
+
+                case DEVICE_IS_BOOTLOADER:
+                    return never;
+                    break;
+
+                case INSUFFICIENT_FUNDS:
+                    return never;
+                    break;
+            }
+            switch (error.code) {
+                case 'Failure_PinInvalid':
+                    console.log('wrong pin!');
+                    return resolveAfter(500).then(retry);
+                    break;
+            }
         }
     },
 
@@ -334,6 +354,12 @@ let deviceList = new trezor.DeviceList(),
         deviceList.on('connect', initTrezorDevice);
         deviceList.on('error', (error) => {
             console.error('List error:', error);
+        });
+    },
+
+    resolveAfter = (msec, value) => {
+        return new Promise((resolve) => {
+            setTimeout(resolve, msec, value);
         });
     },
 
@@ -348,15 +374,15 @@ let deviceList = new trezor.DeviceList(),
             if (trezorDevice.isBootloader()) {
                 throw new Error('Device is in bootloader mode, re-connected it');
             }
-            trezorDevice.session.cipherKeyValue(getPath(), ENC_KEY, ENC_VALUE, true, true, true).then((result) => {
+            let result = trezorDevice.session.cipherKeyValue(getPath(), ENC_KEY, ENC_VALUE, true, true, true).then((result) => {
                 fullKey = result.message.value;
                 encryptionKey = fullKey.toString('utf8').substring(fullKey.length / 2, fullKey.length);
                 loadFile();
             });
+            return result.catch(handleTrezorError());
         } catch (error) {
             console.error('Device error:', error);
         }
-
     },
 
     encryptData = (data) => {
