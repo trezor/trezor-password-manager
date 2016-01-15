@@ -18,10 +18,10 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
     badgeState = {
-        loaded: {color: [59, 192, 195, 100], defaultText: '\u0020'},
-        waiting: {color: [237, 199, 85, 100], defaultText: '\u0020'},
-        disconnected: {color: [237, 199, 85, 100], defaultText: '\u0020'},
-        throttled: {color: [255, 255, 0, 100], defaultText: '!'}
+        LOADED: {color: [59, 192, 195, 100], defaultText: '\u0020'},
+        DROPBOX: {color: [237, 199, 85, 100], defaultText: '\u0020'},
+        TREZOR: {color: [237, 199, 85, 100], defaultText: '\u0020'},
+        ERROR: {color: [255, 255, 0, 100], defaultText: '!'}
     },
 
     updateBadgeStatus = function(status)  {
@@ -351,6 +351,10 @@ let deviceList = new trezor.DeviceList(),
                     break;
             }
             switch (error.code) {
+                case 'Failure_ActionCancelled':
+                    console.log('Button canceled');
+                    // FIX
+                    break;
                 case 'Failure_PinInvalid':
                     sendMessage('wrongPin');
                     retry();
