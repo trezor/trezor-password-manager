@@ -1458,6 +1458,7 @@ var React = require('react'),
                 dropboxUsername: '',
                 deviceStatus: 'disconnected',
                 dialog: 'connect_dropbox',
+                pinDialogText: 'Please enter your PIN.',
                 pin: ''
             }
         },
@@ -1507,7 +1508,7 @@ var React = require('react'),
 
                     case 'wrongPin':
                         this.setState({
-                            dialog: 'wrong_pin',
+                            pinDialogText: 'Wrong PIN!',
                             pin: ''
                         });
                         break;
@@ -1675,7 +1676,7 @@ var React = require('react'),
 
                         React.createElement("div", {className: this.state.dialog === 'pin_dialog' ? 'pin_dialog' : 'hidden_dialog'}, 
                             React.createElement("div", {className: "pin_table_header"}, 
-                                "Please enter your PIN."
+                                this.state.pinDialogText
                             ), 
                             React.createElement("div", {className: "pin_table_subheader"}, 
                                 "Look at the device for number positions."

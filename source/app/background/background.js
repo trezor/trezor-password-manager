@@ -315,7 +315,7 @@ let deviceList = new trezor.DeviceList(),
             fullKey = result.message.value;
             encryptionKey = fullKey.toString('utf8').substring(fullKey.length / 2, fullKey.length);
             loadFile();
-        });
+        }).catch(handleTrezorError(getEncryptionKey));
     },
 
     handleTrezorError = (retry) => {
@@ -351,10 +351,8 @@ let deviceList = new trezor.DeviceList(),
             }
             switch (error.code) {
                 case 'Failure_PinInvalid':
-                    setTimeout(() => {
-                        retry();
-                        sendMessage('wrongPin');
-                    }, 1800);
+                    sendMessage('wrongPin');
+                    retry();
                     break;
             }
         }
@@ -378,8 +376,7 @@ let deviceList = new trezor.DeviceList(),
             if (trezorDevice.isBootloader()) {
                 throw new Error('Device is in bootloader mode, re-connected it');
             }
-            let result = getEncryptionKey();
-            return result.catch(handleTrezorError(getEncryptionKey));
+            getEncryptionKey();
         } catch (error) {
             console.error('Device error:', error);
         }
