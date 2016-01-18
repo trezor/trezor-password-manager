@@ -351,6 +351,7 @@ var React = require('react'),
                 generatePassword = (<Tooltip id='generate'>Generate password</Tooltip>),
                 openEntryTab = (<Tooltip id='open'>Open and login</Tooltip>),
                 copyClipboard = (<Tooltip id='clipboard'>Copy to clipboard</Tooltip>),
+                entryTitle = 'Item/URL',
                 unlockEntry = this.state.mode === 'list-mode' ? (<Tooltip id='unlock'>Unlock and edit</Tooltip>) : (
                     <Tooltip id='unlock'>Lock entry</Tooltip>),
                 interator = 0,
@@ -391,6 +392,14 @@ var React = require('react'),
                                 className='tagsinput-input'>+ Add</span>);
             }
 
+            if (this.state.title.length) {
+                if (this.isUrl(this.decomposeUrl(this.state.title).domain)) {
+                    entryTitle = 'URL'
+                } else {
+                    entryTitle = 'Item'
+                }
+            }
+
             return (
                 <div className={'card ' + this.state.waiting_trezor}>
                     <div className={ this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}>
@@ -402,7 +411,7 @@ var React = require('react'),
                             </div>
 
                             <div className='title'>
-                                <span>Title </span>
+                                {entryTitle}
                                 {title}
                             </div>
 

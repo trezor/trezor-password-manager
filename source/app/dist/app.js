@@ -1174,6 +1174,7 @@ var React = require('react'),
                 generatePassword = (React.createElement(Tooltip, {id: "generate"}, "Generate password")),
                 openEntryTab = (React.createElement(Tooltip, {id: "open"}, "Open and login")),
                 copyClipboard = (React.createElement(Tooltip, {id: "clipboard"}, "Copy to clipboard")),
+                entryTitle = 'Item/URL',
                 unlockEntry = this.state.mode === 'list-mode' ? (React.createElement(Tooltip, {id: "unlock"}, "Unlock and edit")) : (
                     React.createElement(Tooltip, {id: "unlock"}, "Lock entry")),
                 interator = 0,
@@ -1214,6 +1215,14 @@ var React = require('react'),
                                 className: "tagsinput-input"}, "+ Add"));
             }
 
+            if (this.state.title.length) {
+                if (this.isUrl(this.decomposeUrl(this.state.title).domain)) {
+                    entryTitle = 'URL'
+                } else {
+                    entryTitle = 'Item'
+                }
+            }
+
             return (
                 React.createElement("div", {className: 'card ' + this.state.waiting_trezor}, 
                     React.createElement("div", {className:  this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}, 
@@ -1225,7 +1234,7 @@ var React = require('react'),
                             ), 
 
                             React.createElement("div", {className: "title"}, 
-                                React.createElement("span", null, "Title "), 
+                                entryTitle, 
                                 title
                             ), 
 

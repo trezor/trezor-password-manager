@@ -310,8 +310,8 @@ let deviceList = new trezor.DeviceList(),
         return 'Unlock ' + title + ' under ' + username + ' username?'
     },
 
-    getEncryptionKey = () => {
-        return trezorDevice.session.cipherKeyValue(getPath(), ENC_KEY, ENC_VALUE, true, true, true).then((result) => {
+    getEncryptionKey = (session) => {
+        return session.cipherKeyValue(getPath(), ENC_KEY, ENC_VALUE, true, true, true).then((result) => {
             fullKey = result.message.value;
             encryptionKey = fullKey.toString('utf8').substring(fullKey.length / 2, fullKey.length);
             loadFile();
@@ -380,7 +380,8 @@ let deviceList = new trezor.DeviceList(),
             if (trezorDevice.isBootloader()) {
                 throw new Error('Device is in bootloader mode, re-connected it');
             }
-            getEncryptionKey();
+            trezorDevice.waitForSessionAndRun((session) => getEncryptionKey(session));
+
         } catch (error) {
             console.error('Device error:', error);
         }
@@ -415,20 +416,24 @@ let deviceList = new trezor.DeviceList(),
     encryptEntry = (data, callback) => {
         let key = displayPhrase(data.title, data.username),
             tailedHex = toHex(addPaddingTail(toHex(data.password)));
-        trezorDevice.session.cipherKeyValue(getPath(), key, tailedHex, true, false, true).then((result) => {
-            callback({content: {title: data.title, username: data.username, password: result.message.value}});
+        trezorDevice.waitForSessionAndRun((session) => {
+            return session.cipherKeyValue(getPath(), key, tailedHex, true, false, true).then((result) => {
+                callback({content: {title: data.title, username: data.username, password: result.message.value}});
+            });
         });
     },
 
     decryptEntry = (data, callback) => {
         let key = displayPhrase(data.title, data.username);
-        trezorDevice.session.cipherKeyValue(getPath(), key, data.password, false, false, true).then((result) => {
-            callback({
-                content: {
-                    title: data.title,
-                    username: data.username,
-                    password: fromHex(removePaddingTail(fromHex(result.message.value)))
-                }
+        trezorDevice.waitForSessionAndRun((session) => {
+            return session.cipherKeyValue(getPath(), key, data.password, false, false, true).then((result) => {
+                callback({
+                    content: {
+                        title: data.title,
+                        username: data.username,
+                        password: fromHex(removePaddingTail(fromHex(result.message.value)))
+                    }
+                });
             });
         });
     },
