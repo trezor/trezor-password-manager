@@ -41,7 +41,7 @@ var React = require('react'),
 
     TableEntry = React.createClass({
 
-        getInitialState: function () {
+        getInitialState() {
             return {
                 context: this.props.context || {},
                 image_src: 'dist/app-images/transparent.png',

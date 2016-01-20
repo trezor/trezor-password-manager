@@ -99,6 +99,7 @@ var React = require('react'),
                                                  title={obj.title}
                                                  username={obj.username}
                                                  password={obj.password}
+                                                 nonce={obj.nonce}
                                                  tags={obj.tags}
                                                  note={obj.note}
                                         />
@@ -109,9 +110,10 @@ var React = require('react'),
                                 <Table_Entry context={this.state.context}
                                              key={key}
                                              key_value={key}
-                                             password={obj.password}
                                              title={obj.title}
                                              username={obj.username}
+                                             password={obj.password}
+                                             nonce={obj.nonce}
                                              tags={obj.tags}
                                              note={obj.note}
                                     />
@@ -153,6 +155,7 @@ var React = require('react'),
                                          password={''}
                                          tags={[]}
                                          note={''}
+                                         nonce={''}
                                          mode={'edit-mode'}
                                          content_changed={'edited'}
                                 /> : null }

@@ -122,7 +122,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
     isUrl = function(url)  {
-        return url.indexOf('.') > -1
+        return url.match(/[a-z]+\.[a-z][a-z]+$/i) != null
     },
 
     decomposeUrl = function(url)  {
@@ -355,8 +355,7 @@ let deviceList = new trezor.DeviceList(),
             }
             switch (error.code) {
                 case 'Failure_ActionCancelled':
-                    console.log('Button canceled');
-                    // FIX
+                    disconnectCallback();
                     break;
                 case 'Failure_PinInvalid':
                     sendMessage('wrongPin');
@@ -490,7 +489,7 @@ let deviceList = new trezor.DeviceList(),
             } catch (err) {
                 reject(err);
             }
-        })
+        });
     };
 
 deviceList.on('connect', connectTrezor);
