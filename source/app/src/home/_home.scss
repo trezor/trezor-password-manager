@@ -40,12 +40,24 @@
     display: none;
   }
 
+  .preloading,
   .error,
   .accept_dropbox_user,
   .connect_trezor,
   .connect_dropbox,
   .loading_dialog,
   .button_dialog {
+
+    .spinner {
+      height: 50px;
+      width: 50px;
+      animation: rotate 0.8s infinite linear;
+      border: 5px solid $c_white;
+      border-right-color: transparent;
+      border-radius: 50%;
+      display: inline-block;
+      vertical-align: middle;
+    }
 
     h1 {
       color: $c_white;

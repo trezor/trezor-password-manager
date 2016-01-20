@@ -39,8 +39,12 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
                 loadFile();
                 break;
             case 'DROPBOX':
-                if (dropboxUsername !== '') {
+                if (dropboxClient.isAuthenticated() && !dropboxUsername) {
                     setDropboxUsername();
+                } else if (!dropboxClient.isAuthenticated()) {
+                    sendMessage('dropboxInitialized');
+                } else if (dropboxClient.isAuthenticated() && dropboxUsername) {
+                    sendMessage('setDropboxUsername', dropboxUsername);
                 }
                 break;
             case 'TREZOR':
@@ -163,7 +167,7 @@ const FILENAME_MESS = 'deadbeeffaceb00cc0ffee00fee1deadbaddeadbeeffaceb00cc0ffee
     receiverRelativePath = '/html/chrome_oauth_receiver.html',
     dropboxApiKey = 'k1qq2saf035rn7c';
 
-let dropboxClient = {},
+let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
     dropboxUsername = '',
     dropboxUsernameAccepted = false,
     dropboxUid = {},
@@ -206,7 +210,6 @@ let dropboxClient = {},
     },
 
     connectToDropbox = () => {
-        dropboxClient = new Dropbox.Client({key: dropboxApiKey});
         dropboxClient.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: receiverRelativePath}));
         dropboxClient.onError.addListener(function (error) {
             handleDropboxError(error);
@@ -216,8 +219,8 @@ let dropboxClient = {},
                 return handleDropboxError(error);
             } else {
                 if (dropboxClient.isAuthenticated()) {
-                    setDropboxUsername();
                     sendMessage('dropboxConnected');
+                    setDropboxUsername();
                 }
             }
         });
@@ -228,11 +231,12 @@ let dropboxClient = {},
             if (error) {
                 handleDropboxError(error);
                 connectToDropbox();
+            } else {
+                dropboxUsername = accountInfo.name;
+                sendMessage('setDropboxUsername', accountInfo.name);
             }
-            dropboxUsername = accountInfo.name;
-            trezorDevice = null;
-            sendMessage('setDropboxUsername', accountInfo.name);
         });
+
     },
 
     signOutDropbox = () => {
@@ -241,7 +245,6 @@ let dropboxClient = {},
                 handleDropboxError(error);
             }
             sendMessage('dropboxDisconnected');
-            dropboxClient = {};
             dropboxUsername = '';
             dropboxUsernameAccepted = false;
             PHASE = 'DROPBOX';
@@ -284,12 +287,11 @@ let dropboxClient = {},
 // TREZOR PHASE
 
 const HD_HARDENED = 0x80000000,
-    ENC_KEY = 'Activate TREZOR Guard?',
+    ENC_KEY = 'Activate TREZOR Guantanamo???',
     ENC_VALUE = 'deadbeec1cada53301f001edc1a551f1edc0de51111ea11c1afee1fee1fade51',
     CIPHER_IVSIZE = 96 / 8,
     AUTH_SIZE = 128 / 8,
     CIPHER_TYPE = 'aes-256-gcm',
-
 //errors
     NO_TRANSPORT = new Error('No trezor.js transport is available'),
     NO_CONNECTED_DEVICES = new Error('No connected devices'),
@@ -299,9 +301,10 @@ const HD_HARDENED = 0x80000000,
     INSUFFICIENT_FUNDS = new Error('Insufficient funds');
 
 let deviceList = new trezor.DeviceList(),
-    trezorDevice = null,
+    trezorDevice = false,
     fullKey = '',
     encryptionKey = '',
+    trezorConnected = false,
 
     displayPhrase = (title, username) => {
         if (isUrl(title)) {
@@ -362,28 +365,23 @@ let deviceList = new trezor.DeviceList(),
         }
     },
 
-    connectTrezor = () => {
-        deviceList.on('connect', initTrezorDevice);
-        deviceList.on('error', (error) => {
-            console.error('List error:', error);
-        });
-    },
+    connectTrezor = (device) => {
+        trezorDevice = !!device && device;
+        if (PHASE === 'TREZOR' && trezorDevice) {
+            try {
+                sendMessage('trezorConnected');
+                trezorDevice.on('pin', pinCallback);
+                trezorDevice.on('passphrase', passphraseCallback);
+                trezorDevice.on('button', buttonCallback);
+                trezorDevice.on('disconnect', disconnectCallback);
+                if (trezorDevice.isBootloader()) {
+                    throw new Error('Device is in bootloader mode, re-connected it');
+                }
+                trezorDevice.waitForSessionAndRun((session) => getEncryptionKey(session));
 
-    initTrezorDevice = (device) => {
-        try {
-            trezorDevice = device;
-            sendMessage('trezorConnected');
-            trezorDevice.on('pin', pinCallback);
-            trezorDevice.on('passphrase', passphraseCallback);
-            trezorDevice.on('button', buttonCallback);
-            trezorDevice.on('disconnect', disconnectCallback);
-            if (trezorDevice.isBootloader()) {
-                throw new Error('Device is in bootloader mode, re-connected it');
+            } catch (error) {
+                console.error('Device error:', error);
             }
-            trezorDevice.waitForSessionAndRun((session) => getEncryptionKey(session));
-
-        } catch (error) {
-            console.error('Device error:', error);
         }
     },
 
@@ -413,21 +411,27 @@ let deviceList = new trezor.DeviceList(),
         PHASE = 'LOADED';
     },
 
-    encryptEntry = (data, callback) => {
+    encryptEntry = (data, responseCallback) => {
         let key = displayPhrase(data.title, data.username),
             tailedHex = toHex(addPaddingTail(toHex(data.password)));
         trezorDevice.waitForSessionAndRun((session) => {
             return session.cipherKeyValue(getPath(), key, tailedHex, true, false, true).then((result) => {
-                callback({content: {title: data.title, username: data.username, password: result.message.value}});
+                responseCallback({
+                    content: {
+                        title: data.title,
+                        username: data.username,
+                        password: result.message.value
+                    }
+                });
             });
         });
     },
 
-    decryptEntry = (data, callback) => {
+    decryptEntry = (data, responseCallback) => {
         let key = displayPhrase(data.title, data.username);
         trezorDevice.waitForSessionAndRun((session) => {
             return session.cipherKeyValue(getPath(), key, data.password, false, false, true).then((result) => {
-                callback({
+                responseCallback({
                     content: {
                         title: data.title,
                         username: data.username,
@@ -466,7 +470,6 @@ let deviceList = new trezor.DeviceList(),
     },
 
     disconnectCallback = () => {
-        deviceList.removeListener('connect', initTrezorDevice);
         dropboxUsernameAccepted = false;
         sendMessage('trezorDisconnected');
         PHASE = 'DROPBOX';
@@ -489,6 +492,10 @@ let deviceList = new trezor.DeviceList(),
         })
     };
 
+deviceList.on('connect', connectTrezor);
+deviceList.on('error', (error) => {
+    console.error('List error:', error);
+});
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
@@ -502,9 +509,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             break;
 
         case 'initTrezorPhase':
+            PHASE = 'TREZOR';
             dropboxUsernameAccepted = true;
             sendMessage('trezorDisconnected');
-            connectTrezor();
+            connectTrezor(trezorDevice);
             break;
 
         case 'trezorPin':

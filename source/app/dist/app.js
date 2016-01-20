@@ -1466,7 +1466,7 @@ var React = require('react'),
                 dropboxReady: false,
                 dropboxUsername: '',
                 deviceStatus: 'disconnected',
-                dialog: 'connect_dropbox',
+                dialog: 'preloading',
                 pinDialogText: 'Please enter your PIN.',
                 pin: ''
             }
@@ -1486,8 +1486,9 @@ var React = require('react'),
 
                     // DROPBOX PHASE
 
-                    case 'dropboxConnected':
+                    case 'dropboxInitialized':
                         this.setState({
+                            dialog: 'connect_dropbox',
                             dropboxReady: true
                         });
                         break;
@@ -1621,10 +1622,11 @@ var React = require('react'),
         },
 
         submitPin:function() {
-            this.setState({
-                dialog: 'loading_dialog'
-            });
             this.sendMessage('trezorPin', this.state.pin);
+            this.setState({
+                dialog: 'loading_dialog',
+                pin: ''
+            });
         },
 
         render:function() {
@@ -1647,11 +1649,20 @@ var React = require('react'),
                                 "have a TREZOR device"))
                         ), 
 
+                        React.createElement("div", {className: this.state.dialog === 'preloading' ? 'preloading' : 'hidden_dialog'}, 
+                            React.createElement("img", {src: "dist/app-images/trezor.svg", className: "no-circle"}), 
+
+                            React.createElement("div", {className: "dialog-content"}, 
+                                React.createElement("h1", null, "Welcome to ", React.createElement("br", null), " ", React.createElement("b", null, "TREZOR"), " GUANTANAMO"), 
+                                React.createElement("span", {className: "spinner"})
+                            )
+                        ), 
+
                         React.createElement("div", {className: this.state.dialog === 'connect_dropbox' ? 'connect_dropbox' : 'hidden_dialog'}, 
                             React.createElement("img", {src: "dist/app-images/trezor.svg", className: "no-circle"}), 
 
                             React.createElement("div", {className: "dialog-content"}, 
-                                React.createElement("h1", null, "Welcome to ", React.createElement("br", null), " ", React.createElement("b", null, "TREZOR"), " GUARD"), 
+                                React.createElement("h1", null, "Welcome to ", React.createElement("br", null), " ", React.createElement("b", null, "TREZOR"), " GUANTANAMO"), 
                                 React.createElement("button", {className: "dropbox-login", onClick: this.connectDropbox}, "Sign in with Dropbox"
                                 ), 
                                 React.createElement("br", null), 

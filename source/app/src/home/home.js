@@ -12,7 +12,7 @@ var React = require('react'),
                 dropboxReady: false,
                 dropboxUsername: '',
                 deviceStatus: 'disconnected',
-                dialog: 'connect_dropbox',
+                dialog: 'preloading',
                 pinDialogText: 'Please enter your PIN.',
                 pin: ''
             }
@@ -32,8 +32,9 @@ var React = require('react'),
 
                     // DROPBOX PHASE
 
-                    case 'dropboxConnected':
+                    case 'dropboxInitialized':
                         this.setState({
+                            dialog: 'connect_dropbox',
                             dropboxReady: true
                         });
                         break;
@@ -167,10 +168,11 @@ var React = require('react'),
         },
 
         submitPin() {
-            this.setState({
-                dialog: 'loading_dialog'
-            });
             this.sendMessage('trezorPin', this.state.pin);
+            this.setState({
+                dialog: 'loading_dialog',
+                pin: ''
+            });
         },
 
         render() {
@@ -193,11 +195,20 @@ var React = require('react'),
                                 have a TREZOR device</a></button>
                         </div>
 
+                        <div className={this.state.dialog === 'preloading' ? 'preloading' : 'hidden_dialog'}>
+                            <img src='dist/app-images/trezor.svg' className='no-circle'/>
+
+                            <div className='dialog-content'>
+                                <h1>Welcome to <br/> <b>TREZOR</b> GUANTANAMO</h1>
+                                <span className='spinner'></span>
+                            </div>
+                        </div>
+
                         <div className={this.state.dialog === 'connect_dropbox' ? 'connect_dropbox' : 'hidden_dialog'}>
                             <img src='dist/app-images/trezor.svg' className='no-circle'/>
 
                             <div className='dialog-content'>
-                                <h1>Welcome to <br/> <b>TREZOR</b> GUARD</h1>
+                                <h1>Welcome to <br/> <b>TREZOR</b> GUANTANAMO</h1>
                                 <button className='dropbox-login' onClick={this.connectDropbox}>Sign in with Dropbox
                                 </button>
                                 <br />

@@ -3011,6 +3011,12 @@ table {
 .ion-xbox:before {
   content: ""; }
 
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg); }
+  100% {
+    transform: rotate(360deg); } }
+
 html, body {
   box-sizing: border-box;
   width: 100%;
@@ -3115,6 +3121,22 @@ button, .button {
   z-index: 2; }
   .home .hidden_dialog {
     display: none; }
+  .home .preloading .spinner,
+  .home .error .spinner,
+  .home .accept_dropbox_user .spinner,
+  .home .connect_trezor .spinner,
+  .home .connect_dropbox .spinner,
+  .home .loading_dialog .spinner,
+  .home .button_dialog .spinner {
+    height: 50px;
+    width: 50px;
+    animation: rotate 0.8s infinite linear;
+    border: 5px solid #fff;
+    border-right-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle; }
+  .home .preloading h1,
   .home .error h1,
   .home .accept_dropbox_user h1,
   .home .connect_trezor h1,
@@ -3124,6 +3146,7 @@ button, .button {
     color: #fff;
     font-size: 2.6em;
     margin-bottom: 25px; }
+    .home .preloading h1 b,
     .home .error h1 b,
     .home .accept_dropbox_user h1 b,
     .home .connect_trezor h1 b,
@@ -3132,6 +3155,7 @@ button, .button {
     .home .button_dialog h1 b {
       font-weight: 700;
       word-spacing: 1px; }
+  .home .preloading span,
   .home .error span,
   .home .accept_dropbox_user span,
   .home .connect_trezor span,
@@ -3141,6 +3165,7 @@ button, .button {
     max-width: 290px;
     color: rgba(255, 255, 255, 0.9);
     font-size: 1.2em; }
+  .home .preloading img,
   .home .error img,
   .home .accept_dropbox_user img,
   .home .connect_trezor img,
@@ -3163,6 +3188,7 @@ button, .button {
     -moz-transition: rotate(360deg);
     -o-transition: rotate(360deg);
     transition: rotate(360deg); }
+    .home .preloading img.no-circle,
     .home .error img.no-circle,
     .home .accept_dropbox_user img.no-circle,
     .home .connect_trezor img.no-circle,
@@ -3170,6 +3196,7 @@ button, .button {
     .home .loading_dialog img.no-circle,
     .home .button_dialog img.no-circle {
       border: none; }
+  .home .preloading button,
   .home .error button,
   .home .accept_dropbox_user button,
   .home .connect_trezor button,
@@ -3194,6 +3221,7 @@ button, .button {
     -moz-border-radius: 7px;
     -ms-border-radius: 7px;
     border-radius: 7px; }
+    .home .preloading button:hover,
     .home .error button:hover,
     .home .accept_dropbox_user button:hover,
     .home .connect_trezor button:hover,
@@ -3204,6 +3232,7 @@ button, .button {
       -moz-box-shadow: 0px 0px 10px -1px rgba(0, 0, 0, 0.65);
       -o-box-shadow: 0px 0px 10px -1px rgba(0, 0, 0, 0.65);
       box-shadow: 0px 0px 10px -1px rgba(0, 0, 0, 0.65); }
+    .home .preloading button span,
     .home .error button span,
     .home .accept_dropbox_user button span,
     .home .connect_trezor button span,
@@ -3213,6 +3242,7 @@ button, .button {
       color: #3498db;
       word-spacing: 2px;
       letter-spacing: -.1px; }
+    .home .preloading button a,
     .home .error button a,
     .home .accept_dropbox_user button a,
     .home .connect_trezor button a,
@@ -3220,6 +3250,7 @@ button, .button {
     .home .loading_dialog button a,
     .home .button_dialog button a {
       color: #fff; }
+      .home .preloading button a:hover,
       .home .error button a:hover,
       .home .accept_dropbox_user button a:hover,
       .home .connect_trezor button a:hover,
@@ -3228,6 +3259,7 @@ button, .button {
       .home .button_dialog button a:hover {
         color: #fff;
         text-decoration: underline; }
+    .home .preloading button b,
     .home .error button b,
     .home .accept_dropbox_user button b,
     .home .connect_trezor button b,
@@ -3236,6 +3268,7 @@ button, .button {
     .home .button_dialog button b {
       font-weight: 600;
       word-spacing: 1px; }
+    .home .preloading button.no-style,
     .home .error button.no-style,
     .home .accept_dropbox_user button.no-style,
     .home .connect_trezor button.no-style,
@@ -3245,6 +3278,7 @@ button, .button {
       background-color: transparent;
       border: none;
       color: #fff; }
+      .home .preloading button.no-style:hover,
       .home .error button.no-style:hover,
       .home .accept_dropbox_user button.no-style:hover,
       .home .connect_trezor button.no-style:hover,
@@ -3256,6 +3290,7 @@ button, .button {
         -o-box-shadow: none;
         box-shadow: none;
         text-decoration: underline; }
+    .home .preloading button.dropbox-login,
     .home .error button.dropbox-login,
     .home .accept_dropbox_user button.dropbox-login,
     .home .connect_trezor button.dropbox-login,
@@ -3265,6 +3300,7 @@ button, .button {
       padding-left: 60px;
       background: #fff url(app-images/dropbox-blue.svg) no-repeat 20px 8px;
       background-size: 30px 30px; }
+    .home .preloading button.accept-btn,
     .home .error button.accept-btn,
     .home .accept_dropbox_user button.accept-btn,
     .home .connect_trezor button.accept-btn,
@@ -4083,12 +4119,6 @@ aside.left-panel {
               box-shadow: 0px 0px 4px -1px rgba(180, 182, 189, 0.5); }
       .dashboard .card .entry .submit-btn {
         display: none; }
-
-@keyframes rotate {
-  0% {
-    transform: rotate(0deg); }
-  100% {
-    transform: rotate(360deg); } }
 
 form.filter {
   display: block;
