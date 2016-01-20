@@ -3808,6 +3808,8 @@ aside.left-panel {
           color: #797979; }
         .dashboard .card .entry.list-mode:hover .username {
           color: rgba(121, 121, 121, 0.8); }
+          .dashboard .card .entry.list-mode:hover .username input[disabled] {
+            cursor: pointer !important; }
       .dashboard .card .entry.list-mode .title {
         padding-top: 5px;
         font-size: 1.4em;
@@ -3831,7 +3833,7 @@ aside.left-panel {
       .dashboard .card .entry.list-mode .password, .dashboard .card .entry.list-mode .tags, .dashboard .card .entry.list-mode .note {
         display: none; }
       .dashboard .card .entry.list-mode .title input, .dashboard .card .entry.list-mode .username input {
-        width: 100%;
+        width: auto;
         max-width: 280px;
         background: transparent;
         border: none;

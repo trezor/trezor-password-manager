@@ -325,7 +325,11 @@ var React = require('react'),
             });
         },
 
-        copyToClipboard() {
+        copyUsernameToClipboard() {
+            Clipboard.copy(this.state.username);
+        },
+
+        copyPasswordToClipboard() {
             this.setTrezorWaitingBackface(true, 'Copy password to clipboard');
             var data = {
                 title: this.state.title,
@@ -361,8 +365,7 @@ var React = require('react'),
                             value={this.decomposeUrl(this.state.title).domain}
                             name='title'
                             className='title-input'
-                            disabled='disabled'/>
-                    ) : (
+                            disabled='disabled'/>) : (
                     <input type='text'
                            autoComplete='off'
                            value={this.state.title}
@@ -370,6 +373,23 @@ var React = require('react'),
                            onChange={this.handleChange}
                            onKeyUp={this.keyPressed}
                            onBlur={this.titleOnBlur}/>),
+
+                username = this.state.mode === 'list-mode' ?
+                    (<OverlayTrigger placement='top' overlay={copyClipboard}>
+                        <input type='text'
+                               autoComplete='off'
+                               value={this.state.username}
+                               name='username'
+                               onClick={this.copyUsernameToClipboard}
+                               disabled='disabled'/>
+                    </OverlayTrigger>) : (
+                    <input type='text'
+                           autoComplete='off'
+                           value={this.state.username}
+                           name='username'
+                           onChange={this.handleChange}
+                           onKeyUp={this.keyPressed}
+                        />),
 
                 tags = this.state.tags_titles.map((key) => {
                     return (<span className='tagsinput-tag'
@@ -417,13 +437,7 @@ var React = require('react'),
 
                             <div className='username'>
                                 <span>Username </span>
-                                <input type='text'
-                                       autoComplete='off'
-                                       value={this.state.username}
-                                       name='username'
-                                       onChange={this.handleChange}
-                                       onKeyUp={this.keyPressed}
-                                       disabled={this.state.mode === 'list-mode' ? 'disabled' : false}/>
+                                {username}
                             </div>
 
                             <div className='password'>
@@ -474,7 +488,7 @@ var React = require('react'),
 
                                 {this.state.key_value != null &&
                                 <OverlayTrigger placement='top' overlay={copyClipboard}>
-                                    <span className='btn clipboard-btn' onClick={this.copyToClipboard}>
+                                    <span className='btn clipboard-btn' onClick={this.copyPasswordToClipboard}>
                                         <i></i>
                                     </span>
                                 </OverlayTrigger>

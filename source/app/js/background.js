@@ -166,7 +166,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
 
 const FILENAME_MESS = '5f91add3fa1c3c76e90c90a3bd0999e2bd7833d06a483fe884ee60397aca277a',
     receiverRelativePath = '/html/chrome_oauth_receiver.html',
-    dropboxApiKey = 'k1qq2saf035rn7c';
+    dropboxApiKey = 's340kh3l0vla1nv';
 
 let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
     dropboxUsername = '',

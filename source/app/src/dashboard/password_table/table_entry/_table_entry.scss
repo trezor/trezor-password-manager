@@ -124,6 +124,9 @@
 
           .username {
             color: rgba($c_grey_content_font, .8);
+            input[disabled] {
+              cursor: pointer !important;
+            }
           }
         }
 
@@ -158,7 +161,7 @@
 
         .title, .username {
           input {
-            width: 100%;
+            width: auto;
             max-width: 280px;
             background: transparent;
             border: none;

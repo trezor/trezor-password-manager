@@ -1148,7 +1148,11 @@ var React = require('react'),
             }.bind(this));
         },
 
-        copyToClipboard:function() {
+        copyUsernameToClipboard:function() {
+            Clipboard.copy(this.state.username);
+        },
+
+        copyPasswordToClipboard:function() {
             this.setTrezorWaitingBackface(true, 'Copy password to clipboard');
             var data = {
                 title: this.state.title,
@@ -1184,8 +1188,7 @@ var React = require('react'),
                             value: this.decomposeUrl(this.state.title).domain, 
                             name: "title", 
                             className: "title-input", 
-                            disabled: "disabled"})
-                    ) : (
+                            disabled: "disabled"})) : (
                     React.createElement("input", {type: "text", 
                            autoComplete: "off", 
                            value: this.state.title, 
@@ -1193,6 +1196,23 @@ var React = require('react'),
                            onChange: this.handleChange, 
                            onKeyUp: this.keyPressed, 
                            onBlur: this.titleOnBlur})),
+
+                username = this.state.mode === 'list-mode' ?
+                    (React.createElement(OverlayTrigger, {placement: "top", overlay: copyClipboard}, 
+                        React.createElement("input", {type: "text", 
+                               autoComplete: "off", 
+                               value: this.state.username, 
+                               name: "username", 
+                               onClick: this.copyUsernameToClipboard, 
+                               disabled: "disabled"})
+                    )) : (
+                    React.createElement("input", {type: "text", 
+                           autoComplete: "off", 
+                           value: this.state.username, 
+                           name: "username", 
+                           onChange: this.handleChange, 
+                           onKeyUp: this.keyPressed}
+                        )),
 
                 tags = this.state.tags_titles.map(function(key)  {
                     return (React.createElement("span", {className: "tagsinput-tag", 
@@ -1240,13 +1260,7 @@ var React = require('react'),
 
                             React.createElement("div", {className: "username"}, 
                                 React.createElement("span", null, "Username "), 
-                                React.createElement("input", {type: "text", 
-                                       autoComplete: "off", 
-                                       value: this.state.username, 
-                                       name: "username", 
-                                       onChange: this.handleChange, 
-                                       onKeyUp: this.keyPressed, 
-                                       disabled: this.state.mode === 'list-mode' ? 'disabled' : false})
+                                username
                             ), 
 
                             React.createElement("div", {className: "password"}, 
@@ -1297,7 +1311,7 @@ var React = require('react'),
 
                                 this.state.key_value != null &&
                                 React.createElement(OverlayTrigger, {placement: "top", overlay: copyClipboard}, 
-                                    React.createElement("span", {className: "btn clipboard-btn", onClick: this.copyToClipboard}, 
+                                    React.createElement("span", {className: "btn clipboard-btn", onClick: this.copyPasswordToClipboard}, 
                                         React.createElement("i", null)
                                     )
                                 ), 
