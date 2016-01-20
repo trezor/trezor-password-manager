@@ -310,7 +310,7 @@ let deviceList = new trezor.DeviceList(),
         if (isUrl(title)) {
             title = decomposeUrl(title).domain;
         }
-        return 'Unlock ' + title + ' under ' + username + ' username?'
+        return 'Unlock ' + title + ' for user ' + username + '?'
     },
 
     getEncryptionKey = (session) => {
