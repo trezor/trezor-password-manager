@@ -163,7 +163,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
 
 // DROPBOX PHASE
 
-const FILENAME_MESS = 'deadbeeffaceb00cc0ffee00fee1deadbaddeadbeeffaceb00cc0ffee00fee1e',
+const FILENAME_MESS = '5f91add3fa1c3c76e90c90a3bd0999e2bd7833d06a483fe884ee60397aca277a',
     receiverRelativePath = '/html/chrome_oauth_receiver.html',
     dropboxApiKey = 'k1qq2saf035rn7c';
 
@@ -256,7 +256,7 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
             // creating filename
             if (!FILENAME) {
                 let key = fullKey.toString('utf8').substring(0, fullKey.length / 2);
-                FILENAME = crypto.createHmac('sha256', key).update(FILENAME_MESS).digest('hex') + '.txt';
+                FILENAME = crypto.createHmac('sha256', key).update(FILENAME_MESS).digest('hex') + '.pswd';
             }
             dropboxClient.readFile(FILENAME, {arrayBuffer: true}, (error, data) => {
                 if (error) {
@@ -288,7 +288,7 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
 
 const HD_HARDENED = 0x80000000,
     ENC_KEY = 'Activate TREZOR Guantanamo???',
-    ENC_VALUE = 'deadbeec1cada53301f001edc1a551f1edc0de51111ea11c1afee1fee1fade51',
+    ENC_VALUE = '2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee',
     CIPHER_IVSIZE = 96 / 8,
     AUTH_SIZE = 128 / 8,
     CIPHER_TYPE = 'aes-256-gcm',

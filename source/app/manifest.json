@@ -1,7 +1,7 @@
 {
-  "name": "TREZOR Guard",
-  "description": "Really secure password manager using TREZOR. All data is securely encrypted using the device and synchronized via cloud.",
-  "version": "0.0.1",
+  "name": "TREZOR Guard (with New Tab feature)",
+  "description": "Really secure password manager using TREZOR.",
+  "version": "0.0.2",
   "author": "SatoshiLabs",
   "short_name": "TREZOR Guard",
   "commands": {
@@ -25,7 +25,7 @@
       "19": "images/icon19.png",
       "38": "images/icon38.png"
     },
-    "default_title": "TREZOR Password",
+    "default_title": "TREZOR Guard",
     "default_popup": "index.html"
   },
   "background": {
