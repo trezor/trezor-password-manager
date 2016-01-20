@@ -182,7 +182,7 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
 
             case Dropbox.ApiError.NOT_FOUND:
                 console.warn('File or dir not found ', error.status);
-                encryptData(basicObjectBlob);
+                encryptData(JSON.stringify(basicObjectBlob), encryptionKey);
                 break;
 
             case Dropbox.ApiError.OVER_QUOTA:
@@ -266,7 +266,7 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
                     if (!(Buffer.isBuffer(res))) {
                         reject("Not a buffer");
                     }
-                    decryptData(res);
+                    decryptData(res, encryptionKey);
                 }
             });
         } catch (err) {
@@ -384,11 +384,10 @@ let deviceList = new trezor.DeviceList(),
         }
     },
 
-    encryptData = (data) => {
+    encryptData = (data, key) => {
         randomInputVector().then((iv) => {
-            let stringified = JSON.stringify(data),
-                buffer = new Buffer(stringified, 'utf8'),
-                cipher = crypto.createCipheriv(CIPHER_TYPE, encryptionKey, iv),
+            let buffer = new Buffer(data, 'utf8'),
+                cipher = crypto.createCipheriv(CIPHER_TYPE, key, iv),
                 startCText = cipher.update(buffer),
                 endCText = cipher.final(),
                 auth_tag = cipher.getAuthTag();
@@ -396,11 +395,11 @@ let deviceList = new trezor.DeviceList(),
         });
     },
 
-    decryptData = (data) => {
+    decryptData = (data, key) => {
         let iv = data.slice(0, CIPHER_IVSIZE),
             auth_tag = data.slice(CIPHER_IVSIZE, CIPHER_IVSIZE + AUTH_SIZE),
             cText = data.slice(CIPHER_IVSIZE + AUTH_SIZE),
-            decipher = crypto.createDecipheriv(CIPHER_TYPE, encryptionKey, iv),
+            decipher = crypto.createDecipheriv(CIPHER_TYPE, key, iv),
             start = decipher.update(cText);
         decipher.setAuthTag(auth_tag);
         let end = decipher.final(),
@@ -531,7 +530,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             break;
 
         case 'saveContent':
-            encryptData(request.content);
+            encryptData(JSON.stringify(request.content), encryptionKey);
             break;
 
         case 'encryptPassword':

@@ -1160,7 +1160,6 @@ var React = require('react'),
             var data = {
                 title: this.state.title,
                 username: this.state.username,
-                nonce: this.state.nonce,
                 password: this.state.password
             };
             chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, function(response)  {
