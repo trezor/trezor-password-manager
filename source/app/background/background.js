@@ -76,11 +76,11 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
     toHex = (pwd)  => {
-        return new Buffer(pwd, 'binary').toString('hex');
+        return new Buffer(pwd, 'utf8').toString('hex');
     },
 
     fromHex = (hex) => {
-        return new Buffer(hex, 'hex').toString('binary');
+        return new Buffer(hex, 'hex').toString('utf8');
     },
 
     addPaddingTail = (hex) => {
@@ -160,7 +160,10 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
 
             case Dropbox.ApiError.NOT_FOUND:
                 console.warn('File or dir not found ', error.status);
-                encryptData(JSON.stringify(basicObjectBlob), encryptionKey);
+
+                encryptData(basicObjectBlob, encryptionKey).then((res) => {
+                    saveFile(res);
+                });
                 break;
 
             case Dropbox.ApiError.OVER_QUOTA:
@@ -244,11 +247,12 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
                     if (!(Buffer.isBuffer(res))) {
                         reject("Not a buffer");
                     }
-                    decryptData(res, encryptionKey);
+                    sendMessage('decryptedContent', decryptData(res, encryptionKey));
+                    PHASE = 'LOADED';
                 }
             });
         } catch (err) {
-
+            return handleDropboxError(err);
         }
     },
 
@@ -294,7 +298,7 @@ let deviceList = new trezor.DeviceList(),
     getEncryptionKey = (session) => {
         return session.cipherKeyValue(getPath(), ENC_KEY, ENC_VALUE, true, true, true).then((result) => {
             fullKey = result.message.value;
-            encryptionKey = fullKey.toString('utf8').substring(fullKey.length / 2, fullKey.length);
+            encryptionKey = new Buffer(fullKey.substring(fullKey.length / 2, fullKey.length), 'utf8');
             loadFile();
         }).catch(handleTrezorError(getEncryptionKey));
     },
@@ -363,63 +367,70 @@ let deviceList = new trezor.DeviceList(),
     },
 
     encryptData = (data, key) => {
-        randomInputVector().then((iv) => {
-            let buffer = new Buffer(data, 'utf8'),
+        return randomInputVector().then((iv) => {
+            console.log('ENCRYYYYYPT: ', data, key);
+            let stringified = JSON.stringify(data),
+                buffer = new Buffer(stringified, 'utf8'),
                 cipher = crypto.createCipheriv(CIPHER_TYPE, key, iv),
                 startCText = cipher.update(buffer),
                 endCText = cipher.final(),
                 auth_tag = cipher.getAuthTag();
-            saveFile(Buffer.concat([iv, auth_tag, startCText, endCText]));
+            return Buffer.concat([iv, auth_tag, startCText, endCText]);
         });
     },
 
     decryptData = (data, key) => {
+        console.log('DECRYYYYYPT: ', data, key);
         let iv = data.slice(0, CIPHER_IVSIZE),
             auth_tag = data.slice(CIPHER_IVSIZE, CIPHER_IVSIZE + AUTH_SIZE),
             cText = data.slice(CIPHER_IVSIZE + AUTH_SIZE),
             decipher = crypto.createDecipheriv(CIPHER_TYPE, key, iv),
             start = decipher.update(cText);
         decipher.setAuthTag(auth_tag);
-        let end = decipher.final(),
-            res = Buffer.concat([start, end]),
-            stringifiedContent = res.toString('utf8');
-        sendMessage('decryptedContent', stringifiedContent);
-        PHASE = 'LOADED';
+        let end = decipher.final();
+        return Buffer.concat([start, end]).toString('utf8');
     },
 
-    encryptEntry = (data, responseCallback) => {
+    encryptTrezor = (data, responseCallback) => {
         crypto.randomBytes(32, function (ex, buf) {
             let key = displayPhrase(data.title, data.username),
-                nonce = buf;
-            console.log(nonce, nonce.length);
+                nonce = buf.toString('hex');
+            console.log('ENCRYPT ', data);
+
             trezorDevice.waitForSessionAndRun((session) => {
-                return session.cipherKeyValue(getPath(), key, nonce.toString('hex'), false, true, false).then((result) => {
-                    var enckey = result.message.value
-                    responseCallback({
-                        content: {
-                            title: data.title,
-                            username: data.username,
-                            password: data.password,
-                            nonce: enckey
-                            // password = encryptData(password, nonce.toString('binary'))
-                        }
+                return session.cipherKeyValue(getPath(), key, nonce, true, false, true).then((result) => {
+                    console.log('ENC KEY ', result.message.value.slice(0, 32));
+                    let enckey = new Buffer(result.message.value.slice(0, 32), 'utf8');
+                    encryptData({password: data.password}, enckey).then((newPwdData)=> {
+                        console.log('NEWPWD!!!', newPwdData, enckey);
+                        responseCallback({
+                            content: {
+                                title: data.title,
+                                username: data.username,
+                                password: newPwdData,
+                                nonce: enckey.toString('utf8')
+                            }
+                        });
                     });
                 });
             });
         });
     },
 
-    decryptEntry = (data, responseCallback) => {
+    decryptTrezor = (data, responseCallback) => {
         let key = displayPhrase(data.title, data.username);
+        console.log('DECRYPT ', data);
         trezorDevice.waitForSessionAndRun((session) => {
-            return session.cipherKeyValue(getPath(), key, data.nonce, true, true, false).then((result) => {
-                var enckey = fromHex(result.message.value);
+            return session.cipherKeyValue(getPath(), key, data.nonce, false, false, true).then((result) => {
+                console.log('DEC KEY ', result.message.value);
+                let enckey = new Buffer(result.message.value, 'utf8'),
+                    pwd = JSON.stringify(data.password);
                 responseCallback({
                     content: {
                         title: data.title,
                         username: data.username,
-                        password: data.password
-                        // password = decryptData(password, enckey)
+                        password: decryptData(pwd, enckey),
+                        nonce: data.nonce
                     }
                 });
             });
@@ -516,15 +527,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             break;
 
         case 'saveContent':
-            encryptData(JSON.stringify(request.content), encryptionKey);
+            encryptData(JSON.stringify(request.content), encryptionKey).then((res) => {
+                saveFile(res);
+            });
             break;
 
         case 'encryptPassword':
-            encryptEntry(request.content, sendResponse);
+            encryptTrezor(request.content, sendResponse);
             break;
 
         case 'decryptPassword':
-            decryptEntry(request.content, sendResponse);
+            decryptTrezor(request.content, sendResponse);
             break;
 
         case 'openTab':

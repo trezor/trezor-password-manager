@@ -1676,7 +1676,7 @@ var React = require('react'),
                             React.createElement("img", {src: "dist/app-images/trezor.svg", className: "no-circle"}), 
 
                             React.createElement("div", {className: "dialog-content"}, 
-                                React.createElement("h1", null, "Welcome to ", React.createElement("br", null), " ", React.createElement("b", null, "TREZOR"), " GUANTANAMO"), 
+                                React.createElement("h1", null, "Welcome to ", React.createElement("br", null), " ", React.createElement("b", null, "TREZOR"), " GITMO"), 
                                 React.createElement("span", {className: "spinner"})
                             )
                         ), 
@@ -1685,7 +1685,7 @@ var React = require('react'),
                             React.createElement("img", {src: "dist/app-images/trezor.svg", className: "no-circle"}), 
 
                             React.createElement("div", {className: "dialog-content"}, 
-                                React.createElement("h1", null, "Welcome to ", React.createElement("br", null), " ", React.createElement("b", null, "TREZOR"), " GUANTANAMO"), 
+                                React.createElement("h1", null, "Welcome to ", React.createElement("br", null), " ", React.createElement("b", null, "TREZOR"), " GITMO"), 
                                 React.createElement("button", {className: "dropbox-login", onClick: this.connectDropbox}, "Sign in with Dropbox"
                                 ), 
                                 React.createElement("br", null), 
