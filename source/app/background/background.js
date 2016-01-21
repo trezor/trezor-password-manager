@@ -76,33 +76,11 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
     toHex = (pwd)  => {
-        try {
-            let result = new Buffer(pwd, 'utf8').toString('hex'),
-                check = new Buffer(result, 'hex').toString('utf8');
-            if (check === pwd) {
-                return result;
-            } else {
-                // fix later!
-                throw new Error('Whoops!');
-            }
-        } catch (error) {
-            console.log(error);
-        }
+        return new Buffer(pwd, 'binary').toString('hex');
     },
 
     fromHex = (hex) => {
-        try {
-            let pwd = new Buffer(hex, 'hex').toString('binary'),
-                check = new Buffer(pwd, 'utf8').toString('hex');
-            if (hex === check) {
-                return pwd;
-            } else {
-                // fix later!
-                throw new Error('Whoops!');
-            }
-        } catch (error) {
-            console.log(error);
-        }
+        return new Buffer(hex, 'hex').toString('binary');
     },
 
     addPaddingTail = (hex) => {
@@ -415,7 +393,7 @@ let deviceList = new trezor.DeviceList(),
                 nonce = buf;
             console.log(nonce, nonce.length);
             trezorDevice.waitForSessionAndRun((session) => {
-                return session.cipherKeyValue(getPath(), key, nonce.toString('hex'), true, false, true).then((result) => {
+                return session.cipherKeyValue(getPath(), key, nonce.toString('hex'), false, true, false).then((result) => {
                     var enckey = result.message.value
                     responseCallback({
                         content: {
@@ -434,7 +412,7 @@ let deviceList = new trezor.DeviceList(),
     decryptEntry = (data, responseCallback) => {
         let key = displayPhrase(data.title, data.username);
         trezorDevice.waitForSessionAndRun((session) => {
-            return session.cipherKeyValue(getPath(), key, data.nonce, false, false, true).then((result) => {
+            return session.cipherKeyValue(getPath(), key, data.nonce, true, true, false).then((result) => {
                 var enckey = fromHex(result.message.value);
                 responseCallback({
                     content: {
