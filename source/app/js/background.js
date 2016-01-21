@@ -244,11 +244,10 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
                 if (error) {
                     return handleDropboxError(error);
                 } else {
-                    var res = toBuffer(data);
-                    if (!(Buffer.isBuffer(res))) {
-                        reject("Not a buffer");
+                    if (!(Buffer.isBuffer(data))) {
+                        data = toBuffer(data);
                     }
-                    sendMessage('decryptedContent', decryptData(res, encryptionKey));
+                    sendMessage('decryptedContent', decryptData(data, encryptionKey));
                     PHASE = 'LOADED';
                 }
             });
@@ -258,7 +257,7 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
     },
 
     saveFile = function(data)  {
-        dropboxClient.writeFile(FILENAME, toArrayBuffer(data), function (error, stat) {
+        dropboxClient.writeFile(FILENAME, data, function (error, stat) {
             if (error) {
                 return handleDropboxError(error);
             } else {
