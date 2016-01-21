@@ -876,6 +876,7 @@ var React = require('react'),
                 title: this.props.title,
                 username: this.props.username,
                 password: this.props.password,
+                nonce: this.props.nonce,
                 tags_id: this.props.tags,
                 tags_titles: this.props.context.getTagTitleArrayById(this.props.tags) || [],
                 note: this.props.note,
@@ -933,7 +934,8 @@ var React = require('react'),
                 var data = {
                     title: this.state.title,
                     username: this.state.username,
-                    password: this.state.password
+                    password: this.state.password,
+                    nonce: this.state.nonce
                 };
                 chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, function(response)  {
                     this.setTrezorWaitingBackface(false);
@@ -1007,17 +1009,21 @@ var React = require('react'),
                 title: this.state.title,
                 username: this.state.username,
                 password: this.state.password,
+                nonce: this.state.nonce,
                 tags: tags_id,
                 note: this.state.note
             };
 
             chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, function(response)  {
+                console.log(data);
                 data.password = response.content.password;
+                data.nonce = response.content.nonce;
                 if (this.state.key_value) {
                     this.setState({
                         mode: 'list-mode',
                         content_changed: '',
-                        password: response.content.password
+                        password: response.content.password,
+                        nonce: response.content.nonce
                     });
                     this.state.context.saveDataToEntryById(this.state.key_value, data);
                 } else {

@@ -92,7 +92,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
 
     fromHex = (hex) => {
         try {
-            let pwd = new Buffer(hex, 'hex').toString('utf8'),
+            let pwd = new Buffer(hex, 'hex').toString('binary'),
                 check = new Buffer(pwd, 'utf8').toString('hex');
             if (hex === check) {
                 return pwd;
@@ -410,16 +410,22 @@ let deviceList = new trezor.DeviceList(),
     },
 
     encryptEntry = (data, responseCallback) => {
-        let key = displayPhrase(data.title, data.username),
-            tailedHex = toHex(addPaddingTail(toHex(data.password)));
-        trezorDevice.waitForSessionAndRun((session) => {
-            return session.cipherKeyValue(getPath(), key, tailedHex, true, false, true).then((result) => {
-                responseCallback({
-                    content: {
-                        title: data.title,
-                        username: data.username,
-                        password: result.message.value
-                    }
+        crypto.randomBytes(32, function (ex, buf) {
+            let key = displayPhrase(data.title, data.username),
+                nonce = buf;
+            console.log(nonce, nonce.length);
+            trezorDevice.waitForSessionAndRun((session) => {
+                return session.cipherKeyValue(getPath(), key, nonce.toString('hex'), true, false, true).then((result) => {
+                    var enckey = result.message.value
+                    responseCallback({
+                        content: {
+                            title: data.title,
+                            username: data.username,
+                            password: data.password,
+                            nonce: enckey
+                            // password = encryptData(password, nonce.toString('binary'))
+                        }
+                    });
                 });
             });
         });
@@ -428,12 +434,14 @@ let deviceList = new trezor.DeviceList(),
     decryptEntry = (data, responseCallback) => {
         let key = displayPhrase(data.title, data.username);
         trezorDevice.waitForSessionAndRun((session) => {
-            return session.cipherKeyValue(getPath(), key, data.password, false, false, true).then((result) => {
+            return session.cipherKeyValue(getPath(), key, data.nonce, false, false, true).then((result) => {
+                var enckey = fromHex(result.message.value);
                 responseCallback({
                     content: {
                         title: data.title,
                         username: data.username,
-                        password: fromHex(removePaddingTail(fromHex(result.message.value)))
+                        password: data.password
+                        // password = decryptData(password, enckey)
                     }
                 });
             });
