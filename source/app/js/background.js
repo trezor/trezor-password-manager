@@ -368,7 +368,6 @@ let deviceList = new trezor.DeviceList(),
 
     encryptData = function(data, key)  {
         return randomInputVector().then(function(iv)  {
-            console.log('ENCRYYYYYPT: ', data, key);
             let stringified = JSON.stringify(data),
                 buffer = new Buffer(stringified, 'utf8'),
                 cipher = crypto.createCipheriv(CIPHER_TYPE, key, iv),
@@ -380,35 +379,34 @@ let deviceList = new trezor.DeviceList(),
     },
 
     decryptData = function(data, key)  {
-        console.log('DECRYYYYYPT: ', data, key);
-        let iv = data.slice(0, CIPHER_IVSIZE),
-            auth_tag = data.slice(CIPHER_IVSIZE, CIPHER_IVSIZE + AUTH_SIZE),
-            cText = data.slice(CIPHER_IVSIZE + AUTH_SIZE),
-            decipher = crypto.createDecipheriv(CIPHER_TYPE, key, iv),
-            start = decipher.update(cText);
-        decipher.setAuthTag(auth_tag);
-        let end = decipher.final();
-        return Buffer.concat([start, end]).toString('utf8');
+        try {
+            let iv = data.slice(0, CIPHER_IVSIZE),
+                auth_tag = data.slice(CIPHER_IVSIZE, CIPHER_IVSIZE + AUTH_SIZE),
+                cText = data.slice(CIPHER_IVSIZE + AUTH_SIZE),
+                decipher = crypto.createDecipheriv(CIPHER_TYPE, key, iv),
+                start = decipher.update(cText);
+            decipher.setAuthTag(auth_tag);
+            let end = decipher.final();
+            return Buffer.concat([start, end]).toString('utf8');
+        } catch (error) {
+            console.log('error ', error);
+        }
     },
 
     encryptTrezor = function(data, responseCallback)  {
         crypto.randomBytes(32, function (ex, buf) {
             let key = displayPhrase(data.title, data.username),
                 nonce = buf.toString('hex');
-            console.log('ENCRYPT ', data);
-
             trezorDevice.waitForSessionAndRun(function(session)  {
                 return session.cipherKeyValue(getPath(), key, nonce, true, false, true).then(function(result)  {
-                    console.log('ENC KEY ', result.message.value.slice(0, 32));
-                    let enckey = new Buffer(result.message.value.slice(0, 32), 'utf8');
-                    encryptData({password: data.password}, enckey).then(function(newPwdData) {
-                        console.log('NEWPWD!!!', newPwdData, enckey);
+                    let enckey = new Buffer(nonce, 'hex');
+                    encryptData(data.password, enckey).then(function(newPwdData) {
                         responseCallback({
                             content: {
                                 title: data.title,
                                 username: data.username,
                                 password: newPwdData,
-                                nonce: enckey.toString('utf8')
+                                nonce: result.message.value
                             }
                         });
                     });
@@ -419,17 +417,15 @@ let deviceList = new trezor.DeviceList(),
 
     decryptTrezor = function(data, responseCallback)  {
         let key = displayPhrase(data.title, data.username);
-        console.log('DECRYPT ', data);
         trezorDevice.waitForSessionAndRun(function(session)  {
             return session.cipherKeyValue(getPath(), key, data.nonce, false, false, true).then(function(result)  {
-                console.log('DEC KEY ', result.message.value);
-                let enckey = new Buffer(result.message.value, 'utf8'),
-                    pwd = JSON.stringify(data.password);
+                let enckey = new Buffer(result.message.value, 'hex'),
+                    pwd = new Buffer(data.password);
                 responseCallback({
                     content: {
                         title: data.title,
                         username: data.username,
-                        password: decryptData(pwd, enckey),
+                        password: JSON.parse(decryptData(pwd, enckey)),
                         nonce: data.nonce
                     }
                 });
