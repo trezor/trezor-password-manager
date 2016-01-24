@@ -91,6 +91,7 @@ var React = require('react'),
                     if (obj.tags.indexOf(this.state.active_id) > -1 || this.state.active_id == 0) {
                         if (this.state.filter.length > 0) {
                             if (obj.title.toLowerCase().indexOf(this.state.filter) > -1 ||
+                                obj.note.toLowerCase().indexOf(this.state.filter) > -1 ||
                                 obj.username.toLowerCase().indexOf(this.state.filter) > -1) {
                                 return (
                                     <Table_Entry context={this.state.context}
