@@ -400,15 +400,19 @@ let deviceList = new trezor.DeviceList(),
             trezorDevice.waitForSessionAndRun(function(session)  {
                 return session.cipherKeyValue(getPath(), key, nonce, true, false, true).then(function(result)  {
                     let enckey = new Buffer(nonce, 'hex');
-                    encryptData(data.password, enckey).then(function(newPwdData) {
-                        responseCallback({
-                            content: {
-                                title: data.title,
-                                username: data.username,
-                                password: newPwdData,
-                                nonce: result.message.value
-                            }
+                    encryptData(data.password, enckey).then(function(password) {
+                        encryptData(data.safe_note, enckey).then(function(safenote) {
+                            responseCallback({
+                                content: {
+                                    title: data.title,
+                                    username: data.username,
+                                    password: password,
+                                    safe_note: safenote,
+                                    nonce: result.message.value
+                                }
+                            });
                         });
+
                     });
                 });
             });
@@ -420,12 +424,14 @@ let deviceList = new trezor.DeviceList(),
         trezorDevice.waitForSessionAndRun(function(session)  {
             return session.cipherKeyValue(getPath(), key, data.nonce, false, false, true).then(function(result)  {
                 let enckey = new Buffer(result.message.value, 'hex'),
-                    pwd = new Buffer(data.password);
+                    password = new Buffer(data.password),
+                    safenote = new Buffer(data.safe_note);
                 responseCallback({
                     content: {
                         title: data.title,
                         username: data.username,
-                        password: JSON.parse(decryptData(pwd, enckey)),
+                        password: JSON.parse(decryptData(password, enckey)),
+                        safe_note: JSON.parse(decryptData(safenote, enckey)),
                         nonce: data.nonce
                     }
                 });

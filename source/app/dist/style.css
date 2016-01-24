@@ -3854,7 +3854,7 @@ aside.left-panel {
         display: inline-block;
         width: 0;
         overflow: hidden; }
-      .dashboard .card .entry.list-mode .password, .dashboard .card .entry.list-mode .tags {
+      .dashboard .card .entry.list-mode .password, .dashboard .card .entry.list-mode .tags, .dashboard .card .entry.list-mode .safe-note {
         display: none; }
       .dashboard .card .entry.list-mode .title input, .dashboard .card .entry.list-mode .username input {
         width: auto;
@@ -4015,19 +4015,19 @@ aside.left-panel {
         cursor: default; }
         .dashboard .card .entry.edit-mode .title {
           padding-top: 10px; }
-        .dashboard .card .entry.edit-mode .title, .dashboard .card .entry.edit-mode .username, .dashboard .card .entry.edit-mode .password, .dashboard .card .entry.edit-mode .tags, .dashboard .card .entry.edit-mode .note {
+        .dashboard .card .entry.edit-mode .title, .dashboard .card .entry.edit-mode .username, .dashboard .card .entry.edit-mode .password, .dashboard .card .entry.edit-mode .tags, .dashboard .card .entry.edit-mode .safe-note, .dashboard .card .entry.edit-mode .note {
           color: #797979;
           padding-bottom: 3px;
           margin-bottom: 3px;
           z-index: 1; }
-          .dashboard .card .entry.edit-mode .title span, .dashboard .card .entry.edit-mode .username span, .dashboard .card .entry.edit-mode .password span, .dashboard .card .entry.edit-mode .tags span, .dashboard .card .entry.edit-mode .note span {
+          .dashboard .card .entry.edit-mode .title span, .dashboard .card .entry.edit-mode .username span, .dashboard .card .entry.edit-mode .password span, .dashboard .card .entry.edit-mode .tags span, .dashboard .card .entry.edit-mode .safe-note span, .dashboard .card .entry.edit-mode .note span {
             display: inline-block;
             vertical-align: middle;
             text-transform: uppercase;
             width: 70px;
             font-size: .8em;
             font-weight: bold; }
-          .dashboard .card .entry.edit-mode .title input, .dashboard .card .entry.edit-mode .title textarea, .dashboard .card .entry.edit-mode .title span.tagsinput, .dashboard .card .entry.edit-mode .username input, .dashboard .card .entry.edit-mode .username textarea, .dashboard .card .entry.edit-mode .username span.tagsinput, .dashboard .card .entry.edit-mode .password input, .dashboard .card .entry.edit-mode .password textarea, .dashboard .card .entry.edit-mode .password span.tagsinput, .dashboard .card .entry.edit-mode .tags input, .dashboard .card .entry.edit-mode .tags textarea, .dashboard .card .entry.edit-mode .tags span.tagsinput, .dashboard .card .entry.edit-mode .note input, .dashboard .card .entry.edit-mode .note textarea, .dashboard .card .entry.edit-mode .note span.tagsinput {
+          .dashboard .card .entry.edit-mode .title input, .dashboard .card .entry.edit-mode .title textarea, .dashboard .card .entry.edit-mode .title span.tagsinput, .dashboard .card .entry.edit-mode .username input, .dashboard .card .entry.edit-mode .username textarea, .dashboard .card .entry.edit-mode .username span.tagsinput, .dashboard .card .entry.edit-mode .password input, .dashboard .card .entry.edit-mode .password textarea, .dashboard .card .entry.edit-mode .password span.tagsinput, .dashboard .card .entry.edit-mode .tags input, .dashboard .card .entry.edit-mode .tags textarea, .dashboard .card .entry.edit-mode .tags span.tagsinput, .dashboard .card .entry.edit-mode .safe-note input, .dashboard .card .entry.edit-mode .safe-note textarea, .dashboard .card .entry.edit-mode .safe-note span.tagsinput, .dashboard .card .entry.edit-mode .note input, .dashboard .card .entry.edit-mode .note textarea, .dashboard .card .entry.edit-mode .note span.tagsinput {
             display: inline-block;
             border: none;
             width: 100%;
@@ -4040,10 +4040,10 @@ aside.left-panel {
             -moz-border-radius: 2px;
             -ms-border-radius: 2px;
             border-radius: 2px; }
-          .dashboard .card .entry.edit-mode .title .tagsinput, .dashboard .card .entry.edit-mode .username .tagsinput, .dashboard .card .entry.edit-mode .password .tagsinput, .dashboard .card .entry.edit-mode .tags .tagsinput, .dashboard .card .entry.edit-mode .note .tagsinput {
+          .dashboard .card .entry.edit-mode .title .tagsinput, .dashboard .card .entry.edit-mode .username .tagsinput, .dashboard .card .entry.edit-mode .password .tagsinput, .dashboard .card .entry.edit-mode .tags .tagsinput, .dashboard .card .entry.edit-mode .safe-note .tagsinput, .dashboard .card .entry.edit-mode .note .tagsinput {
             padding: 1px !important;
             min-height: 27px; }
-            .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .note .tagsinput span.tagsinput-tag {
+            .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .safe-note .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .note .tagsinput span.tagsinput-tag {
               width: auto;
               float: left;
               color: #fff;
@@ -4055,14 +4055,14 @@ aside.left-panel {
               -moz-border-radius: 2px;
               -ms-border-radius: 2px;
               border-radius: 2px; }
-              .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .note .tagsinput span.tagsinput-tag span {
+              .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .safe-note .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .note .tagsinput span.tagsinput-tag span {
                 width: auto;
                 padding-right: 4px; }
-              .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .note .tagsinput span.tagsinput-tag i {
+              .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .safe-note .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .note .tagsinput span.tagsinput-tag i {
                 font-size: .8em; }
-              .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .note .tagsinput span.tagsinput-tag:hover {
+              .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .safe-note .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .note .tagsinput span.tagsinput-tag:hover {
                 background-color: #979898; }
-            .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .note .tagsinput span.tagsinput-input {
+            .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .safe-note .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .note .tagsinput span.tagsinput-input {
               cursor: pointer;
               border: 1px dashed #b4b6bd;
               padding: 3px 7px 3px 7px !important;
@@ -4107,12 +4107,12 @@ aside.left-panel {
             -moz-transition: all 50ms ease-in-out;
             -o-transition: all 50ms ease-in-out;
             transition: all 50ms ease-in-out; }
-        .dashboard .card .entry.edit-mode .note {
+        .dashboard .card .entry.edit-mode .safe-note, .dashboard .card .entry.edit-mode .note {
           padding-left: 130px; }
-          .dashboard .card .entry.edit-mode .note span {
+          .dashboard .card .entry.edit-mode .safe-note span, .dashboard .card .entry.edit-mode .note span {
             vertical-align: top;
             padding-top: 6px; }
-          .dashboard .card .entry.edit-mode .note textarea {
+          .dashboard .card .entry.edit-mode .safe-note textarea, .dashboard .card .entry.edit-mode .note textarea {
             resize: none; }
         .dashboard .card .entry.edit-mode .form-buttons {
           visibility: visible; }

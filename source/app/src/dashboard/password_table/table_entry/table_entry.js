@@ -54,6 +54,7 @@ var React = require('react'),
                 tags_id: this.props.tags,
                 tags_titles: this.props.context.getTagTitleArrayById(this.props.tags) || [],
                 note: this.props.note,
+                safe_note: this.props.safe_note,
                 tag_globa_title_array: this.props.context.getTagTitleArray(),
                 tags_available: this.props.context.getPossibleToAddTagsForEntry(this.props.key_value),
                 show_available: false,
@@ -109,12 +110,14 @@ var React = require('react'),
                     title: this.state.title,
                     username: this.state.username,
                     password: this.state.password,
+                    safe_note: this.state.safe_note,
                     nonce: this.state.nonce
                 };
                 chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
                     this.setTrezorWaitingBackface(false);
                     this.setState({
                         password: response.content.password,
+                        safe_note: response.content.safe_note,
                         mode: 'edit-mode'
                     });
                 });
@@ -127,7 +130,8 @@ var React = require('react'),
                 }
                 this.setState({
                     mode: 'list-mode',
-                    password: oldValues.password
+                    password: oldValues.password,
+                    safe_note: oldValues.safe_note
                 })
             }
         },
@@ -185,17 +189,20 @@ var React = require('react'),
                 password: this.state.password,
                 nonce: this.state.nonce,
                 tags: tags_id,
+                safe_note: this.state.safe_note,
                 note: this.state.note
             };
 
             chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, (response) => {
                 data.password = response.content.password;
+                data.safe_note = response.content.safe_note;
                 data.nonce = response.content.nonce;
                 if (this.state.key_value) {
                     this.setState({
                         mode: 'list-mode',
                         content_changed: '',
                         password: response.content.password,
+                        safe_note: response.content.safe_note,
                         nonce: response.content.nonce
                     });
                     this.state.context.saveDataToEntryById(this.state.key_value, data);
@@ -216,6 +223,7 @@ var React = require('react'),
                     tags_titles: this.state.context.getTagTitleArrayById(oldValues.tags),
                     show_available: false,
                     tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value),
+                    safe_note: oldValues.safe_note,
                     note: oldValues.note,
                     mode: 'list-mode'
                 });
@@ -499,6 +507,18 @@ var React = require('react'),
                                 <span>Note </span>
                                 {noteArea}
 
+                            </div>
+
+                            <div className='safe-note'>
+                                <span>Safe Note </span>
+                                <Textarea type='text'
+                                          autoComplete='off'
+                                          onChange={this.handleChange}
+                                          onKeyUp={this.keyPressed}
+                                          value={this.state.safe_note}
+                                          defaultValue={''}
+                                          spellCheck='false'
+                                          name='safe_note'></Textarea>
                             </div>
 
                             <div className='form-buttons'>

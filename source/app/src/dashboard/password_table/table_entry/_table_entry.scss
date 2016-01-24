@@ -186,7 +186,7 @@
           }
         }
 
-        .password, .tags {
+        .password, .tags, .safe-note {
           display: none;
         }
 
@@ -385,7 +385,7 @@
           padding-top: 10px;
         }
 
-        .title, .username, .password, .tags, .note {
+        .title, .username, .password, .tags, .safe-note, .note {
           color: $c_grey_content_font;
           padding-bottom: 3px;
           margin-bottom: 3px;
@@ -489,7 +489,7 @@
           }
         }
 
-        .note {
+        .safe-note, .note {
           padding-left: 130px;
 
           span {
@@ -503,7 +503,7 @@
 
         .form-buttons {
           visibility: visible;
-          
+
           .lock-btn {
             @include transform(rotateY(180deg));
             border: 1px solid rgba($c_grey_content_font, .1);
@@ -523,7 +523,7 @@
           .open-tab-btn {
             right: -150px;
           }
-          
+
           .clipboard-btn {
             right: -180px;
           }

@@ -102,6 +102,7 @@ var React = require('react'),
                                                  password={obj.password}
                                                  nonce={obj.nonce}
                                                  tags={obj.tags}
+                                                 safe_note={obj.safe_note}
                                                  note={obj.note}
                                         />
                                 )
@@ -116,6 +117,7 @@ var React = require('react'),
                                              password={obj.password}
                                              nonce={obj.nonce}
                                              tags={obj.tags}
+                                             safe_note={obj.safe_note}
                                              note={obj.note}
                                     />
                             )
@@ -157,6 +159,7 @@ var React = require('react'),
                                          tags={[]}
                                          note={''}
                                          nonce={''}
+                                         safe_note={''}
                                          mode={'edit-mode'}
                                          content_changed={'edited'}
                                 /> : null }
