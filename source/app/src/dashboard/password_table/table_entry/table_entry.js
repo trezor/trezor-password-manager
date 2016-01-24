@@ -189,7 +189,6 @@ var React = require('react'),
             };
 
             chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, (response) => {
-                console.log(data);
                 data.password = response.content.password;
                 data.nonce = response.content.nonce;
                 if (this.state.key_value) {
@@ -323,7 +322,8 @@ var React = require('react'),
             var data = {
                 title: this.state.title,
                 username: this.state.username,
-                password: this.state.password
+                password: this.state.password,
+                nonce: this.state.nonce
             };
             chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
                 chrome.runtime.sendMessage({type: 'openTab', content: response.content});
@@ -340,7 +340,8 @@ var React = require('react'),
             var data = {
                 title: this.state.title,
                 username: this.state.username,
-                password: this.state.password
+                password: this.state.password,
+                nonce: this.state.nonce
             };
             chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
                 this.setTrezorWaitingBackface(false);
@@ -349,6 +350,7 @@ var React = require('react'),
         },
 
         removeEntry() {
+            // window.eventEmitter.emit(''); fix later
             this.state.context.removeEntry(this.state.key_value);
         },
 
@@ -397,6 +399,17 @@ var React = require('react'),
                            onKeyUp={this.keyPressed}
                         />),
 
+                noteArea = (this.state.mode === 'list-mode' && this.state.note.length) &&
+                    (<Textarea type='text'
+                               autoComplete='off'
+                               onChange={this.handleChange}
+                               onKeyUp={this.keyPressed}
+                               value={this.state.note}
+                               disabled='disabled'
+                               defaultValue={''}
+                               spellCheck='false'
+                               name='note'></Textarea>),
+
                 tags = this.state.tags_titles.map((key) => {
                     return (<span className='tagsinput-tag'
                                   onClick={this.switchTag.bind(null , key)}
@@ -424,6 +437,17 @@ var React = require('react'),
                 } else {
                     entryTitle = 'Item'
                 }
+            }
+
+            if (this.state.mode === 'edit-mode') {
+                noteArea = (
+                    <Textarea type='text'
+                              autoComplete='off'
+                              onChange={this.handleChange}
+                              onKeyUp={this.keyPressed}
+                              value={this.state.note}
+                              defaultValue={''}
+                              name='note'></Textarea>)
             }
 
             return (
@@ -473,13 +497,8 @@ var React = require('react'),
 
                             <div className='note'>
                                 <span>Note </span>
-                            <Textarea type='text'
-                                      autoComplete='off'
-                                      onChange={this.handleChange}
-                                      onKeyUp={this.keyPressed}
-                                      value={this.state.note}
-                                      defaultValue={''}
-                                      name='note'></Textarea>
+                                {noteArea}
+
                             </div>
 
                             <div className='form-buttons'>

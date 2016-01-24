@@ -5,7 +5,7 @@ var Service = require('./data_service');
 class Store {
 
     constructor(data) {
-        this.data = data;
+        this.data = typeof data === 'object' ? data : JSON.parse(data);
         window.eventEmitter.emit('update', this.data);
     }
 

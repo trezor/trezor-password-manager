@@ -44,7 +44,6 @@ var React = require('react'),
                         break;
                 }
             });
-
             eventEmitter.emit('contextInit', this.contextStore);
         },
 

@@ -123,9 +123,12 @@
           }
 
           .username {
-            color: rgba($c_grey_content_font, .8);
-            input[disabled] {
-              cursor: pointer !important;
+            color: rgba($c_grey_content_font, .9);
+          }
+
+          .note {
+            textarea:disabled {
+              border-left-color: $c_blue !important;
             }
           }
         }
@@ -146,7 +149,7 @@
         .username {
           padding-top: 0;
           font-size: 1.05em;
-          color: rgba($c_grey_content_font, .6);
+          color: rgba($c_grey_content_font, .8);
 
           span {
             display: inline-block;
@@ -155,7 +158,35 @@
           }
         }
 
-        .password, .tags, .note {
+        .note {
+
+          textarea:disabled {
+            max-width: 300px;
+            margin: 4px 0 8px 2px;
+            background: transparent;
+            padding: 0 0 4px 5px;
+            border: 0;
+            line-height: 1.2em;
+            max-height: 18px;
+            border-left: 3px solid rgba($c_grey_content_font, .3) !important;
+            font-style: italic;
+            font-size: 0.9em;
+            color: rgba($c_grey_content_font, .7);
+            outline: none;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            resize: none;
+            @include appearance-none();
+          }
+
+          span {
+            display: inline-block;
+            width: 0;
+            overflow: hidden;
+          }
+        }
+
+        .password, .tags {
           display: none;
         }
 

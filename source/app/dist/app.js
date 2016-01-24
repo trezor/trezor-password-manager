@@ -50,7 +50,7 @@ var Service = require('./data_service');
 
 
     function Store(data) {
-        this.data = data;
+        this.data = typeof data === 'object' ? data : JSON.parse(data);
         window.eventEmitter.emit('update', this.data);
     }
 
@@ -535,7 +535,6 @@ var React = require('react'),
                         break;
                 }
             }.bind(this));
-
             eventEmitter.emit('contextInit', this.contextStore);
         },
 
@@ -1015,7 +1014,6 @@ var React = require('react'),
             };
 
             chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, function(response)  {
-                console.log(data);
                 data.password = response.content.password;
                 data.nonce = response.content.nonce;
                 if (this.state.key_value) {
@@ -1149,7 +1147,8 @@ var React = require('react'),
             var data = {
                 title: this.state.title,
                 username: this.state.username,
-                password: this.state.password
+                password: this.state.password,
+                nonce: this.state.nonce
             };
             chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, function(response)  {
                 chrome.runtime.sendMessage({type: 'openTab', content: response.content});
@@ -1166,7 +1165,8 @@ var React = require('react'),
             var data = {
                 title: this.state.title,
                 username: this.state.username,
-                password: this.state.password
+                password: this.state.password,
+                nonce: this.state.nonce
             };
             chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, function(response)  {
                 this.setTrezorWaitingBackface(false);
@@ -1175,6 +1175,7 @@ var React = require('react'),
         },
 
         removeEntry:function() {
+            // window.eventEmitter.emit(''); fix later
             this.state.context.removeEntry(this.state.key_value);
         },
 
@@ -1223,6 +1224,17 @@ var React = require('react'),
                            onKeyUp: this.keyPressed}
                         )),
 
+                noteArea = (this.state.mode === 'list-mode' && this.state.note.length) &&
+                    (React.createElement(Textarea, {type: "text", 
+                               autoComplete: "off", 
+                               onChange: this.handleChange, 
+                               onKeyUp: this.keyPressed, 
+                               value: this.state.note, 
+                               disabled: "disabled", 
+                               defaultValue: '', 
+                               spellCheck: "false", 
+                               name: "note"})),
+
                 tags = this.state.tags_titles.map(function(key)  {
                     return (React.createElement("span", {className: "tagsinput-tag", 
                                   onClick: this.switchTag.bind(null , key), 
@@ -1250,6 +1262,17 @@ var React = require('react'),
                 } else {
                     entryTitle = 'Item'
                 }
+            }
+
+            if (this.state.mode === 'edit-mode') {
+                noteArea = (
+                    React.createElement(Textarea, {type: "text", 
+                              autoComplete: "off", 
+                              onChange: this.handleChange, 
+                              onKeyUp: this.keyPressed, 
+                              value: this.state.note, 
+                              defaultValue: '', 
+                              name: "note"}))
             }
 
             return (
@@ -1299,13 +1322,8 @@ var React = require('react'),
 
                             React.createElement("div", {className: "note"}, 
                                 React.createElement("span", null, "Note "), 
-                            React.createElement(Textarea, {type: "text", 
-                                      autoComplete: "off", 
-                                      onChange: this.handleChange, 
-                                      onKeyUp: this.keyPressed, 
-                                      value: this.state.note, 
-                                      defaultValue: '', 
-                                      name: "note"})
+                                noteArea
+
                             ), 
 
                             React.createElement("div", {className: "form-buttons"}, 
