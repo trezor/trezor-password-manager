@@ -1,0 +1,6 @@
+node_modules/
+*.zip
+extension/dist/app.js
+extension/dist/app.js.map
+extension/js/background.js
+extension/js/background.js.map
