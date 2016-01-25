@@ -148,7 +148,7 @@ var React = require('react'),
         },
 
         isUrl(url){
-            return url.match(/[a-z]+\.[a-z][a-z]+$/i) != null
+            return url.match(/[a-z]+\.[a-z][a-z]+(\/.*)?$/i) != null
         },
 
         decomposeUrl(url) {
