@@ -512,7 +512,7 @@ var React = require('react'),
                             </div>
 
                             <div className='safe-note'>
-                                <span>Safe Note </span>
+                                <span>Secret Note </span>
                                 <Textarea type='text'
                                           autoComplete='off'
                                           onChange={this.handleChange}
