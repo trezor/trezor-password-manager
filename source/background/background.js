@@ -528,7 +528,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             break;
 
         case 'saveContent':
-            encryptData(JSON.stringify(request.content), encryptionKey).then((res) => {
+            encryptData(request.content, encryptionKey).then((res) => {
                 saveFile(res);
             });
             break;
