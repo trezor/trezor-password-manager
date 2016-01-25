@@ -1,7 +1,7 @@
 {
   "name": "TREZOR Guard (with New Tab feature)",
   "description": "Really secure password manager using TREZOR.",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "SatoshiLabs",
   "short_name": "TREZOR Guard",
   "commands": {

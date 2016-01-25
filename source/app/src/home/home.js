@@ -199,7 +199,7 @@ var React = require('react'),
                             <img src='dist/app-images/trezor.svg' className='no-circle'/>
 
                             <div className='dialog-content'>
-                                <h1>Welcome to <br/> <b>TREZOR</b> GITMO</h1>
+                                <h1>Welcome to <br/> <b>TREZOR</b> GUARD</h1>
                                 <span className='spinner'></span>
                             </div>
                         </div>
@@ -208,7 +208,7 @@ var React = require('react'),
                             <img src='dist/app-images/trezor.svg' className='no-circle'/>
 
                             <div className='dialog-content'>
-                                <h1>Welcome to <br/> <b>TREZOR</b> GITMO</h1>
+                                <h1>Welcome to <br/> <b>TREZOR</b> GUARD</h1>
                                 <button className='dropbox-login' onClick={this.connectDropbox}>Sign in with Dropbox
                                 </button>
                                 <br />

@@ -269,7 +269,7 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
 // TREZOR PHASE
 
 const HD_HARDENED = 0x80000000,
-    ENC_KEY = 'Activate TREZOR Guantanamo???',
+    ENC_KEY = 'Activate TREZOR Guard?',
     ENC_VALUE = '2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee',
     CIPHER_IVSIZE = 96 / 8,
     AUTH_SIZE = 128 / 8,
