@@ -100,7 +100,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
     isUrl = function(url)  {
-        return url.match(/[a-z]+\.[a-z][a-z]+$/i) != null
+        return url.match(/[a-z]+\.[a-z][a-z]+(\/.*)?$/i) != null
     },
 
     decomposeUrl = function(url)  {

@@ -9,7 +9,7 @@ var gulp = require('gulp'),
     envify = require('envify/custom');
 
 gulp.task('sass', function () {
-    gulp.src('./source/*.scss')
+    gulp.src('./source/app/*.scss')
         .pipe(sass())
         .pipe(gulp.dest('./extension/dist/'))
         .pipe(connect.reload())
@@ -19,7 +19,7 @@ gulp.task('sass', function () {
 gulp.task('productify', function () {
 
     var bundler = browserify({
-        entries: ['./source/app.js'],
+        entries: ['./source/app/app.js'],
         debug: true
     }).transform('reactify', {es6: true})
         .transform(envify({NODE_ENV: 'production'}))
@@ -37,7 +37,7 @@ gulp.task('productify', function () {
 gulp.task('browserify-app', function () {
 
     var bundler = browserify({
-        entries: ['./source/app.js'],
+        entries: ['./source/app/app.js'],
         debug: true
     }).transform('reactify', {es6: true})
         .transform(envify({NODE_ENV: 'development'}));
@@ -97,9 +97,9 @@ gulp.task('css', function () {
 
 gulp.task('watch', function () {
     gulp.watch('./source/background/*.js', ['browserify-bg']);
-    gulp.watch('./source/index.html', ['html']);
-    gulp.watch('./source/**/*.scss', ['sass']);
-    gulp.watch('./source/**/*.js', ['browserify-app'])
+    gulp.watch('./source/app/index.html', ['html']);
+    gulp.watch('./source/app/**/*.scss', ['sass']);
+    gulp.watch('./source/app/**/*.js', ['browserify-app'])
 });
 
 gulp.task('default', ['browserify-bg', 'browserify-app', 'sass']);
