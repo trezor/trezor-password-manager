@@ -9,9 +9,9 @@ var gulp = require('gulp'),
     envify = require('envify/custom');
 
 gulp.task('sass', function () {
-    gulp.src('./app/src/*.scss')
+    gulp.src('./source/*.scss')
         .pipe(sass())
-        .pipe(gulp.dest('./app/dist/'))
+        .pipe(gulp.dest('./extension/dist/'))
         .pipe(connect.reload())
 
 });
@@ -19,7 +19,7 @@ gulp.task('sass', function () {
 gulp.task('productify', function () {
 
     var bundler = browserify({
-        entries: ['./app/src/app.js'],
+        entries: ['./source/app.js'],
         debug: true
     }).transform('reactify', {es6: true})
         .transform(envify({NODE_ENV: 'production'}))
@@ -31,13 +31,13 @@ gulp.task('productify', function () {
         .pipe(buffer())
         .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('./app/dist'))
+        .pipe(gulp.dest('./extension/dist/'))
 });
 
 gulp.task('browserify-app', function () {
 
     var bundler = browserify({
-        entries: ['./app/src/app.js'],
+        entries: ['./source/app.js'],
         debug: true
     }).transform('reactify', {es6: true})
         .transform(envify({NODE_ENV: 'development'}));
@@ -52,12 +52,12 @@ gulp.task('browserify-app', function () {
         .pipe(buffer())
         .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('./app/dist'))
+        .pipe(gulp.dest('./extension/dist/'))
 });
 
 gulp.task('browserify-bg', function () {
     var bundler = browserify({
-        entries: ['./app/background/background.js'],
+        entries: ['./source/background/background.js'],
         debug: true
     }).transform('reactify', {es6: true})
         .transform(envify({NODE_ENV: 'development'}));
@@ -72,7 +72,7 @@ gulp.task('browserify-bg', function () {
         .pipe(buffer())
         .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('./app/js'))
+        .pipe(gulp.dest('./extension/js'))
 });
 
 gulp.task('connect', function () {
@@ -84,22 +84,22 @@ gulp.task('connect', function () {
 });
 
 gulp.task('html', function () {
-    gulp.src('./app/*.html').pipe(connect.reload())
+    gulp.src('./extension/*.html').pipe(connect.reload())
 });
 
 gulp.task('js', function () {
-    gulp.src('./app/dist/**/*.js').pipe(connect.reload())
+    gulp.src('./extension/dist/**/*.js').pipe(connect.reload())
 });
 
 gulp.task('css', function () {
-    gulp.src('./app/dist/**/*.css').pipe(connect.reload())
+    gulp.src('./extension/dist/**/*.css').pipe(connect.reload())
 });
 
 gulp.task('watch', function () {
-    gulp.watch('./app/background/*.js', ['browserify-bg']);
-    gulp.watch('./app/index.html', ['html']);
-    gulp.watch('./app/src/**/*.scss', ['sass']);
-    gulp.watch('./app/src/**/*.js', ['browserify-app'])
+    gulp.watch('./source/background/*.js', ['browserify-bg']);
+    gulp.watch('./source/index.html', ['html']);
+    gulp.watch('./source/**/*.scss', ['sass']);
+    gulp.watch('./source/**/*.js', ['browserify-app'])
 });
 
 gulp.task('default', ['browserify-bg', 'browserify-app', 'sass']);
