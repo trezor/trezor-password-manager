@@ -161,7 +161,7 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
             case Dropbox.ApiError.NOT_FOUND:
                 console.warn('File or dir not found ', error.status);
 
-                encryptData(basicObjectBlob, encryptionKey).then((res) => {
+                encrypt(basicObjectBlob, encryptionKey).then((res) => {
                     saveFile(res);
                 });
                 break;
@@ -246,7 +246,7 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
                     if (!(Buffer.isBuffer(data))) {
                         data = toBuffer(data);
                     }
-                    sendMessage('decryptedContent', decryptData(data, encryptionKey));
+                    sendMessage('decryptedContent', decrypt(data, encryptionKey));
                     PHASE = 'LOADED';
                 }
             });
@@ -299,14 +299,16 @@ let deviceList = new trezor.DeviceList(),
             fullKey = result.message.value;
             encryptionKey = new Buffer(fullKey.substring(fullKey.length / 2, fullKey.length), 'utf8');
             loadFile();
-        }).catch(handleTrezorError(getEncryptionKey));
+        }).catch(handleTrezorError(getEncryptionKey, disconnectCallback));
     },
 
-    handleTrezorError = (retry) => {
+    handleTrezorError = (retry, fallback) => {
         return (error) => {
 
             let never = new Promise(() => {
             });
+
+            console.warn(error);
 
             switch (error) {
                 case NO_TRANSPORT:
@@ -335,11 +337,11 @@ let deviceList = new trezor.DeviceList(),
             }
             switch (error.code) {
                 case 'Failure_ActionCancelled':
-                    disconnectCallback();
+                    fallback();
                     break;
                 case 'Failure_PinInvalid':
                     sendMessage('wrongPin');
-                    retry();
+                    trezorDevice.waitForSessionAndRun((session) => retry(session));
                     break;
             }
         }
@@ -365,7 +367,7 @@ let deviceList = new trezor.DeviceList(),
         }
     },
 
-    encryptData = (data, key) => {
+    encrypt = (data, key) => {
         return randomInputVector().then((iv) => {
             let stringified = JSON.stringify(data),
                 buffer = new Buffer(stringified, 'utf8'),
@@ -377,7 +379,7 @@ let deviceList = new trezor.DeviceList(),
         });
     },
 
-    decryptData = (data, key) => {
+    decrypt = (data, key) => {
         try {
             let iv = data.slice(0, CIPHER_IVSIZE),
                 auth_tag = data.slice(CIPHER_IVSIZE, CIPHER_IVSIZE + AUTH_SIZE),
@@ -392,15 +394,15 @@ let deviceList = new trezor.DeviceList(),
         }
     },
 
-    encryptTrezor = (data, responseCallback) => {
+    encryptFullEntry = (data, responseCallback) => {
         crypto.randomBytes(32, function (ex, buf) {
             let key = displayPhrase(data.title, data.username),
                 nonce = buf.toString('hex');
             trezorDevice.waitForSessionAndRun((session) => {
                 return session.cipherKeyValue(getPath(), key, nonce, true, false, true).then((result) => {
                     let enckey = new Buffer(nonce, 'hex');
-                    encryptData(data.password, enckey).then((password)=> {
-                        encryptData(data.safe_note, enckey).then((safenote)=> {
+                    encrypt(data.password, enckey).then((password)=> {
+                        encrypt(data.safe_note, enckey).then((safenote)=> {
                             responseCallback({
                                 content: {
                                     title: data.title,
@@ -411,17 +413,17 @@ let deviceList = new trezor.DeviceList(),
                                 }
                             });
                         });
-
                     });
                 });
             });
         });
     },
 
-    decryptTrezor = (data, responseCallback) => {
+    decryptFullEntry = (data, responseCallback) => {
         let key = displayPhrase(data.title, data.username);
         trezorDevice.waitForSessionAndRun((session) => {
             return session.cipherKeyValue(getPath(), key, data.nonce, false, false, true).then((result) => {
+
                 let enckey = new Buffer(result.message.value, 'hex'),
                     password = new Buffer(data.password),
                     safenote = new Buffer(data.safe_note);
@@ -429,9 +431,26 @@ let deviceList = new trezor.DeviceList(),
                     content: {
                         title: data.title,
                         username: data.username,
-                        password: JSON.parse(decryptData(password, enckey)),
-                        safe_note: JSON.parse(decryptData(safenote, enckey)),
+                        password: JSON.parse(decrypt(password, enckey)),
+                        safe_note: JSON.parse(decrypt(safenote, enckey)),
                         nonce: data.nonce
+                    }
+                });
+            });
+        });
+    },
+
+    decryptPassword = (data, responseCallback) => {
+        let key = displayPhrase(data.title, data.username);
+        trezorDevice.waitForSessionAndRun((session) => {
+            return session.cipherKeyValue(getPath(), key, data.nonce, false, false, true).then((result) => {
+                let enckey = new Buffer(result.message.value, 'hex'),
+                    password = new Buffer(data.password);
+                responseCallback({
+                    content: {
+                        title: data.title,
+                        username: data.username,
+                        password: JSON.parse(decrypt(password, enckey))
                     }
                 });
             });
@@ -528,17 +547,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             break;
 
         case 'saveContent':
-            encryptData(request.content, encryptionKey).then((res) => {
+            encrypt(request.content, encryptionKey).then((res) => {
                 saveFile(res);
             });
             break;
 
-        case 'encryptPassword':
-            encryptTrezor(request.content, sendResponse);
+        case 'encryptFullEntry':
+            encryptFullEntry(request.content, sendResponse);
             break;
 
         case 'decryptPassword':
-            decryptTrezor(request.content, sendResponse);
+            decryptPassword(request.content, sendResponse);
+            break;
+
+        case 'decryptFullEntry':
+            decryptFullEntry(request.content, sendResponse);
             break;
 
         case 'openTab':

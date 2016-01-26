@@ -3808,7 +3808,7 @@ aside.left-panel {
           color: #797979; }
         .dashboard .card .entry.list-mode:hover .username {
           color: rgba(121, 121, 121, 0.9); }
-        .dashboard .card .entry.list-mode:hover .note textarea:disabled {
+        .dashboard .card .entry.list-mode:hover .note input:disabled {
           border-left-color: #3498db !important; }
       .dashboard .card .entry.list-mode .title {
         padding-top: 5px;
@@ -3830,7 +3830,7 @@ aside.left-panel {
           display: inline-block;
           width: 0;
           overflow: hidden; }
-      .dashboard .card .entry.list-mode .note textarea:disabled {
+      .dashboard .card .entry.list-mode .note input:disabled {
         max-width: 300px;
         margin: 4px 0 8px 2px;
         background: transparent;

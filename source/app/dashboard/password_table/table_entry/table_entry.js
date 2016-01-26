@@ -7,7 +7,7 @@ var React = require('react'),
     MenuItem = require('react-bootstrap').MenuItem,
     Tooltip = require('react-bootstrap').Tooltip,
     OverlayTrigger = require('react-bootstrap').OverlayTrigger,
-    Textarea = require('react-textarea-autosize'),
+    TextareaAutosize = require('react-textarea-autosize'),
     Clipboard = require('clipboard-js'),
     Password = {
         _pattern: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~',
@@ -76,9 +76,9 @@ var React = require('react'),
         },
 
         componentDidMount() {
-            if (this.state.title.indexOf('.') > -1) {
+            if (this.isUrl(this.decomposeUrl(this.state.title).domain)) {
                 this.setState({
-                    image_src: 'https://logo.clearbit.com/' + this.extractDomain(this.state.title)
+                    image_src: 'https://logo.clearbit.com/' + this.decomposeUrl(this.state.title).domain
                 });
             }
         },
@@ -113,7 +113,7 @@ var React = require('react'),
                     safe_note: this.state.safe_note,
                     nonce: this.state.nonce
                 };
-                chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
+                chrome.runtime.sendMessage({type: 'decryptFullEntry', content: data}, (response) => {
                     this.setTrezorWaitingBackface(false);
                     this.setState({
                         password: response.content.password,
@@ -123,7 +123,7 @@ var React = require('react'),
                 });
             } else {
                 var oldValues = this.state.context.getEntryValuesById(this.state.key_value);
-                if (this.state.title.indexOf('.') > -1) {
+                if (this.isUrl(this.decomposeUrl(this.state.title).domain)) {
                     this.setState({
                         image_src: 'https://logo.clearbit.com/' + this.extractDomain(this.state.title)
                     });
@@ -134,17 +134,6 @@ var React = require('react'),
                     safe_note: oldValues.safe_note
                 })
             }
-        },
-
-        extractDomain(url) {
-            var domain;
-            if (url.indexOf('://') > -1) {
-                domain = url.split('/')[2];
-            } else {
-                domain = url.split('/')[0];
-            }
-            domain = domain.split(':')[0];
-            return domain;
         },
 
         isUrl(url){
@@ -165,8 +154,8 @@ var React = require('react'),
             return title;
         },
 
-        setTrezorWaitingBackface(isWaiting, msg) {
-            if (isWaiting) {
+        setTrezorWaitingBackface(msg) {
+            if (msg) {
                 this.setState({
                     waiting_trezor: 'waiting',
                     waiting_trezor_msg: msg
@@ -174,6 +163,39 @@ var React = require('react'),
             } else {
                 this.setState({waiting_trezor: ' '});
             }
+        },
+
+        openTab() {
+            this.setTrezorWaitingBackface('Open Tab');
+            var data = {
+                title: this.state.title,
+                username: this.state.username,
+                password: this.state.password,
+                safe_note: this.state.safe_note,
+                nonce: this.state.nonce
+            };
+            chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
+                chrome.runtime.sendMessage({type: 'openTab', content: response.content});
+                this.setTrezorWaitingBackface(false);
+            });
+        },
+
+        copyUsernameToClipboard() {
+            Clipboard.copy(this.state.username);
+        },
+
+        copyPasswordToClipboard() {
+            this.setTrezorWaitingBackface('Copy password to clipboard');
+            var data = {
+                title: this.state.title,
+                username: this.state.username,
+                password: this.state.password,
+                nonce: this.state.nonce
+            };
+            chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
+                this.setTrezorWaitingBackface(false);
+                Clipboard.copy(response.content.password);
+            });
         },
 
         saveEntry(e) {
@@ -193,7 +215,7 @@ var React = require('react'),
                 note: this.state.note
             };
 
-            chrome.runtime.sendMessage({type: 'encryptPassword', content: data}, (response) => {
+            chrome.runtime.sendMessage({type: 'encryptFullEntry', content: data}, (response) => {
                 data.password = response.content.password;
                 data.safe_note = response.content.safe_note;
                 data.nonce = response.content.nonce;
@@ -238,9 +260,9 @@ var React = require('react'),
         },
 
         titleOnBlur() {
-            if (this.state.title.indexOf('.') > -1) {
+            if (this.isUrl(this.decomposeUrl(this.state.title).domain)) {
                 this.setState({
-                    image_src: 'https://logo.clearbit.com/' + this.extractDomain(this.state.title)
+                    image_src: 'https://logo.clearbit.com/' + this.decomposeUrl(this.state.title).domain
                 });
             } else {
                 this.setState({
@@ -249,10 +271,9 @@ var React = require('react'),
             }
         },
 
-        showPassword() {
-            var input = React.findDOMNode(this.refs.password),
-                inputAttr = input.getAttribute('type');
-            if (inputAttr === 'text') {
+        togglePassword() {
+            var input = React.findDOMNode(this.refs.password);
+            if (input.getAttribute('type') === 'text') {
                 input.setAttribute('type', 'password');
             } else {
                 input.setAttribute('type', 'text');
@@ -325,47 +346,8 @@ var React = require('react'),
             }
         },
 
-        openTab() {
-            this.setTrezorWaitingBackface(true, 'Open Tab');
-            var data = {
-                title: this.state.title,
-                username: this.state.username,
-                password: this.state.password,
-                safe_note: this.state.safe_note,
-                nonce: this.state.nonce
-            };
-            chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
-                chrome.runtime.sendMessage({type: 'openTab', content: response.content});
-                this.setTrezorWaitingBackface(false);
-            });
-        },
-
-        copyUsernameToClipboard() {
-            Clipboard.copy(this.state.username);
-        },
-
-        copyPasswordToClipboard() {
-            this.setTrezorWaitingBackface(true, 'Copy password to clipboard');
-            var data = {
-                title: this.state.title,
-                username: this.state.username,
-                password: this.state.password,
-                safe_note: this.state.safe_note,
-                nonce: this.state.nonce
-            };
-            chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
-                this.setTrezorWaitingBackface(false);
-                Clipboard.copy(response.content.password);
-            });
-        },
-
         removeEntry() {
-            // window.eventEmitter.emit(''); fix later
             this.state.context.removeEntry(this.state.key_value);
-        },
-
-        revertHistory() {
-
         },
 
         render() {
@@ -374,6 +356,7 @@ var React = require('react'),
                 openEntryTab = (<Tooltip id='open'>Open and login</Tooltip>),
                 copyClipboard = (<Tooltip id='clipboard'>Copy to clipboard</Tooltip>),
                 entryTitle = 'Item/URL',
+                noteArea = null,
                 unlockEntry = this.state.mode === 'list-mode' ? (<Tooltip id='unlock'>Unlock and edit</Tooltip>) : (
                     <Tooltip id='unlock'>Lock entry</Tooltip>),
                 interator = 0,
@@ -409,16 +392,6 @@ var React = require('react'),
                            onKeyUp={this.keyPressed}
                         />),
 
-                noteArea = (this.state.mode === 'list-mode' && this.state.note.length) &&
-                    (<Textarea type='text'
-                               autoComplete='off'
-                               onChange={this.handleChange}
-                               onKeyUp={this.keyPressed}
-                               value={this.state.note}
-                               disabled='disabled'
-                               defaultValue={''}
-                               spellCheck='false'
-                               name='note'></Textarea>),
 
                 tags = this.state.tags_titles.map((key) => {
                     return (<span className='tagsinput-tag'
@@ -449,15 +422,23 @@ var React = require('react'),
                 }
             }
 
-            if (this.state.mode === 'edit-mode') {
+            if (this.state.mode === 'list-mode' && this.state.note.length) {
                 noteArea = (
-                    <Textarea type='text'
-                              autoComplete='off'
-                              onChange={this.handleChange}
-                              onKeyUp={this.keyPressed}
-                              value={this.state.note}
-                              defaultValue={''}
-                              name='note'></Textarea>)
+                    <input type='text'
+                           autoComplete='off'
+                           value={this.state.note}
+                           disabled='disabled'
+                           spellCheck='false'
+                           name='note'/>)
+
+            } else if (this.state.mode === 'edit-mode') {
+                noteArea = (
+                    <TextareaAutosize type='text'
+                                      autoComplete='off'
+                                      onChange={this.handleChange}
+                                      onKeyUp={this.keyPressed}
+                                      value={this.state.note}
+                                      name='note'/>)
             }
 
             return (
@@ -490,7 +471,7 @@ var React = require('react'),
                                        onKeyUp={this.keyPressed}
                                        value={this.state.password}/>
                                 <OverlayTrigger placement='top' overlay={showPassword}>
-                                    <i className='button ion-eye' onClick={this.showPassword}></i>
+                                    <i className='button ion-eye' onClick={this.togglePassword}></i>
                                 </OverlayTrigger>
                                 <OverlayTrigger placement='top' overlay={generatePassword}>
                                     <i className='button ion-loop' onClick={this.generatePassword}></i>
@@ -508,19 +489,17 @@ var React = require('react'),
                             <div className='note'>
                                 <span>Note </span>
                                 {noteArea}
-
                             </div>
 
                             <div className='safe-note'>
                                 <span>Secret Note </span>
-                                <Textarea type='text'
-                                          autoComplete='off'
-                                          onChange={this.handleChange}
-                                          onKeyUp={this.keyPressed}
-                                          value={this.state.safe_note}
-                                          defaultValue={''}
-                                          spellCheck='false'
-                                          name='safe_note'></Textarea>
+                                <TextareaAutosize type='text'
+                                                  autoComplete='off'
+                                                  onChange={this.handleChange}
+                                                  onKeyUp={this.keyPressed}
+                                                  value={this.state.safe_note.toString()}
+                                                  spellCheck='false'
+                                                  name='safe_note'/>
                             </div>
 
                             <div className='form-buttons'>

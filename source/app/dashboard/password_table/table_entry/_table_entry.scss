@@ -127,7 +127,7 @@
           }
 
           .note {
-            textarea:disabled {
+            input:disabled {
               border-left-color: $c_blue !important;
             }
           }
@@ -160,7 +160,7 @@
 
         .note {
 
-          textarea:disabled {
+          input:disabled {
             max-width: 300px;
             margin: 4px 0 8px 2px;
             background: transparent;
