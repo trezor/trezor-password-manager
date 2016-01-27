@@ -60,7 +60,9 @@ var React = require('react'),
                 show_available: false,
                 content_changed: this.props.content_changed || '',
                 waiting_trezor: '',
-                waiting_trezor_msg: ''
+                waiting_trezor_msg: '',
+                clipboard_pwd: 'Copy to clipboard',
+                clipboard_usr: 'Copy to clipboard'
             };
         },
 
@@ -201,6 +203,9 @@ var React = require('react'),
             chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
                 if (response != null) {
                     Clipboard.copy(response.content.password);
+                    this.setState({
+                        clipboard_pwd: 'Copied!'
+                    });
                 }
                 this.setTrezorWaitingBackface(false);
             });
@@ -362,7 +367,8 @@ var React = require('react'),
             var showPassword = (<Tooltip id='show'>Show/hide password</Tooltip>),
                 generatePassword = (<Tooltip id='generate'>Generate password</Tooltip>),
                 openEntryTab = (<Tooltip id='open'>Open and login</Tooltip>),
-                copyClipboard = (<Tooltip id='clipboard'>Copy to clipboard</Tooltip>),
+                copyClipboardPwd = (<Tooltip id='clipboard-pwd'>{this.state.clipboard_pwd}</Tooltip>),
+                copyClipboardUsr = (<Tooltip id='clipboard-usr'>{this.state.clipboard_usr}</Tooltip>),
                 entryTitle = 'Item/URL',
                 noteArea = null,
                 unlockEntry = this.state.mode === 'list-mode' ? (<Tooltip id='unlock'>Unlock and edit</Tooltip>) : (
@@ -384,7 +390,7 @@ var React = require('react'),
                            onBlur={this.titleOnBlur}/>),
 
                 username = this.state.mode === 'list-mode' ?
-                    (<OverlayTrigger placement='top' overlay={copyClipboard}>
+                    (<OverlayTrigger placement='top' overlay={copyClipboardUsr}>
                         <input type='text'
                                autoComplete='off'
                                value={this.state.username}
@@ -521,7 +527,7 @@ var React = require('react'),
                                 }
 
                                 {this.state.key_value != null &&
-                                <OverlayTrigger placement='top' overlay={copyClipboard}>
+                                <OverlayTrigger placement='top' overlay={copyClipboardPwd}>
                                     <span className='btn clipboard-btn' onClick={this.copyPasswordToClipboard}>
                                         <i></i>
                                     </span>
