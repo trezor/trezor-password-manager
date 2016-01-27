@@ -436,7 +436,7 @@ let deviceList = new trezor.DeviceList(),
                         nonce: data.nonce
                     }
                 });
-            });
+            }).catch(handleTrezorError(null, responseCallback));
         });
     },
 
@@ -453,7 +453,7 @@ let deviceList = new trezor.DeviceList(),
                         password: JSON.parse(decrypt(password, enckey))
                     }
                 });
-            });
+            }).catch(handleTrezorError(null, responseCallback));
         });
     },
 

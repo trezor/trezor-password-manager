@@ -114,18 +114,21 @@ var React = require('react'),
                     nonce: this.state.nonce
                 };
                 chrome.runtime.sendMessage({type: 'decryptFullEntry', content: data}, (response) => {
+                    if (response != null) {
+                        this.setState({
+                            password: response.content.password,
+                            safe_note: response.content.safe_note,
+                            mode: 'edit-mode'
+                        });
+                    }
                     this.setTrezorWaitingBackface(false);
-                    this.setState({
-                        password: response.content.password,
-                        safe_note: response.content.safe_note,
-                        mode: 'edit-mode'
-                    });
+
                 });
             } else {
                 var oldValues = this.state.context.getEntryValuesById(this.state.key_value);
                 if (this.isUrl(this.decomposeUrl(this.state.title).domain)) {
                     this.setState({
-                        image_src: 'https://logo.clearbit.com/' + this.extractDomain(this.state.title)
+                        image_src: 'https://logo.clearbit.com/' + this.decomposeUrl(this.state.title).domain
                     });
                 }
                 this.setState({
@@ -175,8 +178,11 @@ var React = require('react'),
                 nonce: this.state.nonce
             };
             chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
-                chrome.runtime.sendMessage({type: 'openTab', content: response.content});
+                if (response != null) {
+                    chrome.runtime.sendMessage({type: 'openTab', content: response.content});
+                }
                 this.setTrezorWaitingBackface(false);
+
             });
         },
 
@@ -193,8 +199,10 @@ var React = require('react'),
                 nonce: this.state.nonce
             };
             chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
+                if (response != null) {
+                    Clipboard.copy(response.content.password);
+                }
                 this.setTrezorWaitingBackface(false);
-                Clipboard.copy(response.content.password);
             });
         },
 
