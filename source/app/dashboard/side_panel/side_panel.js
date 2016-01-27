@@ -2,7 +2,7 @@
 
 var React = require('react'),
     Router = require('react-router'),
-    DataService = require('../../components/data_service'),
+    DataService = require('../../global_components/data_service'),
     SidePanel = React.createClass({
 
 

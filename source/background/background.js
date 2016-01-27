@@ -48,7 +48,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
                 }
                 break;
             case 'TREZOR':
-                if (trezorKey === '') {
+                if (fullKey === '') {
                     connectTrezor();
                 } else {
                     PHASE = 'LOADED'
@@ -487,6 +487,8 @@ let deviceList = new trezor.DeviceList(),
     disconnectCallback = () => {
         dropboxUsernameAccepted = false;
         sendMessage('trezorDisconnected');
+        fullKey = '';
+        encryptionKey = '';
         PHASE = 'DROPBOX';
         init();
     },

@@ -1,6 +1,7 @@
 'use strict';
 
 require('whatwg-fetch');
+
 var React = require('react'),
     Router = require('react-router'),
     DropdownButton = require('react-bootstrap').DropdownButton,
@@ -9,35 +10,7 @@ var React = require('react'),
     OverlayTrigger = require('react-bootstrap').OverlayTrigger,
     TextareaAutosize = require('react-textarea-autosize'),
     Clipboard = require('clipboard-js'),
-    Password = {
-        _pattern: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~',
-        _getRandomByte: function () {
-            if (window.crypto && window.crypto.getRandomValues) {
-                var result = new Uint8Array(1);
-                window.crypto.getRandomValues(result);
-                return result[0];
-            } else if (window.msCrypto && window.msCrypto.getRandomValues) {
-                result = new Uint8Array(1);
-                window.msCrypto.getRandomValues(result);
-                return result[0];
-            } else {
-                return Math.floor(Math.random() * 256);
-            }
-        },
-        generate: function (length) {
-            return Array.apply(null, {'length': length})
-                .map(function () {
-                    var result;
-                    while (true) {
-                        result = String.fromCharCode(this._getRandomByte());
-                        if (this._pattern.indexOf(result) >= 0) {
-                            return result;
-                        }
-                    }
-                }, this)
-                .join('');
-        }
-    },
+    Password = require('../../../global_components/password_mgmt'),
 
     TableEntry = React.createClass({
 

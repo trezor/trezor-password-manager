@@ -2,7 +2,7 @@
 
 var React = require('react'),
     Router = require('react-router'),
-    DataService = require('../../components/data_service'),
+    DataService = require('../../global_components/data_service'),
     Table_Entry = require('./table_entry/table_entry'),
     Filter_Input = require('./filter_input/filter_input'),
     DropdownButton = require('react-bootstrap').DropdownButton,
