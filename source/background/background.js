@@ -107,7 +107,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
         if (PHASE === 'LOADED') {
             chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
                 if (typeof tabs[0] !== 'undefined') {
-                    if (tabs[0].url != null) {
+                    if (isUrl(tabs[0].url)) {
                         let domain = decomposeUrl(tabs[0].url).domain;
                         if (activeDomain !== domain) {
                             activeDomain = domain;
@@ -131,7 +131,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
         console.log('huraaa ', data);
         chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
             if (typeof tabs[0] !== 'undefined') {
-                if (tabs[0].url != null) {
+                if (isUrl(tabs[0].url)) {
                     if (decomposeUrl(tabs[0].url).domain === activeDomain) {
                         injectContentScript(tabs[0].id, data);
                     }
