@@ -11,9 +11,7 @@ var React = require('react'),
     TextareaAutosize = require('react-textarea-autosize'),
     Clipboard = require('clipboard-js'),
     Password = require('../../../global_components/password_mgmt'),
-
     TableEntry = React.createClass({
-
         getInitialState() {
             return {
                 context: this.props.context || {},
@@ -34,8 +32,8 @@ var React = require('react'),
                 content_changed: this.props.content_changed || '',
                 waiting_trezor: '',
                 waiting_trezor_msg: '',
-                clipboard_pwd: 'Copy to clipboard',
-                clipboard_usr: 'Copy to clipboard'
+                clipboard_pwd: false,
+                clipboard_usr: false
             };
         },
 
@@ -163,6 +161,14 @@ var React = require('react'),
 
         copyUsernameToClipboard() {
             Clipboard.copy(this.state.username);
+            this.setState({
+                clipboard_usr: true
+            });
+            setTimeout(()=> {
+                this.setState({
+                    clipboard_usr: false
+                });
+            }, 2500);
         },
 
         copyPasswordToClipboard() {
@@ -177,8 +183,13 @@ var React = require('react'),
                 if (response != null) {
                     Clipboard.copy(response.content.password);
                     this.setState({
-                        clipboard_pwd: 'Copied!'
+                        clipboard_pwd: true
                     });
+                    setTimeout(()=> {
+                        this.setState({
+                            clipboard_pwd: false
+                        });
+                    }, 2500);
                 }
                 this.setTrezorWaitingBackface(false);
             });
@@ -340,8 +351,10 @@ var React = require('react'),
             var showPassword = (<Tooltip id='show'>Show/hide password</Tooltip>),
                 generatePassword = (<Tooltip id='generate'>Generate password</Tooltip>),
                 openEntryTab = (<Tooltip id='open'>Open and login</Tooltip>),
-                copyClipboardPwd = (<Tooltip id='clipboard-pwd'>{this.state.clipboard_pwd}</Tooltip>),
-                copyClipboardUsr = (<Tooltip id='clipboard-usr'>{this.state.clipboard_usr}</Tooltip>),
+                copyClipboardPwd = (
+                    <Tooltip id='clipboard-pwd'>{this.state.clipboard_pwd ? 'Copied!' : 'Copy to clipboard'}</Tooltip>),
+                copyClipboardUsr = (
+                    <Tooltip id='clipboard-usr'>{this.state.clipboard_usr ? 'Copied!' : 'Copy to clipboard'}</Tooltip>),
                 entryTitle = 'Item/URL',
                 noteArea = null,
                 unlockEntry = this.state.mode === 'list-mode' ? (<Tooltip id='unlock'>Unlock and edit</Tooltip>) : (
@@ -363,12 +376,12 @@ var React = require('react'),
                            onBlur={this.titleOnBlur}/>),
 
                 username = this.state.mode === 'list-mode' ?
-                    (<OverlayTrigger placement='top' overlay={copyClipboardUsr}>
+                    (<OverlayTrigger placement='bottom' overlay={copyClipboardUsr}>
                         <input type='text'
                                autoComplete='off'
                                value={this.state.username}
-                               name='username'
                                onClick={this.copyUsernameToClipboard}
+                               name='username'
                                disabled='disabled'/>
                     </OverlayTrigger>) : (
                     <input type='text'
@@ -501,7 +514,9 @@ var React = require('react'),
 
                                 {this.state.key_value != null &&
                                 <OverlayTrigger placement='top' overlay={copyClipboardPwd}>
-                                    <span className='btn clipboard-btn' onClick={this.copyPasswordToClipboard}>
+                                    <span
+                                        className={ this.state.clipboard_pwd ? 'btn clipboard-btn copied' : 'btn clipboard-btn'}
+                                        onClick={this.copyPasswordToClipboard}>
                                         <i></i>
                                     </span>
                                 </OverlayTrigger>

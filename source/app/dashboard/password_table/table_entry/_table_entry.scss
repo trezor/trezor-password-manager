@@ -124,6 +124,9 @@
 
           .username {
             color: rgba($c_grey_content_font, .9);
+            input:disabled {
+              cursor: pointer;
+            }
           }
 
           .note {
@@ -192,8 +195,8 @@
 
         .title, .username {
           input {
-            width: auto;
-            max-width: 280px;
+            width: 80%;
+            max-width: 300px;
             background: transparent;
             border: none;
             outline: none;
@@ -298,7 +301,12 @@
             right: 40px;
             i:after {
               content: "\f41b";
-
+            }
+            &.copied, &.copied:hover {
+              i:after {
+                color: $c_green;
+                content: "\f383";
+              }
             }
             &:hover {
               i:after {
@@ -395,7 +403,8 @@
             display: inline-block;
             vertical-align: middle;
             text-transform: uppercase;
-            width: 70px;
+            width: 75px;
+            text-align: left;
             font-size: .8em;
             font-weight: bold;
           }
@@ -545,3 +554,10 @@
     }
   }
 }
+
+// tooltip aligment hacks
+
+#clipboard-usr {
+  margin-left: -120px;
+}
+

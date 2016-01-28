@@ -57,13 +57,17 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
         }
     },
 
-    toArrayBuffer = (buffer) => {
-        let ab = new ArrayBuffer(buffer.length),
-            view = new Uint8Array(ab);
-        for (var i = 0; i < buffer.length; ++i) {
-            view[i] = buffer[i];
+    chromeExists = () => {
+        if (typeof chrome === 'undefined') {
+            return Promise.reject(new Error('Global chrome does not exist; probably not running chrome'));
         }
-        return ab;
+        if (typeof chrome.runtime === 'undefined') {
+            return Promise.reject(new Error('Global chrome.runtime does not exist; probably not running chrome'));
+        }
+        if (typeof chrome.runtime.sendMessage === 'undefined') {
+            return Promise.reject(new Error('Global chrome.runtime.sendMessage does not exist; probably not whitelisted website in extension manifest'));
+        }
+        return Promise.resolve();
     },
 
     toBuffer = (ab) => {
@@ -73,25 +77,6 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
             buffer[i] = view[i];
         }
         return buffer;
-    },
-
-    toHex = (pwd)  => {
-        return new Buffer(pwd, 'utf8').toString('hex');
-    },
-
-    fromHex = (hex) => {
-        return new Buffer(hex, 'hex').toString('utf8');
-    },
-
-    addPaddingTail = (hex) => {
-        let paddingNumber = 16 - (hex.length % 16),
-            tail = new Array(paddingNumber + 1).join((paddingNumber - 1).toString(16));
-        return hex + tail;
-    },
-
-    removePaddingTail = (hex) => {
-        let paddingNumber = parseInt(hex.charAt(hex.length - 1), 16) + 1;
-        return hex.slice(0, -paddingNumber);
     },
 
     setProtocolPrefix = (url) => {
@@ -116,8 +101,18 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
         return title;
     },
 
+    detectActiveUrl = () => {
+        chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
+            if (typeof tabs[0] !== 'undefined') {
+                if (tabs[0].url != null) {
+                    let domain = decomposeUrl(tabs[0].url).domain;
+                    console.log(domain);
+                }
+            }
+        });
+    },
+
     openTab = (data) => {
-        var tabId;
         chrome.tabs.create({url: setProtocolPrefix(data.title)}, (tab) => {
             var tabId = tab.id;
             chrome.tabs.executeScript(tab.id, {file: 'js/content_script.js', runAt: "document_start"}, () => {
@@ -281,7 +276,7 @@ const HD_HARDENED = 0x80000000,
     FIRMWARE_IS_OLD = new Error('Firmware of connected device is too old'),
     INSUFFICIENT_FUNDS = new Error('Insufficient funds');
 
-let deviceList = new trezor.DeviceList(),
+let deviceList = '',
     trezorDevice = false,
     fullKey = '',
     encryptionKey = '',
@@ -509,67 +504,81 @@ let deviceList = new trezor.DeviceList(),
         });
     };
 
-deviceList.on('connect', connectTrezor);
-deviceList.on('error', (error) => {
-    console.error('List error:', error);
-});
+chromeExists().then(() => {
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    switch (request.type) {
+    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+        detectActiveUrl();
+    });
 
-        case 'initPlease':
-            init();
-            break;
+    chrome.tabs.onCreated.addListener((tabId, changeInfo, tab) => {
+        detectActiveUrl();
+    });
 
-        case 'connectDropbox':
-            connectToDropbox();
-            break;
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        switch (request.type) {
 
-        case 'initTrezorPhase':
-            PHASE = 'TREZOR';
-            dropboxUsernameAccepted = true;
-            sendMessage('trezorDisconnected');
-            connectTrezor(trezorDevice);
-            break;
+            case 'initPlease':
+                init();
+                break;
 
-        case 'trezorPin':
-            pinEnter(request.content);
-            break;
+            case 'connectDropbox':
+                connectToDropbox();
+                break;
 
-        case 'trezorPassphrase':
-            passphrasEnter(request.content);
-            break;
+            case 'initTrezorPhase':
+                PHASE = 'TREZOR';
+                dropboxUsernameAccepted = true;
+                sendMessage('trezorDisconnected');
+                connectTrezor(trezorDevice);
+                break;
 
-        case 'disconnectDropbox':
-            signOutDropbox();
-            break;
+            case 'trezorPin':
+                pinEnter(request.content);
+                break;
 
-        case 'loadContent':
-            loadFile();
-            break;
+            case 'trezorPassphrase':
+                passphrasEnter(request.content);
+                break;
 
-        case 'saveContent':
-            encrypt(request.content, encryptionKey).then((res) => {
-                saveFile(res);
-            });
-            break;
+            case 'disconnectDropbox':
+                signOutDropbox();
+                break;
 
-        case 'encryptFullEntry':
-            encryptFullEntry(request.content, sendResponse);
-            break;
+            case 'loadContent':
+                loadFile();
+                break;
 
-        case 'decryptPassword':
-            decryptPassword(request.content, sendResponse);
-            break;
+            case 'saveContent':
+                encrypt(request.content, encryptionKey).then((res) => {
+                    saveFile(res);
+                });
+                break;
 
-        case 'decryptFullEntry':
-            decryptFullEntry(request.content, sendResponse);
-            break;
+            case 'encryptFullEntry':
+                encryptFullEntry(request.content, sendResponse);
+                break;
 
-        case 'openTab':
-            openTab(request.content);
-            break;
-    }
-    return true;
+            case 'decryptPassword':
+                decryptPassword(request.content, sendResponse);
+                break;
+
+            case 'decryptFullEntry':
+                decryptFullEntry(request.content, sendResponse);
+                break;
+
+            case 'openTab':
+                openTab(request.content);
+                break;
+        }
+        return true;
+    });
+
+    return new trezor.DeviceList();
+}).then((list) => {
+    deviceList = list;
+    deviceList.on('connect', connectTrezor);
+    deviceList.on('error', (error) => {
+        console.error('List error:', error);
+    });
 });
 
