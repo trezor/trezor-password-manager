@@ -5,6 +5,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     crypto = require('crypto'),
     activeDomain = '',
     hasCredentials = false,
+    unlockedContent = false,
 
 // GENERAL STUFF
 
@@ -103,28 +104,58 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
         return title;
     },
 
+    containDomain = (domain) => {
+        let entry = false;
+        if (unlockedContent) {
+            let content = typeof unlockedContent === 'object' ? unlockedContent : JSON.parse(unlockedContent);
+            Object.keys(content.entries).map((key) => {
+                var obj = content.entries[key];
+                if (obj.title.indexOf(domain) > -1 || domain.indexOf(obj.title) > -1) {
+                    entry = obj;
+                }
+            });
+        }
+        return entry;
+    },
+
     detectActiveUrl = () => {
-        if (PHASE === 'LOADED') {
+        if (PHASE === 'LOADED' && unlockedContent) {
             chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
                 if (typeof tabs[0] !== 'undefined') {
                     if (isUrl(tabs[0].url)) {
                         let domain = decomposeUrl(tabs[0].url).domain;
                         if (activeDomain !== domain) {
                             activeDomain = domain;
-                            chrome.runtime.sendMessage({type: 'activeDomain', content: activeDomain}, (response)=> {
-                                if (response.content) {
-                                    updateBadgeStatus(PHASE);
-                                    hasCredentials = true;
-                                } else {
-                                    updateBadgeStatus('ERROR');
-                                    hasCredentials = false;
-                                }
-                            });
+                            if (containDomain(activeDomain)) {
+                                updateBadgeStatus(PHASE);
+                                hasCredentials = true;
+                            } else {
+                                updateBadgeStatus('ERROR');
+                                hasCredentials = false;
+                            }
                         }
+                    } else {
+                        updateBadgeStatus('ERROR');
+                        hasCredentials = false;
                     }
                 }
             });
         }
+    },
+
+
+    fillCredentials = (domain) => {
+        let entry = false;
+        if (unlockedContent) {
+            let content = typeof unlockedContent === 'object' ? unlockedContent : JSON.parse(unlockedContent);
+            Object.keys(content.entries).map((key) => {
+                var obj = content.entries[key];
+                if (obj.title.indexOf(domain) > -1 || domain.indexOf(obj.title) > -1) {
+                    entry = obj;
+                }
+            });
+        }
+        decryptPassword(entry, fillLoginForm);
     },
 
     fillLoginForm = (data) => {
@@ -132,7 +163,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
             if (typeof tabs[0] !== 'undefined') {
                 if (isUrl(tabs[0].url)) {
                     if (decomposeUrl(tabs[0].url).domain === activeDomain) {
-                        injectContentScript(tabs[0].id, data);
+                        injectContentScript(tabs[0].id, data.content);
                     }
                 }
             }
@@ -272,7 +303,8 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
                     if (!(Buffer.isBuffer(data))) {
                         data = toBuffer(data);
                     }
-                    sendMessage('decryptedContent', decrypt(data, encryptionKey));
+                    unlockedContent = decrypt(data, encryptionKey);
+                    sendMessage('decryptedContent', unlockedContent);
                     PHASE = 'LOADED';
                 }
             });
@@ -547,7 +579,7 @@ chromeExists().then(() => {
 
     chrome.commands.onCommand.addListener((command) => {
         if (command === 'fill_login_form' && hasCredentials) {
-            sendMessage('fillCredentials', activeDomain);
+            fillCredentials(activeDomain);
         }
     });
 
@@ -601,10 +633,6 @@ chromeExists().then(() => {
 
             case 'decryptFullEntry':
                 decryptFullEntry(request.content, sendResponse);
-                break;
-
-            case 'fillForm':
-                fillLoginForm(request.content);
                 break;
 
             case 'openTab':
