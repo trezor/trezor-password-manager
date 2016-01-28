@@ -128,7 +128,6 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
     fillLoginForm = (data) => {
-        console.log('huraaa ', data);
         chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
             if (typeof tabs[0] !== 'undefined') {
                 if (isUrl(tabs[0].url)) {
@@ -148,7 +147,6 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
 
     injectContentScript = (id, data) => {
         var tabId = id;
-        console.log('huraaa2 ', id, data);
         chrome.tabs.executeScript(tabId, {file: 'js/content_script.js', runAt: "document_start"}, () => {
             chrome.tabs.sendMessage(tabId, {type: 'isScriptExecuted'}, (response) => {
                 if (response.type === 'scriptReady') {
