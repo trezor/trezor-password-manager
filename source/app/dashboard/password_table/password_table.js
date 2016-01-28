@@ -29,6 +29,19 @@ var React = require('react'),
             window.eventEmitter.on('filter', this.setupFilter);
             window.eventEmitter.on('hideNewEntry', this.addNewEntry);
             window.eventEmitter.on('hideOpenNewEntry', this.hideOpenNewEntry);
+
+            chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+                switch (request.type) {
+                    case 'activeDomain':
+                        sendResponse({
+                            content: this.containDomain(request.content)
+                        });
+                        break;
+                    case 'fillCredentials':
+                        this.fillCredentials(request.content);
+                        break;
+                }
+            });
         },
 
         componentWillUnmount() {
@@ -37,6 +50,41 @@ var React = require('react'),
             window.eventEmitter.removeListener('filter', this.setupFilter);
             window.eventEmitter.removeListener('hideNewEntry', this.addNewEntry);
             window.eventEmitter.removeListener('hideOpenNewEntry', this.hideOpenNewEntry);
+        },
+
+        containDomain(domain) {
+            var entry = false;
+            Object.keys(this.state.entries).map((key) => {
+                var obj = this.state.entries[key];
+                if (obj.title.indexOf(domain) > -1 || domain.indexOf(obj.title) > -1) {
+
+                    entry = obj;
+                }
+            });
+            return entry;
+        },
+
+        fillCredentials(domain) {
+            var entry = false;
+            Object.keys(this.state.entries).map((key) => {
+                var obj = this.state.entries[key];
+                if (obj.title.indexOf(domain) > -1 || domain.indexOf(obj.title) > -1) {
+                    entry = obj;
+                }
+            });
+            if (entry) {
+                var data = {
+                    title: entry.title,
+                    username: entry.username,
+                    password: entry.password,
+                    nonce: entry.nonce
+                };
+                chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
+                    if (response != null) {
+                        chrome.runtime.sendMessage({type: 'fillForm', content: response.content});
+                    }
+                });
+            }
         },
 
         setupFilter(filterVal) {

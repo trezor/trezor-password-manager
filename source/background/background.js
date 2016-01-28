@@ -3,6 +3,8 @@
 let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     Buffer = require('buffer/').Buffer,
     crypto = require('crypto'),
+    activeDomain = '',
+    hasCredentials = false,
 
 // GENERAL STUFF
 
@@ -102,11 +104,37 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
     detectActiveUrl = () => {
+        if (PHASE === 'LOADED') {
+            chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
+                if (typeof tabs[0] !== 'undefined') {
+                    if (tabs[0].url != null) {
+                        let domain = decomposeUrl(tabs[0].url).domain;
+                        if (activeDomain !== domain) {
+                            activeDomain = domain;
+                            chrome.runtime.sendMessage({type: 'activeDomain', content: activeDomain}, (response)=> {
+                                if (response.content) {
+                                    updateBadgeStatus(PHASE);
+                                    hasCredentials = true;
+                                } else {
+                                    updateBadgeStatus('ERROR');
+                                    hasCredentials = false;
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        }
+    },
+
+    fillLoginForm = (data) => {
+        console.log('huraaa ', data);
         chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
             if (typeof tabs[0] !== 'undefined') {
                 if (tabs[0].url != null) {
-                    let domain = decomposeUrl(tabs[0].url).domain;
-                    console.log(domain);
+                    if (decomposeUrl(tabs[0].url).domain === activeDomain) {
+                        injectContentScript(tabs[0].id, data);
+                    }
                 }
             }
         });
@@ -114,21 +142,26 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
 
     openTab = (data) => {
         chrome.tabs.create({url: setProtocolPrefix(data.title)}, (tab) => {
-            var tabId = tab.id;
-            chrome.tabs.executeScript(tab.id, {file: 'js/content_script.js', runAt: "document_start"}, () => {
-                chrome.tabs.sendMessage(tabId, {type: 'isScriptExecuted'}, (response) => {
-                    if (response.type === 'scriptReady') {
+            injectContentScript(tab.id, data);
+        });
+    },
+
+    injectContentScript = (id, data) => {
+        var tabId = id;
+        console.log('huraaa2 ', id, data);
+        chrome.tabs.executeScript(tabId, {file: 'js/content_script.js', runAt: "document_start"}, () => {
+            chrome.tabs.sendMessage(tabId, {type: 'isScriptExecuted'}, (response) => {
+                if (response.type === 'scriptReady') {
+                    chrome.tabs.sendMessage(tabId, {type: 'fillData', content: data});
+                } else {
+                    chrome.tabs.executeScript(tabId, {file: 'js/content_script.js'}, () => {
+                        if (chrome.runtime.lastError) {
+                            console.error(chrome.runtime.lastError);
+                            throw Error("Unable to inject script into tab " + tabId);
+                        }
                         chrome.tabs.sendMessage(tabId, {type: 'fillData', content: data});
-                    } else {
-                        chrome.tabs.executeScript(tabId, {file: 'js/content_script.js'}, () => {
-                            if (chrome.runtime.lastError) {
-                                console.error(chrome.runtime.lastError);
-                                throw Error("Unable to inject script into tab " + tabId);
-                            }
-                            chrome.tabs.sendMessage(tabId, {type: 'fillData', content: data});
-                        });
-                    }
-                });
+                    });
+                }
             });
         });
     };
@@ -510,8 +543,14 @@ chromeExists().then(() => {
         detectActiveUrl();
     });
 
-    chrome.tabs.onCreated.addListener((tabId, changeInfo, tab) => {
+    chrome.tabs.onActivated.addListener((tabId, changeInfo, tab) => {
         detectActiveUrl();
+    });
+
+    chrome.commands.onCommand.addListener((command) => {
+        if (command === 'fill_login_form' && hasCredentials) {
+            sendMessage('fillCredentials', activeDomain);
+        }
     });
 
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -564,6 +603,10 @@ chromeExists().then(() => {
 
             case 'decryptFullEntry':
                 decryptFullEntry(request.content, sendResponse);
+                break;
+
+            case 'fillForm':
+                fillLoginForm(request.content);
                 break;
 
             case 'openTab':

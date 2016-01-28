@@ -10,6 +10,12 @@
         "default": "Alt+Shift+G"
       },
       "description": "Open TREZOR Guard app window."
+    },
+    "fill_login_form": {
+      "suggested_key": {
+        "default": "Alt+Shift+F"
+      },
+      "description": "Fill login form with fitting credentials."
     }
   },
   "chrome_url_overrides": {

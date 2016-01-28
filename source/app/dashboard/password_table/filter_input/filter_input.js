@@ -28,7 +28,8 @@ var React = require('react'),
             return (
                 <span>
                     <form role='filter' className='filter' onSubmit={this.submitForm}>
-                        <input type='text' ref='filter' placeholder='Quick search ...' value={this.state.filter} onChange={this.handleChange} className='form-control' />
+                        <input type='text' ref='filter' placeholder='Quick search ...' value={this.state.filter}
+                               onChange={this.handleChange} className='form-control'/>
                     </form>
                 </span>
             )
