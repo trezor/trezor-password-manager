@@ -1,8 +1,6 @@
 'use strict';
 
-let injected = false,
-
-    countVisibleInputs = (inputs) => {
+let countVisibleInputs = (inputs) => {
         var visibleInputs = 0;
         for (var j = 0; j < inputs.length; j++) {
             if (inputs[j].type.toLowerCase() === 'email' || inputs[j].type.toLowerCase() === 'text') {
@@ -19,7 +17,7 @@ let injected = false,
                 passwordInputsNo++;
             }
         }
-        return passwordInputsNo == 1
+        return passwordInputsNo == 1;
     },
 
     hasSubmitElement = (form) => {
@@ -68,6 +66,7 @@ let injected = false,
         var loginForms = getLoginForm();
         for (var i = 0; i < loginForms.length; i++) {
             var inputs = loginForms[i].getElementsByTagName('input');
+            console.log('login forms', loginForms);
             for (var j = 0; j < inputs.length; j++) {
                 switch (inputs[j].type.toLowerCase()) {
                     case 'email':
@@ -87,21 +86,17 @@ let injected = false,
     },
 
     proceedInjection = (data) => {
-        if (!injected) {
-            injected = true;
             setInputValues(data);
-        }
     };
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
         case 'fillData':
             if (document.addEventListener) {
-                if (document.readyState === "complete") {
+                if (document.readyState === 'complete') {
                     proceedInjection(request.content);
                 } else {
-                    document.addEventListener("DOMContentLoaded", proceedInjection(request.content), false);
-                    window.addEventListener("load", proceedInjection(request.content), false);
+                    document.addEventListener('DOMContentLoaded', proceedInjection(request.content), false);
                 }
             }
             break;

@@ -3,7 +3,7 @@
 let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     Buffer = require('buffer/').Buffer,
     crypto = require('crypto'),
-    activeDomain = '',
+    activeHost = '',
     hasCredentials = false,
     unlockedContent = false,
 
@@ -23,7 +23,8 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
         LOADED: {color: [59, 192, 195, 100], defaultText: '\u0020'},
         DROPBOX: {color: [237, 199, 85, 100], defaultText: '\u0020'},
         TREZOR: {color: [237, 199, 85, 100], defaultText: '\u0020'},
-        ERROR: {color: [255, 255, 0, 100], defaultText: '!'}
+        ERROR: {color: [255, 255, 0, 100], defaultText: '!'},
+        OFF: {color: [255, 255, 0, 100], defaultText: ''}
     },
 
     updateBadgeStatus = (status) => {
@@ -91,26 +92,49 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
     decomposeUrl = (url) => {
-        var title = {index: url.indexOf('://')};
-        if (title.index > -1) {
-            title.protocol = url.substring(0, title.index + 3);
-            title.domain = url.split('/')[2];
-            title.path = url.slice(title.protocol.length + title.domain.length, url.length);
-        } else {
-            title.protocol = false;
-            title.domain = url.split('/')[0];
-            title.path = url.slice(title.domain.length, url.length);
+        let parsed_url = {};
+
+        if (url == null || url.length == 0) return parsed_url;
+
+        let protocol_i = url.indexOf('://');
+        parsed_url.protocol = url.substr(0, protocol_i);
+
+        let remaining_url = url.substr(protocol_i + 3, url.length);
+        let domain_i = remaining_url.indexOf('/');
+        domain_i = domain_i == -1 ? remaining_url.length - 1 : domain_i;
+        parsed_url.domain = remaining_url.substr(0, domain_i);
+        parsed_url.path = domain_i == -1 || domain_i + 1 == remaining_url.length ? null : remaining_url.substr(domain_i + 1, remaining_url.length);
+
+        let domain_parts = parsed_url.domain.split('.');
+        switch (domain_parts.length) {
+            case 2:
+                parsed_url.subdomain = null;
+                parsed_url.host = domain_parts[0];
+                parsed_url.tld = domain_parts[1];
+                break;
+            case 3:
+                parsed_url.subdomain = domain_parts[0];
+                parsed_url.host = domain_parts[1];
+                parsed_url.tld = domain_parts[2];
+                break;
+            case 4:
+                parsed_url.subdomain = domain_parts[0];
+                parsed_url.host = domain_parts[1];
+                parsed_url.tld = domain_parts[2] + '.' + domain_parts[3];
+                break;
         }
-        return title;
+
+        parsed_url.parent_domain = parsed_url.host + '.' + parsed_url.tld;
+
+        return parsed_url;
     },
 
-    containDomain = (domain) => {
+    matchingContent = (host) => {
         let entry = false;
         if (unlockedContent) {
-            let content = typeof unlockedContent === 'object' ? unlockedContent : JSON.parse(unlockedContent);
-            Object.keys(content.entries).map((key) => {
-                var obj = content.entries[key];
-                if (obj.title.indexOf(domain) > -1 || domain.indexOf(obj.title) > -1) {
+            Object.keys(unlockedContent.entries).map((key) => {
+                let obj = unlockedContent.entries[key];
+                if (obj.title.indexOf(host) > -1 || host.indexOf(obj.title) > -1) {
                     entry = obj;
                 }
             });
@@ -123,16 +147,13 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
             chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
                 if (typeof tabs[0] !== 'undefined') {
                     if (isUrl(tabs[0].url)) {
-                        let domain = decomposeUrl(tabs[0].url).domain;
-                        if (activeDomain !== domain) {
-                            activeDomain = domain;
-                            if (containDomain(activeDomain)) {
-                                updateBadgeStatus(PHASE);
-                                hasCredentials = true;
-                            } else {
-                                updateBadgeStatus('ERROR');
-                                hasCredentials = false;
-                            }
+                        activeHost = decomposeUrl(tabs[0].url).host;
+                        if (matchingContent(activeHost)) {
+                            updateBadgeStatus(PHASE);
+                            hasCredentials = true;
+                        } else {
+                            updateBadgeStatus('ERROR');
+                            hasCredentials = false;
                         }
                     } else {
                         updateBadgeStatus('ERROR');
@@ -144,13 +165,12 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
 
-    fillCredentials = (domain) => {
+    fillCredentials = (host) => {
         let entry = false;
         if (unlockedContent) {
-            let content = typeof unlockedContent === 'object' ? unlockedContent : JSON.parse(unlockedContent);
-            Object.keys(content.entries).map((key) => {
-                var obj = content.entries[key];
-                if (obj.title.indexOf(domain) > -1 || domain.indexOf(obj.title) > -1) {
+            Object.keys(unlockedContent.entries).map((key) => {
+                let obj = unlockedContent.entries[key];
+                if (obj.title.indexOf(host) > -1 || host.indexOf(obj.title) > -1) {
                     entry = obj;
                 }
             });
@@ -162,7 +182,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
         chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
             if (typeof tabs[0] !== 'undefined') {
                 if (isUrl(tabs[0].url)) {
-                    if (decomposeUrl(tabs[0].url).domain === activeDomain) {
+                    if (decomposeUrl(tabs[0].url).host === activeHost) {
                         injectContentScript(tabs[0].id, data.content);
                     }
                 }
@@ -303,8 +323,10 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
                     if (!(Buffer.isBuffer(data))) {
                         data = toBuffer(data);
                     }
-                    unlockedContent = decrypt(data, encryptionKey);
-                    sendMessage('decryptedContent', unlockedContent);
+
+                    let decrypted = decrypt(data, encryptionKey);
+                    unlockedContent = typeof decrypted === 'object' ? decrypted : JSON.parse(decrypted);
+                    sendMessage('decryptedContent', decrypted);
                     PHASE = 'LOADED';
                 }
             });
@@ -547,6 +569,7 @@ let deviceList = '',
         sendMessage('trezorDisconnected');
         fullKey = '';
         encryptionKey = '';
+        updateBadgeStatus('OFF');
         PHASE = 'DROPBOX';
         init();
     },
@@ -578,8 +601,8 @@ chromeExists().then(() => {
     });
 
     chrome.commands.onCommand.addListener((command) => {
-        if (command === 'fill_login_form' && hasCredentials) {
-            fillCredentials(activeDomain);
+        if (command === 'fill_login_form' && hasCredentials && PHASE === 'LOADED') {
+            fillCredentials(activeHost);
         }
     });
 
