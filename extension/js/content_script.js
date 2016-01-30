@@ -97,6 +97,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     proceedInjection(request.content);
                 } else {
                     document.addEventListener('DOMContentLoaded', proceedInjection(request.content), false);
+                    document.addEventListener("load", proceedInjection(request.content), false);
                 }
             }
             break;
