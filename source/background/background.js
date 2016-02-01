@@ -93,18 +93,14 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
 
     decomposeUrl = (url) => {
         let parsed_url = {};
-
         if (url == null || url.length == 0) return parsed_url;
-
         let protocol_i = url.indexOf('://');
-        parsed_url.protocol = url.substr(0, protocol_i);
-
-        let remaining_url = url.substr(protocol_i + 3, url.length);
+        parsed_url.protocol = protocol_i != -1 ? url.substr(0, protocol_i) : '';
+        let remaining_url = protocol_i != -1 ? url.substr(protocol_i + 3, url.length) : url;
         let domain_i = remaining_url.indexOf('/');
-        domain_i = domain_i == -1 ? remaining_url.length - 1 : domain_i;
+        domain_i = domain_i == -1 ? remaining_url.length : domain_i;
         parsed_url.domain = remaining_url.substr(0, domain_i);
         parsed_url.path = domain_i == -1 || domain_i + 1 == remaining_url.length ? null : remaining_url.substr(domain_i + 1, remaining_url.length);
-
         let domain_parts = parsed_url.domain.split('.');
         switch (domain_parts.length) {
             case 2:
@@ -368,9 +364,7 @@ let deviceList = '',
     trezorConnected = false,
 
     displayPhrase = (title, username) => {
-        if (isUrl(title)) {
-            title = decomposeUrl(title).domain;
-        }
+        title = isUrl(title) ? decomposeUrl(title).host : title;
         return 'Unlock ' + title + ' for user ' + username + '?'
     },
 

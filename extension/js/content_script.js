@@ -97,7 +97,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         window.addEventListener('load', setInputValues(request.content), false);
                     }
                 }
-            }, 10);
+            }, 100);
 
             break;
 

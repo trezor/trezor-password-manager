@@ -13,22 +13,37 @@
     margin-bottom: -15px;
 
     &.waiting {
-      .backface {
 
+      .backface {
         @include backface-visibility(visible);
         @include transform(rotateX(0deg));
 
         .text {
-          .spinner {
-            height: 45px;
-            width: 45px;
-            animation: rotate 0.8s infinite linear;
-            border: 5px solid $c_blue;
-            border-right-color: transparent;
-            border-radius: 50%;
+
+          img {
+            background-color: $c_blue_dark;
+            padding: 0 5px 10px 5px;
+            margin-top: -10px;
+            width: 50px;
+            line-height: 50px;
             display: inline-block;
             vertical-align: middle;
             margin-right: 10px;
+            animation: shake 1.2s cubic-bezier(.36, .07, 0, .1) infinite;
+            transform: translate3d(0, 0, 0);
+            perspective: 1000px;
+            @include border-radius(2px);
+          }
+
+          strong {
+            font-size: 1.3em;
+            color: $c_grey_content_font;
+            position: absolute;
+            top: -20px;
+            width: 200px;
+          }
+          i {
+            line-height: 50px;
           }
         }
       }
@@ -40,6 +55,7 @@
     }
 
     .backface {
+      max-height: 90px;
       @include backface-visibility(hidden);
       @include transform(rotateX(180deg));
       @include transition(all 150ms ease-in-out);
@@ -48,8 +64,12 @@
       .text {
         position: relative;
         top: -50px;
-        left: 30px;
+        left: 25px;
         color: $c_grey_content_font;
+
+        img {
+          display: none;
+        }
       }
 
     }

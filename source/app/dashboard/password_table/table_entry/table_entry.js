@@ -75,43 +75,6 @@ var React = require('react'),
             });
         },
 
-        changeMode() {
-            this.hidePassword();
-            if (this.state.mode === 'list-mode') {
-                this.setTrezorWaitingBackface(true, 'Edit entry');
-                var data = {
-                    title: this.state.title,
-                    username: this.state.username,
-                    password: this.state.password,
-                    safe_note: this.state.safe_note,
-                    nonce: this.state.nonce
-                };
-                chrome.runtime.sendMessage({type: 'decryptFullEntry', content: data}, (response) => {
-                    if (response != null) {
-                        this.setState({
-                            password: response.content.password,
-                            safe_note: response.content.safe_note,
-                            mode: 'edit-mode'
-                        });
-                    }
-                    this.setTrezorWaitingBackface(false);
-
-                });
-            } else {
-                var oldValues = this.state.context.getEntryValuesById(this.state.key_value);
-                if (this.isUrl(this.decomposeUrl(this.state.title).domain)) {
-                    this.setState({
-                        image_src: 'https://logo.clearbit.com/' + this.decomposeUrl(this.state.title).domain
-                    });
-                }
-                this.setState({
-                    mode: 'list-mode',
-                    password: oldValues.password,
-                    safe_note: oldValues.safe_note
-                })
-            }
-        },
-
         isUrl(url){
             return url.match(/[a-z]+\.[a-z][a-z]+(\/.*)?$/i) != null
         },
@@ -142,7 +105,7 @@ var React = require('react'),
         },
 
         openTab() {
-            this.setTrezorWaitingBackface('Open Tab');
+            this.setTrezorWaitingBackface('Opening Tab');
             var data = {
                 title: this.state.title,
                 username: this.state.username,
@@ -192,6 +155,43 @@ var React = require('react'),
                 }
                 this.setTrezorWaitingBackface(false);
             });
+        },
+
+        changeMode() {
+            this.hidePassword();
+            if (this.state.mode === 'list-mode') {
+                this.setTrezorWaitingBackface('Editing entry');
+                var data = {
+                    title: this.state.title,
+                    username: this.state.username,
+                    password: this.state.password,
+                    safe_note: this.state.safe_note,
+                    nonce: this.state.nonce
+                };
+                chrome.runtime.sendMessage({type: 'decryptFullEntry', content: data}, (response) => {
+                    if (response != null) {
+                        this.setState({
+                            password: response.content.password,
+                            safe_note: response.content.safe_note,
+                            mode: 'edit-mode'
+                        });
+                    }
+                    this.setTrezorWaitingBackface(false);
+
+                });
+            } else {
+                var oldValues = this.state.context.getEntryValuesById(this.state.key_value);
+                if (this.isUrl(this.decomposeUrl(this.state.title).domain)) {
+                    this.setState({
+                        image_src: 'https://logo.clearbit.com/' + this.decomposeUrl(this.state.title).domain
+                    });
+                }
+                this.setState({
+                    mode: 'list-mode',
+                    password: oldValues.password,
+                    safe_note: oldValues.safe_note
+                })
+            }
         },
 
         saveEntry(e) {
@@ -547,8 +547,9 @@ var React = require('react'),
                     </div>
                     <div className='backface'>
                         <span className='text'>
-                            <span className='spinner'></span>
-                            <strong>{this.state.waiting_trezor_msg}</strong> Waiting for TREZOR input
+                            <img src='dist/app-images/trezor_button.png'/>
+                            <strong>Look at TREZOR!</strong>
+                            {this.state.waiting_trezor_msg}
                         </span>
                     </div>
                 </div>
