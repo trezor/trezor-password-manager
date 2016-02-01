@@ -1,8 +1,8 @@
 'use strict';
 
 let countVisibleInputs = (inputs) => {
-        var visibleInputs = 0;
-        for (var j = 0; j < inputs.length; j++) {
+        let visibleInputs = 0;
+        for (let j = 0; j < inputs.length; j++) {
             if (inputs[j].type.toLowerCase() === 'email' || inputs[j].type.toLowerCase() === 'text') {
                 visibleInputs++;
             }
@@ -11,8 +11,8 @@ let countVisibleInputs = (inputs) => {
     },
 
     hasOnePasswordInput = (inputs) => {
-        var passwordInputsNo = 0;
-        for (var j = 0; j < inputs.length; j++) {
+        let passwordInputsNo = 0;
+        for (let j = 0; j < inputs.length; j++) {
             if (inputs[j].type.toLowerCase() === 'password') {
                 passwordInputsNo++;
             }
@@ -21,9 +21,9 @@ let countVisibleInputs = (inputs) => {
     },
 
     hasSubmitElement = (form) => {
-        var allChildElements = form.getElementsByTagName('*'),
+        let allChildElements = form.getElementsByTagName('*'),
             submitElement = 0;
-        for (var j = 0; j < allChildElements.length; j++) {
+        for (let j = 0; j < allChildElements.length; j++) {
             if (typeof(allChildElements[j].type) !== 'undefined') {
                 if (allChildElements[j].type.toLowerCase() === 'submit') {
                     submitElement++;
@@ -34,9 +34,9 @@ let countVisibleInputs = (inputs) => {
     },
 
     getSubmitElement = (form) => {
-        var allChildElements = form.getElementsByTagName('*'),
+        let allChildElements = form.getElementsByTagName('*'),
             submitElement = 0;
-        for (var j = 0; j < allChildElements.length; j++) {
+        for (let j = 0; j < allChildElements.length; j++) {
             if (typeof(allChildElements[j].type) !== 'undefined') {
                 if (allChildElements[j].type.toLowerCase() === 'submit') {
                     submitElement++;
@@ -47,10 +47,11 @@ let countVisibleInputs = (inputs) => {
     },
 
     getLoginForm = () => {
-        var tempFormArr = document.getElementsByTagName('FORM'),
+        let tempFormArr = document.getElementsByTagName('FORM'),
             loginFormsArrs = [];
-        for (var i = 0; i < tempFormArr.length; i++) {
-            var inputs = tempFormArr[i].getElementsByTagName('input'),
+        console.log(tempFormArr.length, tempFormArr);
+        for (let i = 0; i < tempFormArr.length; i++) {
+            let inputs = tempFormArr[i].getElementsByTagName('input'),
                 visibleInputs = countVisibleInputs(inputs),
                 hasPwdInput = hasOnePasswordInput(inputs),
                 hasSubmit = hasSubmitElement(tempFormArr[i]);
@@ -63,11 +64,10 @@ let countVisibleInputs = (inputs) => {
 
 
     setInputValues = (content) => {
-        var loginForms = getLoginForm();
-        for (var i = 0; i < loginForms.length; i++) {
-            var inputs = loginForms[i].getElementsByTagName('input');
-            console.log('login forms', loginForms);
-            for (var j = 0; j < inputs.length; j++) {
+        let loginForms = getLoginForm();
+        for (let i = 0; i < loginForms.length; i++) {
+            let inputs = loginForms[i].getElementsByTagName('input');
+            for (let j = 0; j < inputs.length; j++) {
                 switch (inputs[j].type.toLowerCase()) {
                     case 'email':
                         inputs[j].value = content.username;
@@ -83,23 +83,22 @@ let countVisibleInputs = (inputs) => {
             }
         }
 
-    },
-
-    proceedInjection = (data) => {
-            setInputValues(data);
     };
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
         case 'fillData':
-            if (document.addEventListener) {
-                if (document.readyState === 'complete') {
-                    proceedInjection(request.content);
-                } else {
-                    document.addEventListener('DOMContentLoaded', proceedInjection(request.content), false);
-                    document.addEventListener("load", proceedInjection(request.content), false);
+            setTimeout(() => {
+                if (document.addEventListener) {
+                    if (document.readyState === 'complete') {
+                        setInputValues(request.content);
+                    } else {
+                        document.addEventListener('DOMContentLoaded', setInputValues(request.content), false);
+                        window.addEventListener('load', setInputValues(request.content), false);
+                    }
                 }
-            }
+            }, 10);
+
             break;
 
         case 'isScriptExecuted':
