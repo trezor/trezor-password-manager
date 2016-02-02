@@ -3947,7 +3947,7 @@ aside.left-panel {
             -o-box-shadow: 0px 0px 4px -1px rgba(180, 182, 189, 0.5);
             box-shadow: 0px 0px 4px -1px rgba(180, 182, 189, 0.5); }
           .dashboard .card .entry .form-buttons .btn i {
-            font-size: 1.2em;
+            font-size: 1.35em;
             display: block;
             width: 30px;
             height: 30px;
@@ -3958,7 +3958,7 @@ aside.left-panel {
             left: 0; }
             .dashboard .card .entry .form-buttons .btn i:after {
               font-family: 'ionicons' !important;
-              color: rgba(121, 121, 121, 0.5); }
+              color: rgba(121, 121, 121, 0.6); }
           .dashboard .card .entry .form-buttons .btn.lock-btn {
             top: 0;
             right: 0; }
