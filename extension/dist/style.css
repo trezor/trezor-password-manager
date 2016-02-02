@@ -3514,7 +3514,7 @@ aside.left-panel {
   color: #797979;
   overflow: hidden;
   outline: none;
-  width: 210px;
+  width: 200px;
   position: fixed;
   height: 100%;
   top: 0;
@@ -3631,7 +3631,7 @@ aside.left-panel {
         color: #3498db; }
 
 .content {
-  margin-left: 210px; }
+  margin-left: 200px; }
   @media screen and (max-width: 768px) {
     .content {
       margin-left: 80px; } }
@@ -3957,7 +3957,7 @@ aside.left-panel {
             right: 0;
             left: 0; }
             .dashboard .card .entry .form-buttons .btn i:after {
-              font-family: 'ionicons' !important;
+              font-family: "ionicons" !important;
               color: rgba(121, 121, 121, 0.6); }
           .dashboard .card .entry .form-buttons .btn.lock-btn {
             top: 0;

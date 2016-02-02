@@ -134,17 +134,17 @@ var React = require('react'),
             return (
                 <div className='wraper container-fluid'>
                     <div className='row page-title'>
-                        <div className='col-sm-3 col-xs-3'>
+                        <div className='col-md-3 col-sm-3 col-xs-2'>
                             <button type='button'
                                     onClick={this.addNewEntry}
                                     disabled={this.state.newEntry}
                                     className='blue-btn add'>Add entry
                             </button>
                         </div>
-                        <div className='col-sm-6 col-xs-9'>
+                        <div className='col-md-6 col-sm-8 col-xs-6'>
                             <Filter_Input eventEmitter={this.props.eventEmitter}/>
                         </div>
-                        <div className='col-sm-3 col-xs-3 text-right'>
+                        <div className='col-md-3 col-sm-1 col-xs-2 text-right'>
                             {this.state.active_id != 0 ? dropdown : null}
                         </div>
                     </div>

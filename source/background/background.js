@@ -20,10 +20,10 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
     badgeState = {
-        LOADED: {color: [59, 192, 195, 100], defaultText: '\u0020'},
+        LOADED: {color: [59, 192, 195, 255], defaultText: '\u0020'},
         DROPBOX: {color: [237, 199, 85, 100], defaultText: '\u0020'},
         TREZOR: {color: [237, 199, 85, 100], defaultText: '\u0020'},
-        ERROR: {color: [255, 255, 0, 100], defaultText: '!'},
+        ERROR: {color: [255, 255, 0, 100], defaultText: '\u0020'},
         OFF: {color: [255, 255, 0, 100], defaultText: ''}
     },
 
@@ -72,6 +72,75 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
             return Promise.reject(new Error('Global chrome.runtime.sendMessage does not exist; probably not whitelisted website in extension manifest'));
         }
         return Promise.resolve();
+    },
+
+    chromeCommands = (command) => {
+        switch (command) {
+            case 'fill_login_form':
+                if (hasCredentials && PHASE === 'LOADED') {
+                    fillCredentials(activeHost);
+                }
+                break;
+        }
+    },
+
+    chromeMessaging = (request, sender, sendResponse) => {
+        switch (request.type) {
+
+            case 'initPlease':
+                init();
+                break;
+
+            case 'connectDropbox':
+                connectToDropbox();
+                break;
+
+            case 'initTrezorPhase':
+                PHASE = 'TREZOR';
+                dropboxUsernameAccepted = true;
+                sendMessage('trezorDisconnected');
+                connectTrezor(trezorDevice);
+                break;
+
+            case 'trezorPin':
+                pinEnter(request.content);
+                break;
+
+            case 'trezorPassphrase':
+                passphrasEnter(request.content);
+                break;
+
+            case 'disconnectDropbox':
+                signOutDropbox();
+                break;
+
+            case 'loadContent':
+                loadFile();
+                break;
+
+            case 'saveContent':
+                encrypt(request.content, encryptionKey).then((res) => {
+                    saveFile(res);
+                });
+                break;
+
+            case 'encryptFullEntry':
+                encryptFullEntry(request.content, sendResponse);
+                break;
+
+            case 'decryptPassword':
+                decryptPassword(request.content, sendResponse);
+                break;
+
+            case 'decryptFullEntry':
+                decryptFullEntry(request.content, sendResponse);
+                break;
+
+            case 'openTab':
+                openTab(request.content);
+                break;
+        }
+        return true;
     },
 
     toBuffer = (ab) => {
@@ -585,82 +654,13 @@ let deviceList = '',
     };
 
 chromeExists().then(() => {
-
-    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-        detectActiveUrl();
-    });
-
-    chrome.tabs.onActivated.addListener((tabId, changeInfo, tab) => {
-        detectActiveUrl();
-    });
-
-    chrome.commands.onCommand.addListener((command) => {
-        if (command === 'fill_login_form' && hasCredentials && PHASE === 'LOADED') {
-            fillCredentials(activeHost);
-        }
-    });
-
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        switch (request.type) {
-
-            case 'initPlease':
-                init();
-                break;
-
-            case 'connectDropbox':
-                connectToDropbox();
-                break;
-
-            case 'initTrezorPhase':
-                PHASE = 'TREZOR';
-                dropboxUsernameAccepted = true;
-                sendMessage('trezorDisconnected');
-                connectTrezor(trezorDevice);
-                break;
-
-            case 'trezorPin':
-                pinEnter(request.content);
-                break;
-
-            case 'trezorPassphrase':
-                passphrasEnter(request.content);
-                break;
-
-            case 'disconnectDropbox':
-                signOutDropbox();
-                break;
-
-            case 'loadContent':
-                loadFile();
-                break;
-
-            case 'saveContent':
-                encrypt(request.content, encryptionKey).then((res) => {
-                    saveFile(res);
-                });
-                break;
-
-            case 'encryptFullEntry':
-                encryptFullEntry(request.content, sendResponse);
-                break;
-
-            case 'decryptPassword':
-                decryptPassword(request.content, sendResponse);
-                break;
-
-            case 'decryptFullEntry':
-                decryptFullEntry(request.content, sendResponse);
-                break;
-
-            case 'openTab':
-                openTab(request.content);
-                break;
-        }
-        return true;
-    });
-
+    chrome.tabs.onUpdated.addListener(detectActiveUrl);
+    chrome.tabs.onActivated.addListener(detectActiveUrl);
+    chrome.commands.onCommand.addListener(chromeCommands);
+    chrome.runtime.onMessage.addListener(chromeMessaging);
     return new trezor.DeviceList();
 }).then((list) => {
+
     deviceList = list;
     deviceList.on('connect', connectTrezor);
     deviceList.on('error', (error) => {
