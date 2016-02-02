@@ -82,13 +82,14 @@ aside.left-panel {
     @include unselectable();
 
     &.active:hover > a, &.active > a {
-      color: $c_blue;
+      color: $c_white;
+      border-left: 4px solid $c_blue;
       background: $c_blue_dark_very_much;
     }
 
     & > a {
       display: block;
-      padding: 15px 25px;
+      padding: 14px 25px;
       color: $c_grey_font;
       font-size: 15px;
       text-decoration: none;

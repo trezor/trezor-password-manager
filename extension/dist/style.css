@@ -3580,11 +3580,12 @@ aside.left-panel {
     -ms-user-select: none;
     user-select: none; }
     .navigation ul > li.active:hover > a, .navigation ul > li.active > a {
-      color: #3498db;
+      color: #fff;
+      border-left: 4px solid #3498db;
       background: #162338; }
     .navigation ul > li > a {
       display: block;
-      padding: 15px 25px;
+      padding: 14px 25px;
       color: #b4b6bd;
       font-size: 15px;
       text-decoration: none;
