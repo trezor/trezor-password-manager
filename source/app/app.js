@@ -7,6 +7,7 @@ var React = require('react'),
     Layout = require('./global_components/layout'),
     Home = require('./home/home'),
     DashboardLayout = require('./dashboard/dashboard_layout'),
+    AlertBox = require('./global_components/alert_box/alert_box'),
     routes = (
         <Route handler={Layout}>
             <Route name='home' path='/' handler={Home}/>
@@ -20,5 +21,5 @@ if (typeof window !== 'undefined') {
 }
 
 Router.run(routes, Handler => {
-    React.render(<Handler />, document.body)
+    React.render(<div><AlertBox /><Handler /></div>, document.body)
 });

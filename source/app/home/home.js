@@ -19,82 +19,80 @@ var React = require('react'),
         },
 
         componentDidMount() {
-            chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-
-                switch (request.type) {
-
-                    case 'errorMsg':
-                        this.setState({
-                            dialog: 'error',
-                            errorMsg: request.content
-                        });
-                        break;
-
-                    // DROPBOX PHASE
-
-                    case 'dropboxInitialized':
-                        this.setState({
-                            dialog: 'connect_dropbox',
-                            dropboxReady: true
-                        });
-                        break;
-
-                    case 'dropboxDisconnected':
-                        this.setState({
-                            dialog: 'connect_dropbox',
-                            dropboxUsername: '',
-                            dropboxReady: false
-                        });
-                        break;
-
-                    case 'setDropboxUsername':
-                        this.setState({
-                            dialog: 'accept_dropbox_user',
-                            dropboxUsername: request.content
-                        });
-                        break;
-
-                    // TREZOR PHASE
-
-                    case 'showPinDialog':
-                        this.setState({
-                            dialog: 'pin_dialog'
-                        });
-                        break;
-
-                    case 'wrongPin':
-                        this.setState({
-                            pinDialogText: 'Wrong PIN!',
-                            pin: ''
-                        });
-                        break;
-
-                    case 'showButtonDialog':
-                        this.setState({
-                            dialog: 'button_dialog'
-                        });
-                        break;
-
-                    case 'trezorDisconnected':
-                        this.setState({
-                            trezorReady: false,
-                            dialog: 'connect_trezor'
-                        });
-                        break;
-
-                    case 'decryptedContent':
-                        window.decryptedContent = request.content;
-                        this.transitionTo('dashboard');
-                        break;
-                }
-            });
-
+            chrome.runtime.onMessage.addListener(this.chromeMsgHandler);
             // RUN INIT!
             this.sendMessage('initPlease');
         },
 
         componentWillUnmount() {
             window.removeEventListener('keydown', this.pinKeydownHandler);
+        },
+
+        chromeMsgHandler(request, sender, sendResponse) {
+
+            switch (request.type) {
+                case 'errorMsg':
+                    this.setState({
+                        dialog: 'error',
+                        errorMsg: request.content
+                    });
+                    break;
+
+                // DROPBOX PHASE
+                case 'dropboxInitialized':
+                    this.setState({
+                        dialog: 'connect_dropbox',
+                        dropboxReady: true
+                    });
+                    break;
+
+                case 'dropboxDisconnected':
+                    this.setState({
+                        dialog: 'connect_dropbox',
+                        dropboxUsername: '',
+                        dropboxReady: false
+                    });
+                    break;
+
+                case 'setDropboxUsername':
+                    this.setState({
+                        dialog: 'accept_dropbox_user',
+                        dropboxUsername: request.content
+                    });
+                    break;
+
+                // TREZOR PHASE
+                case 'showPinDialog':
+                    this.setState({
+                        dialog: 'pin_dialog'
+                    });
+                    break;
+
+                case 'wrongPin':
+                    this.setState({
+                        pinDialogText: 'Wrong PIN!',
+                        pin: ''
+                    });
+                    break;
+
+                case 'showButtonDialog':
+                    this.setState({
+                        dialog: 'button_dialog'
+                    });
+                    break;
+
+                case 'trezorDisconnected':
+                    this.setState({
+                        trezorReady: false,
+                        dialog: 'connect_trezor'
+                    });
+                    break;
+
+                case 'decryptedContent':
+                    window.decryptedContent = request.content;
+                    this.transitionTo('dashboard');
+                    break;
+            }
         },
 
         sendMessage(msgType, msgContent) {
@@ -226,7 +224,8 @@ var React = require('react'),
                                     <b> {this.state.dropboxUsername}</b>
                                 </button>
                                 <br />
-                                <button className='no-style' onClick={this.disconnectDropbox}>Sign with a different account
+                                <button className='no-style' onClick={this.disconnectDropbox}>Sign with a different
+                                    account
                                 </button>
                             </div>
                         </div>

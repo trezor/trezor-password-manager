@@ -3509,12 +3509,20 @@ button, .button {
     .modal-body div .close-btn:hover {
       color: #979898; }
 
+.alert {
+  position: fixed;
+  z-index: 100;
+  top: 10px;
+  left: 15px;
+  right: 15px;
+  width: auto; }
+
 aside.left-panel {
   background-color: #1A2942;
   color: #797979;
   overflow: hidden;
   outline: none;
-  width: 200px;
+  width: 210px;
   position: fixed;
   height: 100%;
   top: 0;
@@ -3585,7 +3593,7 @@ aside.left-panel {
       background: #162338; }
     .navigation ul > li > a {
       display: block;
-      padding: 14px 25px;
+      padding: 14px 20px;
       color: #b4b6bd;
       font-size: 15px;
       text-decoration: none;
@@ -3631,7 +3639,7 @@ aside.left-panel {
         color: #3498db; }
 
 .content {
-  margin-left: 200px; }
+  margin-left: 210px; }
   @media screen and (max-width: 768px) {
     .content {
       margin-left: 80px; } }

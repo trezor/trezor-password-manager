@@ -3,7 +3,7 @@ aside.left-panel {
   color: $c_grey_content_font;
   overflow: hidden;
   outline: none;
-  width: 200px;
+  width: 210px;
   position: fixed;
   height: 100%;
   top: 0;
@@ -89,7 +89,7 @@ aside.left-panel {
 
     & > a {
       display: block;
-      padding: 14px 25px;
+      padding: 14px 20px;
       color: $c_grey_font;
       font-size: 15px;
       text-decoration: none;

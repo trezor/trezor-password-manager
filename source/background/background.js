@@ -38,6 +38,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
     init = () => {
+        checkVersions();
         switch (PHASE) {
             case 'LOADED':
                 loadFile();
@@ -141,6 +142,20 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
                 break;
         }
         return true;
+    },
+
+    versionCompare = (a, b) => {
+        let pa = a.split('.');
+        let pb = b.split('.');
+        for (let i = 0; i < 3; i++) {
+            let na = Number(pa[i]);
+            let nb = Number(pb[i]);
+            if (na > nb) return true;
+            if (nb > na) return false;
+            if (!isNaN(na) && isNaN(nb)) return true;
+            if (isNaN(na) && !isNaN(nb)) return false;
+        }
+        return false;
     },
 
     toBuffer = (ab) => {
@@ -418,6 +433,8 @@ const HD_HARDENED = 0x80000000,
     CIPHER_IVSIZE = 96 / 8,
     AUTH_SIZE = 128 / 8,
     CIPHER_TYPE = 'aes-256-gcm',
+    MINIMAL_EXTENSION_VERSION = '1.0.6',
+
 //errors
     NO_TRANSPORT = new Error('No trezor.js transport is available'),
     NO_CONNECTED_DEVICES = new Error('No connected devices'),
@@ -431,6 +448,20 @@ let deviceList = '',
     fullKey = '',
     encryptionKey = '',
     trezorConnected = false,
+    current_ext_version = '',
+
+    checkTransport = (transport)  => {
+        current_ext_version = transport.version;
+    },
+
+    checkVersions = () => {
+        if (versionCompare(current_ext_version, MINIMAL_EXTENSION_VERSION)) {
+            // good version
+        } else {
+            // you need to update
+            sendMessage('showAlert', 'OLD_VERSION');
+        }
+    },
 
     displayPhrase = (title, username) => {
         title = isUrl(title) ? decomposeUrl(title).host : title;
@@ -632,6 +663,8 @@ let deviceList = '',
         sendMessage('trezorDisconnected');
         fullKey = '';
         encryptionKey = '';
+        unlockedContent = '';
+        FILENAME = '';
         updateBadgeStatus('OFF');
         PHASE = 'DROPBOX';
         init();
@@ -660,8 +693,8 @@ chromeExists().then(() => {
     chrome.runtime.onMessage.addListener(chromeMessaging);
     return new trezor.DeviceList();
 }).then((list) => {
-
     deviceList = list;
+    deviceList.on('transport', checkTransport);
     deviceList.on('connect', connectTrezor);
     deviceList.on('error', (error) => {
         console.error('List error:', error);
