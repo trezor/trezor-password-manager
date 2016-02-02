@@ -10,7 +10,8 @@
   .card {
     position: relative;
     display: block;
-    margin-bottom: -15px;
+    float: left;
+    width: 100%;
 
     &.waiting {
 
@@ -23,7 +24,7 @@
           img {
             background-color: $c_blue_dark;
             padding: 0 5px 10px 5px;
-            margin-top: -10px;
+            margin-top: -20px;
             width: 50px;
             line-height: 50px;
             display: inline-block;
@@ -55,7 +56,7 @@
     }
 
     .backface {
-      max-height: 90px;
+      max-height: 80px;
       @include backface-visibility(hidden);
       @include transform(rotateX(180deg));
       @include transition(all 150ms ease-in-out);
@@ -134,6 +135,7 @@
       }
 
       &.list-mode {
+        min-height: 80px;
 
         &:hover {
           background: rgba($c_grey_bg, .5);

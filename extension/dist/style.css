@@ -3688,7 +3688,8 @@ aside.left-panel {
   .dashboard .card {
     position: relative;
     display: block;
-    margin-bottom: -15px; }
+    float: left;
+    width: 100%; }
     .dashboard .card.waiting .backface {
       -webkit-backface-visibility: visible;
       -moz-backface-visibility: visible;
@@ -3700,7 +3701,7 @@ aside.left-panel {
       .dashboard .card.waiting .backface .text img {
         background-color: #2c3e50;
         padding: 0 5px 10px 5px;
-        margin-top: -10px;
+        margin-top: -20px;
         width: 50px;
         line-height: 50px;
         display: inline-block;
@@ -3730,7 +3731,7 @@ aside.left-panel {
       -o-transform: rotateX(180deg);
       transform: rotateX(180deg); }
     .dashboard .card .backface {
-      max-height: 90px;
+      max-height: 80px;
       -webkit-backface-visibility: hidden;
       -moz-backface-visibility: hidden;
       -ms-backface-visibility: hidden;
@@ -3829,82 +3830,84 @@ aside.left-panel {
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none; }
-      .dashboard .card .entry.list-mode:hover {
-        background: rgba(237, 240, 240, 0.5); }
-        .dashboard .card .entry.list-mode:hover .title {
+      .dashboard .card .entry.list-mode {
+        min-height: 80px; }
+        .dashboard .card .entry.list-mode:hover {
+          background: rgba(237, 240, 240, 0.5); }
+          .dashboard .card .entry.list-mode:hover .title {
+            color: #797979; }
+          .dashboard .card .entry.list-mode:hover .username {
+            color: rgba(121, 121, 121, 0.9); }
+            .dashboard .card .entry.list-mode:hover .username input:disabled {
+              cursor: pointer; }
+          .dashboard .card .entry.list-mode:hover .note input:disabled {
+            border-left-color: #3498db !important; }
+        .dashboard .card .entry.list-mode .title {
+          padding-top: 5px;
+          font-size: 1.4em;
+          -webkit-transition: all 50ms ease-in-out;
+          -moz-transition: all 50ms ease-in-out;
+          -o-transition: all 50ms ease-in-out;
+          transition: all 50ms ease-in-out;
           color: #797979; }
-        .dashboard .card .entry.list-mode:hover .username {
-          color: rgba(121, 121, 121, 0.9); }
-          .dashboard .card .entry.list-mode:hover .username input:disabled {
-            cursor: pointer; }
-        .dashboard .card .entry.list-mode:hover .note input:disabled {
-          border-left-color: #3498db !important; }
-      .dashboard .card .entry.list-mode .title {
-        padding-top: 5px;
-        font-size: 1.4em;
-        -webkit-transition: all 50ms ease-in-out;
-        -moz-transition: all 50ms ease-in-out;
-        -o-transition: all 50ms ease-in-out;
-        transition: all 50ms ease-in-out;
-        color: #797979; }
-        .dashboard .card .entry.list-mode .title span {
-          display: inline-block;
-          width: 0;
-          overflow: hidden; }
-      .dashboard .card .entry.list-mode .username {
-        padding-top: 0;
-        font-size: 1.05em;
-        color: rgba(121, 121, 121, 0.8); }
-        .dashboard .card .entry.list-mode .username span {
-          display: inline-block;
-          width: 0;
-          overflow: hidden; }
-      .dashboard .card .entry.list-mode .note input:disabled {
-        max-width: 300px;
-        margin: 4px 0 8px 2px;
-        background: transparent;
-        padding: 0 0 4px 5px;
-        border: 0;
-        line-height: 1.2em;
-        max-height: 17px;
-        border-left: 3px solid rgba(121, 121, 121, 0.3) !important;
-        font-style: italic;
-        font-size: 0.9em;
-        color: rgba(121, 121, 121, 0.7);
-        outline: none;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        resize: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        -o-appearance: none;
-        appearance: none; }
-      .dashboard .card .entry.list-mode .note span {
-        display: inline-block;
-        width: 0;
-        overflow: hidden; }
-      .dashboard .card .entry.list-mode .password, .dashboard .card .entry.list-mode .tags, .dashboard .card .entry.list-mode .safe-note {
-        display: none; }
-      .dashboard .card .entry.list-mode .title input, .dashboard .card .entry.list-mode .username input {
-        width: 80%;
-        max-width: 300px;
-        background: transparent;
-        border: none;
-        outline: none;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        -o-appearance: none;
-        appearance: none; }
-        .dashboard .card .entry.list-mode .title input:focus, .dashboard .card .entry.list-mode .title input:active, .dashboard .card .entry.list-mode .username input:focus, .dashboard .card .entry.list-mode .username input:active {
+          .dashboard .card .entry.list-mode .title span {
+            display: inline-block;
+            width: 0;
+            overflow: hidden; }
+        .dashboard .card .entry.list-mode .username {
+          padding-top: 0;
+          font-size: 1.05em;
+          color: rgba(121, 121, 121, 0.8); }
+          .dashboard .card .entry.list-mode .username span {
+            display: inline-block;
+            width: 0;
+            overflow: hidden; }
+        .dashboard .card .entry.list-mode .note input:disabled {
+          max-width: 300px;
+          margin: 4px 0 8px 2px;
+          background: transparent;
+          padding: 0 0 4px 5px;
+          border: 0;
+          line-height: 1.2em;
+          max-height: 17px;
+          border-left: 3px solid rgba(121, 121, 121, 0.3) !important;
+          font-style: italic;
+          font-size: 0.9em;
+          color: rgba(121, 121, 121, 0.7);
+          outline: none;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          resize: none;
           -webkit-appearance: none;
           -moz-appearance: none;
           -o-appearance: none;
           appearance: none; }
-      .dashboard .card .entry.list-mode .available-tags {
-        display: none; }
+        .dashboard .card .entry.list-mode .note span {
+          display: inline-block;
+          width: 0;
+          overflow: hidden; }
+        .dashboard .card .entry.list-mode .password, .dashboard .card .entry.list-mode .tags, .dashboard .card .entry.list-mode .safe-note {
+          display: none; }
+        .dashboard .card .entry.list-mode .title input, .dashboard .card .entry.list-mode .username input {
+          width: 80%;
+          max-width: 300px;
+          background: transparent;
+          border: none;
+          outline: none;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          -o-appearance: none;
+          appearance: none; }
+          .dashboard .card .entry.list-mode .title input:focus, .dashboard .card .entry.list-mode .title input:active, .dashboard .card .entry.list-mode .username input:focus, .dashboard .card .entry.list-mode .username input:active {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            -o-appearance: none;
+            appearance: none; }
+        .dashboard .card .entry.list-mode .available-tags {
+          display: none; }
       .dashboard .card .entry:hover .form-buttons {
         visibility: visible; }
       .dashboard .card .entry .form-buttons {
