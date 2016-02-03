@@ -268,7 +268,7 @@
             color: $c_grey_content_font;
             border: 1px solid rgba($c_grey_content_font, .1);
             background: $c_white;
-            @include box-shadow(0px 0px 4px 1px rgba($c_grey_font, 0.6));
+            @include box-shadow(0px 0px 2px 0px rgba($c_grey_font, 0.6));
           }
 
           i {

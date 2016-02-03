@@ -3977,10 +3977,10 @@ aside.left-panel {
             color: #797979;
             border: 1px solid rgba(121, 121, 121, 0.1);
             background: #fff;
-            -webkit-box-shadow: 0px 0px 4px 1px rgba(180, 182, 189, 0.6);
-            -moz-box-shadow: 0px 0px 4px 1px rgba(180, 182, 189, 0.6);
-            -o-box-shadow: 0px 0px 4px 1px rgba(180, 182, 189, 0.6);
-            box-shadow: 0px 0px 4px 1px rgba(180, 182, 189, 0.6); }
+            -webkit-box-shadow: 0px 0px 2px 0px rgba(180, 182, 189, 0.6);
+            -moz-box-shadow: 0px 0px 2px 0px rgba(180, 182, 189, 0.6);
+            -o-box-shadow: 0px 0px 2px 0px rgba(180, 182, 189, 0.6);
+            box-shadow: 0px 0px 2px 0px rgba(180, 182, 189, 0.6); }
           .dashboard .card .entry .form-buttons .btn i {
             font-size: 1.35em;
             display: block;
