@@ -263,13 +263,12 @@
           cursor: pointer;
           overflow: hidden;
           @include unselectable();
-          @include transition(all 0.2s ease-in-out);
 
           &:hover {
             color: $c_grey_content_font;
             border: 1px solid rgba($c_grey_content_font, .1);
             background: $c_white;
-            @include box-shadow(0px 0px 4px -1px rgba($c_grey_font, 0.5));
+            @include box-shadow(0px 0px 4px 1px rgba($c_grey_font, 0.6));
           }
 
           i {
@@ -292,6 +291,7 @@
           &.lock-btn {
             top: 0;
             right: 0;
+
             i:after {
               content: "\f2bf";
 
