@@ -3991,9 +3991,9 @@ aside.left-panel {
             top: 0;
             right: 0; }
             .dashboard .card .entry .form-buttons .btn.lock-btn i:after {
-              content: "\f457"; }
+              content: "\f2bf"; }
             .dashboard .card .entry .form-buttons .btn.lock-btn:hover i:after {
-              content: "\f4c8";
+              content: "\f2bf";
               color: #797979; }
           .dashboard .card .entry .form-buttons .btn.open-tab-btn {
             top: 0;
@@ -4188,10 +4188,10 @@ aside.left-panel {
             transform: rotateY(180deg);
             border: 1px solid rgba(121, 121, 121, 0.1); }
             .dashboard .card .entry.edit-mode .form-buttons .lock-btn i:after {
-              content: "\f4c8";
+              content: "\f2d7";
               color: #797979; }
             .dashboard .card .entry.edit-mode .form-buttons .lock-btn:hover i:after {
-              content: "\f457";
+              content: "\f2d7";
               color: #797979; }
           .dashboard .card .entry.edit-mode .form-buttons .open-tab-btn {
             right: -150px; }

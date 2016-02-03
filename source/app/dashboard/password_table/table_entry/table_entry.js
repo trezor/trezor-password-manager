@@ -364,8 +364,8 @@ var React = require('react'),
                     <Tooltip id='clipboard-usr'>{this.state.clipboard_usr ? 'Copied!' : 'Copy to clipboard'}</Tooltip>),
                 entryTitle = 'Item/URL',
                 noteArea = null,
-                unlockEntry = this.state.mode === 'list-mode' ? (<Tooltip id='unlock'>Unlock and edit</Tooltip>) : (
-                    <Tooltip id='unlock'>Lock entry</Tooltip>),
+                unlockEntry = this.state.mode === 'list-mode' ? (<Tooltip id='unlock'>Edit entry</Tooltip>) : (
+                    <Tooltip id='unlock'>Close entry</Tooltip>),
                 interator = 0,
                 title = this.state.mode === 'list-mode' ?
                     (<input type='text'

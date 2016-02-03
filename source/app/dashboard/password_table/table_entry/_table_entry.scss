@@ -292,12 +292,12 @@
             top: 0;
             right: 0;
             i:after {
-              content: "\f457";
+              content: "\f2bf";
 
             }
             &:hover {
               i:after {
-                content: "\f4c8";
+                content: "\f2bf";
                 color: $c_grey_content_font;
               }
             }
@@ -540,12 +540,12 @@
             border: 1px solid rgba($c_grey_content_font, .1);
 
             i:after {
-              content: "\f4c8";
+              content: "\f2d7";
               color: $c_grey_content_font;
             }
             &:hover {
               i:after {
-                content: "\f457";
+                content: "\f2d7";
                 color: $c_grey_content_font;
               }
             }
