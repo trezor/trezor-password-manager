@@ -3040,9 +3040,10 @@ html, body {
   background-color: #edf0f0;
   color: #797979;
   overflow-x: hidden; }
-  html > div, body > div {
+  html > div:first-child, body > div:first-child {
     min-height: 100%;
-    height: 100%; }
+    height: 100%;
+    overflow-x: hidden; }
 
 ul.dropdown-menu {
   border: 0;
@@ -3579,14 +3580,14 @@ aside.left-panel {
     font-weight: 300;
     font-size: 1em;
     line-height: 1.1em;
-    letter-spacing: .85em; }
+    letter-spacing: .74em; }
     .logo > span b {
       display: inline-block;
       clear: right;
       font-weight: 700;
       color: #fff;
       font-size: 1.7em;
-      letter-spacing: .05em; }
+      letter-spacing: .02em; }
     @media screen and (max-width: 768px) {
       .logo > span {
         display: none; } }
@@ -4212,6 +4213,8 @@ aside.left-panel {
 
 #clipboard-usr {
   margin-left: -120px; }
+  #clipboard-usr .tooltip-arrow {
+    left: 35px !important; }
 
 form.filter {
   display: block;

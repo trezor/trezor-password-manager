@@ -21,9 +21,10 @@ html, body {
   color: $c_grey_content_font;
   overflow-x: hidden;
 
-  & > div {
+  & > div:first-child {
     min-height: 100%;
     height: 100%;
+    overflow-x: hidden;
   }
 }
 

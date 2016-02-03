@@ -80,8 +80,8 @@ var React = require('react'),
                         <span className="logo-expanded">
                             <img src="dist/app-images/logo-mini.png" alt="logo"/>
                             <span className="nav-label">
-                                <b>TREZOR</b>
-                                <span>Guard</span>
+                                <b>PASSWORD</b>
+                                <span>Manager</span>
                             </span>
                         </span>
                     </div>

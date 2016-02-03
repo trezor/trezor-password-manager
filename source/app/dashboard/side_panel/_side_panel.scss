@@ -50,7 +50,7 @@ aside.left-panel {
     font-weight: 300;
     font-size: 1em;
     line-height: 1.1em;
-    letter-spacing: .85em;
+    letter-spacing: .74em;
 
     b {
       display: inline-block;
@@ -58,7 +58,7 @@ aside.left-panel {
       font-weight: 700;
       color: $c_white;
       font-size: 1.7em;
-      letter-spacing: .05em;
+      letter-spacing: .02em;
     }
 
     @media screen and (max-width: $break-small) {
