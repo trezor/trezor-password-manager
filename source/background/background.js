@@ -452,14 +452,15 @@ let deviceList = '',
 
     checkTransport = (transport)  => {
         current_ext_version = transport.version;
+        checkVersions();
     },
 
     checkVersions = () => {
-        if (versionCompare(current_ext_version, MINIMAL_EXTENSION_VERSION)) {
-            // good version
-        } else {
-            // you need to update
-            sendMessage('showAlert', 'OLD_VERSION');
+        if (current_ext_version) {
+            if (!versionCompare(current_ext_version, MINIMAL_EXTENSION_VERSION)) {
+                // bad version
+                sendMessage('showAlert', 'OLD_VERSION');
+            }
         }
     },
 
