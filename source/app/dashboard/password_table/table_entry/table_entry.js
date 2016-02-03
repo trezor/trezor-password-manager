@@ -33,7 +33,8 @@ var React = require('react'),
                 waiting_trezor: '',
                 waiting_trezor_msg: '',
                 clipboard_pwd: false,
-                clipboard_usr: false
+                clipboard_usr: false,
+                saving_entry: false
             };
         },
 
@@ -196,38 +197,45 @@ var React = require('react'),
 
         saveEntry(e) {
             e.preventDefault();
-            var tags_id = [];
-            this.state.tags_titles.map((key) => {
-                tags_id.push(this.state.context.getTagIdByTitle(key));
-            });
+            if (!this.state.saving_entry) {
+                this.setState({
+                    saving_entry: true
+                });
+                var tags_id = [];
+                this.state.tags_titles.map((key) => {
+                    tags_id.push(this.state.context.getTagIdByTitle(key));
+                });
 
-            var data = {
-                title: this.state.title,
-                username: this.state.username,
-                password: this.state.password,
-                nonce: this.state.nonce,
-                tags: tags_id,
-                safe_note: this.state.safe_note,
-                note: this.state.note
-            };
+                var data = {
+                    title: this.state.title,
+                    username: this.state.username,
+                    password: this.state.password,
+                    nonce: this.state.nonce,
+                    tags: tags_id,
+                    safe_note: this.state.safe_note,
+                    note: this.state.note
+                };
 
-            chrome.runtime.sendMessage({type: 'encryptFullEntry', content: data}, (response) => {
-                data.password = response.content.password;
-                data.safe_note = response.content.safe_note;
-                data.nonce = response.content.nonce;
-                if (this.state.key_value) {
-                    this.setState({
-                        mode: 'list-mode',
-                        content_changed: '',
-                        password: response.content.password,
-                        safe_note: response.content.safe_note,
-                        nonce: response.content.nonce
-                    });
-                    this.state.context.saveDataToEntryById(this.state.key_value, data);
-                } else {
-                    this.state.context.addNewEntry(data);
-                }
-            });
+                chrome.runtime.sendMessage({type: 'encryptFullEntry', content: data}, (response) => {
+                    data.password = response.content.password;
+                    data.safe_note = response.content.safe_note;
+                    data.nonce = response.content.nonce;
+                    if (this.state.key_value) {
+                        this.setState({
+                            mode: 'list-mode',
+                            content_changed: '',
+                            password: response.content.password,
+                            safe_note: response.content.safe_note,
+                            nonce: response.content.nonce,
+                            saving_entry: false
+                        });
+                        this.titleOnBlur();
+                        this.state.context.saveDataToEntryById(this.state.key_value, data);
+                    } else {
+                        this.state.context.addNewEntry(data);
+                    }
+                });
+            }
         },
 
         discardChanges() {
@@ -443,7 +451,7 @@ var React = require('react'),
             return (
                 <div className={'card ' + this.state.waiting_trezor}>
                     <div className={ this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}>
-                        <form onSubmit={this.saveEntry}>
+                        <form onSubmit={this.state.saving_entry ? false : this.saveEntry}>
                             <div className='avatar'>
                                 <img src={this.state.image_src}
                                      onError={this.handleError}/>
@@ -538,8 +546,10 @@ var React = require('react'),
                                 }
 
                                 <div className='content-btns'>
-                                    <span className='button green-btn' onClick={this.saveEntry}>Save</span>
-                                    <span className='button red-btn' onClick={this.discardChanges}>Discard</span>
+                                    <span className='button green-btn'
+                                          onClick={this.state.saving_entry ? false : this.saveEntry}>{this.state.saving_entry ? 'Saving' : 'Save'}</span>
+                                    <span className='button red-btn'
+                                          onClick={this.state.saving_entry ? false : this.saveEntry}>Discard</span>
                                 </div>
                             </div>
                             <button type='submit' className='submit-btn'></button>
