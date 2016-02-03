@@ -2,6 +2,8 @@
 
 var React = require('react'),
     Router = require('react-router'),
+
+    Footer = require('../global_components/footer/footer'),
     {Link} = Router,
     Home = React.createClass({
         mixins: [Router.Navigation],
@@ -285,7 +287,7 @@ var React = require('react'),
                             <h1>Follow instructions on your <br/> <b className='smallcaps'>TREZOR</b> device.</h1>
                         </div>
 
-
+                        <Footer footerStyle='white' />
                     </div>
                 </div>
             )

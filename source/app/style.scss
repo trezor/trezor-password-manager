@@ -20,6 +20,11 @@ html, body {
   background-color: $c_grey_bg;
   color: $c_grey_content_font;
   overflow-x: hidden;
+
+  & > div {
+    min-height: 100%;
+    height: 100%;
+  }
 }
 
 ul.dropdown-menu {
@@ -46,6 +51,7 @@ ul.dropdown-menu {
 @import "home/home";
 @import "global_components/modal_dialogs/tag_modal";
 @import "global_components/alert_box/alert_box";
+@import "global_components/footer/footer";
 @import "dashboard/side_panel/side_panel";
 @import "dashboard/password_table/password_table";
 @import "dashboard/password_table/table_entry/table_entry";

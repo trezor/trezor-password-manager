@@ -3040,6 +3040,9 @@ html, body {
   background-color: #edf0f0;
   color: #797979;
   overflow-x: hidden; }
+  html > div, body > div {
+    min-height: 100%;
+    height: 100%; }
 
 ul.dropdown-menu {
   border: 0;
@@ -3095,7 +3098,6 @@ button, .button {
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
   width: 100%;
   height: 100%;
   z-index: 0;
@@ -3111,7 +3113,6 @@ button, .button {
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
   width: 100%;
   height: 100%;
   z-index: 1;
@@ -3516,6 +3517,24 @@ button, .button {
   left: 15px;
   right: 15px;
   width: auto; }
+
+.footer {
+  z-index: 1000;
+  font-size: 0.9em; }
+  .footer.white {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    color: #fff; }
+    .footer.white a {
+      color: #fff; }
+  .footer.black {
+    position: absolute;
+    bottom: 5px;
+    right: 5px; }
+    .footer.black a {
+      color: #797979; }
 
 aside.left-panel {
   background-color: #1A2942;

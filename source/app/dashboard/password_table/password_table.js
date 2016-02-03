@@ -3,6 +3,7 @@
 var React = require('react'),
     Router = require('react-router'),
     DataService = require('../../global_components/data_service'),
+    Footer = require('../../global_components/footer/footer'),
     Table_Entry = require('./table_entry/table_entry'),
     Filter_Input = require('./filter_input/filter_input'),
     DropdownButton = require('react-bootstrap').DropdownButton,
@@ -166,6 +167,7 @@ var React = require('react'),
                         {password_table.reverse()}
 
                     </div>
+                    <Footer footerStyle='black' />
                 </div>
             )
         }
