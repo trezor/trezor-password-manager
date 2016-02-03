@@ -5,6 +5,7 @@ aside.left-panel {
   outline: none;
   width: 210px;
   position: fixed;
+  min-height: 100%;
   height: 100%;
   top: 0;
   left: 0;
@@ -12,6 +13,12 @@ aside.left-panel {
 
   @media screen and (max-width: $break-small) {
     width: 80px;
+  }
+  @media screen and (min-width: $break-large) {
+    position: fixed;
+    left: auto;
+    bottom: 0;
+    top: 0;
   }
 }
 

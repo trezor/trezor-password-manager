@@ -64,7 +64,7 @@ var React = require('react'),
         render(){
 
             return (
-                <div>
+                <div className='dashboard-layout'>
                     {this.state.ready ?
                         <div>
                             <Tag_Modal />

@@ -549,7 +549,7 @@ var React = require('react'),
                                     <span className='button green-btn'
                                           onClick={this.state.saving_entry ? false : this.saveEntry}>{this.state.saving_entry ? 'Saving' : 'Save'}</span>
                                     <span className='button red-btn'
-                                          onClick={this.state.saving_entry ? false : this.saveEntry}>Discard</span>
+                                          onClick={this.state.saving_entry ? false : this.discardChanges}>Discard</span>
                                 </div>
                             </div>
                             <button type='submit' className='submit-btn'></button>

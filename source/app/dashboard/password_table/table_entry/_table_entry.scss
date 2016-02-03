@@ -12,6 +12,7 @@
     display: block;
     float: left;
     width: 100%;
+    overflow:hidden;
 
     &.waiting {
 
@@ -584,6 +585,5 @@
   .tooltip-arrow {
     left: 32px !important;
   }
-
 }
 

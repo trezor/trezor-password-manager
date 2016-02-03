@@ -1,0 +1,12 @@
+.dashboard-layout {
+  max-width: $break-large;
+  height: 100%;
+  min-height: 100%;
+
+  @media screen and (min-width: $break-large) {
+    margin: 0 auto;
+    border-right: 1px solid $c_grey_border;
+    @include box-shadow(0px 0px 4px 1px rgba($c_grey_font_header_links, 0.5));
+
+  }
+}

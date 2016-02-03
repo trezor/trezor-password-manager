@@ -3041,9 +3041,12 @@ html, body {
   color: #797979;
   overflow-x: hidden; }
   html > div:first-child, body > div:first-child {
-    min-height: 100%;
     height: 100%;
+    min-height: 100%;
     overflow-x: hidden; }
+    html > div:first-child > div, body > div:first-child > div {
+      height: 100%;
+      min-height: 100%; }
 
 ul.dropdown-menu {
   border: 0;
@@ -3544,6 +3547,7 @@ aside.left-panel {
   outline: none;
   width: 210px;
   position: fixed;
+  min-height: 100%;
   height: 100%;
   top: 0;
   left: 0;
@@ -3551,6 +3555,12 @@ aside.left-panel {
   @media screen and (max-width: 768px) {
     aside.left-panel {
       width: 80px; } }
+  @media screen and (min-width: 1290px) {
+    aside.left-panel {
+      position: fixed;
+      left: auto;
+      bottom: 0;
+      top: 0; } }
 
 .logo {
   padding: 20px 25px;
@@ -3718,7 +3728,8 @@ aside.left-panel {
     position: relative;
     display: block;
     float: left;
-    width: 100%; }
+    width: 100%;
+    overflow: hidden; }
     .dashboard .card.waiting .backface {
       -webkit-backface-visibility: visible;
       -moz-backface-visibility: visible;
@@ -4250,6 +4261,19 @@ form.filter {
     content: "\f2f5";
     font-size: 1.3em;
     font-family: 'ionicons'; }
+
+.dashboard-layout {
+  max-width: 1290px;
+  height: 100%;
+  min-height: 100%; }
+  @media screen and (min-width: 1290px) {
+    .dashboard-layout {
+      margin: 0 auto;
+      border-right: 1px solid #ddd;
+      -webkit-box-shadow: 0px 0px 4px 1px rgba(151, 152, 152, 0.5);
+      -moz-box-shadow: 0px 0px 4px 1px rgba(151, 152, 152, 0.5);
+      -o-box-shadow: 0px 0px 4px 1px rgba(151, 152, 152, 0.5);
+      box-shadow: 0px 0px 4px 1px rgba(151, 152, 152, 0.5); } }
 
 header {
   background-color: #fff;
