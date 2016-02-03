@@ -2,34 +2,24 @@
 
 var Password_mgmt = {
 
-    pattern: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~',
+    letters: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+    numbers: '0123456789',
+    specials: '@&-():;!?,/.\';',
 
-    getRandomByte() {
-        if (window.crypto && window.crypto.getRandomValues) {
-            var result = new Uint8Array(1);
-            window.crypto.getRandomValues(result);
-            return result[0];
-        } else if (window.msCrypto && window.msCrypto.getRandomValues) {
-            result = new Uint8Array(1);
-            window.msCrypto.getRandomValues(result);
-            return result[0];
-        } else {
-            return Math.floor(Math.random() * 256);
+    shuffleArray(str, length) {
+        var array = str.split('');
+        for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
         }
+        return array.slice(0, length).join('');
     },
 
     generate(length) {
-        return Array.apply(null, {'length': length})
-            .map(function () {
-                var result;
-                while (true) {
-                    result = String.fromCharCode(this.getRandomByte());
-                    if (this.pattern.indexOf(result) >= 0) {
-                        return result;
-                    }
-                }
-            }, this)
-            .join('');
+        var newPwd = this.shuffleArray(this.specials, 2) + this.shuffleArray(this.numbers, 4) + this.shuffleArray(this.letters, length-6);
+        return this.shuffleArray(newPwd, length);
     }
 };
 

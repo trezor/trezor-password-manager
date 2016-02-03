@@ -263,9 +263,9 @@
 
 @keyframes rotateplane {
   0% {
-    -webkit-transform: perspective(120px) rotateY(0deg)
+    -webkit-transform: rotateY(0deg)
   }
   50% {
-    -webkit-transform: perspective(120px) rotateY(360deg)
+    -webkit-transform: rotateY(360deg)
   }
 }
