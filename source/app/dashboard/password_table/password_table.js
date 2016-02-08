@@ -20,7 +20,8 @@ var React = require('react'),
                 entries: {},
                 filter: '',
                 context: {},
-                newEntry: false
+                newEntry: false,
+                orderType: 'date'
             }
         },
 
@@ -46,6 +47,36 @@ var React = require('react'),
             });
         },
 
+        changeOrder(newOrderType) {
+            this.state.context.changedOrder(newOrderType);
+            this.setState({
+                orderType: newOrderType
+            });
+        },
+
+        getProperOrderArr() {
+            var rawArr = Object.keys(this.state.entries);
+            if (rawArr.length > 0) {
+                if (this.state.orderType === 'date') {
+                    return rawArr.reverse();
+                } else {
+                    var tempArray = Object.keys(this.state.entries).map((key) => {
+                        return {
+                            'key': key,
+                            'title': this.state.entries[key].title
+                        }
+                    }).sort((a, b) => {
+                        return a.title.localeCompare(b.title);
+                    });
+                    return Object.keys(tempArray).map((obj) => {
+                        return tempArray[obj].key
+                    });
+                }
+            } else {
+                return rawArr;
+            }
+        },
+
         changeTag(e) {
             if (e === undefined) {
                 this.setState({
@@ -58,7 +89,12 @@ var React = require('react'),
                     active_title: this.state.context.getTagTitleById(e)
                 });
             }
+        },
 
+        checkFilterMatching(obj) {
+            return obj.title.toLowerCase().indexOf(this.state.filter) > -1 ||
+                obj.note.toLowerCase().indexOf(this.state.filter) > -1 ||
+                obj.username.toLowerCase().indexOf(this.state.filter) > -1;
         },
 
         saveContext(context) {
@@ -66,8 +102,17 @@ var React = require('react'),
                 context: context,
                 tags: context.data.tags,
                 entries: context.data.entries,
+                orderType: context.data.config.orderType || 'date',
                 active_title: context.getTagTitleById(this.state.active_id)
             });
+        },
+
+        activeTag(obj) {
+            return obj.tags.indexOf(this.state.active_id) > -1 || this.state.active_id == 0;
+        },
+
+        filterIsSet() {
+            return this.state.filter.length > 0;
         },
 
         openTagEditor() {
@@ -87,13 +132,12 @@ var React = require('react'),
         },
 
         render(){
-            var password_table = Object.keys(this.state.entries).map((key) => {
+            var raw_table = this.getProperOrderArr();
+            var password_table = raw_table.map((key) => {
                     var obj = this.state.entries[key];
-                    if (obj.tags.indexOf(this.state.active_id) > -1 || this.state.active_id == 0) {
-                        if (this.state.filter.length > 0) {
-                            if (obj.title.toLowerCase().indexOf(this.state.filter) > -1 ||
-                                obj.note.toLowerCase().indexOf(this.state.filter) > -1 ||
-                                obj.username.toLowerCase().indexOf(this.state.filter) > -1) {
+                    if (this.activeTag(obj)) {
+                        if (this.filterIsSet()) {
+                            if (this.checkFilterMatching(obj)) {
                                 return (
                                     <Table_Entry context={this.state.context}
                                                  key={key}
@@ -125,12 +169,13 @@ var React = require('react'),
                         }
                     }
                 }),
-                dropdown = (<DropdownButton title='' className='dropdown' noCaret pullRight id='dropdown-no-caret'>
-                    <MenuItem eventKey='1' onSelect={this.openTagEditor}><i className='ion-edit'></i> Edit
-                        tag</MenuItem>
-                    <MenuItem eventKey='2' onSelect={this.openDeleteTagModal}><i className='ion-close'></i> Remove
-                        tag</MenuItem>
-                </DropdownButton>);
+                dropdown = (
+                    <DropdownButton title='' className='dropdown edit' noCaret pullRight id='edit-dropdown-no-caret'>
+                        <MenuItem eventKey='1' onSelect={this.openTagEditor}><i className='ion-edit'></i> Edit
+                            tag</MenuItem>
+                        <MenuItem eventKey='2' onSelect={this.openDeleteTagModal}><i className='ion-close'></i> Remove
+                            tag</MenuItem>
+                    </DropdownButton>);
 
             return (
                 <div className='wraper container-fluid'>
@@ -147,6 +192,15 @@ var React = require('react'),
                         </div>
                         <div className='col-md-3 col-sm-1 col-xs-2 text-right'>
                             {this.state.active_id != 0 ? dropdown : null}
+                            <DropdownButton title='' className='dropdown order' noCaret pullRight
+                                            id='order-dropdown-no-caret'>
+                                <MenuItem eventKey='1' active={this.state.orderType === 'alphabetical'}
+                                          onSelect={this.changeOrder.bind(null, 'alphabetical')}><i
+                                    className='ion-at'></i> Alphabetical</MenuItem>
+                                <MenuItem eventKey='2' active={this.state.orderType === 'date'}
+                                          onSelect={this.changeOrder.bind(null, 'date')}><i
+                                    className='ion-calendar'></i>Date added</MenuItem>
+                            </DropdownButton>
                         </div>
                     </div>
                     <div className='row dashboard'>
@@ -164,10 +218,10 @@ var React = require('react'),
                                          mode={'edit-mode'}
                                          content_changed={'edited'}
                                 /> : null }
-                        {password_table.reverse()}
+                        {password_table}
 
                     </div>
-                    <Footer footerStyle='black' />
+                    <Footer footerStyle='black'/>
                 </div>
             )
         }

@@ -77,6 +77,12 @@ var React = require('react'),
                     });
                     break;
 
+                case 'notInitialized':
+                    this.setState({
+                        dialog: 'not_init'
+                    });
+                    break;
+
                 case 'showButtonDialog':
                     this.setState({
                         dialog: 'button_dialog'
@@ -195,6 +201,15 @@ var React = require('react'),
                                 have a TREZOR device</a></button>
                         </div>
 
+                        <div className={this.state.dialog === 'not_init' ? 'not_init' : 'hidden_dialog'}>
+                            <img src='dist/app-images/trezor_connect.png'/>
+
+                            <h1>First, init your Trezor!</h1>
+                            <br />
+                            <button className='no-style'><a href='https://www.mytrezor.com' target='_blank'>Go to
+                                mytrezor.com</a></button>
+                        </div>
+
                         <div className={this.state.dialog === 'preloading' ? 'preloading' : 'hidden_dialog'}>
                             <img src='dist/app-images/trezor.svg' className='no-circle'/>
 
@@ -287,7 +302,7 @@ var React = require('react'),
                             <h1>Follow instructions on your <br/> <b className='smallcaps'>TREZOR</b> device.</h1>
                         </div>
 
-                        <Footer footerStyle='white' />
+                        <Footer footerStyle='white'/>
                     </div>
                 </div>
             )

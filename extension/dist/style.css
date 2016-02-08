@@ -3138,6 +3138,7 @@ button, .button {
     display: none; }
   .home .preloading .spinner,
   .home .error .spinner,
+  .home .not_init .spinner,
   .home .accept_dropbox_user .spinner,
   .home .connect_trezor .spinner,
   .home .connect_dropbox .spinner,
@@ -3153,6 +3154,7 @@ button, .button {
     vertical-align: middle; }
   .home .preloading h1,
   .home .error h1,
+  .home .not_init h1,
   .home .accept_dropbox_user h1,
   .home .connect_trezor h1,
   .home .connect_dropbox h1,
@@ -3163,6 +3165,7 @@ button, .button {
     margin-bottom: 25px; }
     .home .preloading h1 b,
     .home .error h1 b,
+    .home .not_init h1 b,
     .home .accept_dropbox_user h1 b,
     .home .connect_trezor h1 b,
     .home .connect_dropbox h1 b,
@@ -3172,6 +3175,7 @@ button, .button {
       word-spacing: 1px; }
   .home .preloading span,
   .home .error span,
+  .home .not_init span,
   .home .accept_dropbox_user span,
   .home .connect_trezor span,
   .home .connect_dropbox span,
@@ -3182,6 +3186,7 @@ button, .button {
     font-size: 1.2em; }
   .home .preloading img,
   .home .error img,
+  .home .not_init img,
   .home .accept_dropbox_user img,
   .home .connect_trezor img,
   .home .connect_dropbox img,
@@ -3205,6 +3210,7 @@ button, .button {
     transition: rotate(360deg); }
     .home .preloading img.no-circle,
     .home .error img.no-circle,
+    .home .not_init img.no-circle,
     .home .accept_dropbox_user img.no-circle,
     .home .connect_trezor img.no-circle,
     .home .connect_dropbox img.no-circle,
@@ -3213,6 +3219,7 @@ button, .button {
       border: none; }
   .home .preloading button,
   .home .error button,
+  .home .not_init button,
   .home .accept_dropbox_user button,
   .home .connect_trezor button,
   .home .connect_dropbox button,
@@ -3238,6 +3245,7 @@ button, .button {
     border-radius: 7px; }
     .home .preloading button:hover,
     .home .error button:hover,
+    .home .not_init button:hover,
     .home .accept_dropbox_user button:hover,
     .home .connect_trezor button:hover,
     .home .connect_dropbox button:hover,
@@ -3249,6 +3257,7 @@ button, .button {
       box-shadow: 0px 0px 10px -1px rgba(0, 0, 0, 0.65); }
     .home .preloading button span,
     .home .error button span,
+    .home .not_init button span,
     .home .accept_dropbox_user button span,
     .home .connect_trezor button span,
     .home .connect_dropbox button span,
@@ -3259,6 +3268,7 @@ button, .button {
       letter-spacing: -.1px; }
     .home .preloading button a,
     .home .error button a,
+    .home .not_init button a,
     .home .accept_dropbox_user button a,
     .home .connect_trezor button a,
     .home .connect_dropbox button a,
@@ -3267,6 +3277,7 @@ button, .button {
       color: #fff; }
       .home .preloading button a:hover,
       .home .error button a:hover,
+      .home .not_init button a:hover,
       .home .accept_dropbox_user button a:hover,
       .home .connect_trezor button a:hover,
       .home .connect_dropbox button a:hover,
@@ -3276,6 +3287,7 @@ button, .button {
         text-decoration: underline; }
     .home .preloading button b,
     .home .error button b,
+    .home .not_init button b,
     .home .accept_dropbox_user button b,
     .home .connect_trezor button b,
     .home .connect_dropbox button b,
@@ -3285,6 +3297,7 @@ button, .button {
       word-spacing: 1px; }
     .home .preloading button.no-style,
     .home .error button.no-style,
+    .home .not_init button.no-style,
     .home .accept_dropbox_user button.no-style,
     .home .connect_trezor button.no-style,
     .home .connect_dropbox button.no-style,
@@ -3295,6 +3308,7 @@ button, .button {
       color: #fff; }
       .home .preloading button.no-style:hover,
       .home .error button.no-style:hover,
+      .home .not_init button.no-style:hover,
       .home .accept_dropbox_user button.no-style:hover,
       .home .connect_trezor button.no-style:hover,
       .home .connect_dropbox button.no-style:hover,
@@ -3307,6 +3321,7 @@ button, .button {
         text-decoration: underline; }
     .home .preloading button.dropbox-login,
     .home .error button.dropbox-login,
+    .home .not_init button.dropbox-login,
     .home .accept_dropbox_user button.dropbox-login,
     .home .connect_trezor button.dropbox-login,
     .home .connect_dropbox button.dropbox-login,
@@ -3317,6 +3332,7 @@ button, .button {
       background-size: 30px 30px; }
     .home .preloading button.accept-btn,
     .home .error button.accept-btn,
+    .home .not_init button.accept-btn,
     .home .accept_dropbox_user button.accept-btn,
     .home .connect_trezor button.accept-btn,
     .home .connect_dropbox button.accept-btn,
@@ -3705,7 +3721,7 @@ aside.left-panel {
           -moz-box-shadow: none;
           -o-box-shadow: none;
           box-shadow: none; }
-        .content .wraper .page-title div button.dropdown:after {
+        .content .wraper .page-title div button.dropdown.edit:after {
           position: absolute;
           right: 5px;
           bottom: .9em;
@@ -3716,6 +3732,20 @@ aside.left-panel {
           content: "\f43d";
           font-size: 1em;
           font-family: 'ionicons' !important; }
+        .content .wraper .page-title div button.dropdown.order:after {
+          position: absolute;
+          right: 5px;
+          bottom: .9em;
+          display: block;
+          color: #797979;
+          width: 20px;
+          height: 20px;
+          content: "\f20d";
+          font-size: 1em;
+          font-family: 'ionicons' !important; }
+
+.dropdown-menu > .active > a, .dropdown-menu > .active > a:focus, .dropdown-menu > .active > a:hover {
+  background-color: #3498db; }
 
 .dashboard {
   width: 100%;

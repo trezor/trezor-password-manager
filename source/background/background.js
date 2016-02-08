@@ -10,6 +10,9 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
 // GENERAL STUFF
 
     basicObjectBlob = {
+        'config': {
+            'orderType': 'date'
+        },
         'tags': {
             '0': {
                 'title': 'All',
@@ -262,7 +265,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
         chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
             if (typeof tabs[0] !== 'undefined') {
                 if (isUrl(tabs[0].url)) {
-                    if (decomposeUrl(tabs[0].url).host === activeHost) {
+                    if (decomposeUrl(tabs[0].url).host === activeHost && typeof data !== 'undefined') {
                         injectContentScript(tabs[0].id, data.content);
                     }
                 }
@@ -511,9 +514,14 @@ let deviceList = '',
                     break;
             }
             switch (error.code) {
+                case 'Failure_NotInitialized':
+                    sendMessage('notInitialized');
+                    break;
+
                 case 'Failure_ActionCancelled':
                     fallback();
                     break;
+
                 case 'Failure_PinInvalid':
                     sendMessage('wrongPin');
                     trezorDevice.waitForSessionAndRun((session) => retry(session));

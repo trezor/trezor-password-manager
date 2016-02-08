@@ -171,6 +171,11 @@ class Store {
         window.eventEmitter.emit('update', this.data);
     }
 
+    changedOrder(newOrder) {
+        this.data.config.orderType = newOrder;
+        Service.saveContext(this.data);
+    }
+
     getAllEntries() {
         return Object.keys(this.data.entries).map((key) => {
             return this.data.entries[key]
