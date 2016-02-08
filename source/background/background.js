@@ -6,6 +6,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     activeHost = '',
     hasCredentials = false,
     unlockedContent = false,
+    windowOpener = '',
 
 // GENERAL STUFF
 
@@ -92,6 +93,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
         switch (request.type) {
 
             case 'initPlease':
+                windowOpener = request.content.substring(1);
                 init();
                 break;
 
@@ -274,9 +276,24 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
     openTab = (data) => {
-        chrome.tabs.create({url: setProtocolPrefix(data.title)}, (tab) => {
-            injectContentScript(tab.id, data);
-        });
+        if (windowOpener === 'newtab') {
+            chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
+                if (typeof tabs[0] !== 'undefined') {
+                    var tabId = tabs[0].id;
+                    chrome.tabs.update(tabId, {
+                        url: setProtocolPrefix(data.title)
+                    }, () => {
+                        injectContentScript(tabId, data);
+                    });
+                }
+            });
+
+        } else {
+            chrome.tabs.create({url: setProtocolPrefix(data.title)}, (tab) => {
+                injectContentScript(tab.id, data);
+            });
+        }
+
     },
 
     injectContentScript = (id, data) => {

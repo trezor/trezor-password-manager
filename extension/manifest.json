@@ -19,7 +19,7 @@
     }
   },
   "chrome_url_overrides": {
-    "newtab": "index.html"
+    "newtab": "index.html?newtab"
   },
   "icons": {
     "16": "images/icon16.png",
@@ -32,7 +32,7 @@
       "38": "images/icon38.png"
     },
     "default_title": "TREZOR Guard",
-    "default_popup": "index.html"
+    "default_popup": "index.html?popup"
   },
   "background": {
     "persistent": true,

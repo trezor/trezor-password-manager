@@ -23,7 +23,7 @@ var React = require('react'),
         componentDidMount() {
             chrome.runtime.onMessage.addListener(this.chromeMsgHandler);
             // RUN INIT!
-            this.sendMessage('initPlease');
+            this.sendMessage('initPlease', window.location.search);
         },
 
         componentWillUnmount() {
