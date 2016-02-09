@@ -264,14 +264,27 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
                 }
             });
         }
-        decryptPassword(entry, fillLoginForm);
+        chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
+            if (typeof tabs[0] !== 'undefined') {
+                if (isUrl(tabs[0].url)) {
+                    if (decomposeUrl(tabs[0].url).host === activeHost) {
+                        injectContentScript(tabs[0].id, sendTabMessage, 'showTrezorMsg', null);
+                        decryptPassword(entry, fillLoginForm);
+                    }
+                }
+            }
+        });
     },
 
     fillLoginForm = (data) => {
         chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
             if (typeof tabs[0] !== 'undefined') {
                 if (isUrl(tabs[0].url)) {
-                    if (decomposeUrl(tabs[0].url).host === activeHost && typeof data !== 'undefined') {
+                    if (typeof data === 'undefined') {
+                        data = {};
+                        data.content = null;
+                    }
+                    if (decomposeUrl(tabs[0].url).host === activeHost) {
                         injectContentScript(tabs[0].id, sendTabMessage, 'fillData', data.content);
                     }
                 }
@@ -305,21 +318,30 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
 
     injectContentScript = (id, callback, type, data) => {
         var tabId = id;
-        chrome.tabs.executeScript(tabId, {file: 'js/content_script.js', runAt: "document_start"}, () => {
-            chrome.tabs.sendMessage(tabId, {type: 'isScriptExecuted'}, (response) => {
+        chrome.tabs.sendMessage(tabId, {type: 'isScriptExecuted'}, (response) => {
+            if (chrome.runtime.lastError) {
+                chrome.tabs.executeScript(tabId, {file: 'js/content_script.js', runAt: "document_start"}, () => {
+                    chrome.tabs.sendMessage(tabId, {type: 'isScriptExecuted'}, (response) => {
+                        if (response.type === 'scriptReady') {
+                            callback(tabId, type, data);
+                        } else {
+                            chrome.tabs.executeScript(tabId, {file: 'js/content_script.js'}, () => {
+                                if (chrome.runtime.lastError) {
+                                    console.error(chrome.runtime.lastError);
+                                    throw Error("Unable to inject script into tab " + tabId);
+                                }
+                                callback(tabId, type, data);
+                            });
+                        }
+                    });
+                });
+            } else {
                 if (response.type === 'scriptReady') {
                     callback(tabId, type, data);
-                } else {
-                    chrome.tabs.executeScript(tabId, {file: 'js/content_script.js'}, () => {
-                        if (chrome.runtime.lastError) {
-                            console.error(chrome.runtime.lastError);
-                            throw Error("Unable to inject script into tab " + tabId);
-                        }
-                        callback(tabId, type, data);
-                    });
                 }
-            });
+            }
         });
+
     };
 
 

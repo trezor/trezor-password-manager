@@ -43,7 +43,8 @@
     ]
   },
   "web_accessible_resources": [
-    "html/chrome_oauth_receiver.html"
+    "html/chrome_oauth_receiver.html",
+    "images/trezor.svg"
   ],
   "externally_connectable": {
     "ids": [
@@ -58,6 +59,8 @@
     "background",
     "tabs",
     "activeTab",
+    "http://*/",
+    "https://*/",
     "nativeMessaging",
     "https://*.dropbox.com/*"
   ]
