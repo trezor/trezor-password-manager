@@ -283,7 +283,9 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
                     chrome.tabs.update(tabId, {
                         url: setProtocolPrefix(data.title)
                     }, () => {
-                        injectContentScript(tabId, data);
+                        chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab)  => {
+                            injectContentScript(tab.id, data);
+                        });
                     });
                 }
             });
