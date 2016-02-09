@@ -41,6 +41,10 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
         chrome.runtime.sendMessage({type: msgType, content: msgContent});
     },
 
+    sendTabMessage = (tabId, type, data) => {
+        chrome.tabs.sendMessage(tabId, {type: type, content: data});
+    },
+
     init = () => {
         checkVersions();
         switch (PHASE) {
@@ -268,7 +272,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
             if (typeof tabs[0] !== 'undefined') {
                 if (isUrl(tabs[0].url)) {
                     if (decomposeUrl(tabs[0].url).host === activeHost && typeof data !== 'undefined') {
-                        injectContentScript(tabs[0].id, data.content);
+                        injectContentScript(tabs[0].id, sendTabMessage, 'fillData', data.content);
                     }
                 }
             }
@@ -282,35 +286,36 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
                     var tabId = tabs[0].id;
                     chrome.tabs.update(tabId, {
                         url: setProtocolPrefix(data.title)
-                    }, () => {
-                        chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab)  => {
-                            injectContentScript(tab.id, data);
-                        });
+                    }, (tab) => {
+                        var injectionListener = (tabId, changeInfo, tab)  => {
+                            chrome.tabs.onUpdated.removeListener(injectionListener);
+                            injectContentScript(tab.id, sendTabMessage, 'fillData', data);
+                        };
+                        chrome.tabs.onUpdated.addListener(injectionListener);
                     });
                 }
             });
-
         } else {
             chrome.tabs.create({url: setProtocolPrefix(data.title)}, (tab) => {
-                injectContentScript(tab.id, data);
+                injectContentScript(tab.id, sendTabMessage, 'fillData', data);
             });
         }
-
     },
 
-    injectContentScript = (id, data) => {
+
+    injectContentScript = (id, callback, type, data) => {
         var tabId = id;
         chrome.tabs.executeScript(tabId, {file: 'js/content_script.js', runAt: "document_start"}, () => {
             chrome.tabs.sendMessage(tabId, {type: 'isScriptExecuted'}, (response) => {
                 if (response.type === 'scriptReady') {
-                    chrome.tabs.sendMessage(tabId, {type: 'fillData', content: data});
+                    callback(tabId, type, data);
                 } else {
                     chrome.tabs.executeScript(tabId, {file: 'js/content_script.js'}, () => {
                         if (chrome.runtime.lastError) {
                             console.error(chrome.runtime.lastError);
                             throw Error("Unable to inject script into tab " + tabId);
                         }
-                        chrome.tabs.sendMessage(tabId, {type: 'fillData', content: data});
+                        callback(tabId, type, data);
                     });
                 }
             });
