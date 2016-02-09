@@ -3908,8 +3908,6 @@ aside.left-panel {
             color: #797979; }
           .dashboard .card .entry.list-mode:hover .username {
             color: rgba(121, 121, 121, 0.9); }
-            .dashboard .card .entry.list-mode:hover .username input:disabled {
-              cursor: pointer; }
           .dashboard .card .entry.list-mode:hover .note input:disabled {
             border-left-color: #3498db !important; }
         .dashboard .card .entry.list-mode .title {
@@ -3976,6 +3974,8 @@ aside.left-panel {
             -moz-appearance: none;
             -o-appearance: none;
             appearance: none; }
+          .dashboard .card .entry.list-mode .title input:disabled, .dashboard .card .entry.list-mode .username input:disabled {
+            cursor: pointer; }
         .dashboard .card .entry.list-mode .available-tags {
           display: none; }
       .dashboard .card .entry:hover .form-buttons {

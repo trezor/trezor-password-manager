@@ -106,6 +106,13 @@ var React = require('react'),
         },
 
         openTab() {
+            var data = {
+                title: this.state.title
+            };
+            chrome.runtime.sendMessage({type: 'openTab', content: data});
+        },
+
+        openTabAndLogin() {
             this.setTrezorWaitingBackface('Opening Tab');
             var data = {
                 title: this.state.title,
@@ -115,7 +122,7 @@ var React = require('react'),
             };
             chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
                 if (response != null) {
-                    chrome.runtime.sendMessage({type: 'openTab', content: response.content});
+                    chrome.runtime.sendMessage({type: 'openTabAndLogin', content: response.content});
                 }
                 this.setTrezorWaitingBackface(false);
 
@@ -372,6 +379,7 @@ var React = require('react'),
                             autoComplete='off'
                             value={this.decomposeUrl(this.state.title).domain}
                             name='title'
+                            onClick={this.openTab}
                             className='title-input'
                             disabled='disabled'/>) : (
                     <input type='text'
@@ -531,7 +539,7 @@ var React = require('react'),
 
                                 {this.isUrl(this.state.title) && this.state.key_value != null &&
                                 <OverlayTrigger placement='top' overlay={openEntryTab}>
-                                    <span className='btn open-tab-btn' onClick={this.openTab}>
+                                    <span className='btn open-tab-btn' onClick={this.openTabAndLogin}>
                                         <i></i>
                                     </span>
                                 </OverlayTrigger>

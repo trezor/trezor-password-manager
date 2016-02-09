@@ -147,9 +147,6 @@
 
           .username {
             color: rgba($c_grey_content_font, .9);
-            input:disabled {
-              cursor: pointer;
-            }
           }
 
           .note {
@@ -230,6 +227,10 @@
 
             &:focus, &:active {
               @include appearance-none();
+            }
+            
+            &:disabled {
+              cursor: pointer;
             }
           }
         }

@@ -149,6 +149,10 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
             case 'openTab':
                 openTab(request.content);
                 break;
+
+            case 'openTabAndLogin':
+                openTabAndLogin(request.content);
+                break;
         }
         return true;
     },
@@ -293,6 +297,21 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
     openTab = (data) => {
+        if (windowOpener === 'newtab') {
+            chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
+                if (typeof tabs[0] !== 'undefined') {
+                    var tabId = tabs[0].id;
+                    chrome.tabs.update(tabId, {
+                        url: setProtocolPrefix(data.title)
+                    });
+                }
+            });
+        } else {
+            chrome.tabs.create({url: setProtocolPrefix(data.title)});
+        }
+    },
+
+    openTabAndLogin = (data) => {
         if (windowOpener === 'newtab') {
             chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
                 if (typeof tabs[0] !== 'undefined') {
