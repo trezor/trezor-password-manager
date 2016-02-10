@@ -99,21 +99,18 @@ let visibleDialog = false,
     appendTrezorDialog = () => {
         visibleDialog = true;
         let wrapperDiv = document.createElement('div');
-        wrapperDiv.setAttribute('style', 'position: fixed; left: 0px; right: 0px; top: 30%; background: transparent; z-index: 99999; height: 180px; width: 100%;');
+        wrapperDiv.setAttribute('style', 'position: fixed; left: 0px; right: 0px; top: 30%; background: transparent; z-index: 99999; height: 180px; width: 100%; animation: shakeitbaby 1.2s cubic-bezier(0.36, 0.07, 0, 0.1) infinite; transform: translate3d(0, 0, 0);');
         wrapperDiv.setAttribute('id', 'waiting-trezor');
 
         let dialogDiv = document.createElement('div');
-        dialogDiv.setAttribute('style', 'position: relative; background: rgba(0,0,0,.7); height: 180px; width: 150px; border-radius: 4px; -webkit-border-radius: 4px; margin: 0 auto; text-align: center; animation: shakeitbaby 1.2s cubic-bezier(0.36, 0.07, 0, 0.1) infinite; transform: translate3d(0, 0, 0);');
-        wrapperDiv.appendChild(dialogDiv);
-
+        dialogDiv.setAttribute('style', 'position: relative; background: rgba(0,0,0,.7); height: 180px; width: 160px; border-radius: 6px; -webkit-border-radius: 6px; margin: 0 auto; text-align: center;');
         let imageElement = document.createElement('img');
         imageElement.src = chrome.extension.getURL('images/trezor.svg');
         imageElement.setAttribute('style', 'display: block; width: 50%; margin: 0 auto; padding-top: 15px;');
         dialogDiv.appendChild(imageElement);
-
         let textBlock = document.createElement('span');
         textBlock.innerHTML = 'Look at TREZOR!';
-        textBlock.setAttribute('style', 'position: relative; width: 100%; margin: 0 auto; text-align: center; color: white; font-weight: bold; line-height: 50px; font-size: 16px;');
+        textBlock.setAttribute('style', 'position: relative; width: 100%; margin: 0 auto; text-align: center; color: white; font-weight: bold; line-height: 40px; font-size: 16px;');
         dialogDiv.appendChild(textBlock);
 
         let css = document.createElement('style');
@@ -121,8 +118,16 @@ let visibleDialog = false,
         css.setAttribute('id', 'trezor-css');
         css.innerHTML = '@keyframes shakeitbaby {10%, 90% {transform: translate3d(-1px, 0, 0);} 20%, 80% {transform: translate3d(2px, 0, 0);}30%, 50%, 70% {transform: translate3d(-4px, 0, 0);}40%, 60% {transform: translate3d(4px, 0, 0);}';
         document.getElementsByTagName('head')[0].appendChild(css);
-
         document.body.appendChild(wrapperDiv);
+
+        if (document.head.createShadowRoot) {
+            let shadow = wrapperDiv.createShadowRoot();
+            shadow.appendChild(dialogDiv);
+        } else {
+            wrapperDiv.appendChild(dialogDiv);
+        }
+
+
     };
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
