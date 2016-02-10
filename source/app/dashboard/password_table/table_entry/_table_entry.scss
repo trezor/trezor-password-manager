@@ -1,10 +1,10 @@
 
 .dashboard {
   width: 100%;
+  height: 100%;
   padding: 0;
   border: none;
   border-top: 1px solid $c_grey_border;
-  background-color: $c_white;
   margin: 0 0 20px 0;
 
   .card {
@@ -12,6 +12,7 @@
     display: block;
     float: left;
     width: 100%;
+    background-color: $c_white;
     overflow:hidden;
 
     &.waiting {

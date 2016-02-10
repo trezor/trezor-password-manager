@@ -7,6 +7,7 @@ var React = require('react'),
     Header = require('./header/header'),
     Store = require('../global_components/data_store'),
     Service = require('../global_components/data_service'),
+    Footer = require('../global_components/footer/footer'),
     Tag_Modal = require('../global_components/modal_dialogs/tag_modal'),
     events = require('events'),
     eventEmitter = new events.EventEmitter(),
@@ -73,6 +74,7 @@ var React = require('react'),
                             <section className='content'>
                                 <PasswordTable />
                             </section>
+                            <Footer footerStyle='black'/>
                         </div>
                         :
                         <div>Loading</div>
