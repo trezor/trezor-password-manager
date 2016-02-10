@@ -25,7 +25,7 @@ var React = require('react'),
         componentWillMount() {
             eventEmitter.on('update', this.contextReady);
             window.eventEmitter = eventEmitter;
-            if (!this.hasContent()) {
+            if (!this.hasContext()) {
                 this.transitionTo('home');
             } else {
                 var responseData = Service.getContext();
@@ -58,7 +58,7 @@ var React = require('react'),
             });
         },
 
-        hasContent() {
+        hasContext() {
             return window.decryptedContent != null;
         },
 

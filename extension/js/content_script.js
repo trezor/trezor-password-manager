@@ -126,8 +126,6 @@ let visibleDialog = false,
         } else {
             wrapperDiv.appendChild(dialogDiv);
         }
-
-
     };
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
