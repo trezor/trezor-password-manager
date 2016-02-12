@@ -62,7 +62,8 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
                 break;
             case 'TREZOR':
                 if (fullKey === '') {
-                    connectTrezor();
+                    PHASE = 'DROPBOX';
+                    init();
                 } else {
                     PHASE = 'LOADED'
                 }
