@@ -462,8 +462,8 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
         try {
             // creating filename
             if (!FILENAME) {
-                let key = masterKey.substring(0, masterKey.length / 2);
-                FILENAME = crypto.createHmac('sha256', key).update(FILENAME_MESS).digest('hex') + '.pswd';
+                let fileKey = masterKey.substring(0, masterKey.length / 2);
+                FILENAME = crypto.createHmac('sha256', fileKey).update(FILENAME_MESS).digest('hex') + '.pswd';
             }
             dropboxClient.readFile(FILENAME, {arrayBuffer: true}, (error, data) => {
                 if (error) {
