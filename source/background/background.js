@@ -61,7 +61,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
                 }
                 break;
             case 'TREZOR':
-                if (fullKey === '') {
+                if (masterKey === '') {
                     PHASE = 'DROPBOX';
                     init();
                 } else {
@@ -462,7 +462,7 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
         try {
             // creating filename
             if (!FILENAME) {
-                let key = fullKey.toString('utf8').substring(0, fullKey.length / 2);
+                let key = masterKey.substring(0, masterKey.length / 2);
                 FILENAME = crypto.createHmac('sha256', key).update(FILENAME_MESS).digest('hex') + '.pswd';
             }
             dropboxClient.readFile(FILENAME, {arrayBuffer: true}, (error, data) => {
@@ -498,7 +498,7 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
 
 const HD_HARDENED = 0x80000000,
     ENC_KEY = 'Activate TREZOR Guard?',
-    ENC_VALUE = '2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee',
+    ENC_VALUE = '2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee',
     CIPHER_IVSIZE = 96 / 8,
     AUTH_SIZE = 128 / 8,
     CIPHER_TYPE = 'aes-256-gcm',
@@ -514,7 +514,7 @@ const HD_HARDENED = 0x80000000,
 
 let deviceList = '',
     trezorDevice = false,
-    fullKey = '',
+    masterKey = '',
     encryptionKey = '',
     trezorConnected = false,
     current_ext_version = '',
@@ -540,8 +540,8 @@ let deviceList = '',
 
     getEncryptionKey = (session) => {
         return session.cipherKeyValue(getPath(), ENC_KEY, ENC_VALUE, true, true, true).then((result) => {
-            fullKey = result.message.value;
-            encryptionKey = new Buffer(fullKey.substring(fullKey.length / 2, fullKey.length), 'utf8');
+            masterKey = result.message.value;
+            encryptionKey = new Buffer(masterKey.substring(masterKey.length / 2, masterKey.length), 'hex');
             loadFile();
         }).catch(handleTrezorError(getEncryptionKey, disconnectCallback));
     },
@@ -736,7 +736,7 @@ let deviceList = '',
     disconnectCallback = () => {
         dropboxUsernameAccepted = false;
         sendMessage('trezorDisconnected');
-        fullKey = '';
+        masterKey = '';
         encryptionKey = '';
         unlockedContent = '';
         FILENAME = '';
