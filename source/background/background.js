@@ -11,6 +11,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
 // GENERAL STUFF
 
     basicObjectBlob = {
+        'version': '0.0.1',
         'config': {
             'orderType': 'date'
         },
@@ -672,7 +673,6 @@ let deviceList = '',
         let key = displayPhrase(data.title, data.username);
         trezorDevice.waitForSessionAndRun((session) => {
             return session.cipherKeyValue(getPath(), key, data.nonce, false, false, true).then((result) => {
-
                 let enckey = new Buffer(result.message.value, 'hex'),
                     password = new Buffer(data.password),
                     safenote = new Buffer(data.safe_note);
