@@ -549,7 +549,6 @@ let deviceList = '',
 
     handleTrezorError = (retry, fallback) => {
         return (error) => {
-
             let never = new Promise(() => {
             });
 
@@ -708,7 +707,7 @@ let deviceList = '',
 
 // FIX ME down here! (hint: make nice hardended path:)
     getPath = () => {
-        return [(1047 | HD_HARDENED) >>> 0, (1047 | HD_HARDENED) >>> 0, 0]
+        return [(10016 | HD_HARDENED) >>> 0, 0]
     },
 
     pinCallback = (type, callback) => {
