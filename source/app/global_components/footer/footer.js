@@ -9,7 +9,7 @@ var React = require('react'),
 
         render(){
             return (<div className={'footer ' + this.props.footerStyle}>
-                TREZOR Guard © 2016 | <a href='mailto:info@bitcointrezor.com'>info@bitcointrezor.com</a>
+                TREZOR Password Manager © 2016 | <a href='mailto:support@satoshilabs.com'>support@satoshilabs.com</a>
             </div>)
         }
     });
