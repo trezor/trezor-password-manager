@@ -204,7 +204,7 @@ var React = require('react'),
                         <div className={this.state.dialog === 'not_init' ? 'not_init' : 'hidden_dialog'}>
                             <img src='dist/app-images/trezor_connect.png'/>
 
-                            <h1>First, init your Trezor!</h1>
+                            <h1>Please, setup your TREZOR first.</h1>
                             <br />
                             <button className='no-style'><a href='https://www.mytrezor.com' target='_blank'>Go to
                                 mytrezor.com</a></button>

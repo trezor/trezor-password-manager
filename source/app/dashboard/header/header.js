@@ -15,7 +15,7 @@ var React = require('react'),
             return (
                 <header className="top-head container-fluid">
                     <ul className="list-inline navbar-right top-menu top-right-menu">
-                        <NavDropdown eventKey={1} title="Trezor User" id="nav-dropdown" onSelect={this.handleSelect}>
+                        <NavDropdown eventKey={1} title="TREZOR User" id="nav-dropdown" onSelect={this.handleSelect}>
                             <MenuItem eventKey="1.1"><i className="ion-gear-a"></i> Settings</MenuItem>
                             <MenuItem divider/>
                             <MenuItem eventKey="1.2"><i className="ion-log-out"></i> Logout</MenuItem>
