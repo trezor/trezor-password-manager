@@ -3017,6 +3017,18 @@ table {
   100% {
     transform: rotate(360deg); } }
 
+@keyframes blink {
+  from, to {
+    background-color: transparent; }
+  50% {
+    background-color: #fff; } }
+
+@keyframes rotateplane {
+  0% {
+    -webkit-transform: rotateY(0deg); }
+  50% {
+    -webkit-transform: rotateY(90deg); } }
+
 @keyframes shake {
   10%, 90% {
     transform: translate3d(-1px, 0, 0); }
@@ -3340,6 +3352,11 @@ button, .button {
     .home .button_dialog button.accept-btn {
       font-weight: 400;
       font-size: 1em; }
+  .home .preloading img,
+  .home .connect_dropbox img {
+    width: 210px;
+    height: 210px;
+    margin-bottom: -15px; }
   .home .pin_dialog, .home .wrong_pin {
     margin-top: -30px; }
     .home .pin_dialog .pin_table_header, .home .wrong_pin .pin_table_header {
@@ -3417,23 +3434,11 @@ button, .button {
         opacity: 1; }
 
 .loading_dialog img {
-  -webkit-animation: 3s rotateplane infinite ease-in-out;
-  -moz-animation: 3s rotateplane infinite ease-in-out;
-  -ms-animation: 3s rotateplane infinite ease-in-out;
-  -o-animation: 3s rotateplane infinite ease-in-out;
-  animation: 3s rotateplane infinite ease-in-out; }
-
-@keyframes blink {
-  from, to {
-    background-color: transparent; }
-  50% {
-    background-color: #fff; } }
-
-@keyframes rotateplane {
-  0% {
-    -webkit-transform: rotateY(0deg); }
-  50% {
-    -webkit-transform: rotateY(360deg); } }
+  -webkit-animation: 0.75s rotateplane infinite ease-in-out;
+  -moz-animation: 0.75s rotateplane infinite ease-in-out;
+  -ms-animation: 0.75s rotateplane infinite ease-in-out;
+  -o-animation: 0.75s rotateplane infinite ease-in-out;
+  animation: 0.75s rotateplane infinite ease-in-out; }
 
 .modal-content {
   -webkit-border-radius: 2px;

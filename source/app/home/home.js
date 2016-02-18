@@ -214,7 +214,7 @@ var React = require('react'),
                             <img src='dist/app-images/trezor.svg' className='no-circle'/>
 
                             <div className='dialog-content'>
-                                <h1>Welcome to <br/> <b>TREZOR</b> Password Manager</h1>
+                                <h1><b></b>Password Manager</h1>
                                 <span className='spinner'></span>
                             </div>
                         </div>
@@ -223,7 +223,7 @@ var React = require('react'),
                             <img src='dist/app-images/trezor.svg' className='no-circle'/>
 
                             <div className='dialog-content'>
-                                <h1>Welcome to <br/> <b>TREZOR</b> Password Manager</h1>
+                                <h1><b></b>Password Manager</h1>
                                 <button className='dropbox-login' onClick={this.connectDropbox}>Sign in with Dropbox
                                 </button>
                                 <br />
@@ -291,8 +291,7 @@ var React = require('react'),
                         </div>
 
                         <div className={this.state.dialog === 'loading_dialog' ? 'loading_dialog' : 'hidden_dialog'}>
-                            <img src='dist/app-images/trezor.svg' className='no-circle'/>
-
+                            <span className='spinner'></span>
                             <h1>Loading ...</h1>
                         </div>
 

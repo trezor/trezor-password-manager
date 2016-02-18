@@ -157,6 +157,15 @@
     }
   }
 
+  .preloading,
+  .connect_dropbox {
+    img {
+      width: 210px;
+      height: 210px;
+      margin-bottom: -15px;
+    }
+  }
+
   .pin_dialog, .wrong_pin {
     margin-top: -30px;
 
@@ -247,24 +256,6 @@
 
 .loading_dialog {
   img {
-    @include animation(3s rotateplane infinite ease-in-out);
-  }
-}
-
-@keyframes blink {
-  from, to {
-    background-color: transparent;
-  }
-  50% {
-    background-color: $c_white;
-  }
-}
-
-@keyframes rotateplane {
-  0% {
-    -webkit-transform: rotateY(0deg)
-  }
-  50% {
-    -webkit-transform: rotateY(360deg)
+    @include animation(.75s rotateplane infinite ease-in-out);
   }
 }
