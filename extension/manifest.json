@@ -1,15 +1,15 @@
 {
-  "name": "TREZOR Guard (with New Tab feature)",
+  "name": "TREZOR Password Manager (with New Tab feature)",
   "description": "Really secure password manager using TREZOR.",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "author": "SatoshiLabs",
-  "short_name": "TREZOR Guard",
+  "short_name": "TREZOR Password Manager",
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {
         "default": "Alt+Shift+G"
       },
-      "description": "Open TREZOR Guard app window."
+      "description": "Open TREZOR Password Manager app window."
     },
     "fill_login_form": {
       "suggested_key": {
@@ -31,7 +31,7 @@
       "19": "images/icon19.png",
       "38": "images/icon38.png"
     },
-    "default_title": "TREZOR Guard",
+    "default_title": "TREZOR Password Manager",
     "default_popup": "index.html?popup"
   },
   "background": {
