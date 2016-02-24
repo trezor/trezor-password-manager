@@ -16,13 +16,12 @@ gulp.task('sass', function () {
 
 });
 
-gulp.task('productify', function () {
+gulp.task('productify-app', function () {
 
     var bundler = browserify({
         entries: ['./source/app/app.js'],
         debug: true
     }).transform('reactify', {es6: true})
-        .transform(envify({NODE_ENV: 'production'}))
         .transform({global: true}, 'uglifyify');
 
     return bundler
@@ -32,6 +31,20 @@ gulp.task('productify', function () {
         .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('./extension/dist/'))
+});
+
+gulp.task('productify-bg', function () {
+    var bundler = browserify({
+        entries: ['./source/background/background.js'],
+        debug: false
+    }).transform({global: true}, 'uglifyify');
+    return bundler
+        .bundle()
+        .pipe(source('background.js'))
+        .pipe(buffer())
+        .pipe(sourcemaps.init({loadMaps: true}))
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest('./extension/js'))
 });
 
 gulp.task('browserify-app', function () {
@@ -104,4 +117,4 @@ gulp.task('watch', function () {
 
 gulp.task('default', ['browserify-bg', 'browserify-app', 'sass']);
 gulp.task('serve', ['browserify-bg', 'browserify-app', 'sass', 'connect', 'watch']);
-gulp.task('production', ['browserify-bg', 'browserify-app', 'sass']);
+gulp.task('production', ['productify-bg', 'productify-app', 'sass']);

@@ -292,7 +292,7 @@ var React = require('react'),
 
                         <div className={this.state.dialog === 'loading_dialog' ? 'loading_dialog' : 'hidden_dialog'}>
                             <span className='spinner'></span>
-                            <h1>Loading ...</h1>
+                            <h1>Loading</h1>
                         </div>
 
                         <div className={this.state.dialog === 'button_dialog' ? 'button_dialog' : 'hidden_dialog'}>

@@ -255,6 +255,11 @@
 }
 
 .loading_dialog {
+
+  .spinner {
+    margin-bottom: 20px;
+  }
+
   img {
     @include animation(.75s rotateplane infinite ease-in-out);
   }

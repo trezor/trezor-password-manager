@@ -3433,6 +3433,9 @@ button, .button {
         background-color: #fff;
         opacity: 1; }
 
+.loading_dialog .spinner {
+  margin-bottom: 20px; }
+
 .loading_dialog img {
   -webkit-animation: 0.75s rotateplane infinite ease-in-out;
   -moz-animation: 0.75s rotateplane infinite ease-in-out;

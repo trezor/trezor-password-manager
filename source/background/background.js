@@ -10,29 +10,14 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
 
 // GENERAL STUFF
 
-    basicObjectBlob = {
-        'version': '0.0.1',
-        'config': {
-            'orderType': 'date'
-        },
-        'tags': {
-            '0': {
-                'title': 'All',
-                'icon': 'home'
-            }
-        },
-        'entries': {}
-    },
-
-    badgeState = {
-        LOADED: {color: [59, 192, 195, 255], defaultText: '\u0020'},
-        DROPBOX: {color: [237, 199, 85, 100], defaultText: '\u0020'},
-        TREZOR: {color: [237, 199, 85, 100], defaultText: '\u0020'},
-        ERROR: {color: [255, 255, 0, 100], defaultText: '\u0020'},
-        OFF: {color: [255, 255, 0, 100], defaultText: ''}
-    },
-
     updateBadgeStatus = (status) => {
+        let badgeState = {
+            LOADED: {color: [59, 192, 195, 255], defaultText: '\u0020'},
+            DROPBOX: {color: [237, 199, 85, 100], defaultText: '\u0020'},
+            TREZOR: {color: [237, 199, 85, 100], defaultText: '\u0020'},
+            ERROR: {color: [255, 255, 0, 100], defaultText: '\u0020'},
+            OFF: {color: [255, 255, 0, 100], defaultText: ''}
+        };
         chrome.browserAction.setBadgeText({text: badgeState[status].defaultText});
         chrome.browserAction.setBadgeBackgroundColor(
             {color: badgeState[status].color});
@@ -109,7 +94,6 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
 
             case 'initTrezorPhase':
                 PHASE = 'TREZOR';
-                dropboxUsernameAccepted = true;
                 sendMessage('trezorDisconnected');
                 connectTrezor(trezorDevice);
                 break;
@@ -374,8 +358,6 @@ const FILENAME_MESS = '5f91add3fa1c3c76e90c90a3bd0999e2bd7833d06a483fe884ee60397
 
 let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
     dropboxUsername = '',
-    dropboxUsernameAccepted = false,
-    dropboxUid = {},
     FILENAME = false,
 
     handleDropboxError = (error) => {
@@ -387,7 +369,19 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
 
             case Dropbox.ApiError.NOT_FOUND:
                 console.warn('File or dir not found ', error.status);
-
+                let basicObjectBlob = {
+                    'version': '0.0.1',
+                    'config': {
+                        'orderType': 'date'
+                    },
+                    'tags': {
+                        '0': {
+                            'title': 'All',
+                            'icon': 'home'
+                        }
+                    },
+                    'entries': {}
+                };
                 encrypt(basicObjectBlob, encryptionKey).then((res) => {
                     saveFile(res);
                 });
@@ -454,7 +448,6 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
             }
             sendMessage('dropboxDisconnected');
             dropboxUsername = '';
-            dropboxUsernameAccepted = false;
             PHASE = 'DROPBOX';
         });
     },
@@ -733,7 +726,6 @@ let deviceList = '',
     },
 
     disconnectCallback = () => {
-        dropboxUsernameAccepted = false;
         sendMessage('trezorDisconnected');
         masterKey = '';
         encryptionKey = '';
@@ -767,10 +759,9 @@ chromeExists().then(() => {
     chrome.runtime.onMessage.addListener(chromeMessaging);
     return new trezor.DeviceList();
 }).then((list) => {
-    deviceList = list;
-    deviceList.on('transport', checkTransport);
-    deviceList.on('connect', connectTrezor);
-    deviceList.on('error', (error) => {
+    list.on('transport', checkTransport);
+    list.on('connect', connectTrezor);
+    list.on('error', (error) => {
         console.error('List error:', error);
     });
 });

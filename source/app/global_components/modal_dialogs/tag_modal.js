@@ -42,6 +42,19 @@ var React = require('react'),
             window.eventEmitter.on('contextInit', this.saveContext);
         },
 
+        componentWillUnmount() {
+            window.eventEmitter.removeListener('openAddTag', this.openEditModal);
+            window.eventEmitter.removeListener('openEditTag', this.openEdit);
+            window.eventEmitter.removeListener('openRemoveTag', this.openRemoveModal);
+            window.eventEmitter.removeListener('contextInit', this.saveContext);
+        },
+
+        componentDidUpdate() {
+            if (this.state.showEditModal) {
+                React.findDOMNode(this.refs.newTagTitle).focus();
+            }
+        },
+
         saveContext(context) {
             this.setState({
                 context: context
@@ -79,7 +92,6 @@ var React = require('react'),
                 showEditModal: true,
                 content_changed: ''
             });
-
         },
 
         handleChange: function (e) {
