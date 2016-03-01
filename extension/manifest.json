@@ -1,5 +1,5 @@
 {
-  "name": "TREZOR Password Manager (with New Tab)",
+  "name": "TREZOR Password Manager",
   "description": "Really secure password manager using TREZOR.",
   "version": "0.1.0",
   "author": "SatoshiLabs",
@@ -7,7 +7,7 @@
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {
-        "default": "Alt+Shift+G"
+        "default": "Alt+Shift+T"
       },
       "description": "Open TREZOR Password Manager app window."
     },
@@ -17,9 +17,6 @@
       },
       "description": "Fill login form with fitting credentials."
     }
-  },
-  "chrome_url_overrides": {
-    "newtab": "index.html?newtab"
   },
   "icons": {
     "16": "images/icon16.png",
@@ -31,8 +28,7 @@
       "19": "images/icon19.png",
       "38": "images/icon38.png"
     },
-    "default_title": "TREZOR Password Manager",
-    "default_popup": "index.html?popup"
+    "default_title": "TREZOR Password Manager"
   },
   "background": {
     "persistent": true,

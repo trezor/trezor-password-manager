@@ -6,7 +6,6 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     activeHost = '',
     hasCredentials = false,
     unlockedContent = false,
-    windowOpener = '',
 
 // GENERAL STUFF
 
@@ -84,7 +83,6 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
         switch (request.type) {
 
             case 'initPlease':
-                windowOpener = request.content.substring(1);
                 init();
                 break;
 
@@ -210,7 +208,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
 
     matchingContent = (host) => {
         let entry = false;
-        if (unlockedContent) {
+        if (unlockedContent && typeof host !== 'undefined') {
             Object.keys(unlockedContent.entries).map((key) => {
                 let obj = unlockedContent.entries[key];
                 if (obj.title.indexOf(host) > -1 || host.indexOf(obj.title) > -1) {
@@ -283,41 +281,14 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
     openTab = (data) => {
-        if (windowOpener === 'newtab') {
-            chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
-                if (typeof tabs[0] !== 'undefined') {
-                    var tabId = tabs[0].id;
-                    chrome.tabs.update(tabId, {
-                        url: setProtocolPrefix(data.title)
-                    });
-                }
-            });
-        } else {
-            chrome.tabs.create({url: setProtocolPrefix(data.title)});
-        }
+        chrome.tabs.create({url: setProtocolPrefix(data.title)});
+
     },
 
     openTabAndLogin = (data) => {
-        if (windowOpener === 'newtab') {
-            chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
-                if (typeof tabs[0] !== 'undefined') {
-                    var tabId = tabs[0].id;
-                    chrome.tabs.update(tabId, {
-                        url: setProtocolPrefix(data.title)
-                    }, (tab) => {
-                        var injectionListener = (tabId, changeInfo, tab)  => {
-                            chrome.tabs.onUpdated.removeListener(injectionListener);
-                            injectContentScript(tab.id, sendTabMessage, 'fillData', data);
-                        };
-                        chrome.tabs.onUpdated.addListener(injectionListener);
-                    });
-                }
-            });
-        } else {
-            chrome.tabs.create({url: setProtocolPrefix(data.title)}, (tab) => {
-                injectContentScript(tab.id, sendTabMessage, 'fillData', data);
-            });
-        }
+        chrome.tabs.create({url: setProtocolPrefix(data.title)}, (tab) => {
+            injectContentScript(tab.id, sendTabMessage, 'fillData', data);
+        });
     },
 
 
@@ -413,7 +384,7 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
 
     connectToDropbox = () => {
         dropboxClient.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: receiverRelativePath}));
-        dropboxClient.onError.addListener(function (error) {
+        dropboxClient.onError.addListener((error) => {
             handleDropboxError(error);
         });
         dropboxClient.authenticate((error, data) => {
@@ -429,7 +400,7 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
     },
 
     setDropboxUsername = () => {
-        dropboxClient.getAccountInfo(function (error, accountInfo) {
+        dropboxClient.getAccountInfo((error, accountInfo) => {
             if (error) {
                 handleDropboxError(error);
                 connectToDropbox();
@@ -442,7 +413,7 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
     },
 
     signOutDropbox = () => {
-        dropboxClient.signOut(function (error, accountInfo) {
+        dropboxClient.signOut((error, accountInfo) => {
             if (error) {
                 handleDropboxError(error);
             }
@@ -479,7 +450,7 @@ let dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
     },
 
     saveFile = (data) => {
-        dropboxClient.writeFile(FILENAME, data, function (error, stat) {
+        dropboxClient.writeFile(FILENAME, data, (error, stat) => {
             if (error) {
                 return handleDropboxError(error);
             } else {
@@ -637,7 +608,7 @@ let deviceList = '',
     },
 
     encryptFullEntry = (data, responseCallback) => {
-        crypto.randomBytes(32, function (ex, buf) {
+        crypto.randomBytes(32, (ex, buf) => {
             let key = displayPhrase(data.title, data.username),
                 nonce = buf.toString('hex');
             trezorDevice.waitForSessionAndRun((session) => {
@@ -757,6 +728,9 @@ chromeExists().then(() => {
     chrome.tabs.onActivated.addListener(detectActiveUrl);
     chrome.commands.onCommand.addListener(chromeCommands);
     chrome.runtime.onMessage.addListener(chromeMessaging);
+    chrome.browserAction.onClicked.addListener(function (tab) {
+        chrome.tabs.create({'url': chrome.extension.getURL('index.html'), 'selected': true});
+    });
     return new trezor.DeviceList();
 }).then((list) => {
     list.on('transport', checkTransport);
