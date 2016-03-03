@@ -109,7 +109,7 @@ gulp.task('css', function () {
 });
 
 gulp.task('watch', function () {
-    gulp.watch('./source/background/*.js', ['browserify-bg']);
+    gulp.watch('./source/background/**/*.js', ['browserify-bg']);
     gulp.watch('./source/app/index.html', ['html']);
     gulp.watch('./source/app/**/*.scss', ['sass']);
     gulp.watch('./source/app/**/*.js', ['browserify-app'])
