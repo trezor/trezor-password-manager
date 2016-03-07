@@ -2,18 +2,20 @@
 
 const FILENAME_MESS = '5f91add3fa1c3c76e90c90a3bd0999e2bd7833d06a483fe884ee60397aca277a',
     receiverRelativePath = '/html/chrome_oauth_receiver.html',
-    dropboxApiKey = 's340kh3l0vla1nv';
+    APIKEY = 's340kh3l0vla1nv';
 
 var crypto = require('crypto'),
-    dropboxClient = new Dropbox.Client({key: dropboxApiKey}),
-    dropboxUsername = '',
-    FILENAME = false,
+    client = new Dropbox.Client({key: APIKEY}),
+    username = '',
+    filname = false,
     loadedData = '';
 
 class Dropbox_mgmt {
 
     constructor(phase) {
         this.PHASE = phase;
+        this.polling = false;
+        this.cursor = null;
     }
 
     sendMessage(msgType, msgContent) {
@@ -21,11 +23,11 @@ class Dropbox_mgmt {
     }
 
     isAuth() {
-        return dropboxClient.isAuthenticated();
+        return client.isAuthenticated();
     }
 
     getName() {
-        return dropboxUsername
+        return username;
     }
 
     toBuffer(ab) {
@@ -73,16 +75,28 @@ class Dropbox_mgmt {
         }
     }
 
+    initCursor() {
+        return new Promise((resolve, reject) => {
+            client.pullChanges(this.cursor, (error, cursor) => {
+                if (error) {
+                    reject(error);
+                }
+                this.cursor = cursor;
+                resolve(undefined);
+            });
+        });
+    }
+
     connectToDropbox() {
-        dropboxClient.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: receiverRelativePath}));
-        dropboxClient.onError.addListener((error) => {
+        client.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: receiverRelativePath}));
+        client.onError.addListener((error) => {
             this.handleDropboxError(error);
         });
-        dropboxClient.authenticate((error, data) => {
+        client.authenticate((error, data) => {
             if (error) {
                 return this.handleDropboxError(error);
             } else {
-                if (dropboxClient.isAuthenticated()) {
+                if (client.isAuthenticated()) {
                     this.sendMessage('dropboxConnected');
                     this.setDropboxUsername();
                 }
@@ -91,41 +105,125 @@ class Dropbox_mgmt {
     }
 
     setDropboxUsername() {
-        dropboxClient.getAccountInfo((error, accountInfo) => {
+        if (this.cursor == null) {
+            this.initCursor().then(() => this.poll()).catch((e) => console.error(e));
+        }
+        client.getAccountInfo((error, accountInfo) => {
             if (error) {
                 this.handleDropboxError(error);
                 this.connectToDropbox();
             } else {
-                dropboxUsername = accountInfo.name;
+                username = accountInfo.name;
                 this.sendMessage('setDropboxUsername', accountInfo.name);
             }
         });
     }
 
     signOutDropbox() {
-        dropboxClient.signOut((error, accountInfo) => {
+        client.signOut((error, accountInfo) => {
             if (error) {
                 this.handleDropboxError(error);
             }
             this.sendMessage('dropboxDisconnected');
-            dropboxUsername = '';
+            username = '';
+            filname = false;
+            loadedData = '';
             this.sendMessage('bg-changePhase', 'DROPBOX');
 
         });
     }
 
+    singlePull(pullCursor) {
+        return new Promise((resolve, reject) => {
+            try {
+                client.pullChanges(pullCursor, (error, changes) => {
+                    if (error) {
+                        reject(error);
+                        return;
+                    }
+                    this.cursor = changes;
+                    changes.changes.forEach(change => {
+                        this.notifyChange(change.path);
+                    });
+                    if (changes.shouldPullAgain) {
+                        resolve(this.singlePull(pullCursor));
+                    } else {
+                        resolve(changes.shouldBackOff);
+                    }
+                })
+            } catch (e) {
+                reject(e);
+            }
+        });
+    }
+
+    singlePoll(pullCursor) {
+        return new Promise((resolve, reject) => {
+            try {
+                client.pollForChanges(pullCursor, {}, (error, pollResult) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(pollResult);
+                    }
+                });
+            } catch (e) {
+                reject(e);
+            }
+        });
+    }
+
+
+    poll() {
+        if (this.polling) {
+            return;
+        }
+        this.polling = true;
+        const pullCursorNull = this.cursor;
+        if (pullCursorNull == null) {
+            throw new Error("Pull error is null where it shouldn't be");
+        }
+        const pullCursor = pullCursorNull;
+        this.singlePoll(pullCursor).then((pollResult) => {
+            if (pollResult.hasChanges) {
+                return this.singlePull(pullCursor).then(() => pollResult);
+            }
+            return pollResult;
+        }).then((pollResult) => {
+            this.polling = false;
+            const retryAfter = pollResult.retryAfter;
+            if (client.isAuthenticated()) {
+                window.setTimeout(() => this.poll(), retryAfter);
+            }
+            return pollResult;
+        }, (e) => {
+            throw e;
+        }).catch((e) => {
+            console.error(e);
+        });
+    }
+
+    notifyChange(path) {
+        if (path.substr(0, 1) === "/") {
+            path = path.substr(1);
+        }
+        if (path === filname) {
+            this.loadFile();
+        }
+    }
+
+
     loadFile(masterKey) {
         try {
-            if (!FILENAME) {
+            if (!filname) {
                 try {
                     let fileKey = masterKey.substring(0, masterKey.length / 2);
-                    FILENAME = crypto.createHmac('sha256', fileKey).update(FILENAME_MESS).digest('hex') + '.pswd';
+                    filname = crypto.createHmac('sha256', fileKey).update(FILENAME_MESS).digest('hex') + '.pswd';
                 } catch (ex) {
                     console.log('Crypto failed: ', ex);
                 }
             }
-
-            dropboxClient.readFile(FILENAME, {arrayBuffer: true}, (error, data) => {
+            client.readFile(filname, {arrayBuffer: true}, (error, data) => {
                 if (error) {
                     return this.handleDropboxError(error);
                 } else {
@@ -141,13 +239,15 @@ class Dropbox_mgmt {
     }
 
     saveFile(data) {
-        dropboxClient.writeFile(FILENAME, data, (error, stat) => {
-            if (error) {
-                return this.handleDropboxError(error);
-            } else {
-                this.loadFile();
-            }
-        });
+        try {
+            client.writeFile(filname, data, (error, stat) => {
+                if (error) {
+                    return this.handleDropboxError(error);
+                }
+            });
+        } catch (err) {
+            return this.handleDropboxError(err);
+        }
     }
 
     saveLoadedData(data) {

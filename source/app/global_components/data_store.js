@@ -1,12 +1,18 @@
 'use strict';
 
-var Service = require('./data_service');
+var Service = require('./data_service'),
+    EventEmitter = require('events');
 
-class Store {
+class Store extends EventEmitter {
 
     constructor(data) {
         this.data = typeof data === 'object' ? data : JSON.parse(data);
-        window.eventEmitter.emit('update', this.data);
+        this.emit('update', this.data);
+    }
+
+    updateData(data) {
+        this.data = typeof data === 'object' ? data : JSON.parse(data);
+        this.emit('update', this.data);
     }
 
     getTagTitleById(tagId) {
@@ -51,7 +57,7 @@ class Store {
         if (oldTagTitleArray.indexOf(newTagTitle) == -1) {
             tagData.title = newTagTitle;
             this.saveDataToTagById(tagId, tagData);
-            window.eventEmitter.emit('update', this.data);
+            this.emit('update', this.data);
             Service.saveContext(this.data);
             return true;
         } else {
@@ -63,7 +69,7 @@ class Store {
         var tagData = Object.getOwnPropertyDescriptor(this.data.tags, tagId).value;
         tagData.icon = newTagIcon;
         this.saveDataToTagById(tagId, tagData);
-        window.eventEmitter.emit('update', this.data);
+        this.emit('update', this.data);
         Service.saveContext(this.data);
     }
 
@@ -80,7 +86,7 @@ class Store {
             oldTagTitleArray = this.getTagTitleArray();
         if (oldTagTitleArray.indexOf(newTitle) == -1) {
             this.data.tags[newId] = data;
-            window.eventEmitter.emit('update', this.data);
+            this.emit('update', this.data);
             Service.saveContext(this.data);
             return true;
         } else {
@@ -95,9 +101,9 @@ class Store {
                 this.removeTagFromEntry(tagId, key);
             }
         });
-        window.eventEmitter.emit('changeTag', 0);
+        this.emit('changeTag', 0);
         delete this.data.tags[tagId];
-        window.eventEmitter.emit('update', this.data);
+        this.emit('update', this.data);
         Service.saveContext(this.data);
     }
 
@@ -118,7 +124,7 @@ class Store {
 
     saveDataToEntryById(entryId, data) {
         Object.defineProperty(this.data.entries, entryId, {value: data});
-        window.eventEmitter.emit('changeTag');
+        this.emit('changeTag');
         return Service.saveContext(this.data);
     }
 
@@ -162,13 +168,13 @@ class Store {
         newId = isNaN(newId) ? 0 : newId;
         this.data.entries[newId] = data;
         Service.saveContext(this.data);
-        return window.eventEmitter.emit('hideOpenNewEntry', newId);
+        return this.emit('hideOpenNewEntry', newId);
     }
 
     removeEntry(entryId) {
         delete this.data.entries[entryId];
         Service.saveContext(this.data);
-        window.eventEmitter.emit('update', this.data);
+        this.emit('update', this.data);
     }
 
     changedOrder(newOrder) {
@@ -187,7 +193,7 @@ class Store {
     }
 
     hideNewEntry() {
-        return window.eventEmitter.emit('hideNewEntry');
+        return this.emit('hideNewEntry');
     }
 }
 

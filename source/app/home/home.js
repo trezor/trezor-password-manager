@@ -2,7 +2,7 @@
 
 var React = require('react'),
     Router = require('react-router'),
-
+    Store = require('../global_components/data_store'),
     Footer = require('../global_components/footer/footer'),
     {Link} = Router,
     Home = React.createClass({
@@ -23,7 +23,7 @@ var React = require('react'),
         componentDidMount() {
             chrome.runtime.onMessage.addListener(this.chromeMsgHandler);
             // RUN INIT!
-            this.sendMessage('initPlease', window.location.search);
+            this.sendMessage('initPlease');
         },
 
         componentWillUnmount() {
@@ -97,7 +97,7 @@ var React = require('react'),
                     break;
 
                 case 'decryptedContent':
-                    window.decryptedContent = request.content;
+                    window.myStore = new Store(request.content);
                     this.transitionTo('dashboard');
                     break;
             }

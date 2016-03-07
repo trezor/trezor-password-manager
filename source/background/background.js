@@ -54,7 +54,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
         trezorManager.checkVersions();
         switch (PHASE) {
             case 'LOADED':
-                sendMessage('decryptedContent', decryptedContent);
+                sendMessage('decryptedContent', JSON.stringify(decryptedContent));
                 break;
             case 'DROPBOX':
                 if (dropboxManager.isAuth() && !dropboxManager.getName()) {
@@ -163,10 +163,9 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
                 break;
 
             case 'bg-decryptContent':
-                let data = dropboxManager.getLoadedData();
-                decryptedContent = trezorManager.decrypt(data, encryptionKey);
-                sendMessage('decryptedContent', decryptedContent);
-                decryptedContent = typeof decryptedContent === 'object' ? decryptedContent : JSON.parse(decryptedContent);
+                let tempDecryptedData = trezorManager.decrypt(dropboxManager.getLoadedData(), encryptionKey);
+                sendMessage('decryptedContent', tempDecryptedData);
+                decryptedContent = typeof tempDecryptedData === 'object' ? tempDecryptedData : JSON.parse(tempDecryptedData);
                 changePhase('LOADED');
                 break;
 

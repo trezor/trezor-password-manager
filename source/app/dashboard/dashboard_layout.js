@@ -4,12 +4,9 @@ var React = require('react'),
     Router = require('react-router'),
     PasswordTable = require('./password_table/password_table'),
     SidePanel = require('./side_panel/side_panel'),
-    Store = require('../global_components/data_store'),
     Service = require('../global_components/data_service'),
     Footer = require('../global_components/footer/footer'),
     Tag_Modal = require('../global_components/modal_dialogs/tag_modal'),
-    events = require('events'),
-    eventEmitter = new events.EventEmitter(),
     {Link} = Router,
 
     DashboardLayout = React.createClass({
@@ -21,22 +18,11 @@ var React = require('react'),
             }
         },
 
-        componentWillMount() {
-            eventEmitter.on('update', this.contextReady);
-            window.eventEmitter = eventEmitter;
-            if (!this.hasContext()) {
-                this.transitionTo('home');
-            } else {
-                var responseData = Service.getContext();
-                this.contextStore = new Store(responseData);
-            }
-        },
-
         componentDidMount() {
             chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 switch (request.type) {
                     case 'trezorDisconnected':
-                        window.decryptedContent = null;
+                        window.myStore = null;
                         this.setState({
                             ready: false
                         });
@@ -44,11 +30,12 @@ var React = require('react'),
                         break;
                 }
             });
-            eventEmitter.emit('contextInit', this.contextStore);
-        },
-
-        componentWillUnmount() {
-            eventEmitter.removeListener('update', this.contextReady);
+            if (this.storeExists()) {
+                window.myStore.emit('contextInit', window.myStore);
+                this.setState({ready: true});
+            } else {
+                this.transitionTo('home');
+            }
         },
 
         contextReady() {
@@ -57,8 +44,8 @@ var React = require('react'),
             });
         },
 
-        hasContext() {
-            return window.decryptedContent != null;
+        storeExists() {
+            return window.myStore != null;
         },
 
         render(){

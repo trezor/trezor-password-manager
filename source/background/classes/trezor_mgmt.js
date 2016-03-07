@@ -6,7 +6,8 @@ const HD_HARDENED = 0x80000000,
     CIPHER_IVSIZE = 96 / 8,
     AUTH_SIZE = 128 / 8,
     CIPHER_TYPE = 'aes-256-gcm',
-    MINIMAL_EXTENSION_VERSION = '1.0.6';
+    MINIMAL_EXTENSION_VERSION = '1.0.6',
+    PATH = [(10016 | HD_HARDENED) >>> 0, 0];
 
 var crypto = require('crypto'),
     NO_TRANSPORT = new Error('No trezor.js transport is available'),
@@ -26,14 +27,15 @@ class Trezor_mgmt {
 
     constructor(list, phase) {
         this.PHASE = phase;
-        list.on('transport', this.checkTransport.bind(this));
-        list.on('connect', this.connectedNewTrezor.bind(this));
+        list.on('transport', (transport) => this.checkTransport(transport));
+        list.on('connect', (device) => this.connectedNewTrezor(device));
         list.on('error', (error) => {
             console.error('List error:', error);
         });
     }
 
-    handleTrezorError(retry, fallback) {
+    handleTrezorError(session, retry, fallback) {
+        console.log('called');
         return (error) => {
             let never = new Promise(() => {
             });
@@ -68,15 +70,17 @@ class Trezor_mgmt {
             switch (error.code) {
                 case 'Failure_NotInitialized':
                     this.sendMessage('notInitialized');
+                    return never;
                     break;
 
                 case 'Failure_ActionCancelled':
-                    fallback();
+                    return () => fallback();
                     break;
 
                 case 'Failure_PinInvalid':
+                    console.log('napicu pin');
                     this.sendMessage('wrongPin');
-                    trezorDevice.waitForSessionAndRun((session) => retry(session));
+                    return () => retry(session);
                     break;
             }
         }
@@ -123,10 +127,10 @@ class Trezor_mgmt {
         if (this.PHASE === 'TREZOR' && trezorDevice != null) {
             try {
                 this.sendMessage('trezorConnected');
-                trezorDevice.on('pin', this.pinCallback.bind(this));
-                trezorDevice.on('passphrase', this.passphraseCallback.bind(this));
-                trezorDevice.on('button', this.buttonCallback.bind(this));
-                trezorDevice.on('disconnect', this.disconnectCallback.bind(this));
+                trezorDevice.on('pin', (type, callback) => this.pinCallback(type, callback));
+                trezorDevice.on('passphrase', (callback) => this.passphraseCallback(callback));
+                trezorDevice.on('button', (type, callback) => this.buttonCallback(type, callback));
+                trezorDevice.on('disconnect', () => this.disconnectCallback());
                 if (trezorDevice.isBootloader()) {
                     throw new Error('Device is in bootloader mode, re-connected it');
                 }
@@ -136,10 +140,6 @@ class Trezor_mgmt {
                 console.error('Device error:', error);
             }
         }
-    }
-
-    getPath() {
-        return [(10016 | HD_HARDENED) >>> 0, 0]
     }
 
     pinCallback(type, callback) {
@@ -228,7 +228,7 @@ class Trezor_mgmt {
             let key = this.displayPhrase(data.title, data.username),
                 nonce = buf.toString('hex');
             trezorDevice.waitForSessionAndRun((session) => {
-                return session.cipherKeyValue(this.getPath(), key, nonce, true, false, true).then((result) => {
+                return session.cipherKeyValue(PATH, key, nonce, true, false, true).then((result) => {
                     let enckey = new Buffer(nonce, 'hex');
                     this.encrypt(data.password, enckey).then((password)=> {
                         this.encrypt(data.safe_note, enckey).then((safenote)=> {
@@ -256,7 +256,7 @@ class Trezor_mgmt {
     decryptFullEntry(data, responseCallback) {
         let key = this.displayPhrase(data.title, data.username);
         trezorDevice.waitForSessionAndRun((session) => {
-            return session.cipherKeyValue(this.getPath(), key, data.nonce, false, false, true).then((result) => {
+            return session.cipherKeyValue(PATH, key, data.nonce, false, false, true).then((result) => {
                 let enckey = new Buffer(result.message.value, 'hex'),
                     password = new Buffer(data.password),
                     safenote = new Buffer(data.safe_note);
@@ -269,14 +269,14 @@ class Trezor_mgmt {
                         nonce: data.nonce
                     }
                 });
-            }).catch(this.handleTrezorError(null, responseCallback));
+            }).catch((responseCallback) => this.handleTrezorError(null, responseCallback));
         });
     }
 
     decryptPassword(data, responseCallback) {
         let key = this.displayPhrase(data.title, data.username);
         trezorDevice.waitForSessionAndRun((session) => {
-            return session.cipherKeyValue(this.getPath(), key, data.nonce, false, false, true).then((result) => {
+            return session.cipherKeyValue(PATH, key, data.nonce, false, false, true).then((result) => {
                 let enckey = new Buffer(result.message.value, 'hex'),
                     password = new Buffer(data.password);
                 responseCallback({
@@ -286,16 +286,18 @@ class Trezor_mgmt {
                         password: JSON.parse(this.decrypt(password, enckey))
                     }
                 });
-            }).catch(this.handleTrezorError(null, responseCallback));
+            }).catch((responseCallback) => this.handleTrezorError(null, responseCallback));
         });
     }
 
     getEncryptionKey(session) {
-        return session.cipherKeyValue(this.getPath(), ENC_KEY, ENC_VALUE, true, true, true).then((result) => {
+        console.log('called', session);
+        return session.cipherKeyValue(PATH, ENC_KEY, ENC_VALUE, true, true, true).then((result) => {
+            console.log(result);
             masterKey = result.message.value;
             encryptionKey = new Buffer(masterKey.substring(masterKey.length / 2, masterKey.length), 'hex');
             this.sendMessage('bg-loadFile');
-        }).catch(this.handleTrezorError(this.getEncryptionKey, this.disconnectCallback));
+        }).catch((session) => this.handleTrezorError(session, this.getEncryptionKey, this.disconnectCallback));
     }
 
     getKeys() {

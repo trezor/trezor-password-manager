@@ -15,29 +15,29 @@ var React = require('react'),
             return {
                 active_id: 0,
                 active_title: '',
-                tags: {},
-                entries: {},
+                tags: window.myStore.data.tags,
+                entries: window.myStore.data.entries,
                 filter: '',
-                context: {},
+                context: window.myStore,
                 newEntry: false,
-                orderType: 'date'
+                orderType: window.myStore.data.config.orderType || 'date'
             }
         },
 
-        componentDidMount() {
-            window.eventEmitter.on('changeTag', this.changeTag);
-            window.eventEmitter.on('contextInit', this.saveContext);
-            window.eventEmitter.on('filter', this.setupFilter);
-            window.eventEmitter.on('hideNewEntry', this.addNewEntry);
-            window.eventEmitter.on('hideOpenNewEntry', this.hideOpenNewEntry);
+        componentWillMount() {
+            window.myStore.on('changeTag', this.changeTag);
+            window.myStore.on('contextInit', this.saveContext);
+            window.myStore.on('filter', this.setupFilter);
+            window.myStore.on('hideNewEntry', this.addNewEntry);
+            window.myStore.on('hideOpenNewEntry', this.hideOpenNewEntry);
         },
 
         componentWillUnmount() {
-            window.eventEmitter.removeListener('changeTag', this.changeTag);
-            window.eventEmitter.removeListener('contextInit', this.saveContext);
-            window.eventEmitter.removeListener('filter', this.setupFilter);
-            window.eventEmitter.removeListener('hideNewEntry', this.addNewEntry);
-            window.eventEmitter.removeListener('hideOpenNewEntry', this.hideOpenNewEntry);
+            window.myStore.removeListener('changeTag', this.changeTag);
+            window.myStore.removeListener('contextInit', this.saveContext);
+            window.myStore.removeListener('filter', this.setupFilter);
+            window.myStore.removeListener('hideNewEntry', this.addNewEntry);
+            window.myStore.removeListener('hideOpenNewEntry', this.hideOpenNewEntry);
         },
 
         setupFilter(filterVal) {
@@ -115,7 +115,7 @@ var React = require('react'),
         },
 
         openTagEditor() {
-            window.eventEmitter.emit('openEditTag', this.state.active_id);
+            window.myStore.emit('openEditTag', this.state.active_id);
         },
 
         openDeleteTagModal() {

@@ -8,21 +8,21 @@ var React = require('react'),
 
         getInitialState() {
             return {
-                context: {},
-                tags: {},
+                context: window.myStore,
+                tags: window.myStore.data.tags,
                 active_id: 0,
-                active_title: ''
+                active_title: window.myStore.getTagTitleById(0)
             }
         },
 
         componentWillMount() {
-            window.eventEmitter.on('contextInit', this.saveContext);
-            window.eventEmitter.on('changeTag', this.changeTag);
+            window.myStore.on('contextInit', this.saveContext);
+            window.myStore.on('changeTag', this.changeTag);
         },
 
         componentWillUnmount() {
-            window.eventEmitter.removeListener('contextInit', this.saveContext);
-            window.eventEmitter.removeListener('changeTag', this.changeTag);
+            window.myStore.removeListener('contextInit', this.saveContext);
+            window.myStore.removeListener('changeTag', this.changeTag);
         },
 
         changeTag(e) {
@@ -40,7 +40,7 @@ var React = require('react'),
         },
 
         changeTagAndEmitt(e) {
-            window.eventEmitter.emit('changeTag', e);
+            window.myStore.emit('changeTag', e);
             this.setState({
                 active_id: parseInt(e),
                 active_title: this.state.context.getTagTitleById(e)
@@ -48,7 +48,7 @@ var React = require('react'),
         },
 
         addTag() {
-            window.eventEmitter.emit('openAddTag');
+            window.myStore.emit('openAddTag');
         },
 
         saveContext(context) {

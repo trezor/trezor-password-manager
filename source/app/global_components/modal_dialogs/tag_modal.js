@@ -36,17 +36,17 @@ var React = require('react'),
         },
 
         componentWillMount() {
-            window.eventEmitter.on('openAddTag', this.openEditModal);
-            window.eventEmitter.on('openEditTag', this.openEdit);
-            window.eventEmitter.on('openRemoveTag', this.openRemoveModal);
-            window.eventEmitter.on('contextInit', this.saveContext);
+            window.myStore.on('openAddTag', this.openEditModal);
+            window.myStore.on('openEditTag', this.openEdit);
+            window.myStore.on('openRemoveTag', this.openRemoveModal);
+            window.myStore.on('contextInit', this.saveContext);
         },
 
         componentWillUnmount() {
-            window.eventEmitter.removeListener('openAddTag', this.openEditModal);
-            window.eventEmitter.removeListener('openEditTag', this.openEdit);
-            window.eventEmitter.removeListener('openRemoveTag', this.openRemoveModal);
-            window.eventEmitter.removeListener('contextInit', this.saveContext);
+            window.myStore.removeListener('openAddTag', this.openEditModal);
+            window.myStore.removeListener('openEditTag', this.openEdit);
+            window.myStore.removeListener('openRemoveTag', this.openRemoveModal);
+            window.myStore.removeListener('contextInit', this.saveContext);
         },
 
         componentDidUpdate() {

@@ -17,7 +17,7 @@ var React = require('react'),
 
         handleChange(event) {
             this.setState({filter: event.target.value});
-            window.eventEmitter.emit('filter', event.target.value);
+            window.myStore.emit('filter', event.target.value);
         },
 
         submitForm(event) {
