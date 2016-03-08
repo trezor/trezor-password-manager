@@ -19,22 +19,27 @@ var React = require('react'),
         },
 
         componentDidMount() {
-            chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-                switch (request.type) {
-                    case 'trezorDisconnected':
-                        window.myStore = null;
-                        this.setState({
-                            ready: false
-                        });
-                        this.transitionTo('home');
-                        break;
-                }
-            });
+            chrome.runtime.onMessage.addListener(this.chromeMsgHandler);
             if (this.storeExists()) {
-                window.myStore.emit('contextInit', window.myStore);
                 this.setState({ready: true});
             } else {
                 this.transitionTo('home');
+            }
+        },
+
+        componentWillUnmount() {
+            chrome.runtime.onMessage.removeListener(this.chromeMsgHandler);
+        },
+
+        chromeMsgHandler(request, sender, sendResponse) {
+            switch (request.type) {
+                case 'trezorDisconnected':
+                    window.myStore = null;
+                    this.setState({
+                        ready: false
+                    });
+                    this.transitionTo('home');
+                    break;
             }
         },
 

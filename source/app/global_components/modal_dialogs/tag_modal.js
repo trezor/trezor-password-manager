@@ -24,14 +24,12 @@ var React = require('react'),
 
         getInitialState() {
             return {
-                context: {},
                 showEditModal: false,
                 showRemoveModal: false,
                 newTagId: '',
                 newTagTitle: '',
                 newIcon: icons[0],
                 content_changed: ''
-
             };
         },
 
@@ -39,26 +37,18 @@ var React = require('react'),
             window.myStore.on('openAddTag', this.openEditModal);
             window.myStore.on('openEditTag', this.openEdit);
             window.myStore.on('openRemoveTag', this.openRemoveModal);
-            window.myStore.on('contextInit', this.saveContext);
         },
 
         componentWillUnmount() {
             window.myStore.removeListener('openAddTag', this.openEditModal);
             window.myStore.removeListener('openEditTag', this.openEdit);
             window.myStore.removeListener('openRemoveTag', this.openRemoveModal);
-            window.myStore.removeListener('contextInit', this.saveContext);
         },
 
         componentDidUpdate() {
             if (this.state.showEditModal) {
                 React.findDOMNode(this.refs.newTagTitle).focus();
             }
-        },
-
-        saveContext(context) {
-            this.setState({
-                context: context
-            });
         },
 
         /////////
@@ -84,10 +74,10 @@ var React = require('react'),
         },
 
         openEdit(entryId) {
-            var icon = this.state.context.getTagIconById(entryId);
+            var icon = window.myStore.getTagIconById(entryId);
             this.setState({
                 newTagId: entryId,
-                newTagTitle: this.state.context.getTagTitleById(entryId),
+                newTagTitle: window.myStore.getTagTitleById(entryId),
                 newIcon: icons[icons.indexOf(icon)],
                 showEditModal: true,
                 content_changed: ''
@@ -124,12 +114,12 @@ var React = require('react'),
         },
 
         saveTagChanges() {
-            this.state.context.changeTagTitleById(parseInt(this.state.newTagId), this.state.newTagTitle);
-            this.state.context.changeTagIconById(parseInt(this.state.newTagId), this.state.newIcon);
+            window.myStore.changeTagTitleById(parseInt(this.state.newTagId), this.state.newTagTitle);
+            window.myStore.changeTagIconById(parseInt(this.state.newTagId), this.state.newIcon);
         },
 
         addNewTag() {
-            this.state.context.addNewTag(this.state.newTagTitle, this.state.newIcon);
+            window.myStore.addNewTag(this.state.newTagTitle, this.state.newIcon);
         },
 
         handleKeyDown(e) {
@@ -155,10 +145,10 @@ var React = require('react'),
         ////////
 
         openRemoveModal(entryId) {
-            var icon = this.state.context.getTagIconById(entryId);
+            var icon = window.myStore.getTagIconById(entryId);
             this.setState({
                 newTagId: entryId,
-                newTagTitle: this.state.context.getTagTitleById(entryId),
+                newTagTitle: window.myStore.getTagTitleById(entryId),
                 newIcon: icons[icons.indexOf(icon)],
                 showRemoveModal: true
             });
@@ -172,7 +162,7 @@ var React = require('react'),
         },
 
         removeTagCloseModal() {
-            this.state.context.removeTag(this.state.newTagId);
+            window.myStore.removeTag(this.state.newTagId);
             this.setState({
                 showRemoveModal: false
             });

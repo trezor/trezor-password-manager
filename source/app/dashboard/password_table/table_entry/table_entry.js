@@ -14,7 +14,6 @@ var React = require('react'),
     TableEntry = React.createClass({
         getInitialState() {
             return {
-                context: this.props.context || {},
                 image_src: 'dist/app-images/transparent.png',
                 mode: this.props.mode || 'list-mode',
                 key_value: this.props.key_value,
@@ -23,11 +22,11 @@ var React = require('react'),
                 password: this.props.password,
                 nonce: this.props.nonce,
                 tags_id: this.props.tags,
-                tags_titles: this.props.context.getTagTitleArrayById(this.props.tags) || [],
+                tags_titles: window.myStore.getTagTitleArrayById(this.props.tags) || [],
                 note: this.props.note,
                 safe_note: this.props.safe_note,
-                tag_globa_title_array: this.props.context.getTagTitleArray(),
-                tags_available: this.props.context.getPossibleToAddTagsForEntry(this.props.key_value),
+                tag_globa_title_array: window.myStore.getTagTitleArray(),
+                tags_available: window.myStore.getPossibleToAddTagsForEntry(this.props.key_value),
                 show_available: false,
                 content_changed: this.props.content_changed || '',
                 waiting_trezor: '',
@@ -40,11 +39,10 @@ var React = require('react'),
 
         componentWillReceiveProps(nextProps){
             this.setState({
-                context: nextProps.context,
                 tags_id: nextProps.tags,
-                tags_titles: nextProps.context.getTagTitleArrayById(nextProps.tags),
-                tag_globa_title_array: nextProps.context.getTagTitleArray(),
-                tags_available: nextProps.context.getPossibleToAddTagsForEntry(this.state.key_value)
+                tags_titles: window.myStore.getTagTitleArrayById(nextProps.tags),
+                tag_globa_title_array: window.myStore.getTagTitleArray(),
+                tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value)
 
             });
         },
@@ -188,7 +186,7 @@ var React = require('react'),
 
                 });
             } else {
-                var oldValues = this.state.context.getEntryValuesById(this.state.key_value);
+                var oldValues = window.myStore.getEntryValuesById(this.state.key_value);
                 if (this.isUrl(this.decomposeUrl(this.state.title).domain)) {
                     this.setState({
                         image_src: 'https://logo.clearbit.com/' + this.decomposeUrl(this.state.title).domain
@@ -210,7 +208,7 @@ var React = require('react'),
                 });
                 var tags_id = [];
                 this.state.tags_titles.map((key) => {
-                    tags_id.push(this.state.context.getTagIdByTitle(key));
+                    tags_id.push(window.myStore.getTagIdByTitle(key));
                 });
 
                 var data = {
@@ -237,25 +235,25 @@ var React = require('react'),
                             saving_entry: false
                         });
                         this.titleOnBlur();
-                        this.state.context.saveDataToEntryById(this.state.key_value, data);
+                        window.myStore.saveDataToEntryById(this.state.key_value, data);
                     } else {
-                        this.state.context.addNewEntry(data);
+                        window.myStore.addNewEntry(data);
                     }
                 });
             }
         },
 
         discardChanges() {
-            var oldValues = this.state.context.getEntryValuesById(this.state.key_value);
+            var oldValues = window.myStore.getEntryValuesById(this.state.key_value);
             if (oldValues) {
                 this.setState({
                     title: oldValues.title,
                     username: oldValues.username,
                     password: oldValues.password,
                     tags_id: oldValues.tags,
-                    tags_titles: this.state.context.getTagTitleArrayById(oldValues.tags),
+                    tags_titles: window.myStore.getTagTitleArrayById(oldValues.tags),
                     show_available: false,
-                    tags_available: this.state.context.getPossibleToAddTagsForEntry(this.state.key_value),
+                    tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value),
                     safe_note: oldValues.safe_note,
                     note: oldValues.note,
                     mode: 'list-mode'
@@ -266,7 +264,7 @@ var React = require('react'),
                     });
                 }
             } else {
-                this.state.context.hideNewEntry();
+                window.myStore.hideNewEntry();
             }
         },
 
@@ -358,7 +356,7 @@ var React = require('react'),
         },
 
         removeEntry() {
-            this.state.context.removeEntry(this.state.key_value);
+            window.myStore.removeEntry(this.state.key_value);
         },
 
         render() {
@@ -463,7 +461,7 @@ var React = require('react'),
                             <div className='avatar'>
                                 <img src={this.state.image_src}
                                      onError={this.handleError}/>
-                                <i className={'icon ion-' + this.state.context.getTagIconById(this.state.tags_id[this.state.tags_id.length-1])}></i>
+                                <i className={'icon ion-' + window.myStore.getTagIconById(this.state.tags_id[this.state.tags_id.length-1])}></i>
                             </div>
 
                             <div className='title'>

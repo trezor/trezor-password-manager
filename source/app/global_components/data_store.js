@@ -7,12 +7,12 @@ class Store extends EventEmitter {
 
     constructor(data) {
         this.data = typeof data === 'object' ? data : JSON.parse(data);
-        this.emit('update', this.data);
+        //this.emit('update', this.data);
     }
 
     updateData(data) {
         this.data = typeof data === 'object' ? data : JSON.parse(data);
-        this.emit('update', this.data);
+        //this.emit('update', this.data);
     }
 
     getTagTitleById(tagId) {
@@ -57,7 +57,7 @@ class Store extends EventEmitter {
         if (oldTagTitleArray.indexOf(newTagTitle) == -1) {
             tagData.title = newTagTitle;
             this.saveDataToTagById(tagId, tagData);
-            this.emit('update', this.data);
+            //this.emit('update', this.data);
             Service.saveContext(this.data);
             return true;
         } else {
@@ -69,7 +69,7 @@ class Store extends EventEmitter {
         var tagData = Object.getOwnPropertyDescriptor(this.data.tags, tagId).value;
         tagData.icon = newTagIcon;
         this.saveDataToTagById(tagId, tagData);
-        this.emit('update', this.data);
+        //this.emit('update', this.data);
         Service.saveContext(this.data);
     }
 
@@ -86,7 +86,7 @@ class Store extends EventEmitter {
             oldTagTitleArray = this.getTagTitleArray();
         if (oldTagTitleArray.indexOf(newTitle) == -1) {
             this.data.tags[newId] = data;
-            this.emit('update', this.data);
+            //this.emit('update', this.data);
             Service.saveContext(this.data);
             return true;
         } else {
@@ -174,7 +174,7 @@ class Store extends EventEmitter {
     removeEntry(entryId) {
         delete this.data.entries[entryId];
         Service.saveContext(this.data);
-        this.emit('update', this.data);
+        //this.emit('update', this.data);
     }
 
     changedOrder(newOrder) {

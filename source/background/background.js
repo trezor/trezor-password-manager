@@ -10,6 +10,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     masterKey = '',
     encryptionKey = '',
     decryptedContent = false,
+    privateCounter = 0,
 
 // GENERAL STUFF
 
@@ -27,6 +28,8 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
     sendMessage = (msgType, msgContent) => {
+        privateCounter++;
+        console.log(privateCounter, ' bg send: ', msgType);
         chrome.runtime.sendMessage({type: msgType, content: msgContent});
     },
 
@@ -100,8 +103,9 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
     chromeMessaging = (request, sender, sendResponse) => {
+        privateCounter++;
+        console.log(privateCounter, ' bg recived: ', request.type);
         switch (request.type) {
-
             case 'initPlease':
                 init();
                 break;
@@ -125,7 +129,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
                 break;
 
             case 'loadContent':
-                dropboxManager.loadFile(masterKey, encryptionKey);
+                dropboxManager.loadFile(masterKey);
                 break;
 
             case 'saveContent':

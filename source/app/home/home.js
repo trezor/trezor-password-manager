@@ -27,6 +27,7 @@ var React = require('react'),
         },
 
         componentWillUnmount() {
+            chrome.runtime.onMessage.removeListener(this.chromeMsgHandler);
             window.removeEventListener('keydown', this.pinKeydownHandler);
         },
 

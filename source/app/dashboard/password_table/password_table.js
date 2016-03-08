@@ -18,7 +18,6 @@ var React = require('react'),
                 tags: window.myStore.data.tags,
                 entries: window.myStore.data.entries,
                 filter: '',
-                context: window.myStore,
                 newEntry: false,
                 orderType: window.myStore.data.config.orderType || 'date'
             }
@@ -26,7 +25,6 @@ var React = require('react'),
 
         componentWillMount() {
             window.myStore.on('changeTag', this.changeTag);
-            window.myStore.on('contextInit', this.saveContext);
             window.myStore.on('filter', this.setupFilter);
             window.myStore.on('hideNewEntry', this.addNewEntry);
             window.myStore.on('hideOpenNewEntry', this.hideOpenNewEntry);
@@ -34,7 +32,6 @@ var React = require('react'),
 
         componentWillUnmount() {
             window.myStore.removeListener('changeTag', this.changeTag);
-            window.myStore.removeListener('contextInit', this.saveContext);
             window.myStore.removeListener('filter', this.setupFilter);
             window.myStore.removeListener('hideNewEntry', this.addNewEntry);
             window.myStore.removeListener('hideOpenNewEntry', this.hideOpenNewEntry);
@@ -47,7 +44,7 @@ var React = require('react'),
         },
 
         changeOrder(newOrderType) {
-            this.state.context.changedOrder(newOrderType);
+            window.myStore.changedOrder(newOrderType);
             this.setState({
                 orderType: newOrderType
             });
@@ -77,6 +74,7 @@ var React = require('react'),
         },
 
         changeTag(e) {
+            console.log('change tag:', e);
             if (e === undefined) {
                 this.setState({
                     active_id: this.state.active_id,
@@ -85,7 +83,7 @@ var React = require('react'),
             } else {
                 this.setState({
                     active_id: parseInt(e),
-                    active_title: this.state.context.getTagTitleById(e)
+                    active_title:  window.myStore.getTagTitleById(e)
                 });
             }
         },
@@ -94,16 +92,6 @@ var React = require('react'),
             return obj.title.toLowerCase().indexOf(this.state.filter) > -1 ||
                 obj.note.toLowerCase().indexOf(this.state.filter) > -1 ||
                 obj.username.toLowerCase().indexOf(this.state.filter) > -1;
-        },
-
-        saveContext(context) {
-            this.setState({
-                context: context,
-                tags: context.data.tags,
-                entries: context.data.entries,
-                orderType: context.data.config.orderType || 'date',
-                active_title: context.getTagTitleById(this.state.active_id)
-            });
         },
 
         activeTag(obj) {
@@ -119,7 +107,7 @@ var React = require('react'),
         },
 
         openDeleteTagModal() {
-            window.eventEmitter.emit('openRemoveTag', this.state.active_id);
+            window.myStore.emit('openRemoveTag', this.state.active_id);
         },
 
         addNewEntry() {
@@ -138,8 +126,7 @@ var React = require('react'),
                         if (this.filterIsSet()) {
                             if (this.checkFilterMatching(obj)) {
                                 return (
-                                    <Table_Entry context={this.state.context}
-                                                 key={key}
+                                    <Table_Entry key={key}
                                                  key_value={key}
                                                  title={obj.title}
                                                  username={obj.username}
@@ -153,8 +140,7 @@ var React = require('react'),
                             }
                         } else {
                             return (
-                                <Table_Entry context={this.state.context}
-                                             key={key}
+                                <Table_Entry key={key}
                                              key_value={key}
                                              title={obj.title}
                                              username={obj.username}
@@ -204,8 +190,7 @@ var React = require('react'),
                     </div>
                     <div className='row dashboard'>
                         {this.state.newEntry ?
-                            <Table_Entry context={this.state.context}
-                                         key={undefined}
+                            <Table_Entry key={undefined}
                                          key_value={undefined}
                                          title=''
                                          username=''

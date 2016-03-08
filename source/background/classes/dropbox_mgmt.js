@@ -97,8 +97,8 @@ class Dropbox_mgmt {
                 return this.handleDropboxError(error);
             } else {
                 if (client.isAuthenticated()) {
-                    this.sendMessage('dropboxConnected');
                     this.setDropboxUsername();
+                    this.sendMessage('dropboxConnected');
                 }
             }
         });
@@ -230,7 +230,8 @@ class Dropbox_mgmt {
                     if (!(Buffer.isBuffer(data))) {
                         data = this.toBuffer(data);
                     }
-                    this.saveLoadedData(data);
+                    loadedData = data;
+                    return data;
                 }
             });
         } catch (err) {
@@ -242,7 +243,10 @@ class Dropbox_mgmt {
         try {
             client.writeFile(filname, data, (error, stat) => {
                 if (error) {
+                    console.error('Dropbox problem: ', error);
                     return this.handleDropboxError(error);
+                } else {
+                    this.loadFile();
                 }
             });
         } catch (err) {

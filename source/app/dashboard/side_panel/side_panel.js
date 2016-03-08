@@ -53,9 +53,9 @@ var React = require('react'),
 
         saveContext(context) {
             this.setState({
-                context: context,
-                tags: context.data.tags,
-                active_title: context.getTagTitleById(this.state.active_id)
+                context: window.myStore,
+                tags: window.myStore.data.tags,
+                active_title: window.myStore.getTagTitleById(this.state.active_id)
             });
         },
 

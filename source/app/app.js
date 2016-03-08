@@ -11,7 +11,7 @@ var React = require('react'),
     routes = (
         <Route handler={Layout}>
             <Route name='home' path='/' handler={Home}/>
-            <Route name='dashboard' path='/dasboard' handler={DashboardLayout}/>
+            <Route name='dashboard' path='/dashboard' handler={DashboardLayout}/>
         </Route>
     );
 
