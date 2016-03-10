@@ -10,7 +10,6 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     masterKey = '',
     encryptionKey = '',
     decryptedContent = false,
-    privateCounter = 0,
 
 // GENERAL STUFF
 
@@ -28,8 +27,6 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
     sendMessage = (msgType, msgContent) => {
-        privateCounter++;
-        console.log(privateCounter, ' bg send: ', msgType);
         chrome.runtime.sendMessage({type: msgType, content: msgContent});
     },
 
@@ -103,8 +100,6 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
     },
 
     chromeMessaging = (request, sender, sendResponse) => {
-        privateCounter++;
-        console.log(privateCounter, ' bg recived: ', request.type);
         switch (request.type) {
             case 'initPlease':
                 init();
@@ -366,7 +361,7 @@ chromeExists().then(() => {
     chrome.tabs.onActivated.addListener(detectActiveUrl);
     chrome.commands.onCommand.addListener(chromeCommands);
     chrome.runtime.onMessage.addListener(chromeMessaging);
-    chrome.browserAction.onClicked.addListener(function (tab) {
+    chrome.browserAction.onClicked.addListener(() => {
         chrome.tabs.create({'url': chrome.extension.getURL('index.html'), 'selected': true});
     });
     return new trezor.DeviceList();

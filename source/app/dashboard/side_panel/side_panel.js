@@ -8,7 +8,6 @@ var React = require('react'),
 
         getInitialState() {
             return {
-                context: window.myStore,
                 tags: window.myStore.data.tags,
                 active_id: 0,
                 active_title: window.myStore.getTagTitleById(0)
@@ -16,13 +15,27 @@ var React = require('react'),
         },
 
         componentWillMount() {
-            window.myStore.on('contextInit', this.saveContext);
             window.myStore.on('changeTag', this.changeTag);
+            window.myStore.on('update', this.updateContent);
         },
 
         componentWillUnmount() {
-            window.myStore.removeListener('contextInit', this.saveContext);
             window.myStore.removeListener('changeTag', this.changeTag);
+            window.myStore.removeListener('update', this.updateContent);
+        },
+
+        updateContent(data) {
+            if (window.myStore.hasTagId(this.state.active_id) > -1) {
+                this.setState({
+                    tags: data.tags,
+                    active_title: window.myStore.getTagTitleById(this.state.active_id)
+                });
+            } else {
+                this.changeTagAndEmitt(0);
+                this.setState({
+                    tags: data.tags
+                });
+            }
         },
 
         changeTag(e) {
@@ -34,7 +47,7 @@ var React = require('react'),
             } else {
                 this.setState({
                     active_id: parseInt(e),
-                    active_title: this.state.context.getTagTitleById(e)
+                    active_title: window.myStore.getTagTitleById(e)
                 });
             }
         },
@@ -43,7 +56,7 @@ var React = require('react'),
             window.myStore.emit('changeTag', e);
             this.setState({
                 active_id: parseInt(e),
-                active_title: this.state.context.getTagTitleById(e)
+                active_title: window.myStore.getTagTitleById(e)
             });
         },
 
@@ -51,20 +64,11 @@ var React = require('react'),
             window.myStore.emit('openAddTag');
         },
 
-        saveContext(context) {
-            this.setState({
-                context: window.myStore,
-                tags: window.myStore.data.tags,
-                active_title: window.myStore.getTagTitleById(this.state.active_id)
-            });
-        },
-
         render(){
             var tag_array = Object.keys(this.state.tags).map((key) => {
                 var obj = this.state.tags[key];
-                obj.active = this.state.active_id == key ? 'active' : '';
                 return (
-                    <li key={key} className={obj.active}>
+                    <li key={key} className={this.state.active_id == key ? 'active' : ''}>
                         <a data-tag-key={key}
                            data-tag-name={obj.title}
                            onClick={this.changeTagAndEmitt.bind(null, key)}

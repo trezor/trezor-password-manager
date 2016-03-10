@@ -28,6 +28,7 @@ var React = require('react'),
             window.myStore.on('filter', this.setupFilter);
             window.myStore.on('hideNewEntry', this.addNewEntry);
             window.myStore.on('hideOpenNewEntry', this.hideOpenNewEntry);
+            window.myStore.on('update', this.updateContent);
         },
 
         componentWillUnmount() {
@@ -35,6 +36,14 @@ var React = require('react'),
             window.myStore.removeListener('filter', this.setupFilter);
             window.myStore.removeListener('hideNewEntry', this.addNewEntry);
             window.myStore.removeListener('hideOpenNewEntry', this.hideOpenNewEntry);
+            window.myStore.removeListener('update', this.updateContent);
+        },
+
+        updateContent(data) {
+            this.setState({
+                tags: data.tags,
+                entries: data.entries
+            });
         },
 
         setupFilter(filterVal) {
@@ -74,7 +83,6 @@ var React = require('react'),
         },
 
         changeTag(e) {
-            console.log('change tag:', e);
             if (e === undefined) {
                 this.setState({
                     active_id: this.state.active_id,

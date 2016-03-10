@@ -129,7 +129,6 @@ class Dropbox_mgmt {
             filname = false;
             loadedData = '';
             this.sendMessage('bg-changePhase', 'DROPBOX');
-
         });
     }
 
@@ -143,7 +142,7 @@ class Dropbox_mgmt {
                     }
                     this.cursor = changes;
                     changes.changes.forEach(change => {
-                        this.notifyChange(change.path);
+                        this.notifyChange(change);
                     });
                     if (changes.shouldPullAgain) {
                         resolve(this.singlePull(pullCursor));
@@ -203,11 +202,11 @@ class Dropbox_mgmt {
         });
     }
 
-    notifyChange(path) {
-        if (path.substr(0, 1) === "/") {
-            path = path.substr(1);
+    notifyChange(change) {
+        if (change.path.substr(0, 1) === "/") {
+            change.path = change.path.substr(1);
         }
-        if (path === filname) {
+        if (change.path === filname) {
             this.loadFile();
         }
     }
@@ -230,8 +229,7 @@ class Dropbox_mgmt {
                     if (!(Buffer.isBuffer(data))) {
                         data = this.toBuffer(data);
                     }
-                    loadedData = data;
-                    return data;
+                    this.saveLoadedData(data);
                 }
             });
         } catch (err) {
