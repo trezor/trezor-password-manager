@@ -104,7 +104,7 @@ var React = require('react'),
         },
 
         openTab() {
-            var data = {
+            let data = {
                 title: this.state.title
             };
             chrome.runtime.sendMessage({type: 'openTab', content: data});
@@ -112,7 +112,7 @@ var React = require('react'),
 
         openTabAndLogin() {
             this.setTrezorWaitingBackface('Opening Tab');
-            var data = {
+            let data = {
                 title: this.state.title,
                 username: this.state.username,
                 password: this.state.password,
@@ -141,7 +141,7 @@ var React = require('react'),
 
         copyPasswordToClipboard() {
             this.setTrezorWaitingBackface('Copy password to clipboard');
-            var data = {
+            let data = {
                 title: this.state.title,
                 username: this.state.username,
                 password: this.state.password,
@@ -280,6 +280,10 @@ var React = require('react'),
             }
         },
 
+        setProtocolPrefix(url) {
+            return url.indexOf('://') > -1 ? url : 'https://' + url;
+        },
+
         togglePassword() {
             var input = React.findDOMNode(this.refs.password);
             if (input.getAttribute('type') === 'text') {
@@ -368,18 +372,14 @@ var React = require('react'),
                 copyClipboardUsr = (
                     <Tooltip id='clipboard-usr'>{this.state.clipboard_usr ? 'Copied!' : 'Copy to clipboard'}</Tooltip>),
                 entryTitle = 'Item/URL',
+                entryTitleVal = this.isUrl(this.state.title) ? this.decomposeUrl(this.state.title).domain : this.state.title,
                 noteArea = null,
                 unlockEntry = this.state.mode === 'list-mode' ? (<Tooltip id='unlock'>Edit entry</Tooltip>) : (
                     <Tooltip id='unlock'>Close entry</Tooltip>),
                 interator = 0,
                 title = this.state.mode === 'list-mode' ?
-                    (<input type='text'
-                            autoComplete='off'
-                            value={this.decomposeUrl(this.state.title).domain}
-                            name='title'
-                            onClick={this.openTab}
-                            className='title-input'
-                            disabled='disabled'/>) : (
+                    (<a href={this.isUrl(this.state.title) ? this.setProtocolPrefix(this.state.title) : null}
+                        className='title-input'>{entryTitleVal}</a>) : (
                     <input type='text'
                            autoComplete='off'
                            value={this.state.title}
@@ -428,11 +428,7 @@ var React = require('react'),
             }
 
             if (this.state.title.length) {
-                if (this.isUrl(this.decomposeUrl(this.state.title).domain)) {
-                    entryTitle = 'URL'
-                } else {
-                    entryTitle = 'Item'
-                }
+                entryTitle = this.isUrl(this.state.title) ? 'URL' : 'Item';
             }
 
             if (this.state.mode === 'list-mode' && this.state.note.length) {

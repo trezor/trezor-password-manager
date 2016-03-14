@@ -249,7 +249,7 @@ class Trezor_mgmt {
     }
 
     displayPhrase(title, username) {
-        title = this.isUrl(title) ? this.decomposeUrl(title).host : title;
+        title = this.isUrl(title) ? this.decomposeUrl(title).domain : title;
         return 'Unlock ' + title + ' for user ' + username + '?'
     }
 

@@ -3929,6 +3929,9 @@ aside.left-panel {
           -o-transition: all 50ms ease-in-out;
           transition: all 50ms ease-in-out;
           color: #797979; }
+          .dashboard .card .entry.list-mode .title a {
+            color: #797979;
+            font-size: 1.1em; }
           .dashboard .card .entry.list-mode .title span {
             display: inline-block;
             width: 0;
@@ -3967,7 +3970,7 @@ aside.left-panel {
           overflow: hidden; }
         .dashboard .card .entry.list-mode .password, .dashboard .card .entry.list-mode .tags, .dashboard .card .entry.list-mode .safe-note {
           display: none; }
-        .dashboard .card .entry.list-mode .title input, .dashboard .card .entry.list-mode .username input {
+        .dashboard .card .entry.list-mode .title input, .dashboard .card .entry.list-mode .title a, .dashboard .card .entry.list-mode .username input, .dashboard .card .entry.list-mode .username a {
           width: 80%;
           max-width: 300px;
           background: transparent;
@@ -3975,17 +3978,20 @@ aside.left-panel {
           outline: none;
           white-space: nowrap;
           overflow: hidden;
+          text-decoration: none;
           text-overflow: ellipsis;
           -webkit-appearance: none;
           -moz-appearance: none;
           -o-appearance: none;
           appearance: none; }
-          .dashboard .card .entry.list-mode .title input:focus, .dashboard .card .entry.list-mode .title input:active, .dashboard .card .entry.list-mode .username input:focus, .dashboard .card .entry.list-mode .username input:active {
+          .dashboard .card .entry.list-mode .title input:hover, .dashboard .card .entry.list-mode .title a:hover, .dashboard .card .entry.list-mode .username input:hover, .dashboard .card .entry.list-mode .username a:hover {
+            text-decoration: none; }
+          .dashboard .card .entry.list-mode .title input:focus, .dashboard .card .entry.list-mode .title input:active, .dashboard .card .entry.list-mode .title a:focus, .dashboard .card .entry.list-mode .title a:active, .dashboard .card .entry.list-mode .username input:focus, .dashboard .card .entry.list-mode .username input:active, .dashboard .card .entry.list-mode .username a:focus, .dashboard .card .entry.list-mode .username a:active {
             -webkit-appearance: none;
             -moz-appearance: none;
             -o-appearance: none;
             appearance: none; }
-          .dashboard .card .entry.list-mode .title input:disabled, .dashboard .card .entry.list-mode .username input:disabled {
+          .dashboard .card .entry.list-mode .title input:disabled, .dashboard .card .entry.list-mode .title a:disabled, .dashboard .card .entry.list-mode .username input:disabled, .dashboard .card .entry.list-mode .username a:disabled {
             cursor: pointer; }
         .dashboard .card .entry.list-mode .available-tags {
           display: none; }

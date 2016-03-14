@@ -163,6 +163,11 @@
           @include transition(all 50ms ease-in-out);
           color: rgba($c_grey_content_font, 1);
 
+          a {
+            color: rgba($c_grey_content_font, 1);
+            font-size: 1.1em;
+          }
+
           span {
             display: inline-block;
             width: 0;
@@ -215,7 +220,7 @@
         }
 
         .title, .username {
-          input {
+          input, a {
             width: 80%;
             max-width: 300px;
             background: transparent;
@@ -223,13 +228,18 @@
             outline: none;
             white-space: nowrap;
             overflow: hidden;
+            text-decoration: none;
             text-overflow: ellipsis;
             @include appearance-none();
+
+            &:hover {
+              text-decoration: none;
+            }
 
             &:focus, &:active {
               @include appearance-none();
             }
-            
+
             &:disabled {
               cursor: pointer;
             }

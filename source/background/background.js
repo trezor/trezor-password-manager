@@ -239,7 +239,6 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
         }
 
         parsed_url.parent_domain = parsed_url.host + '.' + parsed_url.tld;
-
         return parsed_url;
     },
 
@@ -293,7 +292,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
             if (typeof tabs[0] !== 'undefined') {
                 if (isUrl(tabs[0].url)) {
                     if (decomposeUrl(tabs[0].url).host === activeHost) {
-                        injectContentScript(tabs[0].id, sendTabMessage, 'showTrezorMsg', null);
+                        injectContentScript(tabs[0].id, this.sendTabMessage, 'showTrezorMsg', null);
                         trezorManager.decryptPassword(entry, fillLoginForm);
                     }
                 }
@@ -310,7 +309,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
                         data.content = null;
                     }
                     if (decomposeUrl(tabs[0].url).host === activeHost) {
-                        injectContentScript(tabs[0].id, sendTabMessage, 'fillData', data.content);
+                        injectContentScript(tabs[0].id, this.sendTabMessage, 'fillData', data.content);
                     }
                 }
             }
@@ -324,7 +323,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
 
     openTabAndLogin = (data) => {
         chrome.tabs.create({url: setProtocolPrefix(data.title)}, (tab) => {
-            injectContentScript(tab.id, sendTabMessage, 'fillData', data);
+            injectContentScript(tab.id, this.sendTabMessage, 'fillData', data);
         });
     },
 
