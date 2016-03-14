@@ -103,13 +103,6 @@ var React = require('react'),
             }
         },
 
-        openTab() {
-            let data = {
-                title: this.state.title
-            };
-            chrome.runtime.sendMessage({type: 'openTab', content: data});
-        },
-
         openTabAndLogin() {
             this.setTrezorWaitingBackface('Opening Tab');
             let data = {

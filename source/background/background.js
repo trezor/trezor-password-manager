@@ -145,10 +145,6 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
                 trezorManager.decryptFullEntry(request.content, sendResponse);
                 break;
 
-            case 'openTab':
-                openTab(request.content);
-                break;
-
             case 'openTabAndLogin':
                 openTabAndLogin(request.content);
                 break;
@@ -314,11 +310,6 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
                 }
             }
         });
-    },
-
-    openTab = (data) => {
-        chrome.tabs.create({url: setProtocolPrefix(data.title)});
-
     },
 
     openTabAndLogin = (data) => {
