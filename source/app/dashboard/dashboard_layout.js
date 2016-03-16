@@ -34,10 +34,10 @@ var React = require('react'),
         chromeMsgHandler(request, sender, sendResponse) {
             switch (request.type) {
                 case 'trezorDisconnected':
-                    window.myStore = null;
                     this.setState({
                         ready: false
                     });
+                    window.myStore = null;
                     this.transitionTo('home');
                     break;
             }

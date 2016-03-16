@@ -18,6 +18,13 @@ class Dropbox_mgmt {
         this.cursor = null;
     }
 
+    disconnected() {
+        this.polling = false;
+        this.cursor = null;
+        filname = false;
+        loadedData = '';
+    }
+
     sendMessage(msgType, msgContent) {
         chrome.runtime.sendMessage({type: msgType, content: msgContent});
     }
@@ -97,6 +104,9 @@ class Dropbox_mgmt {
                 return this.handleDropboxError(error);
             } else {
                 if (client.isAuthenticated()) {
+                    if (this.cursor == null) {
+                        this.initCursor().then(() => this.poll()).catch((e) => console.error(e));
+                    }
                     this.setDropboxUsername();
                     this.sendMessage('dropboxConnected');
                 }
@@ -105,9 +115,6 @@ class Dropbox_mgmt {
     }
 
     setDropboxUsername() {
-        if (this.cursor == null) {
-            this.initCursor().then(() => this.poll()).catch((e) => console.error(e));
-        }
         client.getAccountInfo((error, accountInfo) => {
             if (error) {
                 this.handleDropboxError(error);

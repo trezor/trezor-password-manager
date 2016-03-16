@@ -7,15 +7,16 @@ const HD_HARDENED = 0x80000000,
     AUTH_SIZE = 128 / 8,
     CIPHER_TYPE = 'aes-256-gcm',
     MINIMAL_EXTENSION_VERSION = '1.0.6',
-    PATH = [(10016 | HD_HARDENED) >>> 0, 0];
+    PATH = [(10016 | HD_HARDENED) >>> 0, 0],
+    NO_TRANSPORT = 'No trezor.js transport is available',
+    NO_CONNECTED_DEVICES = 'No connected devices',
+    DEVICE_IS_BOOTLOADER = 'Connected device is in bootloader mode',
+    DEVICE_IS_EMPTY = 'Connected device is not initialized',
+    FIRMWARE_IS_OLD = 'Firmware of connected device is too old',
+    INSUFFICIENT_FUNDS = 'Insufficient funds',
+    WRONG_PIN = 'Invalid PIN';
 
 var crypto = require('crypto'),
-    NO_TRANSPORT = new Error('No trezor.js transport is available'),
-    NO_CONNECTED_DEVICES = new Error('No connected devices'),
-    DEVICE_IS_BOOTLOADER = new Error('Connected device is in bootloader mode'),
-    DEVICE_IS_EMPTY = new Error('Connected device is not initialized'),
-    FIRMWARE_IS_OLD = new Error('Firmware of connected device is too old'),
-    INSUFFICIENT_FUNDS = new Error('Insufficient funds'),
     deviceList = '',
     trezorDevice = null,
     masterKey = '',
@@ -34,57 +35,54 @@ class Trezor_mgmt {
         });
     }
 
-    handleTrezorError(session, retry, fallback) {
-        console.log('called');
-        return (error) => {
-            let never = new Promise(() => {
-            });
+    handleTrezorError(error) {
+        let never = new Promise(() => {
+        });
 
-            console.error(error);
+        console.log(error);
 
-            switch (error) {
-                case NO_TRANSPORT:
-                    return never;
-                    break;
+        switch (error.message) {
+            case NO_TRANSPORT:
+                return never;
+                break;
 
-                case DEVICE_IS_EMPTY:
-                    return never;
-                    break;
+            case DEVICE_IS_EMPTY:
+                return never;
+                break;
 
-                case FIRMWARE_IS_OLD:
-                    return never;
-                    break;
+            case FIRMWARE_IS_OLD:
+                return never;
+                break;
 
-                case NO_CONNECTED_DEVICES:
-                    return never;
-                    break;
+            case NO_CONNECTED_DEVICES:
+                return never;
+                break;
 
-                case DEVICE_IS_BOOTLOADER:
-                    return never;
-                    break;
+            case DEVICE_IS_BOOTLOADER:
+                return never;
+                break;
 
-                case INSUFFICIENT_FUNDS:
-                    return never;
-                    break;
-            }
-            switch (error.code) {
-                case 'Failure_NotInitialized':
-                    this.sendMessage('notInitialized');
-                    return never;
-                    break;
+            case INSUFFICIENT_FUNDS:
+                return never;
+                break;
 
-                case 'Failure_ActionCancelled':
-                    return () => fallback();
-                    break;
+            case WRONG_PIN:
+                this.sendMessage('wrongPin', null);
+                trezorDevice.waitForSessionAndRun((session) => this.getEncryptionKey(session));
+                break;
+        }
+        switch (error.code) {
+            case 'Failure_NotInitialized':
+                this.sendMessage('notInitialized', null);
+                return never;
+                break;
 
-                case 'Failure_PinInvalid':
-                    console.log('napicu pin');
-                    this.sendMessage('wrongPin');
-                    return () => retry(session);
-                    break;
-            }
+            case 'Failure_ActionCancelled':
+                return never;
+                break;
         }
     }
+
 
     checkTransport(transport) {
         current_ext_version = transport.version;
@@ -106,6 +104,7 @@ class Trezor_mgmt {
     }
 
     sendMessage(msgType, msgContent) {
+        console.log('sendMsg', msgType, msgContent);
         chrome.runtime.sendMessage({type: msgType, content: msgContent});
     }
 
@@ -286,18 +285,20 @@ class Trezor_mgmt {
                         password: JSON.parse(this.decrypt(password, enckey))
                     }
                 });
-            }).catch((responseCallback) => this.handleTrezorError(null, responseCallback));
+            }).catch((err) => {
+                console.log(err);
+                //(responseCallback) => this.handleTrezorError(null, responseCallback)
+
+            });
         });
     }
 
     getEncryptionKey(session) {
-        console.log('called', session);
         return session.cipherKeyValue(PATH, ENC_KEY, ENC_VALUE, true, true, true).then((result) => {
-            console.log(result);
             masterKey = result.message.value;
             encryptionKey = new Buffer(masterKey.substring(masterKey.length / 2, masterKey.length), 'hex');
             this.sendMessage('bg-loadFile');
-        }).catch((session) => this.handleTrezorError(session, this.getEncryptionKey, this.disconnectCallback));
+        }).catch((error) => this.handleTrezorError(error));
     }
 
     getKeys() {

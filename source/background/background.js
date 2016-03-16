@@ -153,6 +153,7 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
                 decryptedContent = '';
                 updateBadgeStatus('OFF');
                 sendMessage('trezorDisconnected');
+                dropboxManager.disconnected();
                 changePhase('DROPBOX');
                 init();
                 break;

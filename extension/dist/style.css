@@ -3434,7 +3434,10 @@ button, .button {
         opacity: 1; }
 
 .loading_dialog .spinner {
-  margin-bottom: 20px; }
+  width: 90px !important;
+  height: 90px !important;
+  margin-bottom: 20px;
+  border-width: 3px !important; }
 
 .loading_dialog img {
   -webkit-animation: 0.75s rotateplane infinite ease-in-out;
