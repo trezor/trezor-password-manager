@@ -3925,7 +3925,7 @@ aside.left-panel {
           .dashboard .card .entry.list-mode:hover .note input:disabled {
             border-left-color: #3498db !important; }
         .dashboard .card .entry.list-mode .title {
-          padding-top: 5px;
+          padding-top: 10px;
           font-size: 1.4em;
           -webkit-transition: all 50ms ease-in-out;
           -moz-transition: all 50ms ease-in-out;

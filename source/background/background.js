@@ -1,6 +1,7 @@
 'use strict';
 let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
-    Buffer = require('buffer/').Buffer,
+    ChromeMgmt = require('./classes/chrome_mgmt'),
+    chromeManager = {},
     TrezorMgmt = require('./classes/trezor_mgmt'),
     trezorManager = {},
     DropboxMgmt = require('./classes/dropbox_mgmt'),
@@ -40,16 +41,6 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
         dropboxManager.changePhase(PHASE);
     },
 
-
-    toBuffer = (ab) => {
-        let buffer = new Buffer(ab.byteLength),
-            view = new Uint8Array(ab);
-        for (var i = 0; i < buffer.length; ++i) {
-            buffer[i] = view[i];
-        }
-        return buffer;
-    },
-
     init = () => {
         trezorManager.checkVersions();
         switch (PHASE) {
@@ -74,19 +65,6 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
                 }
                 break;
         }
-    },
-
-    chromeExists = () => {
-        if (typeof chrome === 'undefined') {
-            return Promise.reject(new Error('Global chrome does not exist; probably not running chrome'));
-        }
-        if (typeof chrome.runtime === 'undefined') {
-            return Promise.reject(new Error('Global chrome.runtime does not exist; probably not running chrome'));
-        }
-        if (typeof chrome.runtime.sendMessage === 'undefined') {
-            return Promise.reject(new Error('Global chrome.runtime.sendMessage does not exist; probably not whitelisted website in extension manifest'));
-        }
-        return Promise.resolve();
     },
 
     chromeCommands = (command) => {
@@ -149,15 +127,6 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
                 openTabAndLogin(request.content);
                 break;
 
-            case 'bg-trezorDisconnected':
-                decryptedContent = '';
-                updateBadgeStatus('OFF');
-                sendMessage('trezorDisconnected');
-                dropboxManager.disconnected();
-                changePhase('DROPBOX');
-                init();
-                break;
-
             case 'bg-decryptContent':
                 let tempDecryptedData = trezorManager.decrypt(dropboxManager.getLoadedData(), encryptionKey);
                 sendMessage('decryptedContent', tempDecryptedData);
@@ -196,6 +165,15 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
                 break;
         }
         return true;
+    },
+
+    userLoggedOut = () => {
+        decryptedContent = '';
+        updateBadgeStatus('OFF');
+        sendMessage('trezorDisconnected');
+        dropboxManager.disconnected();
+        changePhase('DROPBOX');
+        init();
     },
 
     setProtocolPrefix = (url) => {
@@ -344,10 +322,12 @@ let PHASE = 'DROPBOX', /* DROPBOX, TREZOR, LOADED */
                 }
             }
         });
-
     };
 
-chromeExists().then(() => {
+chromeManager = new ChromeMgmt();
+
+chromeManager.exists().then(() => {
+    console.log(chromeManager);
     chrome.tabs.onUpdated.addListener(detectActiveUrl);
     chrome.tabs.onActivated.addListener(detectActiveUrl);
     chrome.commands.onCommand.addListener(chromeCommands);
@@ -357,7 +337,7 @@ chromeExists().then(() => {
     });
     return new trezor.DeviceList();
 }).then((list) => {
-    trezorManager = new TrezorMgmt(list, PHASE);
+    trezorManager = new TrezorMgmt(list, PHASE, userLoggedOut);
     dropboxManager = new DropboxMgmt(PHASE);
 });
 

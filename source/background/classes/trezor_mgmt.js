@@ -14,6 +14,7 @@ const HD_HARDENED = 0x80000000,
     DEVICE_IS_EMPTY = 'Connected device is not initialized',
     FIRMWARE_IS_OLD = 'Firmware of connected device is too old',
     INSUFFICIENT_FUNDS = 'Insufficient funds',
+    CIPHER_CANCEL = 'CipherKeyValue cancelled',
     WRONG_PIN = 'Invalid PIN';
 
 var crypto = require('crypto'),
@@ -26,8 +27,9 @@ var crypto = require('crypto'),
 
 class Trezor_mgmt {
 
-    constructor(list, phase) {
+    constructor(list, phase, userLoggedOut) {
         this.PHASE = phase;
+        this.logOutCallback = userLoggedOut;
         list.on('transport', (transport) => this.checkTransport(transport));
         list.on('connect', (device) => this.connectedNewTrezor(device));
         list.on('error', (error) => {
@@ -35,11 +37,9 @@ class Trezor_mgmt {
         });
     }
 
-    handleTrezorError(error) {
+    handleTrezorError(error, fallback) {
         let never = new Promise(() => {
         });
-
-        console.log(error);
 
         switch (error.message) {
             case NO_TRANSPORT:
@@ -66,18 +66,20 @@ class Trezor_mgmt {
                 return never;
                 break;
 
+            case CIPHER_CANCEL:
+                fallback(null);
+                break;
+
             case WRONG_PIN:
                 this.sendMessage('wrongPin', null);
                 trezorDevice.waitForSessionAndRun((session) => this.getEncryptionKey(session));
                 break;
+
+
         }
         switch (error.code) {
             case 'Failure_NotInitialized':
                 this.sendMessage('notInitialized', null);
-                return never;
-                break;
-
-            case 'Failure_ActionCancelled':
                 return never;
                 break;
         }
@@ -164,9 +166,10 @@ class Trezor_mgmt {
     }
 
     disconnectCallback() {
-        this.sendMessage('bg-trezorDisconnected');
+        this.logOutCallback();
         masterKey = '';
         encryptionKey = '';
+
     }
 
     randomInputVector() {
@@ -268,7 +271,7 @@ class Trezor_mgmt {
                         nonce: data.nonce
                     }
                 });
-            }).catch((responseCallback) => this.handleTrezorError(null, responseCallback));
+            }).catch((error) => this.handleTrezorError(error, responseCallback));
         });
     }
 
@@ -285,11 +288,7 @@ class Trezor_mgmt {
                         password: JSON.parse(this.decrypt(password, enckey))
                     }
                 });
-            }).catch((err) => {
-                console.log(err);
-                //(responseCallback) => this.handleTrezorError(null, responseCallback)
-
-            });
+            }).catch((error) => this.handleTrezorError(error, responseCallback));
         });
     }
 
@@ -298,7 +297,7 @@ class Trezor_mgmt {
             masterKey = result.message.value;
             encryptionKey = new Buffer(masterKey.substring(masterKey.length / 2, masterKey.length), 'hex');
             this.sendMessage('bg-loadFile');
-        }).catch((error) => this.handleTrezorError(error));
+        }).catch((error) => this.handleTrezorError(error, this.disconnectCallback));
     }
 
     getKeys() {

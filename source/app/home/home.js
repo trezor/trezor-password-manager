@@ -109,6 +109,9 @@ var React = require('react'),
         },
 
         connectDropbox() {
+            this.setState({
+                dialog: 'preloading'
+            });
             this.sendMessage('connectDropbox');
         },
 

@@ -158,7 +158,7 @@
         }
 
         .title {
-          padding-top: 5px;
+          padding-top: 10px;
           font-size: 1.4em;
           @include transition(all 50ms ease-in-out);
           color: rgba($c_grey_content_font, 1);
