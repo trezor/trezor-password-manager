@@ -35,7 +35,7 @@ class Chrome_mgmt {
                     if (this.isUrl(tabs[0].url)) {
                         this.activeHost = this.decomposeUrl(tabs[0].url).host;
                         if (this.matchingContent(this.activeHost)) {
-                            this.updateBadgeStatus(PHASE);
+                            this.updateBadgeStatus(this.storage.phase);
                             this.hasCredentials = true;
                         } else {
                             this.updateBadgeStatus('ERROR');
