@@ -102,10 +102,6 @@ var StorageMgmt = require('./classes/storage_mgmt'),
                 dropboxManager.signOutDropbox();
                 break;
 
-            case 'loadContent':
-                dropboxManager.loadFile(storage.masterKey);
-                break;
-
             case 'saveContent':
                 trezorManager.encrypt(request.content, storage.encryptionKey).then((res) => {
                     dropboxManager.saveFile(res);
