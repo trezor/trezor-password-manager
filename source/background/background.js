@@ -59,7 +59,7 @@ var StorageMgmt = require('./classes/storage_mgmt'),
     },
 
     loadFile = () => {
-        dropboxManager.loadFile(storage.masterKey);
+        dropboxManager.loadFile();
     },
 
     userLoggedOut = () => {

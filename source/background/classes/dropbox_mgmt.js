@@ -4,8 +4,7 @@ const FILENAME_MESS = '5f91add3fa1c3c76e90c90a3bd0999e2bd7833d06a483fe884ee60397
     receiverRelativePath = '/html/chrome_oauth_receiver.html',
     APIKEY = 's340kh3l0vla1nv';
 
-var crypto = require('crypto'),
-    client = new Dropbox.Client({key: APIKEY});
+var crypto = require('crypto');
 
 class Dropbox_mgmt {
 
@@ -16,12 +15,14 @@ class Dropbox_mgmt {
         this.filename = false;
         this.username = false;
         this.loadedData = '';
+        this.client = new Dropbox.Client({key: APIKEY});
     }
 
     disconnected() {
         this.polling = false;
         this.cursor = null;
         this.filename = false;
+        this.username = false;
         this.loadedData = '';
     }
 
@@ -30,7 +31,7 @@ class Dropbox_mgmt {
     }
 
     isAuth() {
-        return client.isAuthenticated();
+        return this.client.isAuthenticated();
     }
 
     toBuffer(ab) {
@@ -80,7 +81,7 @@ class Dropbox_mgmt {
 
     initCursor() {
         return new Promise((resolve, reject) => {
-            client.pullChanges(this.cursor, (error, cursor) => {
+            this.client.pullChanges(this.cursor, (error, cursor) => {
                 if (error) {
                     reject(error);
                 }
@@ -91,15 +92,15 @@ class Dropbox_mgmt {
     }
 
     connectToDropbox() {
-        client.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: receiverRelativePath}));
-        client.onError.addListener((error) => {
+        this.client.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: receiverRelativePath}));
+        this.client.onError.addListener((error) => {
             this.handleDropboxError(error);
         });
-        client.authenticate((error, data) => {
+        this.client.authenticate((error, data) => {
             if (error) {
                 return this.handleDropboxError(error);
             } else {
-                if (client.isAuthenticated()) {
+                if (this.isAuth()) {
                     if (this.cursor == null) {
                         this.initCursor().then(() => this.poll()).catch((e) => console.error(e));
                     }
@@ -111,7 +112,7 @@ class Dropbox_mgmt {
     }
 
     setDropboxUsername() {
-        client.getAccountInfo((error, accountInfo) => {
+        this.client.getAccountInfo((error, accountInfo) => {
             if (error) {
                 this.handleDropboxError(error);
                 this.connectToDropbox();
@@ -123,7 +124,7 @@ class Dropbox_mgmt {
     }
 
     signOutDropbox() {
-        client.signOut((error, accountInfo) => {
+        this.client.signOut((error, accountInfo) => {
             if (error) {
                 this.handleDropboxError(error);
             }
@@ -138,7 +139,7 @@ class Dropbox_mgmt {
     singlePull(pullCursor) {
         return new Promise((resolve, reject) => {
             try {
-                client.pullChanges(pullCursor, (error, changes) => {
+                this.client.pullChanges(pullCursor, (error, changes) => {
                     if (error) {
                         reject(error);
                         return;
@@ -162,7 +163,7 @@ class Dropbox_mgmt {
     singlePoll(pullCursor) {
         return new Promise((resolve, reject) => {
             try {
-                client.pollForChanges(pullCursor, {}, (error, pollResult) => {
+                this.client.pollForChanges(pullCursor, {}, (error, pollResult) => {
                     if (error) {
                         reject(error);
                     } else {
@@ -194,7 +195,7 @@ class Dropbox_mgmt {
         }).then((pollResult) => {
             this.polling = false;
             const retryAfter = pollResult.retryAfter;
-            if (client.isAuthenticated()) {
+            if (this.isAuth()) {
                 window.setTimeout(() => this.poll(), retryAfter);
             }
             return pollResult;
@@ -215,17 +216,17 @@ class Dropbox_mgmt {
     }
 
 
-    loadFile(masterKey) {
+    loadFile() {
         try {
             if (!this.filename) {
                 try {
-                    let fileKey = masterKey.substring(0, masterKey.length / 2);
+                    let fileKey = this.storage.masterKey.substring(0, this.storage.masterKey.length / 2);
                     this.filename = crypto.createHmac('sha256', fileKey).update(FILENAME_MESS).digest('hex') + '.pswd';
                 } catch (ex) {
                     console.log('Crypto failed: ', ex);
                 }
             }
-            client.readFile(this.filename, {arrayBuffer: true}, (error, data) => {
+            this.client.readFile(this.filename, {arrayBuffer: true}, (error, data) => {
                 if (error) {
                     return this.handleDropboxError(error);
                 } else {
@@ -242,7 +243,7 @@ class Dropbox_mgmt {
 
     saveFile(data) {
         try {
-            client.writeFile(this.filename, data, (error, stat) => {
+            this.client.writeFile(this.filename, data, (error, stat) => {
                 if (error) {
                     console.error('Dropbox problem: ', error);
                     return this.handleDropboxError(error);
