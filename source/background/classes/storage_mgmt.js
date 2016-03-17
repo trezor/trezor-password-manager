@@ -13,10 +13,6 @@ class Storage_mgmt extends EventEmitter {
         this.encryptionKey = '';
         this.decryptedContent = false;
     }
-
-    changePhase(phase) {
-        this.phase = phase;
-    }
 }
 
 module.exports = Storage_mgmt;

@@ -67,7 +67,7 @@ var StorageMgmt = require('./classes/storage_mgmt'),
         chromeManager.updateBadgeStatus('OFF');
         chromeManager.sendMessage('trezorDisconnected');
         dropboxManager.disconnected();
-        storage.changePhase('DROPBOX');
+        storage.phase = 'DROPBOX';
         init();
     },
 
