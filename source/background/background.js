@@ -63,7 +63,7 @@ var StorageMgmt = require('./classes/storage_mgmt'),
     },
 
     userLoggedOut = () => {
-        storage.decryptedContent = '';
+        storage.decryptedContent = false;
         chromeManager.updateBadgeStatus('OFF');
         chromeManager.sendMessage('trezorDisconnected');
         dropboxManager.disconnected();

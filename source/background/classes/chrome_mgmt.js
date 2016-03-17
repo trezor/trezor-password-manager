@@ -1,5 +1,6 @@
 'use strict';
 
+var Promise = require('es6-promise').Promise
 class Chrome_mgmt {
 
     constructor(storage) {
@@ -8,7 +9,7 @@ class Chrome_mgmt {
         this.hasCredentials = false;
         chrome.tabs.onUpdated.addListener(() => this.detectActiveUrl());
         chrome.tabs.onActivated.addListener(() => this.detectActiveUrl());
-        chrome.commands.onCommand.addListener(() => this.chromeCommands());
+        chrome.commands.onCommand.addListener((c) => this.chromeCommands(c));
         chrome.browserAction.onClicked.addListener(() => {
             chrome.tabs.create({'url': chrome.extension.getURL('index.html'), 'selected': true});
         });
@@ -76,9 +77,9 @@ class Chrome_mgmt {
             if (typeof tabs[0] !== 'undefined') {
                 if (this.isUrl(tabs[0].url)) {
                     if (this.decomposeUrl(tabs[0].url).host === this.activeHost) {
-                        this.injectContentScript(tabs[0].id, this.sendTabMessage, 'showTrezorMsg', null);
+                        this.injectContentScript(tabs[0].id, 'showTrezorMsg', null);
                         //FIXME!
-                        trezorManager.decryptPassword(entry, this.fillLoginForm);
+                        //trezorManager.decryptPassword(entry, this.fillLoginForm);
                     }
                 }
             }
@@ -152,28 +153,28 @@ class Chrome_mgmt {
         return parsed_url;
     }
 
-    injectContentScript(id, callback, type, data) {
+    injectContentScript(id, type, data) {
         var tabId = id;
         chrome.tabs.sendMessage(tabId, {type: 'isScriptExecuted'}, (response) => {
             if (chrome.runtime.lastError) {
                 chrome.tabs.executeScript(tabId, {file: 'js/content_script.js', runAt: "document_start"}, () => {
                     chrome.tabs.sendMessage(tabId, {type: 'isScriptExecuted'}, (response) => {
                         if (response.type === 'scriptReady') {
-                            callback(tabId, type, data);
+                            this.sendTabMessage(tabId, type, data);
                         } else {
                             chrome.tabs.executeScript(tabId, {file: 'js/content_script.js'}, () => {
                                 if (chrome.runtime.lastError) {
                                     console.error(chrome.runtime.lastError);
                                     throw Error("Unable to inject script into tab " + tabId);
                                 }
-                                callback(tabId, type, data);
+                                this.sendTabMessage(tabId, type, data);
                             });
                         }
                     });
                 });
             } else {
                 if (response.type === 'scriptReady') {
-                    callback(tabId, type, data);
+                    this.sendTabMessage(tabId, type, data);
                 }
             }
         });
@@ -188,7 +189,7 @@ class Chrome_mgmt {
                         data.content = null;
                     }
                     if (this.decomposeUrl(tabs[0].url).host === this.activeHost) {
-                        this.injectContentScript(tabs[0].id, this.sendTabMessage, 'fillData', data.content);
+                        this.injectContentScript(tabs[0].id, 'fillData', data.content);
                     }
                 }
             }
@@ -196,8 +197,8 @@ class Chrome_mgmt {
     }
 
     openTabAndLogin(data) {
-        chrome.tabs.create({url: setProtocolPrefix(data.title)}, (tab) => {
-            this.injectContentScript(tab.id, this.sendTabMessage, 'fillData', data);
+        chrome.tabs.create({url: this.setProtocolPrefix(data.title)}, (tab) => {
+            this.injectContentScript(tab.id, 'fillData', data);
         });
     }
 
