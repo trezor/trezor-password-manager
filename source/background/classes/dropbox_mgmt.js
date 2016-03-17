@@ -26,10 +26,6 @@ class Dropbox_mgmt {
         this.loadedData = '';
     }
 
-    sendMessage(msgType, msgContent) {
-        chrome.runtime.sendMessage({type: msgType, content: msgContent});
-    }
-
     isAuth() {
         return this.client.isAuthenticated();
     }
@@ -47,7 +43,7 @@ class Dropbox_mgmt {
         switch (error.status) {
             case Dropbox.ApiError.INVALID_TOKEN:
                 console.warn('User token expired ', error.status);
-                this.sendMessage('errorMsg', 'Dropbox User token expired');
+                this.storage.emit('sendMessage', 'errorMsg', 'Dropbox User token expired');
                 break;
 
             case Dropbox.ApiError.NOT_FOUND:
@@ -57,17 +53,17 @@ class Dropbox_mgmt {
 
             case Dropbox.ApiError.OVER_QUOTA:
                 console.warn('Dropbox quota overreached ', error.status);
-                this.sendMessage('errorMsg', 'Dropbox quota overreached.');
+                this.storage.emit('sendMessage', 'errorMsg', 'Dropbox quota overreached.');
                 break;
 
             case Dropbox.ApiError.RATE_LIMITED:
                 console.warn('Too many API calls ', error.status);
-                this.sendMessage('errorMsg', 'Too many Dropbox API calls.');
+                this.storage.emit('sendMessage', 'errorMsg', 'Too many Dropbox API calls.');
                 break;
 
             case Dropbox.ApiError.NETWORK_ERROR:
                 console.warn('Network error, check connection ', error.status);
-                this.sendMessage('errorMsg', 'Dropbox Network error, check connection.');
+                this.storage.emit('sendMessage', 'errorMsg', 'Dropbox Network error, check connection.');
                 break;
 
             case Dropbox.ApiError.INVALID_PARAM:
@@ -75,7 +71,7 @@ class Dropbox_mgmt {
             case Dropbox.ApiError.INVALID_METHOD:
             default:
                 console.warn('Network error, check connection ', error.status);
-                this.sendMessage('errorMsg', 'Network error, check connection.');
+                this.storage.emit('sendMessage', 'errorMsg', 'Network error, check connection.');
         }
     }
 
@@ -105,7 +101,7 @@ class Dropbox_mgmt {
                         this.initCursor().then(() => this.poll()).catch((e) => console.error(e));
                     }
                     this.setDropboxUsername();
-                    this.sendMessage('dropboxConnected');
+                    this.storage.emit('sendMessage', 'dropboxConnected');
                 }
             }
         });
@@ -118,7 +114,7 @@ class Dropbox_mgmt {
                 this.connectToDropbox();
             } else {
                 this.username = accountInfo.name;
-                this.sendMessage('setDropboxUsername', accountInfo.name);
+                this.storage.emit('sendMessage', 'setDropboxUsername', accountInfo.name);
             }
         });
     }
@@ -128,7 +124,7 @@ class Dropbox_mgmt {
             if (error) {
                 this.handleDropboxError(error);
             }
-            this.sendMessage('dropboxDisconnected');
+            this.storage.emit('sendMessage', 'dropboxDisconnected');
             this.username = false;
             this.filename = false;
             this.loadedData = '';

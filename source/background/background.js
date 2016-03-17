@@ -137,5 +137,6 @@ chromeManager.exists().then(() => {
     storage.on('initStorageFile', initNewFile);
     storage.on('loadFile', loadFile);
     storage.on('disconnectedTrezor', userLoggedOut);
+    storage.on('sendMessage', (type, content) => chromeManager.sendMessage(type, content));
 });
 

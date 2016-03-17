@@ -67,7 +67,7 @@ class Trezor_mgmt {
                 break;
 
             case WRONG_PIN:
-                this.sendMessage('wrongPin', null);
+                this.storage.emit('sendMessage', 'wrongPin');
                 this.trezorDevice.waitForSessionAndRun((session) => this.getEncryptionKey(session));
                 break;
 
@@ -75,7 +75,7 @@ class Trezor_mgmt {
         }
         switch (error.code) {
             case 'Failure_NotInitialized':
-                this.sendMessage('notInitialized', null);
+                this.storage.emit('sendMessage', 'notInitialized');
                 return never;
                 break;
         }
@@ -101,16 +101,11 @@ class Trezor_mgmt {
         return false;
     }
 
-    sendMessage(msgType, msgContent) {
-        console.log('sendMsg', msgType, msgContent);
-        chrome.runtime.sendMessage({type: msgType, content: msgContent});
-    }
-
     checkVersions() {
         if (this.current_ext_version) {
             if (!this.versionCompare(this.current_ext_version, MINIMAL_EXTENSION_VERSION)) {
                 // bad version
-                this.sendMessage('showAlert', 'OLD_VERSION');
+                this.storage.emit('sendMessage', 'showAlert', 'OLD_VERSION');
             }
         }
     }
@@ -123,7 +118,7 @@ class Trezor_mgmt {
     connectTrezor() {
         if (this.storage.phase === 'TREZOR' && this.trezorDevice != null) {
             try {
-                this.sendMessage('trezorConnected');
+                this.storage.emit('sendMessage', 'trezorConnected');
                 this.trezorDevice.on('pin', (type, callback) => this.pinCallback(type, callback));
                 this.trezorDevice.on('passphrase', (callback) => this.passphraseCallback(callback));
                 this.trezorDevice.on('button', (type, callback) => this.buttonCallback(type, callback));
@@ -141,7 +136,7 @@ class Trezor_mgmt {
 
     pinCallback(type, callback) {
         this.trezorDevice.pinCallback = callback;
-        this.sendMessage('showPinDialog');
+        this.storage.emit('sendMessage', 'showPinDialog');
     }
 
     pinEnter(pin) {
@@ -153,7 +148,7 @@ class Trezor_mgmt {
     }
 
     buttonCallback(type, callback) {
-        this.sendMessage('showButtonDialog');
+        this.storage.emit('sendMessage', 'showButtonDialog');
         this.trezorDevice.buttonCallback = callback;
     }
 
