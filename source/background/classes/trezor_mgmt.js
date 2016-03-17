@@ -17,19 +17,15 @@ const HD_HARDENED = 0x80000000,
     CIPHER_CANCEL = 'CipherKeyValue cancelled',
     WRONG_PIN = 'Invalid PIN';
 
-var crypto = require('crypto'),
-    deviceList = '',
-    trezorDevice = null,
-    masterKey = '',
-    encryptionKey = '',
-    trezorConnected = false,
-    current_ext_version = '';
+var crypto = require('crypto');
 
 class Trezor_mgmt {
 
-    constructor(list, phase, userLoggedOut) {
-        this.PHASE = phase;
-        this.logOutCallback = userLoggedOut;
+    constructor(storage, list) {
+        this.storage = storage;
+        this.trezorDevice = null;
+        this.trezorConnected = false;
+        this.current_ext_version = '';
         list.on('transport', (transport) => this.checkTransport(transport));
         list.on('connect', (device) => this.connectedNewTrezor(device));
         list.on('error', (error) => {
@@ -72,7 +68,7 @@ class Trezor_mgmt {
 
             case WRONG_PIN:
                 this.sendMessage('wrongPin', null);
-                trezorDevice.waitForSessionAndRun((session) => this.getEncryptionKey(session));
+                this.trezorDevice.waitForSessionAndRun((session) => this.getEncryptionKey(session));
                 break;
 
 
@@ -87,7 +83,7 @@ class Trezor_mgmt {
 
 
     checkTransport(transport) {
-        current_ext_version = transport.version;
+        this.current_ext_version = transport.version;
         this.checkVersions();
     }
 
@@ -111,8 +107,8 @@ class Trezor_mgmt {
     }
 
     checkVersions() {
-        if (current_ext_version) {
-            if (!this.versionCompare(current_ext_version, MINIMAL_EXTENSION_VERSION)) {
+        if (this.current_ext_version) {
+            if (!this.versionCompare(this.current_ext_version, MINIMAL_EXTENSION_VERSION)) {
                 // bad version
                 this.sendMessage('showAlert', 'OLD_VERSION');
             }
@@ -120,22 +116,22 @@ class Trezor_mgmt {
     }
 
     connectedNewTrezor(device) {
-        trezorDevice = device;
+        this.trezorDevice = device;
         this.connectTrezor();
     }
 
     connectTrezor() {
-        if (this.PHASE === 'TREZOR' && trezorDevice != null) {
+        if (this.storage.phase === 'TREZOR' && this.trezorDevice != null) {
             try {
                 this.sendMessage('trezorConnected');
-                trezorDevice.on('pin', (type, callback) => this.pinCallback(type, callback));
-                trezorDevice.on('passphrase', (callback) => this.passphraseCallback(callback));
-                trezorDevice.on('button', (type, callback) => this.buttonCallback(type, callback));
-                trezorDevice.on('disconnect', () => this.disconnectCallback());
-                if (trezorDevice.isBootloader()) {
+                this.trezorDevice.on('pin', (type, callback) => this.pinCallback(type, callback));
+                this.trezorDevice.on('passphrase', (callback) => this.passphraseCallback(callback));
+                this.trezorDevice.on('button', (type, callback) => this.buttonCallback(type, callback));
+                this.trezorDevice.on('disconnect', () => this.disconnectCallback());
+                if (this.trezorDevice.isBootloader()) {
                     throw new Error('Device is in bootloader mode, re-connected it');
                 }
-                trezorDevice.waitForSessionAndRun((session) => this.getEncryptionKey(session));
+                this.trezorDevice.waitForSessionAndRun((session) => this.getEncryptionKey(session));
 
             } catch (error) {
                 console.error('Device error:', error);
@@ -144,12 +140,12 @@ class Trezor_mgmt {
     }
 
     pinCallback(type, callback) {
-        trezorDevice.pinCallback = callback;
+        this.trezorDevice.pinCallback = callback;
         this.sendMessage('showPinDialog');
     }
 
     pinEnter(pin) {
-        trezorDevice.pinCallback(null, pin);
+        this.trezorDevice.pinCallback(null, pin);
     }
 
     passphraseCallback(callback) {
@@ -158,17 +154,18 @@ class Trezor_mgmt {
 
     buttonCallback(type, callback) {
         this.sendMessage('showButtonDialog');
-        trezorDevice.buttonCallback = callback;
+        this.trezorDevice.buttonCallback = callback;
     }
 
     buttonEnter(code) {
-        trezorDevice.buttonCallback(null, code);
+        this.trezorDevice.buttonCallback(null, code);
     }
 
     disconnectCallback() {
-        this.logOutCallback();
-        masterKey = '';
-        encryptionKey = '';
+        // this.logOutCallback(); FIx by internatl messaging!
+        this.storage.masterKey = '';
+        this.storage.encryptionKey = '';
+        this.storage.emit('disconnectedTrezor');
 
     }
 
@@ -229,7 +226,7 @@ class Trezor_mgmt {
         crypto.randomBytes(32, (ex, buf) => {
             let key = this.displayPhrase(data.title, data.username),
                 nonce = buf.toString('hex');
-            trezorDevice.waitForSessionAndRun((session) => {
+            this.trezorDevice.waitForSessionAndRun((session) => {
                 return session.cipherKeyValue(PATH, key, nonce, true, false, true).then((result) => {
                     let enckey = new Buffer(nonce, 'hex');
                     this.encrypt(data.password, enckey).then((password)=> {
@@ -257,7 +254,7 @@ class Trezor_mgmt {
 
     decryptFullEntry(data, responseCallback) {
         let key = this.displayPhrase(data.title, data.username);
-        trezorDevice.waitForSessionAndRun((session) => {
+        this.trezorDevice.waitForSessionAndRun((session) => {
             return session.cipherKeyValue(PATH, key, data.nonce, false, false, true).then((result) => {
                 let enckey = new Buffer(result.message.value, 'hex'),
                     password = new Buffer(data.password),
@@ -277,7 +274,7 @@ class Trezor_mgmt {
 
     decryptPassword(data, responseCallback) {
         let key = this.displayPhrase(data.title, data.username);
-        trezorDevice.waitForSessionAndRun((session) => {
+        this.trezorDevice.waitForSessionAndRun((session) => {
             return session.cipherKeyValue(PATH, key, data.nonce, false, false, true).then((result) => {
                 let enckey = new Buffer(result.message.value, 'hex'),
                     password = new Buffer(data.password);
@@ -294,14 +291,11 @@ class Trezor_mgmt {
 
     getEncryptionKey(session) {
         return session.cipherKeyValue(PATH, ENC_KEY, ENC_VALUE, true, true, true).then((result) => {
-            masterKey = result.message.value;
-            encryptionKey = new Buffer(masterKey.substring(masterKey.length / 2, masterKey.length), 'hex');
-            this.sendMessage('bg-loadFile');
+            this.storage.masterKey = result.message.value;
+            let temp = this.storage.masterKey;
+            this.storage.encryptionKey = new Buffer(temp.substring(temp.length / 2, temp.length), 'hex');
+            this.storage.emit('loadFile');
         }).catch((error) => this.handleTrezorError(error, this.disconnectCallback));
-    }
-
-    getKeys() {
-        return [masterKey, encryptionKey];
     }
 
     decomposeUrl(url) {
@@ -340,10 +334,6 @@ class Trezor_mgmt {
 
     isUrl(url) {
         return url.match(/[a-z]+\.[a-z][a-z]+(\/.*)?$/i) != null
-    }
-
-    changePhase(phase) {
-        this.PHASE = phase
     }
 }
 module.exports = Trezor_mgmt;

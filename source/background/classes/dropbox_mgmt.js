@@ -5,24 +5,24 @@ const FILENAME_MESS = '5f91add3fa1c3c76e90c90a3bd0999e2bd7833d06a483fe884ee60397
     APIKEY = 's340kh3l0vla1nv';
 
 var crypto = require('crypto'),
-    client = new Dropbox.Client({key: APIKEY}),
-    username = '',
-    filname = false,
-    loadedData = '';
+    client = new Dropbox.Client({key: APIKEY});
 
 class Dropbox_mgmt {
 
-    constructor(phase) {
-        this.PHASE = phase;
+    constructor(storage) {
+        this.storage = storage;
         this.polling = false;
         this.cursor = null;
+        this.filename = false;
+        this.username = false;
+        this.loadedData = '';
     }
 
     disconnected() {
         this.polling = false;
         this.cursor = null;
-        filname = false;
-        loadedData = '';
+        this.filename = false;
+        this.loadedData = '';
     }
 
     sendMessage(msgType, msgContent) {
@@ -31,10 +31,6 @@ class Dropbox_mgmt {
 
     isAuth() {
         return client.isAuthenticated();
-    }
-
-    getName() {
-        return username;
     }
 
     toBuffer(ab) {
@@ -55,7 +51,7 @@ class Dropbox_mgmt {
 
             case Dropbox.ApiError.NOT_FOUND:
                 console.warn('File or dir not found ', error.status);
-                this.sendMessage('bg-noStorage');
+                this.storage.emit('initStorageFile');
                 break;
 
             case Dropbox.ApiError.OVER_QUOTA:
@@ -120,7 +116,7 @@ class Dropbox_mgmt {
                 this.handleDropboxError(error);
                 this.connectToDropbox();
             } else {
-                username = accountInfo.name;
+                this.username = accountInfo.name;
                 this.sendMessage('setDropboxUsername', accountInfo.name);
             }
         });
@@ -132,10 +128,10 @@ class Dropbox_mgmt {
                 this.handleDropboxError(error);
             }
             this.sendMessage('dropboxDisconnected');
-            username = '';
-            filname = false;
-            loadedData = '';
-            this.sendMessage('bg-changePhase', 'DROPBOX');
+            this.username = false;
+            this.filename = false;
+            this.loadedData = '';
+            this.storage.phase = 'DROPBOX';
         });
     }
 
@@ -213,7 +209,7 @@ class Dropbox_mgmt {
         if (change.path.substr(0, 1) === "/") {
             change.path = change.path.substr(1);
         }
-        if (change.path === filname) {
+        if (change.path === this.filename) {
             this.loadFile();
         }
     }
@@ -221,15 +217,15 @@ class Dropbox_mgmt {
 
     loadFile(masterKey) {
         try {
-            if (!filname) {
+            if (!this.filename) {
                 try {
                     let fileKey = masterKey.substring(0, masterKey.length / 2);
-                    filname = crypto.createHmac('sha256', fileKey).update(FILENAME_MESS).digest('hex') + '.pswd';
+                    this.filename = crypto.createHmac('sha256', fileKey).update(FILENAME_MESS).digest('hex') + '.pswd';
                 } catch (ex) {
                     console.log('Crypto failed: ', ex);
                 }
             }
-            client.readFile(filname, {arrayBuffer: true}, (error, data) => {
+            client.readFile(this.filename, {arrayBuffer: true}, (error, data) => {
                 if (error) {
                     return this.handleDropboxError(error);
                 } else {
@@ -246,7 +242,7 @@ class Dropbox_mgmt {
 
     saveFile(data) {
         try {
-            client.writeFile(filname, data, (error, stat) => {
+            client.writeFile(this.filename, data, (error, stat) => {
                 if (error) {
                     console.error('Dropbox problem: ', error);
                     return this.handleDropboxError(error);
@@ -260,16 +256,8 @@ class Dropbox_mgmt {
     }
 
     saveLoadedData(data) {
-        loadedData = data;
-        this.sendMessage('bg-decryptContent');
-    }
-
-    getLoadedData() {
-        return loadedData;
-    }
-
-    changePhase(phase) {
-        this.PHASE = phase
+        this.loadedData = data;
+        this.storage.emit('decryptContent');
     }
 }
 
