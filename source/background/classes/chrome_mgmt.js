@@ -5,6 +5,7 @@ class Chrome_mgmt {
 
     constructor(storage) {
         this.storage = storage;
+        this.storage.on('decryptedPassword', (data) => this.fillLoginForm(data));
         this.activeHost = '';
         this.hasCredentials = false;
         chrome.tabs.onUpdated.addListener(() => this.detectActiveUrl());
@@ -78,8 +79,7 @@ class Chrome_mgmt {
                 if (this.isUrl(tabs[0].url)) {
                     if (this.decomposeUrl(tabs[0].url).host === this.activeHost) {
                         this.injectContentScript(tabs[0].id, 'showTrezorMsg', null);
-                        //FIXME!
-                        //trezorManager.decryptPassword(entry, this.fillLoginForm);
+                        this.storage.emit('decryptPassword', entry);
                     }
                 }
             }
@@ -181,6 +181,7 @@ class Chrome_mgmt {
     }
 
     fillLoginForm(data) {
+        console.log('FILL LOGIN FORM! ', data);
         chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
             if (typeof tabs[0] !== 'undefined') {
                 if (this.isUrl(tabs[0].url)) {

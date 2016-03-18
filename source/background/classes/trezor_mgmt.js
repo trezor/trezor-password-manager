@@ -157,11 +157,9 @@ class Trezor_mgmt {
     }
 
     disconnectCallback() {
-        // this.logOutCallback(); FIx by internatl messaging!
         this.storage.masterKey = '';
         this.storage.encryptionKey = '';
         this.storage.emit('disconnectedTrezor');
-
     }
 
     randomInputVector() {

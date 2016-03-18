@@ -33,7 +33,7 @@ var StorageMgmt = require('./classes/storage_mgmt'),
                     storage.phase = 'DROPBOX';
                     init();
                 } else {
-                    storage.phase ='LOADED';
+                    storage.phase = 'LOADED';
                 }
                 break;
         }
@@ -76,6 +76,10 @@ var StorageMgmt = require('./classes/storage_mgmt'),
         chromeManager.sendMessage('decryptedContent', tempDecryptedData);
         storage.decryptedContent = typeof tempDecryptedData === 'object' ? tempDecryptedData : JSON.parse(tempDecryptedData);
         storage.phase = 'LOADED';
+    },
+
+    decrypteAndInject = (entry) => {
+        trezorManager.decryptPassword(entry, (data) => chromeManager.fillLoginForm(data));
     },
 
     chromeMessaging = (request, sender, sendResponse) => {
@@ -137,6 +141,7 @@ chromeManager.exists().then(() => {
     storage.on('initStorageFile', initNewFile);
     storage.on('loadFile', loadFile);
     storage.on('disconnectedTrezor', userLoggedOut);
+    storage.on('decryptPassword', (entry) => decrypteAndInject(entry));
     storage.on('sendMessage', (type, content) => chromeManager.sendMessage(type, content));
 });
 
