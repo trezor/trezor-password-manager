@@ -9,7 +9,6 @@ class Storage_mgmt extends EventEmitter {
         this.phase = 'DROPBOX';
         this.decryptedContent = false;
         this.masterKey = '';
-        this.masterKey = '';
         this.encryptionKey = '';
         this.decryptedContent = false;
     }
