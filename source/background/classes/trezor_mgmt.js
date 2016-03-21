@@ -31,6 +31,9 @@ class Trezor_mgmt {
         list.on('connect', (device) => this.connectedNewTrezor(device));
         list.on('error', (error) => {
             console.error('List error:', error);
+            if(this.storage.phase === 'LOADED') {
+                this.disconnectCallback();
+            }
         });
     }
 
