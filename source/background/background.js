@@ -58,10 +58,6 @@ var StorageMgmt = require('./classes/storage_mgmt'),
         });
     },
 
-    loadFile = () => {
-        dropboxManager.loadFile();
-    },
-
     userLoggedOut = () => {
         storage.decryptedContent = false;
         chromeManager.updateBadgeStatus('OFF');
@@ -139,7 +135,7 @@ chromeManager.exists().then(() => {
     dropboxManager = new DropboxMgmt(storage);
     storage.on('decryptContent', contentDecrypted);
     storage.on('initStorageFile', initNewFile);
-    storage.on('loadFile', loadFile);
+    storage.on('loadFile', () => dropboxManager.loadFile());
     storage.on('disconnectedTrezor', userLoggedOut);
     storage.on('decryptPassword', (entry) => decrypteAndInject(entry));
     storage.on('sendMessage', (type, content) => chromeManager.sendMessage(type, content));

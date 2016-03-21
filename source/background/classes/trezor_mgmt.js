@@ -12,6 +12,7 @@ const HD_HARDENED = 0x80000000,
     NO_CONNECTED_DEVICES = 'No connected devices',
     DEVICE_IS_BOOTLOADER = 'Connected device is in bootloader mode',
     DEVICE_IS_EMPTY = 'Connected device is not initialized',
+    NOT_INITIALIZED = 'Device not initialized',
     FIRMWARE_IS_OLD = 'Firmware of connected device is too old',
     INSUFFICIENT_FUNDS = 'Insufficient funds',
     CIPHER_CANCEL = 'CipherKeyValue cancelled',
@@ -66,17 +67,14 @@ class Trezor_mgmt {
                 fallback(null);
                 break;
 
+            case NOT_INITIALIZED:
+                this.storage.emit('sendMessage', 'notInitialized');
+                return never;
+                break;
+
             case WRONG_PIN:
                 this.storage.emit('sendMessage', 'wrongPin');
                 this.trezorDevice.waitForSessionAndRun((session) => this.getEncryptionKey(session));
-                break;
-
-
-        }
-        switch (error.code) {
-            case 'Failure_NotInitialized':
-                this.storage.emit('sendMessage', 'notInitialized');
-                return never;
                 break;
         }
     }
