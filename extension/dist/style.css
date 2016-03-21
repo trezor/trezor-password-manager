@@ -3547,7 +3547,9 @@ button, .button {
   top: 10px;
   left: 15px;
   right: 15px;
-  width: auto; }
+  width: auto;
+  max-height: 70px !important;
+  min-height: 10px !important; }
 
 .footer {
   z-index: 1000;

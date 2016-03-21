@@ -6,7 +6,7 @@ const HD_HARDENED = 0x80000000,
     CIPHER_IVSIZE = 96 / 8,
     AUTH_SIZE = 128 / 8,
     CIPHER_TYPE = 'aes-256-gcm',
-    MINIMAL_EXTENSION_VERSION = '1.0.6',
+    MINIMAL_EXTENSION_VERSION = '1.0.9',
     PATH = [(10016 | HD_HARDENED) >>> 0, 0],
     NO_TRANSPORT = 'No trezor.js transport is available',
     NO_CONNECTED_DEVICES = 'No connected devices',
@@ -102,11 +102,14 @@ class Trezor_mgmt {
     }
 
     checkVersions() {
-        if (this.current_ext_version) {
+        if (this.current_ext_version !== '') {
             if (!this.versionCompare(this.current_ext_version, MINIMAL_EXTENSION_VERSION)) {
                 // bad version
                 this.storage.emit('sendMessage', 'showAlert', 'OLD_VERSION');
             }
+        } else {
+            // no extension
+            this.storage.emit('sendMessage', 'showAlert', 'NO_TRANSPORT');
         }
     }
 

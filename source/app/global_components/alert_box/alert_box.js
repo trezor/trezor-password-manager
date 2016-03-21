@@ -17,19 +17,18 @@ var React = require('react'),
             chrome.runtime.onMessage.addListener(this.chromeMsgHandler);
         },
 
+        restartBackground() {
+            chrome.runtime.reload();
+        },
+
         chromeMsgHandler(request, sender, sendResponse) {
             if (request.type === 'showAlert') {
-                switch (request.content) {
-                    case 'OLD_VERSION':
-                        this.setState({
-                            alertVisible: true,
-                            alertTitle: 'Update TREZOR EXTENSION!',
-                            alertText: 'You are using unsupported TREZOR Extension. Please, update your TREZOR EXTENSION to version 1.0.7 or higher.'
-                        });
-                        break;
-                }
-            }
+                this.setState({
+                    alertType: request.content,
+                    alertVisible: true
 
+                });
+            }
         },
 
         handleAlertDismiss() {
@@ -40,9 +39,22 @@ var React = require('react'),
             if (this.state.alertVisible) {
                 return (
                     <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}>
-                        <h4>{this.state.alertTitle}</h4>
+                        {this.state.alertType === 'OLD_VERSION' &&
+                        <span>
+                            <h4>Update TREZOR Chrome Extension</h4>
+                            <p>You are using unsupported TREZOR Extension. Please, update your TREZOR EXTENSION to
+                                version 1.0.10 or higher and <a href="#" onClick={this.restartBackground}>restart Password Manager</a>.</p>
+                            </span>
+                        }
 
-                        <p>{this.state.alertText}</p>
+                        {this.state.alertType === 'NO_TRANSPORT' &&
+                        <span>
+                            <h4>Missing TREZOR Chrome Extension!</h4>
+                            <p>You are missing importatnt dependency TREZOR Chrome Extension, go to Chrome web store,
+                                install it and <a href="#" onClick={this.restartBackground}>restart Password Manager</a>.</p>
+                            </span>
+                        }
+
                     </Alert>
                 );
             } else {
