@@ -185,6 +185,10 @@ var React = require('react'),
             });
         },
 
+        restartBackground() {
+            chrome.runtime.reload();
+        },
+
         render() {
             if (this.state.dialog === 'pin_dialog') {
                 window.addEventListener('keydown', this.pinKeydownHandler);
@@ -201,8 +205,9 @@ var React = require('react'),
 
                             <h1>Murphy's law: <br/> Something just go wrong.</h1>
                             <br />
-                            <button className='no-style'><a href='https://www.buytrezor.com' target='_blank'>I don't
-                                have a TREZOR device</a></button>
+                            {this.state.errorMsg}
+                            <br />
+                            <button className='accept-btn' onClick={this.restartBackground}>Restart App</button>
                         </div>
 
                         <div className={this.state.dialog === 'not_init' ? 'not_init' : 'hidden_dialog'}>
