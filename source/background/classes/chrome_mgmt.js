@@ -16,7 +16,6 @@ class Chrome_mgmt {
         });
     }
 
-
     exists() {
         if (typeof chrome === 'undefined') {
             return Promise.reject(new Error('Global chrome does not exist; probably not running chrome'));

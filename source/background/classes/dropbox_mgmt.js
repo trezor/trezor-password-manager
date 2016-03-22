@@ -172,7 +172,6 @@ class Dropbox_mgmt {
         });
     }
 
-
     poll() {
         if (this.polling) {
             return;
@@ -210,7 +209,6 @@ class Dropbox_mgmt {
             this.loadFile();
         }
     }
-
 
     loadFile() {
         try {

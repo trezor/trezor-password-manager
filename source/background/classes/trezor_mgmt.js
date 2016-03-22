@@ -82,7 +82,6 @@ class Trezor_mgmt {
         }
     }
 
-
     checkTransport(transport) {
         this.current_ext_version = transport.version;
         this.checkVersions();
@@ -182,15 +181,6 @@ class Trezor_mgmt {
         });
     }
 
-    toBuffer(ab) {
-        let buffer = new Buffer(ab.byteLength),
-            view = new Uint8Array(ab);
-        for (var i = 0; i < buffer.length; ++i) {
-            buffer[i] = view[i];
-        }
-        return buffer;
-    }
-
     encrypt(data, key) {
         return this.randomInputVector().then((iv) => {
             let stringified = JSON.stringify(data),
@@ -202,7 +192,6 @@ class Trezor_mgmt {
             return Buffer.concat([iv, auth_tag, startCText, endCText]);
         });
     }
-
 
     decrypt(data, key) {
         try {
@@ -323,9 +312,7 @@ class Trezor_mgmt {
                 parsed_url.tld = domain_parts[2] + '.' + domain_parts[3];
                 break;
         }
-
         parsed_url.parent_domain = parsed_url.host + '.' + parsed_url.tld;
-
         return parsed_url;
     }
 
