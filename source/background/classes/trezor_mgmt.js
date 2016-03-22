@@ -133,6 +133,7 @@ class Trezor_mgmt {
 
             } catch (error) {
                 console.error('Device error:', error);
+                //FIXME soon please
             }
         }
     }
@@ -177,6 +178,7 @@ class Trezor_mgmt {
                 })
             } catch (err) {
                 reject(err);
+                //FIXME soon please
             }
         });
     }
@@ -205,6 +207,7 @@ class Trezor_mgmt {
             return Buffer.concat([start, end]).toString('utf8');
         } catch (error) {
             console.error('error ', error);
+            //FIXME soon please
         }
     }
 

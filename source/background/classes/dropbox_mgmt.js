@@ -198,6 +198,7 @@ class Dropbox_mgmt {
             throw e;
         }).catch((e) => {
             console.error(e);
+            //FIXME soon please
         });
     }
 
@@ -218,6 +219,7 @@ class Dropbox_mgmt {
                     this.filename = crypto.createHmac('sha256', fileKey).update(FILENAME_MESS).digest('hex') + '.pswd';
                 } catch (ex) {
                     console.log('Crypto failed: ', ex);
+                    //FIXME soon please
                 }
             }
             this.client.readFile(this.filename, {arrayBuffer: true}, (error, data) => {

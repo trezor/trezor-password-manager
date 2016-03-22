@@ -156,7 +156,7 @@ class Chrome_mgmt {
         var tabId = id;
         chrome.tabs.sendMessage(tabId, {type: 'isScriptExecuted'}, (response) => {
             if (chrome.runtime.lastError) {
-                chrome.tabs.executeScript(tabId, {file: 'js/content_script.js', runAt: "document_start"}, () => {
+                chrome.tabs.executeScript(tabId, {file: 'js/content_script.js', runAt: 'document_start'}, () => {
                     chrome.tabs.sendMessage(tabId, {type: 'isScriptExecuted'}, (response) => {
                         if (response.type === 'scriptReady') {
                             this.sendTabMessage(tabId, type, data);
@@ -164,7 +164,7 @@ class Chrome_mgmt {
                             chrome.tabs.executeScript(tabId, {file: 'js/content_script.js'}, () => {
                                 if (chrome.runtime.lastError) {
                                     console.error(chrome.runtime.lastError);
-                                    throw Error("Unable to inject script into tab " + tabId);
+                                    throw Error('Unable to inject script into tab ' + tabId);
                                 }
                                 this.sendTabMessage(tabId, type, data);
                             });
