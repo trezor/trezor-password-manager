@@ -164,6 +164,7 @@ class Trezor_mgmt {
         this.storage.masterKey = '';
         this.storage.encryptionKey = '';
         this.storage.emit('disconnectedTrezor');
+        this.trezorDevice = null;
     }
 
     randomInputVector() {
