@@ -1,6 +1,6 @@
 'use strict';
 
-var Password_mgmt = {
+var PasswordMgmt = {
 
     letters: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
     numbers: '0123456789',
@@ -23,4 +23,4 @@ var Password_mgmt = {
     }
 };
 
-module.exports = Password_mgmt;
+module.exports = PasswordMgmt;

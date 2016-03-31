@@ -20,7 +20,7 @@ const HD_HARDENED = 0x80000000,
 
 var crypto = require('crypto');
 
-class Trezor_mgmt {
+class TrezorMgmt {
 
     constructor(storage, list) {
         this.storage = storage;
@@ -136,6 +136,10 @@ class Trezor_mgmt {
                 //FIXME soon please
             }
         }
+    }
+
+    clearSession() {
+        this.trezorDevice.waitForSessionAndRun((session) => {return session.clearSession()});
     }
 
     pinCallback(type, callback) {
@@ -281,6 +285,7 @@ class Trezor_mgmt {
 
     getEncryptionKey(session) {
         return session.cipherKeyValue(PATH, ENC_KEY, ENC_VALUE, true, true, true).then((result) => {
+            this.storage.emit('sendMessage', 'loading', 'We are getting there');
             this.storage.masterKey = result.message.value;
             let temp = this.storage.masterKey;
             this.storage.encryptionKey = new Buffer(temp.substring(temp.length / 2, temp.length), 'hex');
@@ -324,4 +329,4 @@ class Trezor_mgmt {
         return url.match(/[a-z]+\.[a-z][a-z]+(\/.*)?$/i) != null
     }
 }
-module.exports = Trezor_mgmt;
+module.exports = TrezorMgmt;

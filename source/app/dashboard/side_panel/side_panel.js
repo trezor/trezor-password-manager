@@ -1,7 +1,6 @@
 "use strict";
 
 var React = require('react'),
-    Router = require('react-router'),
     DataService = require('../../global_components/data_service'),
     SidePanel = React.createClass({
 
@@ -61,6 +60,7 @@ var React = require('react'),
         },
 
         addTag() {
+            //chrome.runtime.sendMessage({type: 'clearSession', content: ''});
             window.myStore.emit('openAddTag');
         },
 

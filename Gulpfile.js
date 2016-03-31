@@ -6,8 +6,7 @@ var gulp = require('gulp'),
     babelify = require('babelify'),
     source = require('vinyl-source-stream'),
     buffer = require('vinyl-buffer'),
-    browserify = require('browserify'),
-    envify = require('envify/custom');
+    browserify = require('browserify');
 
 gulp.task('sass', function () {
     gulp.src('./source/app/*.scss')
@@ -36,8 +35,7 @@ gulp.task('production-bg', () => {
     var bundler = browserify({
         entries: ['./source/background/background.js'],
         debug: false
-    }).transform(babelify, {presets: ["es2015"]})
-        .transform(envify({NODE_ENV: 'production'}));
+    }).transform(babelify, {presets: ["es2015"]});
     return bundler
         .bundle()
         .pipe(source('background.js'))
@@ -57,7 +55,6 @@ gulp.task('dev-app', () => {
         .bundle()
         .on('error', (err) => {
             console.log(err.message);
-            this.emit('end');
         })
         .pipe(source('app.js'))
         .pipe(gulp.dest('./extension/dist/'))
@@ -73,13 +70,12 @@ gulp.task('dev-bg', () => {
         .bundle()
         .on('error', (err) => {
             console.log(err.message);
-            this.emit('end');
         })
         .pipe(source('background.js'))
         .pipe(gulp.dest('./extension/js'))
         .pipe(connect.reload())
 });
-// if dev build is falling on this task, just try to change port number - its reported bug of gulp livereload
+// if dev build is falling on this task, just try to change port number - its reported bug of gulp-connect
 gulp.task('connect', () => {
     connect.server({
         root: 'app',

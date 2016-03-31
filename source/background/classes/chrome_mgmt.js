@@ -1,7 +1,7 @@
 'use strict';
 
 var Promise = require('es6-promise').Promise
-class Chrome_mgmt {
+class ChromeMgmt {
 
     constructor(storage) {
         this.storage = storage;
@@ -180,7 +180,6 @@ class Chrome_mgmt {
     }
 
     fillLoginForm(data) {
-        console.log('FILL LOGIN FORM! ', data);
         chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
             if (typeof tabs[0] !== 'undefined') {
                 if (this.isUrl(tabs[0].url)) {
@@ -212,4 +211,4 @@ class Chrome_mgmt {
     }
 }
 
-module.exports = Chrome_mgmt;
+module.exports = ChromeMgmt;

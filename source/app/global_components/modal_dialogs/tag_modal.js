@@ -1,7 +1,6 @@
 'use strict';
 
 var React = require('react'),
-    Router = require('react-router'),
     Modal = require('react-bootstrap').Modal,
     icons = [
         'person',
@@ -20,7 +19,7 @@ var React = require('react'),
         'earth',
         'wifi'
     ],
-    Tag_Modal = React.createClass({
+    TagModal = React.createClass({
 
         getInitialState() {
             return {
@@ -232,4 +231,4 @@ var React = require('react'),
         }
     });
 
-module.exports = Tag_Modal;
+module.exports = TagModal;

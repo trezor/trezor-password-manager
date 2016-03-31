@@ -1,0 +1,88 @@
+.pin_dialog, .wrong_pin {
+  margin-top: -30px;
+
+  .pin_table_header {
+    font-size: 2em;
+    color: $c_white;
+  }
+
+  .pin_table_subheader {
+    margin-top: 10px;
+    font-size: 1.09em;
+  }
+
+  .pin_password {
+    padding: 30px;
+
+    .password_text {
+      font-size: 4em;
+      line-height: 0;
+      vertical-align: middle;
+    }
+
+    .blinking_cursor {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 36px;
+      background-color: $c_white;
+      @include animation(1s blink step-end infinite);
+    }
+  }
+
+  .pin_table {
+
+    button {
+      background-color: transparent;
+      border: 2px solid $c_white;
+      width: 70px;
+      height: 70px;
+      display: inline-block;
+      font-size: 1.7em;
+      margin: 5px;
+      opacity: .6;
+      @include border-radius(7px);
+
+      &:hover {
+        @include box-shadow(0px 0px 8px -1px rgba(0, 0, 0, 0.35));
+        opacity: 1;
+      }
+
+      &.active {
+        background-color: $c_white;
+        opacity: 1;
+      }
+    }
+  }
+
+  .pin_footer {
+
+    #enter {
+      background-color: $c_white;
+      border: 2px solid $c_white;
+      color: $c_blue;
+      font-weight: bold;
+      opacity: .9;
+      margin-right: 5px;
+      width: 152px;
+      height: 70px;
+      @include border-radius(7px);
+    }
+
+    #backspace {
+      background-color: transparent;
+      border: 2px solid $c_white;
+      width: 70px;
+      height: 70px;
+      font-size: 1.5em;
+      opacity: .6;
+      margin: 5px;
+      @include border-radius(7px);
+
+      &.active {
+        background-color: $c_white;
+        opacity: 1;
+      }
+    }
+  }
+}

@@ -6,7 +6,7 @@ const FILENAME_MESS = '5f91add3fa1c3c76e90c90a3bd0999e2bd7833d06a483fe884ee60397
 
 var crypto = require('crypto');
 
-class Dropbox_mgmt {
+class DropboxMgmt {
 
     constructor(storage) {
         this.storage = storage;
@@ -258,4 +258,4 @@ class Dropbox_mgmt {
     }
 }
 
-module.exports = Dropbox_mgmt;
+module.exports = DropboxMgmt;

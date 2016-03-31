@@ -3,8 +3,8 @@
 var React = require('react'),
     Router = require('react-router'),
     DataService = require('../../global_components/data_service'),
-    Table_Entry = require('./table_entry/table_entry'),
-    Filter_Input = require('./filter_input/filter_input'),
+    TableEntry = require('./table_entry/table_entry'),
+    FilterInput = require('./filter_input/filter_input'),
     DropdownButton = require('react-bootstrap').DropdownButton,
     MenuItem = require('react-bootstrap').MenuItem,
     {Link} = Router,
@@ -134,7 +134,7 @@ var React = require('react'),
                         if (this.filterIsSet()) {
                             if (this.checkFilterMatching(obj)) {
                                 return (
-                                    <Table_Entry key={key}
+                                    <TableEntry key={key}
                                                  key_value={key}
                                                  title={obj.title}
                                                  username={obj.username}
@@ -148,7 +148,7 @@ var React = require('react'),
                             }
                         } else {
                             return (
-                                <Table_Entry key={key}
+                                <TableEntry key={key}
                                              key_value={key}
                                              title={obj.title}
                                              username={obj.username}
@@ -181,7 +181,7 @@ var React = require('react'),
                             </button>
                         </div>
                         <div className='col-md-6 col-sm-8 col-xs-6'>
-                            <Filter_Input eventEmitter={this.props.eventEmitter}/>
+                            <FilterInput eventEmitter={this.props.eventEmitter}/>
                         </div>
                         <div className='col-md-3 col-sm-1 col-xs-2 text-right'>
                             {this.state.active_id != 0 ? dropdown : null}
@@ -198,7 +198,7 @@ var React = require('react'),
                     </div>
                     <div className='row dashboard'>
                         {this.state.newEntry ?
-                            <Table_Entry key={undefined}
+                            <TableEntry key={undefined}
                                          key_value={undefined}
                                          title=''
                                          username=''

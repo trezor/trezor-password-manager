@@ -1,7 +1,7 @@
 'use strict';
 var EventEmitter = require('events');
 
-class Storage_mgmt extends EventEmitter {
+class StorageMgmt extends EventEmitter {
 
     constructor() {
         super();
@@ -14,4 +14,4 @@ class Storage_mgmt extends EventEmitter {
     }
 }
 
-module.exports = Storage_mgmt;
+module.exports = StorageMgmt;

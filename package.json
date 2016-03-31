@@ -15,7 +15,6 @@
     "buffer": "^3.5.3",
     "clipboard-js": "^0.2.0",
     "crypto": "0.0.3",
-    "envify": "3.3.0",
     "es6-promise": "^3.0.2",
     "events": "^1.1.0",
     "fbjs": "^0.2.1",

@@ -6,7 +6,8 @@ var React = require('react'),
     SidePanel = require('./side_panel/side_panel'),
     Service = require('../global_components/data_service'),
     Footer = require('../global_components/footer/footer'),
-    Tag_Modal = require('../global_components/modal_dialogs/tag_modal'),
+    TagModal = require('../global_components/modal_dialogs/tag_modal'),
+    PinModal = require('../global_components/modal_dialogs/pin_modal'),
     {Link} = Router,
 
     DashboardLayout = React.createClass({
@@ -28,7 +29,7 @@ var React = require('react'),
         },
 
         componentWillUnmount() {
-            chrome.runtime.onMessage.removeListener(this.chromeMsgHandler);
+            chrome.runtime.onMessage.removeListener(this.chromeDashboardMsgHandler);
         },
 
         chromeMsgHandler(request, sender, sendResponse) {
@@ -54,14 +55,13 @@ var React = require('react'),
         },
 
         render(){
-
             return (
                 <div className='dashboard-layout'>
                     {this.state.ready ?
                         <div>
-                            <Tag_Modal />
+                            <TagModal />
+                            <PinModal />
                             <SidePanel />
-
                             <section className='content'>
                                 <PasswordTable />
                             </section>

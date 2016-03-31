@@ -3,7 +3,7 @@
 var React = require('react'),
     Alert = require('react-bootstrap').Alert,
 
-    Alert_Box = React.createClass({
+    AlertBox = React.createClass({
 
         getInitialState() {
             return {
@@ -63,4 +63,4 @@ var React = require('react'),
         }
     });
 
-module.exports = Alert_Box;
+module.exports = AlertBox;

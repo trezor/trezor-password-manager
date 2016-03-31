@@ -4,6 +4,7 @@ var React = require('react'),
     Router = require('react-router'),
     Store = require('../global_components/data_store'),
     Footer = require('../global_components/footer/footer'),
+    PinDialog = require('../global_components/pin_dialog/pin_dialog'),
     {Link} = Router,
     Home = React.createClass({
         mixins: [Router.Navigation],
@@ -15,8 +16,7 @@ var React = require('react'),
                 dropboxUsername: '',
                 deviceStatus: 'disconnected',
                 dialog: 'preloading',
-                pinDialogText: 'Please enter your PIN.',
-                pin: ''
+                loadingText: 'Doing math ...'
             }
         },
 
@@ -28,11 +28,9 @@ var React = require('react'),
 
         componentWillUnmount() {
             chrome.runtime.onMessage.removeListener(this.chromeMsgHandler);
-            window.removeEventListener('keydown', this.pinKeydownHandler);
         },
 
         chromeMsgHandler(request, sender, sendResponse) {
-
             switch (request.type) {
                 case 'errorMsg':
                     this.setState({
@@ -71,10 +69,16 @@ var React = require('react'),
                     });
                     break;
 
-                case 'wrongPin':
+                case 'trezorPin':
                     this.setState({
-                        pinDialogText: 'Wrong PIN!',
-                        pin: ''
+                        dialog: 'loading_dialog'
+                    });
+                    break;
+
+                case 'loading':
+                    this.setState({
+                        dialog: 'loading_dialog',
+                        loadingText: request.content
                     });
                     break;
 
@@ -129,71 +133,11 @@ var React = require('react'),
             }
         },
 
-        pinKeydownHandler(ev) {
-            var keyCode = ev.keyCode;
-            if (keyCode > 96 && keyCode < 106) {
-                keyCode = keyCode - 48;
-            }
-            if (keyCode > 48 && keyCode < 58) {
-                this.pinAdd(String.fromCharCode(keyCode));
-            }
-            if (keyCode == 8) {
-                this.pinBackspace();
-            }
-            if (keyCode == 13) {
-                this.submitPin();
-            }
-        },
-
-        pinAdd(val) {
-            if (this.state.pin.length < 9) {
-                this.setState({
-                    pin: this.state.pin + val.toString()
-                });
-            }
-            this.highlightKeyPress(val);
-        },
-
-        hideText(text) {
-            var stars = '';
-            for (var i = 0; i < text.length; i++) {
-                stars = stars + '*';
-            }
-            return stars;
-        },
-
-        highlightKeyPress(val) {
-            var el = document.getElementById(val.toString());
-            el.classList.add('active');
-            setTimeout(() => {
-                el.classList.remove('active');
-            }, 140);
-        },
-
-        pinBackspace() {
-            this.setState({
-                pin: this.state.pin.slice(0, -1)
-            });
-            this.highlightKeyPress('backspace');
-        },
-
-        submitPin() {
-            this.sendMessage('trezorPin', this.state.pin);
-            this.setState({
-                dialog: 'loading_dialog',
-                pin: ''
-            });
-        },
-
         restartBackground() {
             chrome.runtime.reload();
         },
 
         render() {
-            if (this.state.dialog === 'pin_dialog') {
-                window.addEventListener('keydown', this.pinKeydownHandler);
-            }
-
             return (
                 <div>
                     <div className='overlay-hill'></div>
@@ -266,42 +210,13 @@ var React = require('react'),
                         </div>
 
                         <div className={this.state.dialog === 'pin_dialog' ? 'pin_dialog' : 'hidden_dialog'}>
-                            <div className='pin_table_header'>
-                                {this.state.pinDialogText}
-                            </div>
-                            <div className="pin_table_subheader">
-                                Look at the device for number positions.
-                            </div>
-                            <div className='pin_password'>
-                                <span className='password_text'>{this.hideText(this.state.pin)}</span>
-                                <span className='blinking_cursor'></span>
-                            </div>
-                            <div className='pin_table'>
-                                <div>
-                                    <button type='button' id='7' onClick={this.pinAdd.bind(null, 7)}>&#8226;</button>
-                                    <button type='button' id='8' onClick={this.pinAdd.bind(null, 8)}>&#8226;</button>
-                                    <button type='button' id='9' onClick={this.pinAdd.bind(null, 9)}>&#8226;</button>
-                                </div>
-                                <div>
-                                    <button type='button' id='4' onClick={this.pinAdd.bind(null, 4)}>&#8226;</button>
-                                    <button type='button' id='5' onClick={this.pinAdd.bind(null, 5)}>&#8226;</button>
-                                    <button type='button' id='6' onClick={this.pinAdd.bind(null, 6)}>&#8226;</button>
-                                </div>
-                                <div>
-                                    <button type='button' id='1' onClick={this.pinAdd.bind(null, 1)}>&#8226;</button>
-                                    <button type='button' id='2' onClick={this.pinAdd.bind(null, 2)}>&#8226;</button>
-                                    <button type='button' id='3' onClick={this.pinAdd.bind(null, 3)}>&#8226;</button>
-                                </div>
-                            </div>
-                            <div className='pin_footer'>
-                                <button type='button' id='enter' onClick={this.submitPin}>ENTER</button>
-                                <button type='button' id='backspace' onClick={this.pinBackspace}>&#9003;</button>
-                            </div>
+                            <PinDialog />
                         </div>
 
                         <div className={this.state.dialog === 'loading_dialog' ? 'loading_dialog' : 'hidden_dialog'}>
                             <span className='spinner'></span>
-                            <h1>Doing math ...</h1>
+
+                            <h1>{this.state.loadingText}</h1>
                         </div>
 
                         <div className={this.state.dialog === 'button_dialog' ? 'button_dialog' : 'hidden_dialog'}>

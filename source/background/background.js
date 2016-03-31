@@ -79,7 +79,9 @@ var StorageMgmt = require('./classes/storage_mgmt'),
     },
 
     chromeMessaging = (request, sender, sendResponse) => {
+
         switch (request.type) {
+
             case 'initPlease':
                 init();
                 break;
@@ -122,6 +124,10 @@ var StorageMgmt = require('./classes/storage_mgmt'),
 
             case 'openTabAndLogin':
                 chromeManager.openTabAndLogin(request.content);
+                break;
+
+            case 'clearSession':
+                trezorManager.clearSession();
                 break;
         }
         return true;

@@ -3,7 +3,6 @@
 require('whatwg-fetch');
 
 var React = require('react'),
-    Router = require('react-router'),
     DropdownButton = require('react-bootstrap').DropdownButton,
     MenuItem = require('react-bootstrap').MenuItem,
     Tooltip = require('react-bootstrap').Tooltip,

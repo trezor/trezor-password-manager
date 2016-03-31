@@ -1,9 +1,8 @@
 'use strict';
 
 var React = require('react'),
-    Router = require('react-router'),
     NavDropdown = require('react-bootstrap').NavDropdown,
-    Filter_Input = React.createClass({
+    FilterInput = React.createClass({
 
         getInitialState() {
             return {
@@ -36,4 +35,4 @@ var React = require('react'),
         }
     });
 
-module.exports = Filter_Input;
+module.exports = FilterInput;
