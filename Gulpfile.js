@@ -1,11 +1,12 @@
 var gulp = require('gulp'),
     sass = require('gulp-sass'),
     connect = require('gulp-connect'),
+    uglify = require('gulp-uglify'),
     sourcemaps = require('gulp-sourcemaps'),
+    babelify = require('babelify'),
     source = require('vinyl-source-stream'),
     buffer = require('vinyl-buffer'),
     browserify = require('browserify'),
-    uglify = require('uglifyify'),
     envify = require('envify/custom');
 
 gulp.task('sass', function () {
@@ -13,108 +14,91 @@ gulp.task('sass', function () {
         .pipe(sass())
         .pipe(gulp.dest('./extension/dist/'))
         .pipe(connect.reload())
-
 });
 
-gulp.task('productify-app', function () {
-
+gulp.task('production-app', () => {
+    console.log('This process will take a several minutes, feel free to have a coffee.');
     var bundler = browserify({
         entries: ['./source/app/app.js'],
-        debug: true
-    }).transform('reactify', {es6: true})
-        .transform({global: true}, 'uglifyify');
-
+        debug: false
+    }).transform(babelify, {presets: ["es2015", "react"]});
     return bundler
         .bundle()
         .pipe(source('app.js'))
         .pipe(buffer())
         .pipe(sourcemaps.init({loadMaps: true}))
+        .pipe(uglify())
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('./extension/dist/'))
 });
 
-gulp.task('productify-bg', function () {
+gulp.task('production-bg', () => {
     var bundler = browserify({
         entries: ['./source/background/background.js'],
         debug: false
-    }).transform({global: true}, 'uglifyify');
+    }).transform(babelify, {presets: ["es2015"]})
+        .transform(envify({NODE_ENV: 'production'}));
     return bundler
         .bundle()
         .pipe(source('background.js'))
         .pipe(buffer())
         .pipe(sourcemaps.init({loadMaps: true}))
+        .pipe(uglify())
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('./extension/js'))
 });
 
-gulp.task('browserify-app', function () {
-
+gulp.task('dev-app', () => {
     var bundler = browserify({
         entries: ['./source/app/app.js'],
         debug: true
-    }).transform('reactify', {es6: true})
-        .transform(envify({NODE_ENV: 'development'}));
-
+    }).transform(babelify, {presets: ["es2015", "react"]});
     return bundler
         .bundle()
-        .on('error', function (err) {
+        .on('error', (err) => {
             console.log(err.message);
             this.emit('end');
         })
         .pipe(source('app.js'))
-        .pipe(buffer())
-        .pipe(sourcemaps.init({loadMaps: true}))
-        .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('./extension/dist/'))
+        .pipe(connect.reload())
 });
 
-gulp.task('browserify-bg', function () {
+gulp.task('dev-bg', () => {
     var bundler = browserify({
         entries: ['./source/background/background.js'],
         debug: true
-    }).transform('reactify', {es6: true})
-        .transform(envify({NODE_ENV: 'development'}));
-
+    }).transform(babelify, {presets: ["es2015"]});
     return bundler
         .bundle()
-        .on('error', function (err) {
+        .on('error', (err) => {
             console.log(err.message);
             this.emit('end');
         })
         .pipe(source('background.js'))
-        .pipe(buffer())
-        .pipe(sourcemaps.init({loadMaps: true}))
-        .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('./extension/js'))
+        .pipe(connect.reload())
 });
-
-gulp.task('connect', function () {
+// if dev build is falling on this task, just try to change port number - its reported bug of gulp livereload
+gulp.task('connect', () => {
     connect.server({
         root: 'app',
-        port: 3000,
+        port: 3012,
         livereload: true
     })
 });
 
-gulp.task('html', function () {
+gulp.task('html', () => {
     gulp.src('./extension/*.html').pipe(connect.reload())
 });
 
-gulp.task('js', function () {
-    gulp.src('./extension/dist/**/*.js').pipe(connect.reload())
-});
-
-gulp.task('css', function () {
-    gulp.src('./extension/dist/**/*.css').pipe(connect.reload())
-});
-
-gulp.task('watch', function () {
-    gulp.watch('./source/background/**/*.js', ['browserify-bg']);
+gulp.task('watch', () => {
+    gulp.watch('./source/background/**/*.js', ['dev-bg']);
     gulp.watch('./source/app/index.html', ['html']);
     gulp.watch('./source/app/**/*.scss', ['sass']);
-    gulp.watch('./source/app/**/*.js', ['browserify-app'])
+    gulp.watch('./source/app/**/*.js', ['dev-app'])
 });
 
-gulp.task('default', ['browserify-bg', 'browserify-app', 'sass']);
-gulp.task('serve', ['browserify-bg', 'browserify-app', 'sass', 'connect', 'watch']);
-gulp.task('production', ['productify-bg', 'productify-app', 'sass']);
+gulp.task('default', ['production-app', 'production-bg', 'sass']);
+gulp.task('serve', ['dev-bg', 'dev-app', 'sass', 'connect', 'watch']);
+gulp.task('production', ['production-app', 'production-bg', 'sass']);
