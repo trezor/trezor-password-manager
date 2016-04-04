@@ -10,8 +10,6 @@ class DropboxMgmt {
 
     constructor(storage) {
         this.storage = storage;
-        this.polling = false;
-        this.cursor = null;
         this.filename = false;
         this.username = false;
         this.loadedData = '';
@@ -19,8 +17,6 @@ class DropboxMgmt {
     }
 
     disconnected() {
-        this.polling = false;
-        this.cursor = null;
         this.filename = false;
         this.username = false;
         this.loadedData = '';
@@ -40,6 +36,7 @@ class DropboxMgmt {
     }
 
     handleDropboxError(error) {
+        console.warn('Dropbox error:', error);
         switch (error.status) {
             case Dropbox.ApiError.INVALID_TOKEN:
                 console.warn('User token expired ', error.status);
@@ -75,18 +72,6 @@ class DropboxMgmt {
         }
     }
 
-    initCursor() {
-        return new Promise((resolve, reject) => {
-            this.client.pullChanges(this.cursor, (error, cursor) => {
-                if (error) {
-                    reject(error);
-                }
-                this.cursor = cursor;
-                resolve(undefined);
-            });
-        });
-    }
-
     connectToDropbox() {
         this.client.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: receiverRelativePath}));
         this.client.onError.addListener((error) => {
@@ -97,9 +82,6 @@ class DropboxMgmt {
                 return this.handleDropboxError(error);
             } else {
                 if (this.isAuth()) {
-                    if (this.cursor == null) {
-                        this.initCursor().then(() => this.poll()).catch((e) => console.error(e));
-                    }
                     this.setDropboxUsername();
                     this.storage.emit('sendMessage', 'dropboxConnected');
                 }
@@ -130,85 +112,6 @@ class DropboxMgmt {
             this.loadedData = '';
             this.storage.phase = 'DROPBOX';
         });
-    }
-
-    singlePull(pullCursor) {
-        return new Promise((resolve, reject) => {
-            try {
-                this.client.pullChanges(pullCursor, (error, changes) => {
-                    if (error) {
-                        reject(error);
-                        return;
-                    }
-                    this.cursor = changes;
-                    changes.changes.forEach(change => {
-                        this.notifyChange(change);
-                    });
-                    if (changes.shouldPullAgain) {
-                        resolve(this.singlePull(pullCursor));
-                    } else {
-                        resolve(changes.shouldBackOff);
-                    }
-                })
-            } catch (e) {
-                reject(e);
-            }
-        });
-    }
-
-    singlePoll(pullCursor) {
-        return new Promise((resolve, reject) => {
-            try {
-                this.client.pollForChanges(pullCursor, {}, (error, pollResult) => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        resolve(pollResult);
-                    }
-                });
-            } catch (e) {
-                reject(e);
-            }
-        });
-    }
-
-    poll() {
-        if (this.polling) {
-            return;
-        }
-        this.polling = true;
-        const pullCursorNull = this.cursor;
-        if (pullCursorNull == null) {
-            throw new Error("Pull error is null where it shouldn't be");
-        }
-        const pullCursor = pullCursorNull;
-        this.singlePoll(pullCursor).then((pollResult) => {
-            if (pollResult.hasChanges) {
-                return this.singlePull(pullCursor).then(() => pollResult);
-            }
-            return pollResult;
-        }).then((pollResult) => {
-            this.polling = false;
-            const retryAfter = pollResult.retryAfter;
-            if (this.isAuth()) {
-                window.setTimeout(() => this.poll(), retryAfter);
-            }
-            return pollResult;
-        }, (e) => {
-            throw e;
-        }).catch((e) => {
-            console.error(e);
-            //TODO soon please
-        });
-    }
-
-    notifyChange(change) {
-        if (change.path.substr(0, 1) === "/") {
-            change.path = change.path.substr(1);
-        }
-        if (change.path === this.filename) {
-            this.loadFile();
-        }
     }
 
     loadFile() {

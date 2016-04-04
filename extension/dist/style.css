@@ -3384,7 +3384,8 @@ button, .button {
     .pin_dialog .pin_password .password_text, .wrong_pin .pin_password .password_text {
       font-size: 4em;
       line-height: 0;
-      vertical-align: middle; }
+      vertical-align: middle;
+      color: #fff; }
     .pin_dialog .pin_password .blinking_cursor, .wrong_pin .pin_password .blinking_cursor {
       content: '';
       display: inline-block;
@@ -4220,7 +4221,7 @@ aside.left-panel {
         .dashboard .card .entry.edit-mode .available-tags {
           position: relative;
           display: block;
-          padding: 0 0 4px 200px;
+          padding: 0 0 4px 205px;
           margin-top: -5px;
           width: 410px; }
           .dashboard .card .entry.edit-mode .available-tags span.tagsinput-available-tag {
