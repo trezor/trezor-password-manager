@@ -75,13 +75,11 @@ var StorageMgmt = require('./classes/storage_mgmt'),
     },
 
     decrypteAndInject = (entry) => {
-        trezorManager.decryptPassword(entry, (data) => chromeManager.fillLoginForm(data));
+        trezorManager.decryptFullEntry(entry, (data) => chromeManager.fillLoginForm(data));
     },
 
     chromeMessaging = (request, sender, sendResponse) => {
-
         switch (request.type) {
-
             case 'initPlease':
                 init();
                 break;
@@ -115,7 +113,7 @@ var StorageMgmt = require('./classes/storage_mgmt'),
                 break;
 
             case 'decryptPassword':
-                trezorManager.decryptPassword(request.content, sendResponse);
+                trezorManager.decryptFullEntry(request.content, sendResponse);
                 break;
 
             case 'decryptFullEntry':

@@ -20,7 +20,7 @@ var React = require('react'),
         },
 
         componentDidMount() {
-            chrome.runtime.onMessage.addListener(this.chromeMsgHandler);
+            chrome.runtime.onMessage.addListener(this.chromeDashboardMsgHandler);
             if (this.storeExists()) {
                 this.setState({ready: true});
             } else {
@@ -32,7 +32,7 @@ var React = require('react'),
             chrome.runtime.onMessage.removeListener(this.chromeDashboardMsgHandler);
         },
 
-        chromeMsgHandler(request, sender, sendResponse) {
+        chromeDashboardMsgHandler(request, sender, sendResponse) {
             switch (request.type) {
                 case 'trezorDisconnected':
                     this.setState({

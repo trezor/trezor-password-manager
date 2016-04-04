@@ -36,6 +36,7 @@ var React = require('react'),
         },
 
         pinKeydownHandler(ev) {
+            ev.preventDefault();
             var keyCode = ev.keyCode;
             if (keyCode > 96 && keyCode < 106) {
                 keyCode = keyCode - 48;

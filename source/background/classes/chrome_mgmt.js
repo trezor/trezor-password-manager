@@ -1,6 +1,6 @@
 'use strict';
 
-var Promise = require('es6-promise').Promise
+var Promise = require('es6-promise').Promise;
 class ChromeMgmt {
 
     constructor(storage) {
@@ -33,8 +33,8 @@ class ChromeMgmt {
         if (this.storage.phase === 'LOADED' && this.storage.decryptedContent) {
             chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
                 if (typeof tabs[0] !== 'undefined') {
-                    if (this.isUrl(tabs[0].url)) {
-                        this.activeHost = this.decomposeUrl(tabs[0].url).host;
+                    if (this.storage.isUrl(tabs[0].url)) {
+                        this.activeHost = this.storage.decomposeUrl(tabs[0].url).host;
                         if (this.matchingContent(this.activeHost)) {
                             this.updateBadgeStatus(this.storage.phase);
                             this.hasCredentials = true;
@@ -60,6 +60,10 @@ class ChromeMgmt {
                     this.fillCredentials(this.activeHost);
                 }
                 break;
+
+            case 'restart_app':
+                chrome.runtime.reload();
+                break;
         }
     }
 
@@ -75,8 +79,8 @@ class ChromeMgmt {
         }
         chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
             if (typeof tabs[0] !== 'undefined') {
-                if (this.isUrl(tabs[0].url)) {
-                    if (this.decomposeUrl(tabs[0].url).host === this.activeHost) {
+                if (this.storage.isUrl(tabs[0].url)) {
+                    if (this.storage.decomposeUrl(tabs[0].url).host === this.activeHost) {
                         this.injectContentScript(tabs[0].id, 'showTrezorMsg', null);
                         this.storage.emit('decryptPassword', entry);
                     }
@@ -115,43 +119,6 @@ class ChromeMgmt {
         return url.indexOf('://') > -1 ? url : 'https://' + url;
     }
 
-    isUrl(url) {
-        return url.match(/[a-z]+\.[a-z][a-z]+(\/.*)?$/i) != null
-    }
-
-    decomposeUrl(url) {
-        let parsed_url = {};
-        if (url == null || url.length == 0) return parsed_url;
-        let protocol_i = url.indexOf('://');
-        parsed_url.protocol = protocol_i != -1 ? url.substr(0, protocol_i) : '';
-        let remaining_url = protocol_i != -1 ? url.substr(protocol_i + 3, url.length) : url;
-        let domain_i = remaining_url.indexOf('/');
-        domain_i = domain_i == -1 ? remaining_url.length : domain_i;
-        parsed_url.domain = remaining_url.substr(0, domain_i);
-        parsed_url.path = domain_i == -1 || domain_i + 1 == remaining_url.length ? null : remaining_url.substr(domain_i + 1, remaining_url.length);
-        let domain_parts = parsed_url.domain.split('.');
-        switch (domain_parts.length) {
-            case 2:
-                parsed_url.subdomain = null;
-                parsed_url.host = domain_parts[0];
-                parsed_url.tld = domain_parts[1];
-                break;
-            case 3:
-                parsed_url.subdomain = domain_parts[0];
-                parsed_url.host = domain_parts[1];
-                parsed_url.tld = domain_parts[2];
-                break;
-            case 4:
-                parsed_url.subdomain = domain_parts[0];
-                parsed_url.host = domain_parts[1];
-                parsed_url.tld = domain_parts[2] + '.' + domain_parts[3];
-                break;
-        }
-
-        parsed_url.parent_domain = parsed_url.host + '.' + parsed_url.tld;
-        return parsed_url;
-    }
-
     injectContentScript(id, type, data) {
         var tabId = id;
         chrome.tabs.sendMessage(tabId, {type: 'isScriptExecuted'}, (response) => {
@@ -182,12 +149,12 @@ class ChromeMgmt {
     fillLoginForm(data) {
         chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
             if (typeof tabs[0] !== 'undefined') {
-                if (this.isUrl(tabs[0].url)) {
+                if (this.storage.isUrl(tabs[0].url)) {
                     if (typeof data === 'undefined') {
                         data = {};
                         data.content = null;
                     }
-                    if (this.decomposeUrl(tabs[0].url).host === this.activeHost) {
+                    if (this.storage.decomposeUrl(tabs[0].url).host === this.activeHost) {
                         this.injectContentScript(tabs[0].id, 'fillData', data.content);
                     }
                 }

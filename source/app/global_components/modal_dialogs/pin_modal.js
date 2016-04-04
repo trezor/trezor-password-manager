@@ -47,7 +47,7 @@ var React = require('react'),
         render(){
             return (
                 <div>
-                    <Modal show={this.state.showPinModal} backdrop={'static'} dialogClassName={'pin-modal-dialog'} enforceFocus={true} onHide={this.hiding}>
+                    <Modal show={this.state.showPinModal} backdrop={'static'} dialogClassName={'pin-modal-dialog'} autoFocus={true} enforceFocus={true} onHide={this.hiding}>
                         <Modal.Body>
                             <PinDialog />
                         </Modal.Body>

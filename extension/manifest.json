@@ -16,6 +16,12 @@
         "default": "Alt+Shift+F"
       },
       "description": "Fill login form with fitting credentials."
+    },
+    "restart_app": {
+      "suggested_key": {
+        "default": "Alt+Shift+U"
+      },
+      "description": "Hard restart of app."
     }
   },
   "icons": {

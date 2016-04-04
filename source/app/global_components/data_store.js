@@ -8,7 +8,7 @@ class Store extends EventEmitter {
     constructor(data) {
         super();
         this.data = typeof data === 'object' ? data : JSON.parse(data);
-        chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.chromeMsgHandler(request, sender, sendResponse));
+        chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.chromeStoreMsgHandler(request, sender, sendResponse));
         this.emit('update', this.data);
     }
 
@@ -17,7 +17,7 @@ class Store extends EventEmitter {
         this.emit('update', this.data);
     }
 
-    chromeMsgHandler(request, sender, sendResponse) {
+    chromeStoreMsgHandler(request, sender, sendResponse) {
         switch (request.type) {
             case 'decryptedContent':
                 if (request.content !== JSON.stringify(this.data)) {

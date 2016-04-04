@@ -1,8 +1,6 @@
 'use strict';
 
 const HD_HARDENED = 0x80000000,
-    ENC_KEY = 'Activate TREZOR Password Manager?',
-    ENC_VALUE = '2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee',
     CIPHER_IVSIZE = 96 / 8,
     AUTH_SIZE = 128 / 8,
     CIPHER_TYPE = 'aes-256-gcm',
@@ -16,7 +14,10 @@ const HD_HARDENED = 0x80000000,
     FIRMWARE_IS_OLD = 'Firmware of connected device is too old',
     INSUFFICIENT_FUNDS = 'Insufficient funds',
     CIPHER_CANCEL = 'CipherKeyValue cancelled',
-    WRONG_PIN = 'Invalid PIN';
+    WRONG_PIN = 'Invalid PIN',
+    DEFAULT_KEYPHRASE = 'Activate TREZOR Password Manager?',
+    DEFAULT_NONCE = '2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee';
+
 
 var crypto = require('crypto');
 
@@ -27,19 +28,27 @@ class TrezorMgmt {
         this.trezorDevice = null;
         this.trezorConnected = false;
         this.current_ext_version = '';
+        this.cryptoData = {
+            'keyPhrase': DEFAULT_KEYPHRASE,
+            'nonce': DEFAULT_NONCE,
+            'enc': true,
+            'askOnEnc' : true
+        };
         list.on('transport', (transport) => this.checkTransport(transport));
         list.on('connect', (device) => this.connectedNewTrezor(device));
         list.on('error', (error) => {
             console.error('List error:', error);
-            if(this.storage.phase === 'LOADED') {
+            if (this.storage.phase === 'LOADED') {
                 this.disconnectCallback();
             }
         });
     }
 
-    handleTrezorError(error, fallback) {
+    handleTrezorError(error, operation, fallback) {
         let never = new Promise(() => {
         });
+
+        console.log(error);
 
         switch (error.message) {
             case NO_TRANSPORT:
@@ -67,7 +76,8 @@ class TrezorMgmt {
                 break;
 
             case CIPHER_CANCEL:
-                fallback(null);
+                fallback();
+                return never;
                 break;
 
             case NOT_INITIALIZED:
@@ -77,7 +87,18 @@ class TrezorMgmt {
 
             case WRONG_PIN:
                 this.storage.emit('sendMessage', 'wrongPin');
-                this.trezorDevice.waitForSessionAndRun((session) => this.getEncryptionKey(session));
+                //TODO do it smart asshole!
+                switch (operation) {
+                    case 'encKey':
+                        this.trezorDevice.waitForSessionAndRun((session) => this.getEncryptionKey(session));
+                        break;
+                    case 'encEntry':
+                        this.trezorDevice.waitForSessionAndRun((session) => this.sendEncryptCallback(session));
+                        break;
+                    case 'decEntry':
+                        this.trezorDevice.waitForSessionAndRun((session) => this.sendDecryptCallback(session));
+                        break;
+                }
                 break;
         }
     }
@@ -133,13 +154,15 @@ class TrezorMgmt {
 
             } catch (error) {
                 console.error('Device error:', error);
-                //FIXME soon please
+                //TODO
             }
         }
     }
 
     clearSession() {
-        this.trezorDevice.waitForSessionAndRun((session) => {return session.clearSession()});
+        this.trezorDevice.waitForSessionAndRun((session) => {
+            return session.clearSession()
+        });
     }
 
     pinCallback(type, callback) {
@@ -167,8 +190,15 @@ class TrezorMgmt {
     disconnectCallback() {
         this.storage.masterKey = '';
         this.storage.encryptionKey = '';
-        this.storage.emit('disconnectedTrezor');
         this.trezorDevice = null;
+        this.cryptoData = {
+            'keyPhrase': DEFAULT_KEYPHRASE,
+            'nonce': DEFAULT_NONCE,
+            'enc': true,
+            'askOnEnc' : true
+        };
+        this.storage.emit('disconnectedTrezor');
+        console.warn('DISCONNECT!');
     }
 
     randomInputVector() {
@@ -183,7 +213,7 @@ class TrezorMgmt {
                 })
             } catch (err) {
                 reject(err);
-                //FIXME soon please
+                //TODO
             }
         });
     }
@@ -212,121 +242,91 @@ class TrezorMgmt {
             return Buffer.concat([start, end]).toString('utf8');
         } catch (error) {
             console.error('error ', error);
-            //FIXME soon please
+            //TODO
         }
+    }
+
+    displayKey(title, username) {
+        title = this.storage.isUrl(title) ? this.storage.decomposeUrl(title).domain : title;
+        return 'Unlock ' + title + ' for user ' + username + '?';
     }
 
     encryptFullEntry(data, responseCallback) {
         crypto.randomBytes(32, (ex, buf) => {
-            let key = this.displayPhrase(data.title, data.username),
-                nonce = buf.toString('hex');
-            this.trezorDevice.waitForSessionAndRun((session) => {
-                return session.cipherKeyValue(PATH, key, nonce, true, false, true).then((result) => {
-                    let enckey = new Buffer(nonce, 'hex');
-                    this.encrypt(data.password, enckey).then((password)=> {
-                        this.encrypt(data.safe_note, enckey).then((safenote)=> {
-                            responseCallback({
-                                content: {
-                                    title: data.title,
-                                    username: data.username,
-                                    password: password,
-                                    safe_note: safenote,
-                                    nonce: result.message.value
-                                }
-                            });
-                        });
+            this.cryptoData = {
+                'title' : data.title,
+                'username' : data.username,
+                'password' : data.password,
+                'safe_note' : data.safe_note,
+                'keyPhrase': this.displayKey(data.title, data.username),
+                'nonce': buf.toString('hex'),
+                'callback': responseCallback,
+                'enc': true,
+                'askOnEnc' : false
+            };
+            this.trezorDevice.waitForSessionAndRun((session) => this.sendEncryptCallback(session));
+        });
+    }
+
+    sendEncryptCallback(session) {
+        return session.cipherKeyValue(PATH, this.cryptoData.keyPhrase, this.cryptoData.nonce, this.cryptoData.enc, this.cryptoData.askOnEnc, true).then((result) => {
+            let enckey = new Buffer(this.cryptoData.nonce, 'hex');
+            this.encrypt(this.cryptoData.password, enckey).then((password)=> {
+                this.encrypt(this.cryptoData.safe_note, enckey).then((safenote)=> {
+                    this.cryptoData.callback({
+                        content: {
+                            title: this.cryptoData.title,
+                            username: this.cryptoData.username,
+                            password: password,
+                            safe_note: safenote,
+                            nonce: result.message.value
+                        }
                     });
                 });
             });
-        });
-    }
-
-    displayPhrase(title, username) {
-        title = this.isUrl(title) ? this.decomposeUrl(title).domain : title;
-        return 'Unlock ' + title + ' for user ' + username + '?'
+        }).catch((error) => this.handleTrezorError(error, 'encEntry', this.cryptoData.callback));
     }
 
     decryptFullEntry(data, responseCallback) {
-        let key = this.displayPhrase(data.title, data.username);
-        this.trezorDevice.waitForSessionAndRun((session) => {
-            return session.cipherKeyValue(PATH, key, data.nonce, false, false, true).then((result) => {
-                let enckey = new Buffer(result.message.value, 'hex'),
-                    password = new Buffer(data.password),
-                    safenote = new Buffer(data.safe_note);
-                responseCallback({
-                    content: {
-                        title: data.title,
-                        username: data.username,
-                        password: JSON.parse(this.decrypt(password, enckey)),
-                        safe_note: JSON.parse(this.decrypt(safenote, enckey)),
-                        nonce: data.nonce
-                    }
-                });
-            }).catch((error) => this.handleTrezorError(error, responseCallback));
-        });
+        this.cryptoData = {
+            'title' : data.title,
+            'username' : data.username,
+            'password' : data.password,
+            'safe_note' : data.safe_note,
+            'keyPhrase': this.displayKey(data.title, data.username),
+            'nonce': data.nonce,
+            'callback': responseCallback,
+            'enc': false,
+            'askOnEnc' : false
+        };
+        this.trezorDevice.waitForSessionAndRun((session) => this.sendDecryptCallback(session));
     }
 
-    decryptPassword(data, responseCallback) {
-        let key = this.displayPhrase(data.title, data.username);
-        this.trezorDevice.waitForSessionAndRun((session) => {
-            return session.cipherKeyValue(PATH, key, data.nonce, false, false, true).then((result) => {
-                let enckey = new Buffer(result.message.value, 'hex'),
-                    password = new Buffer(data.password);
-                responseCallback({
-                    content: {
-                        title: data.title,
-                        username: data.username,
-                        password: JSON.parse(this.decrypt(password, enckey))
-                    }
-                });
-            }).catch((error) => this.handleTrezorError(error, responseCallback));
-        });
-    }
+    sendDecryptCallback(session) {
+         return session.cipherKeyValue(PATH, this.cryptoData.keyPhrase, this.cryptoData.nonce, this.cryptoData.enc, this.cryptoData.askOnEnc, true).then((result) => {
+             let enckey = new Buffer(result.message.value, 'hex'),
+                 password = new Buffer(this.cryptoData.password),
+                 safenote = new Buffer(this.cryptoData.safe_note);
+             this.cryptoData.callback({
+                 content: {
+                     title: this.cryptoData.title,
+                     username: this.cryptoData.username,
+                     password: JSON.parse(this.decrypt(password, enckey)),
+                     safe_note: JSON.parse(this.decrypt(safenote, enckey)),
+                     nonce: this.cryptoData.nonce
+                 }
+             });
+         }).catch((error) => this.handleTrezorError(error, 'decEntry', this.cryptoData.callback));
+     }
 
     getEncryptionKey(session) {
-        return session.cipherKeyValue(PATH, ENC_KEY, ENC_VALUE, true, true, true).then((result) => {
+        return session.cipherKeyValue(PATH, this.cryptoData.keyPhrase, this.cryptoData.nonce, this.cryptoData.enc, this.cryptoData.askOnEnc, true).then((result) => {
             this.storage.emit('sendMessage', 'loading', 'We are getting there');
             this.storage.masterKey = result.message.value;
             let temp = this.storage.masterKey;
             this.storage.encryptionKey = new Buffer(temp.substring(temp.length / 2, temp.length), 'hex');
             this.storage.emit('loadFile');
-        }).catch((error) => this.handleTrezorError(error, this.disconnectCallback));
-    }
-
-    decomposeUrl(url) {
-        let parsed_url = {};
-        if (url == null || url.length == 0) return parsed_url;
-        let protocol_i = url.indexOf('://');
-        parsed_url.protocol = protocol_i != -1 ? url.substr(0, protocol_i) : '';
-        let remaining_url = protocol_i != -1 ? url.substr(protocol_i + 3, url.length) : url;
-        let domain_i = remaining_url.indexOf('/');
-        domain_i = domain_i == -1 ? remaining_url.length : domain_i;
-        parsed_url.domain = remaining_url.substr(0, domain_i);
-        parsed_url.path = domain_i == -1 || domain_i + 1 == remaining_url.length ? null : remaining_url.substr(domain_i + 1, remaining_url.length);
-        let domain_parts = parsed_url.domain.split('.');
-        switch (domain_parts.length) {
-            case 2:
-                parsed_url.subdomain = null;
-                parsed_url.host = domain_parts[0];
-                parsed_url.tld = domain_parts[1];
-                break;
-            case 3:
-                parsed_url.subdomain = domain_parts[0];
-                parsed_url.host = domain_parts[1];
-                parsed_url.tld = domain_parts[2];
-                break;
-            case 4:
-                parsed_url.subdomain = domain_parts[0];
-                parsed_url.host = domain_parts[1];
-                parsed_url.tld = domain_parts[2] + '.' + domain_parts[3];
-                break;
-        }
-        parsed_url.parent_domain = parsed_url.host + '.' + parsed_url.tld;
-        return parsed_url;
-    }
-
-    isUrl(url) {
-        return url.match(/[a-z]+\.[a-z][a-z]+(\/.*)?$/i) != null
+        }).catch((error) => this.handleTrezorError(error, 'encKey', this.disconnectCallback));
     }
 }
 module.exports = TrezorMgmt;

@@ -108,6 +108,7 @@ var React = require('react'),
                 title: this.state.title,
                 username: this.state.username,
                 password: this.state.password,
+                safe_note: this.state.safe_note,
                 nonce: this.state.nonce
             };
             chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
@@ -137,6 +138,7 @@ var React = require('react'),
                 title: this.state.title,
                 username: this.state.username,
                 password: this.state.password,
+                safe_note: this.state.safe_note,
                 nonce: this.state.nonce
             };
             chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {

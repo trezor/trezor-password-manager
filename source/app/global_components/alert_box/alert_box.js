@@ -14,14 +14,18 @@ var React = require('react'),
         },
 
         componentDidMount() {
-            chrome.runtime.onMessage.addListener(this.chromeMsgHandler);
+            chrome.runtime.onMessage.addListener(this.chromeAlertMsgHandler);
+        },
+
+        componentWillUnmount() {
+            chrome.runtime.onMessage.removeListener(this.chromeAlertMsgHandler);
         },
 
         restartBackground() {
             chrome.runtime.reload();
         },
 
-        chromeMsgHandler(request, sender, sendResponse) {
+        chromeAlertMsgHandler(request, sender, sendResponse) {
             if (request.type === 'showAlert') {
                 this.setState({
                     alertType: request.content,
