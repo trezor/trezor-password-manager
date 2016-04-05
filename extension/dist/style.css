@@ -3577,9 +3577,10 @@ button, .button {
     .footer.white a {
       color: #fff; }
   .footer.black {
-    position: absolute;
-    bottom: 5px;
-    right: 5px; }
+    margin-top: -12px;
+    padding: 0 15px 0 0;
+    position: relative;
+    float: right; }
     .footer.black a {
       color: #797979; }
 
@@ -3719,8 +3720,7 @@ aside.left-panel {
       margin-left: 80px; } }
   .content .wraper {
     padding: 20px 0 20px 0;
-    min-height: 550px;
-    height: 100%; }
+    min-height: 98%; }
     .content .wraper .page-title {
       padding: 0 10px 15px 10px;
       margin: 0; }
@@ -4329,6 +4329,8 @@ form.filter {
   height: 100%;
   min-height: 100%;
   position: relative; }
+  .dashboard-layout > div {
+    height: 100%; }
   @media screen and (min-width: 1290px) {
     .dashboard-layout {
       margin: 0 auto;

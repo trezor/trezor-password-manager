@@ -64,8 +64,8 @@ var React = require('react'),
                             <SidePanel />
                             <section className='content'>
                                 <PasswordTable />
+                                <Footer footerStyle='black'/>
                             </section>
-                            <Footer footerStyle='black'/>
                         </div>
                         :
                         <div>Loading</div>

@@ -14,9 +14,10 @@
   }
 
   &.black {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
+    margin-top: -12px;
+    padding: 0 15px 0 0;
+    position: relative;
+    float: right;
     a {
       color: $c_grey_content_font;
     }

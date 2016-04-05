@@ -4,6 +4,10 @@
   min-height: 100%;
   position: relative;
 
+  & > div {
+    height: 100%;
+  }
+
   @media screen and (min-width: $break-large) {
     margin: 0 auto;
     border-right: 1px solid $c_grey_border;
