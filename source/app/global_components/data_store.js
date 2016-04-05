@@ -15,6 +15,7 @@ class Store extends EventEmitter {
     updateData(data) {
         data = typeof data === 'object' ? data : JSON.parse(data);
         this.emit('update', data);
+        this.data = data;
     }
 
     chromeStoreMsgHandler(request, sender, sendResponse) {
@@ -186,7 +187,7 @@ class Store extends EventEmitter {
         this.data.entries[newId] = data;
         this.emit('update', this.data);
         Service.saveContext(this.data);
-        return this.emit('hideOpenNewEntry', newId);
+        return this.emit('toggleNewEntry');
     }
 
     removeEntry(entryId) {
@@ -211,7 +212,7 @@ class Store extends EventEmitter {
     }
 
     hideNewEntry() {
-        return this.emit('hideNewEntry');
+        return this.emit('toggleNewEntry');
     }
 }
 

@@ -26,20 +26,18 @@ var React = require('react'),
         componentWillMount() {
             window.myStore.on('changeTag', this.changeTag);
             window.myStore.on('filter', this.setupFilter);
-            window.myStore.on('hideNewEntry', this.addNewEntry);
-            window.myStore.on('hideOpenNewEntry', this.hideOpenNewEntry);
-            window.myStore.on('update', this.updateContent);
+            window.myStore.on('toggleNewEntry', this.toggleNewEntry);
+            window.myStore.on('update', this.updateTableContent);
         },
 
         componentWillUnmount() {
             window.myStore.removeListener('changeTag', this.changeTag);
             window.myStore.removeListener('filter', this.setupFilter);
-            window.myStore.removeListener('hideNewEntry', this.addNewEntry);
-            window.myStore.removeListener('hideOpenNewEntry', this.hideOpenNewEntry);
-            window.myStore.removeListener('update', this.updateContent);
+            window.myStore.removeListener('toggleNewEntry', this.toggleNewEntry);
+            window.myStore.removeListener('update', this.updateTableContent);
         },
 
-        updateContent(data) {
+        updateTableContent(data) {
             this.setState({
                 tags: data.tags,
                 entries: data.entries
@@ -85,7 +83,7 @@ var React = require('react'),
         changeTag(e) {
             if (e === undefined) {
                 this.setState({
-                    active_id: this.state.active_id,
+                    active_id: parseInt(this.state.active_id),
                     active_title: this.state.active_title
                 });
             } else {
@@ -118,11 +116,7 @@ var React = require('react'),
             window.myStore.emit('openRemoveTag', this.state.active_id);
         },
 
-        addNewEntry() {
-            this.state.newEntry ? this.setState({newEntry: false}) : this.setState({newEntry: true})
-        },
-
-        hideOpenNewEntry() {
+        toggleNewEntry() {
             this.state.newEntry ? this.setState({newEntry: false}) : this.setState({newEntry: true})
         },
 
@@ -175,7 +169,7 @@ var React = require('react'),
                     <div className='row page-title'>
                         <div className='col-md-3 col-sm-3 col-xs-2'>
                             <button type='button'
-                                    onClick={this.addNewEntry}
+                                    onClick={this.toggleNewEntry}
                                     disabled={this.state.newEntry}
                                     className='blue-btn add'>Add entry
                             </button>
