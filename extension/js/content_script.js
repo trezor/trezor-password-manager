@@ -8,7 +8,7 @@ let visibleDialog = false,
                 visibleInputs++;
             }
         }
-        return visibleInputs < 3;
+        return visibleInputs < 2;
     },
 
     hasOnePasswordInput = (inputs) => {
@@ -53,9 +53,8 @@ let visibleDialog = false,
         for (let i = 0; i < tempFormArr.length; i++) {
             let inputs = tempFormArr[i].getElementsByTagName('input'),
                 visibleInputs = countVisibleInputs(inputs),
-                hasPwdInput = hasOnePasswordInput(inputs),
-                hasSubmit = hasSubmitElement(tempFormArr[i]);
-            if (hasPwdInput && hasSubmit && visibleInputs) {
+                hasPwdInput = hasOnePasswordInput(inputs);
+            if (hasPwdInput && visibleInputs) {
                 loginFormsArrs.push(tempFormArr[i]);
             }
         }
