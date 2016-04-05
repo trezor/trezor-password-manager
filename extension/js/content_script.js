@@ -8,7 +8,7 @@ let visibleDialog = false,
                 visibleInputs++;
             }
         }
-        return visibleInputs == 1;
+        return visibleInputs < 3;
     },
 
     hasOnePasswordInput = (inputs) => {
@@ -144,7 +144,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         removeTrezorDialog();
                     }
                 }
-            }, 100);
+            }, 250);
             break;
 
         case 'showTrezorMsg':
