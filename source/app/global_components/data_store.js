@@ -13,8 +13,8 @@ class Store extends EventEmitter {
     }
 
     updateData(data) {
-        this.data = typeof data === 'object' ? data : JSON.parse(data);
-        this.emit('update', this.data);
+        data = typeof data === 'object' ? data : JSON.parse(data);
+        this.emit('update', data);
     }
 
     chromeStoreMsgHandler(request, sender, sendResponse) {
@@ -120,7 +120,7 @@ class Store extends EventEmitter {
     }
 
     hasTagId(tagId) {
-        let arr = this.getEntriesIdArray();
+        let arr = this.getTagIdArray();
         return arr.indexOf(parseInt(tagId));
     }
 

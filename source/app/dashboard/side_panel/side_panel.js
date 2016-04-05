@@ -40,7 +40,7 @@ var React = require('react'),
         changeTag(e) {
             if (e === undefined) {
                 this.setState({
-                    active_id: this.state.active_id,
+                    active_id: parseInt(this.state.active_id),
                     active_title: this.state.active_title
                 });
             } else {
@@ -52,15 +52,14 @@ var React = require('react'),
         },
 
         changeTagAndEmitt(e) {
-            window.myStore.emit('changeTag', e);
             this.setState({
                 active_id: parseInt(e),
                 active_title: window.myStore.getTagTitleById(e)
             });
+            window.myStore.emit('changeTag', e);
         },
 
         addTag() {
-            //chrome.runtime.sendMessage({type: 'clearSession', content: ''});
             window.myStore.emit('openAddTag');
         },
 

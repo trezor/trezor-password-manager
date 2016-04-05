@@ -91,7 +91,7 @@ var React = require('react'),
             } else {
                 this.setState({
                     active_id: parseInt(e),
-                    active_title:  window.myStore.getTagTitleById(e)
+                    active_title: window.myStore.getTagTitleById(e)
                 });
             }
         },
@@ -135,28 +135,28 @@ var React = require('react'),
                             if (this.checkFilterMatching(obj)) {
                                 return (
                                     <TableEntry key={key}
-                                                 key_value={key}
-                                                 title={obj.title}
-                                                 username={obj.username}
-                                                 password={obj.password}
-                                                 nonce={obj.nonce}
-                                                 tags={obj.tags}
-                                                 safe_note={obj.safe_note}
-                                                 note={obj.note}
+                                                key_value={key}
+                                                title={obj.title}
+                                                username={obj.username}
+                                                password={obj.password}
+                                                nonce={obj.nonce}
+                                                tags={obj.tags}
+                                                safe_note={obj.safe_note}
+                                                note={obj.note}
                                         />
                                 )
                             }
                         } else {
                             return (
                                 <TableEntry key={key}
-                                             key_value={key}
-                                             title={obj.title}
-                                             username={obj.username}
-                                             password={obj.password}
-                                             nonce={obj.nonce}
-                                             tags={obj.tags}
-                                             safe_note={obj.safe_note}
-                                             note={obj.note}
+                                            key_value={key}
+                                            title={obj.title}
+                                            username={obj.username}
+                                            password={obj.password}
+                                            nonce={obj.nonce}
+                                            tags={obj.tags}
+                                            safe_note={obj.safe_note}
+                                            note={obj.note}
                                     />
                             )
                         }
@@ -199,16 +199,16 @@ var React = require('react'),
                     <div className='row dashboard'>
                         {this.state.newEntry ?
                             <TableEntry key={undefined}
-                                         key_value={undefined}
-                                         title=''
-                                         username=''
-                                         password=''
-                                         tags={[]}
-                                         note=''
-                                         nonce=''
-                                         safe_note=''
-                                         mode={'edit-mode'}
-                                         content_changed={'edited'}
+                                        key_value={undefined}
+                                        title=''
+                                        username=''
+                                        password=''
+                                        tags={[]}
+                                        note=''
+                                        nonce=''
+                                        safe_note=''
+                                        mode={'edit-mode'}
+                                        content_changed={'edited'}
                                 /> : null }
                         {password_table}
 
