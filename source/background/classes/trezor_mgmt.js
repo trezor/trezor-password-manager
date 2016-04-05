@@ -32,7 +32,7 @@ class TrezorMgmt {
             'keyPhrase': DEFAULT_KEYPHRASE,
             'nonce': DEFAULT_NONCE,
             'enc': true,
-            'askOnEnc' : true
+            'askOnEnc': true
         };
         list.on('transport', (transport) => this.checkTransport(transport));
         list.on('connect', (device) => this.connectedNewTrezor(device));
@@ -76,8 +76,12 @@ class TrezorMgmt {
                 break;
 
             case CIPHER_CANCEL:
-                fallback();
-                return never;
+                //TODO do it smart asshole!
+                if (operation === 'encKey') {
+                    return never;
+                } else {
+                    fallback();
+                }
                 break;
 
             case NOT_INITIALIZED:
@@ -195,10 +199,9 @@ class TrezorMgmt {
             'keyPhrase': DEFAULT_KEYPHRASE,
             'nonce': DEFAULT_NONCE,
             'enc': true,
-            'askOnEnc' : true
+            'askOnEnc': true
         };
         this.storage.emit('disconnectedTrezor');
-        console.warn('DISCONNECT!');
     }
 
     randomInputVector() {
@@ -254,15 +257,15 @@ class TrezorMgmt {
     encryptFullEntry(data, responseCallback) {
         crypto.randomBytes(32, (ex, buf) => {
             this.cryptoData = {
-                'title' : data.title,
-                'username' : data.username,
-                'password' : data.password,
-                'safe_note' : data.safe_note,
+                'title': data.title,
+                'username': data.username,
+                'password': data.password,
+                'safe_note': data.safe_note,
                 'keyPhrase': this.displayKey(data.title, data.username),
                 'nonce': buf.toString('hex'),
                 'callback': responseCallback,
                 'enc': true,
-                'askOnEnc' : false
+                'askOnEnc': false
             };
             this.trezorDevice.waitForSessionAndRun((session) => this.sendEncryptCallback(session));
         });
@@ -289,35 +292,35 @@ class TrezorMgmt {
 
     decryptFullEntry(data, responseCallback) {
         this.cryptoData = {
-            'title' : data.title,
-            'username' : data.username,
-            'password' : data.password,
-            'safe_note' : data.safe_note,
+            'title': data.title,
+            'username': data.username,
+            'password': data.password,
+            'safe_note': data.safe_note,
             'keyPhrase': this.displayKey(data.title, data.username),
             'nonce': data.nonce,
             'callback': responseCallback,
             'enc': false,
-            'askOnEnc' : false
+            'askOnEnc': false
         };
         this.trezorDevice.waitForSessionAndRun((session) => this.sendDecryptCallback(session));
     }
 
     sendDecryptCallback(session) {
-         return session.cipherKeyValue(PATH, this.cryptoData.keyPhrase, this.cryptoData.nonce, this.cryptoData.enc, this.cryptoData.askOnEnc, true).then((result) => {
-             let enckey = new Buffer(result.message.value, 'hex'),
-                 password = new Buffer(this.cryptoData.password),
-                 safenote = new Buffer(this.cryptoData.safe_note);
-             this.cryptoData.callback({
-                 content: {
-                     title: this.cryptoData.title,
-                     username: this.cryptoData.username,
-                     password: JSON.parse(this.decrypt(password, enckey)),
-                     safe_note: JSON.parse(this.decrypt(safenote, enckey)),
-                     nonce: this.cryptoData.nonce
-                 }
-             });
-         }).catch((error) => this.handleTrezorError(error, 'decEntry', this.cryptoData.callback));
-     }
+        return session.cipherKeyValue(PATH, this.cryptoData.keyPhrase, this.cryptoData.nonce, this.cryptoData.enc, this.cryptoData.askOnEnc, true).then((result) => {
+            let enckey = new Buffer(result.message.value, 'hex'),
+                password = new Buffer(this.cryptoData.password),
+                safenote = new Buffer(this.cryptoData.safe_note);
+            this.cryptoData.callback({
+                content: {
+                    title: this.cryptoData.title,
+                    username: this.cryptoData.username,
+                    password: JSON.parse(this.decrypt(password, enckey)),
+                    safe_note: JSON.parse(this.decrypt(safenote, enckey)),
+                    nonce: this.cryptoData.nonce
+                }
+            });
+        }).catch((error) => this.handleTrezorError(error, 'decEntry', this.cryptoData.callback));
+    }
 
     getEncryptionKey(session) {
         return session.cipherKeyValue(PATH, this.cryptoData.keyPhrase, this.cryptoData.nonce, this.cryptoData.enc, this.cryptoData.askOnEnc, true).then((result) => {
@@ -326,7 +329,7 @@ class TrezorMgmt {
             let temp = this.storage.masterKey;
             this.storage.encryptionKey = new Buffer(temp.substring(temp.length / 2, temp.length), 'hex');
             this.storage.emit('loadFile');
-        }).catch((error) => this.handleTrezorError(error, 'encKey', this.disconnectCallback));
+        }).catch((error) => this.handleTrezorError(error, 'encKey', null));
     }
 }
 module.exports = TrezorMgmt;
