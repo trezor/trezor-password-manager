@@ -3757,10 +3757,8 @@ aside.left-panel {
     .content .wraper .page-title {
       padding: 0 10px 15px 10px;
       margin: 0; }
-      .content .wraper .page-title div button.add {
-        margin: 3px 0 0 0; }
-        .content .wraper .page-title div button.add:hover {
-          color: #fff; }
+      .content .wraper .page-title div button.add:hover {
+        color: #fff; }
       .content .wraper .page-title div button.dropdown {
         width: 40px;
         text-align: right;
