@@ -1,6 +1,6 @@
 'use strict';
 
-const mailHeaderTemplate = 'Hi Vojtech,%0D%0A%0D%0AI have experienced some errors with TREZOR Password Manager. It\'s impossible to solve it by your "Simple steps solution".%0D%0A%0D%0AProblem is titled and described as:%0D%0A%0D%0A',
+const mailHeaderTemplate = 'Hi SatoshiLabs,%0D%0A%0D%0AI have experienced some errors with TREZOR Password Manager. It\'s impossible to solve it by your "Simple steps solution".%0D%0A%0D%0AProblem is titled and described as:%0D%0A%0D%0A',
     mailFooterTemplate = '%0D%0A%0D%0ALooking forward for your reply and thank you for your time!%0D%0A%0D%0ABest regards,%0D%0A[MY NAME]';
 
 var React = require('react'),
@@ -11,12 +11,12 @@ var React = require('react'),
         getInitialState() {
             return {
                 showErrorModal: false,
-                errorTitle: 'Error! It\'s all peter\'s fault ...',
+                errorTitle: 'Error!',
                 errorSolutionSteps: [
-                    'It seems, you are online, but check your connection.',
-                    'Make sure you have installed TREZOR Chrome Extension from chrome web store.',
-                    'Try to restart the App - TREZOR password manager.',
-                    'Get in touch with our support specialists.'
+                    'Check your connection.',
+                    'Make sure you have TREZOR Chrome Extension installed.',
+                    'Try to restart TREZOR Password Manager.',
+                    'In case of ongoing problems contact our support.'
                 ],
                 restartAction: true,
                 supportAction: true,
@@ -45,24 +45,24 @@ var React = require('react'),
                         return {
                             errorTitle: 'Houston, we have a problem ...',
                             solution: [
-                                'It seems, you are online, but check your connection.',
-                                'Make sure you have installed TREZOR Chrome Extension from chrome web store.',
-                                'Try to restart the App - TREZOR password manager.',
-                                'Write to our support specialists.'
+                                'Check your connection.',
+                                'Make sure you have TREZOR Chrome Extension installed.',
+                                'Try to restart TREZOR Password Manager.',
+                                'In case of ongoing problems contact our support.'
                             ],
                             restartAction: true,
                             supportAction: true,
                             redirectAction: true,
                             redirectText: 'Chrome Extension',
-                            redirectTo: 'https://chrome.google.com/webstore/detail/trezor-chrome-extension/jcjjhjgimijdkoamemaghajlhegmoclj?hl=en',
+                            redirectTo: 'https://chrome.google.com/webstore/detail/trezor-chrome-extension/jcjjhjgimijdkoamemaghajlhegmoclj',
                             supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + mailFooterTemplate
                         };
                     }
                     return {
-                        errorTitle: 'D\'oh, you are offline ...',
+                        errorTitle: 'You are offline',
                         solution: [
-                            'Connect to Internet.',
-                            'Then restart the App - TREZOR password manager.'
+                            'Connect to the Internet.',
+                            'Try to restart TREZOR Password Manager.'
                         ],
                         restartAction: true,
                         supportAction: false,
@@ -76,17 +76,17 @@ var React = require('react'),
 
                 case 'T_NOT_INIT':
                     return {
-                        errorTitle: 'Excuse me, initialize TREZOR first!',
+                        errorTitle: 'TREZOR not initialized',
                         solution: [
                             'Go to mytrezor.com.',
-                            'Initialize TREZOR.',
+                            'Initialize TREZOR device.',
                             'Try again.'
                         ],
                         restartAction: false,
                         supportAction: false,
                         redirectAction: true,
                         closeAction: false,
-                        redirectText: 'MyTrezor.com',
+                        redirectText: 'mytrezor.com',
                         redirectTo: 'https://mytrezor.com',
                         supportDefaultMailText: ''
                     };
@@ -94,7 +94,7 @@ var React = require('react'),
 
                 case 'T_OLD_VERSION':
                     return {
-                        errorTitle: 'Old firmware version!',
+                        errorTitle: 'Old firmware version',
                         solution: [
                             'Go to mytrezor.com.',
                             'Check and update your firmware.',
@@ -112,34 +112,33 @@ var React = require('react'),
 
                 case 'T_NO_TRANSPORT':
                     return {
-                        errorTitle: 'Missing TREZOR Chrome Extension!',
+                        errorTitle: 'TREZOR Chrome Extension not installed',
                         solution: [
                             'Go to Chrome web store.',
                             'Download and install TREZOR Chrome Extension.',
-                            'Restart app - TREZOR Password Manager.',
-                            'Have fun!'
+                            'Restart app - TREZOR Password Manager.'
                         ],
                         restartAction: true,
                         supportAction: false,
                         redirectAction: true,
                         closeAction: false,
                         redirectText: 'Chrome Extension',
-                        redirectTo: 'https://chrome.google.com/webstore/detail/trezor-chrome-extension/jcjjhjgimijdkoamemaghajlhegmoclj?hl=en',
+                        redirectTo: 'https://chrome.google.com/webstore/detail/trezor-chrome-extension/jcjjhjgimijdkoamemaghajlhegmoclj',
                         supportDefaultMailText: ''
                     };
                     break;
 
-                case 'T_BOOTLAODER':
+                case 'T_BOOTLOADER':
                     return {
-                        errorTitle: 'You are in BOOTLOADER mode ...',
+                        errorTitle: 'You are in bootloader mode',
                         solution: [
-                            'Go to MyTrezor.com and setup device.'
+                            'If you really want to upgrade firmware go to mytrezor.com.'
                         ],
                         restartAction: true,
                         supportAction: false,
                         redirectAction: true,
                         closeAction: true,
-                        redirectText: 'MyTrezor.com',
+                        redirectText: 'mytrezor.com',
                         redirectTo: 'https://mytrezor.com',
                         supportDefaultMailText: ''
                     };
@@ -147,31 +146,30 @@ var React = require('react'),
 
                 case 'T_DEVICE':
                     return {
-                        errorTitle: 'Houston, we have device problem ...',
+                        errorTitle: 'Device problem detected',
                         solution: [
-                            'Try to visit MyTrezor.com if your device works fine.',
-                            'In case of problems contact our support specialist.',
-                            'Try to restart the App - TREZOR Password Manager.',
-
+                            'Try using mytrezor.com to check whether your device works fine.',
+                            'In case of ongoing problems contact our support.',
+                            'Try restarting TREZOR Password Manager.'
                         ],
                         restartAction: true,
                         supportAction: true,
                         redirectAction: true,
                         closeAction: false,
-                        redirectText: 'MyTrezor.com',
+                        redirectText: 'mytrezor.com',
                         redirectTo: 'https://mytrezor.com',
                         supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + mailFooterTemplate
                     };
                     break;
 
-                case 'DB_INVALIED_TOKEN':
+                case 'DB_INVALID_TOKEN':
                     return {
-                        errorTitle: 'Houston, we have DROPBOX problem ...',
+                        errorTitle: 'Problem with Dropbox detected',
                         solution: [
                             'Clear browser cache and restart Chrome.',
-                            'Try to re-login to your dropbox account.',
-                            'Restart App - TREZOR Password Manager.',
-                            'Get in touch with our Support specialist.'
+                            'Try to re-login to your Dropbox account.',
+                            'Restart TREZOR Password Manager.',
+                            'In case of ongoing problems contact our support.'
                         ],
                         restartAction: true,
                         supportAction: true,
@@ -185,10 +183,10 @@ var React = require('react'),
 
                 case 'DB_OVER_QUOTA':
                     return {
-                        errorTitle: 'WOW, not enough Dropbox space ...',
+                        errorTitle: 'Not enough Dropbox space',
                         solution: [
                             'You have reached your Dropbox quota.',
-                            'Clean up your dropbox or buy more space.'
+                            'Clean up your Dropbox folder or buy more space.'
                         ],
                         restartAction: false,
                         supportAction: false,
@@ -202,11 +200,11 @@ var React = require('react'),
 
                 case 'DB_RATE_LIMITED':
                     return {
-                        errorTitle: 'WOW, Dropbox rate limit ...',
+                        errorTitle: 'Dropbox rate limit reached',
                         solution: [
                             'You have reached Dropbox limits.',
                             'Check Dropbox.com if service is running.',
-                            'Get in touch with our Support specialist.'
+                            'Get in touch with Dropbox support.'
                         ],
                         restartAction: false,
                         supportAction: true,
@@ -219,14 +217,12 @@ var React = require('react'),
                     break;
 
                 case 'DB_NETWORK_ERROR':
-
-
                     if (this.isOnline()) {
                         return {
-                            errorTitle: 'Houston, Dropbox is down (or slow) ...',
+                            errorTitle: 'Dropbox is down (or very slow)',
                             solution: [
-                                'It seems, you are online, but check your internet connection.',
-                                'Try Dropbox and check their service status.'
+                                'Check your internet connection.',
+                                'Check Dropbox service status.'
                             ],
                             restartAction: false,
                             supportAction: false,
@@ -238,10 +234,10 @@ var React = require('react'),
                         };
                     } else {
                         return {
-                            errorTitle: 'D\'oh, you are offline ...',
+                            errorTitle: 'You are offline',
                             solution: [
-                                'Connect to Internet.',
-                                'Re-Login to TREZOR password manager.'
+                                'Connect to the Internet.',
+                                'Re-Login to TREZOR Password Manager.'
                             ],
                             restartAction: true,
                             supportAction: false,
@@ -255,12 +251,12 @@ var React = require('react'),
                     break;
             }
             return {
-                errorTitle: 'Error! It\'s all peter\'s fault ...',
+                errorTitle: 'Error',
                 errorSolutionSteps: [
-                    'It seems, you are online, but check your connection.',
-                    'Make sure you have installed TREZOR Chrome Extension from chrome web store.',
-                    'Try to restart the App - TREZOR password manager.',
-                    'Get in touch with our Support specialist.'
+                    'Check your connection.',
+                    'Make sure you have TREZOR Chrome Extension installed.',
+                    'Try to restart TREZOR Password Manager.',
+                    'In case of ongoing problems contact our support.'
                 ],
                 restartAction: true,
                 supportAction: true,
@@ -325,7 +321,7 @@ var React = require('react'),
                             {this.state.redirectAction ? <a href={this.state.redirectTo} target='_blank'
                                                             className='button shadow blue-btn'>{this.state.redirectText}</a> : ''}
                             {this.state.supportAction ? <a className='button shadow green-btn' target='_blank'
-                                                           href={'mailto:support@satohilabs.com?subject=TREZOR Password Manager bug report&body=' + this.state.supportDefaultMailText}>Contact
+                                                           href={'mailto:support@satoshilabs.com?subject=TREZOR Password Manager bug report&body=' + this.state.supportDefaultMailText}>Contact
                                 support</a> : ''}
                             {this.state.restartAction ?
                                 <Button className='button shadow red-btn' onClick={this.restartApp}>Restart

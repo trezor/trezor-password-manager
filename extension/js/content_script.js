@@ -103,7 +103,7 @@ let visibleDialog = false,
         let dialogDiv = document.createElement('div');
         dialogDiv.setAttribute('style', 'position: relative; background: rgba(0,0,0,.7); height: 40px; width: 200px; border-radius: 6px; -webkit-border-radius: 6px; margin: 0 auto; text-align: center;');
         let textBlock = document.createElement('span');
-        textBlock.innerHTML = 'Can\'t find Login, sorry!';
+        textBlock.innerHTML = 'Could not find login form, sorry!';
         textBlock.setAttribute('style', 'position: relative; width: 100%; margin: 0 auto; text-align: center; color: white; font-weight: bold; line-height: 40px; font-size: 16px;');
         dialogDiv.appendChild(textBlock);
         document.body.appendChild(wrapperDiv);
