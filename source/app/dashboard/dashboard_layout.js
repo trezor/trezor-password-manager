@@ -8,7 +8,6 @@ var React = require('react'),
     Footer = require('../global_components/footer/footer'),
     TagModal = require('../global_components/modal_dialogs/tag_modal'),
     PinModal = require('../global_components/modal_dialogs/pin_modal'),
-    ErrorModal = require('../global_components/modal_dialogs/error_modal'),
     {Link} = Router,
 
     DashboardLayout = React.createClass({
@@ -62,7 +61,6 @@ var React = require('react'),
                         <div>
                             <TagModal />
                             <PinModal />
-                            <ErrorModal />
                             <SidePanel />
                             <section className='content'>
                                 <PasswordTable />

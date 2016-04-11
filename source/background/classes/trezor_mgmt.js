@@ -12,12 +12,11 @@ const HD_HARDENED = 0x80000000,
     DEVICE_IS_EMPTY = 'Connected device is not initialized',
     NOT_INITIALIZED = 'Device not initialized',
     FIRMWARE_IS_OLD = 'Firmware of connected device is too old',
-    INSUFFICIENT_FUNDS = 'Insufficient funds',
     CIPHER_CANCEL = 'CipherKeyValue cancelled',
     WRONG_PIN = 'Invalid PIN',
+
     DEFAULT_KEYPHRASE = 'Activate TREZOR Password Manager?',
     DEFAULT_NONCE = '2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee';
-
 
 var crypto = require('crypto');
 
@@ -41,6 +40,7 @@ class TrezorMgmt {
             if (this.storage.phase === 'LOADED') {
                 this.disconnectCallback();
             }
+            this.storage.emit('sendMessage', 'errorMsg', {code: 'T_LIST', msg: error});
         });
     }
 
@@ -71,10 +71,6 @@ class TrezorMgmt {
                 return never;
                 break;
 
-            case INSUFFICIENT_FUNDS:
-                return never;
-                break;
-
             case CIPHER_CANCEL:
                 //TODO do it smart asshole!
                 if (operation === 'encKey') {
@@ -85,13 +81,13 @@ class TrezorMgmt {
                 break;
 
             case NOT_INITIALIZED:
-                this.storage.emit('sendMessage', 'notInitialized');
+                this.storage.emit('sendMessage', 'errorMsg', {code: 'T_NOT_INIT'});
                 return never;
                 break;
 
             case WRONG_PIN:
                 this.storage.emit('sendMessage', 'wrongPin');
-                //TODO do it smart asshole!
+                //TODO it smart asshole!
                 switch (operation) {
                     case 'encKey':
                         this.trezorDevice.waitForSessionAndRun((session) => this.getEncryptionKey(session));
@@ -130,11 +126,11 @@ class TrezorMgmt {
         if (this.current_ext_version !== '') {
             if (!this.versionCompare(this.current_ext_version, MINIMAL_EXTENSION_VERSION)) {
                 // bad version
-                this.storage.emit('sendMessage', 'showAlert', 'OLD_VERSION');
+                this.storage.emit('sendMessage', 'errorMsg', {code: 'T_OLD_VERSION', msg: this.current_ext_version});
             }
         } else {
             // no extension
-            this.storage.emit('sendMessage', 'showAlert', 'NO_TRANSPORT');
+            this.storage.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT', msg: this.current_ext_version});
         }
     }
 
@@ -152,11 +148,13 @@ class TrezorMgmt {
                 this.trezorDevice.on('button', (type, callback) => this.buttonCallback(type, callback));
                 this.trezorDevice.on('disconnect', () => this.disconnectCallback());
                 if (this.trezorDevice.isBootloader()) {
+                    this.storage.emit('sendMessage', 'errorMsg', {code: 'T_BOOTLOADER'});
                     throw new Error('Device is in bootloader mode, re-connected it');
                 }
                 this.trezorDevice.waitForSessionAndRun((session) => this.getEncryptionKey(session));
 
             } catch (error) {
+                this.storage.emit('sendMessage', 'errorMsg', {code: 'T_DEVICE', msg: error});
                 console.error('Device error:', error);
                 //TODO
             }

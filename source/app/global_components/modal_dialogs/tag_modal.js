@@ -193,8 +193,8 @@ var React = require('react'),
                                            onKeyDown={this.handleKeyDown}
                                            value={this.state.newTagTitle}/>
                                     <div className='btn-controls'>
-                                        <button className="btn green-btn" onClick={this.saveEditModal}>Save</button>
-                                        <button className="btn red-btn" onClick={this.closeEditModal}>Discard</button>
+                                        <button className='btn shadow green-btn' onClick={this.saveEditModal}>Save</button>
+                                        <button className='btn shadow red-btn' onClick={this.closeEditModal}>Discard</button>
                                     </div>
                                 </span>
                             </div>
@@ -217,10 +217,10 @@ var React = require('react'),
                                            disabled
                                            value={'Remove ' + this.state.newTagTitle + ' ?'}/>
                                     <div className='btn-controls'>
-                                        <button className="btn  green-btn" onClick={this.removeTagCloseModal}>Yes,
+                                        <button className='btn shadow green-btn' onClick={this.removeTagCloseModal}>Yes,
                                             remove
                                         </button>
-                                        <button className="btn red-btn" onClick={this.closeRemoveModal}>No</button>
+                                        <button className='btn shadow red-btn' onClick={this.closeRemoveModal}>No</button>
                                     </div>
                                 </span>
                             </div>

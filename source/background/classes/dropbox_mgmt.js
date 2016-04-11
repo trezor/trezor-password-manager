@@ -40,7 +40,7 @@ class DropboxMgmt {
         switch (error.status) {
             case Dropbox.ApiError.INVALID_TOKEN:
                 console.warn('User token expired ', error.status);
-                this.storage.emit('sendMessage', 'errorMsg', 'Dropbox User token expired');
+                this.storage.emit('sendMessage', 'errorMsg', {code: 'DB_INVALID_TOKEN', msg: error.status});
                 break;
 
             case Dropbox.ApiError.NOT_FOUND:
@@ -50,17 +50,17 @@ class DropboxMgmt {
 
             case Dropbox.ApiError.OVER_QUOTA:
                 console.warn('Dropbox quota overreached ', error.status);
-                this.storage.emit('sendMessage', 'errorMsg', 'Dropbox quota overreached.');
+                this.storage.emit('sendMessage', 'errorMsg', {code: 'DB_OVER_QUOTA', msg: error.status});
                 break;
 
             case Dropbox.ApiError.RATE_LIMITED:
                 console.warn('Too many API calls ', error.status);
-                this.storage.emit('sendMessage', 'errorMsg', 'Too many Dropbox API calls.');
+                this.storage.emit('sendMessage', 'errorMsg', {code: 'DB_RATE_LIMITED', msg: error.status});
                 break;
 
             case Dropbox.ApiError.NETWORK_ERROR:
                 console.warn('Network error, check connection ', error.status);
-                this.storage.emit('sendMessage', 'errorMsg', 'Dropbox Network error, check connection.');
+                this.storage.emit('sendMessage', 'errorMsg', {code: 'DB_NETWORK_ERROR', msg: error.status});
                 break;
 
             case Dropbox.ApiError.INVALID_PARAM:
@@ -68,7 +68,7 @@ class DropboxMgmt {
             case Dropbox.ApiError.INVALID_METHOD:
             default:
                 console.warn('Network error, check connection ', error.status);
-                this.storage.emit('sendMessage', 'errorMsg', 'Network error, check connection.');
+                this.storage.emit('sendMessage', 'errorMsg', {code: 'DB_NETWORK_ERROR', msg: error.status});
         }
     }
 

@@ -1,5 +1,6 @@
 'use strict';
 
+window.tpmErroLog = [];
 // Storage will be used for background internal messaging (extends EventEmitter) ...
 var StorageMgmt = require('./classes/storage_mgmt'),
     storage = new StorageMgmt(),
@@ -78,6 +79,11 @@ var StorageMgmt = require('./classes/storage_mgmt'),
         trezorManager.decryptFullEntry(entry, (data) => chromeManager.fillLoginForm(data));
     },
 
+    saveErroLog = (errorMsg, url, lineNumber, column, errorObj) => {
+        console.log(errorMsg, url, lineNumber, column, errorObj);
+        window.tpmErroLog.push('%0D%0A Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber + ' Column: ' + column + ' StackTrace: ' +  errorObj);
+    },
+
     chromeMessaging = (request, sender, sendResponse) => {
         switch (request.type) {
             case 'initPlease':
@@ -137,6 +143,7 @@ chromeManager.exists().then(() => {
 }).then((list) => {
     trezorManager = new TrezorMgmt(storage, list);
     dropboxManager = new DropboxMgmt(storage);
+    window.onerror = saveErroLog;
     storage.on('decryptContent', contentDecrypted);
     storage.on('initStorageFile', initNewFile);
     storage.on('loadFile', () => dropboxManager.loadFile());

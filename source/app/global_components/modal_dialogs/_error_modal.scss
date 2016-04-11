@@ -1,0 +1,65 @@
+.error-modal-dialog {
+  width: 380px;
+  text-align: left;
+  color: $c_white;
+
+  .modal-content {
+    background-color: $c_blue_dark_very;
+  }
+
+  .modal-header {
+    font-size: 1.4em;
+    border-bottom: 0;
+    padding-left: 20px;
+  }
+
+  .modal-body {
+    background-color: $c_blue_dark_very;
+    height: auto;
+    padding: 0 10px 20px 20px;
+
+    b {
+      color: $c_grey_font;
+      font-size: .9em;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    ul {
+      counter-reset: numbering;
+      padding-top: 5px;
+
+      li {
+        line-height: 1.3em;
+        padding: 7px 0 7px 0;
+        position: relative;
+        display: block;
+        margin-left: 15px;
+
+        &:before {
+          content: counter(numbering)'.';
+          counter-increment: numbering;
+          position: absolute;
+          left: -15px;
+        }
+      }
+    }
+  }
+
+  .btn-controls {
+    position: absolute;
+    overflow: hidden;
+    bottom: -55px;
+    right: 0;
+    height: 45px;
+    @include transition(all 0.3s ease-in-out);
+
+
+    button, a.button {
+      display: inline-block;
+      margin-left: 10px;
+      position: relative;
+      @include transition(all 0.3s ease-in-out);
+    }
+  }
+}

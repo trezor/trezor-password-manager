@@ -32,12 +32,6 @@ var React = require('react'),
 
         chromeMsgHandler(request, sender, sendResponse) {
             switch (request.type) {
-                case 'errorMsg':
-                    this.setState({
-                        dialog: 'error',
-                        errorMsg: request.content
-                    });
-                    break;
 
                 // DROPBOX PHASE
                 case 'dropboxInitialized':
@@ -79,12 +73,6 @@ var React = require('react'),
                     this.setState({
                         dialog: 'loading_dialog',
                         loadingText: request.content
-                    });
-                    break;
-
-                case 'notInitialized':
-                    this.setState({
-                        dialog: 'not_init'
                     });
                     break;
 
@@ -144,34 +132,6 @@ var React = require('react'),
                     <div className='overlay-color'></div>
                     <div className='home'>
 
-                        <div className={this.state.dialog === 'error' ? 'error' : 'hidden_dialog'}>
-                            <img src='dist/app-images/trezor_connect.png'/>
-
-                            <h1>Murphy's law: <br/> Something just go wrong.</h1>
-                            <br />
-                            {this.state.errorMsg}
-                            <br />
-                            <button className='accept-btn' onClick={this.restartBackground}>Restart App</button>
-                        </div>
-
-                        <div className={this.state.dialog === 'not_init' ? 'not_init' : 'hidden_dialog'}>
-                            <img src='dist/app-images/trezor_connect.png'/>
-
-                            <h1>Please, setup your TREZOR first.</h1>
-                            <br />
-                            <button className='no-style'><a href='https://www.mytrezor.com' target='_blank'>Go to
-                                mytrezor.com</a></button>
-                        </div>
-
-                        <div className={this.state.dialog === 'preloading' ? 'preloading' : 'hidden_dialog'}>
-                            <img src='dist/app-images/trezor.svg' className='no-circle'/>
-
-                            <div className='dialog-content'>
-                                <h1><b></b>Password Manager</h1>
-                                <span className='spinner'></span>
-                            </div>
-                        </div>
-
                         <div className={this.state.dialog === 'connect_dropbox' ? 'connect_dropbox' : 'hidden_dialog'}>
                             <img src='dist/app-images/trezor.svg' className='no-circle'/>
 
@@ -184,6 +144,16 @@ var React = require('react'),
                                     have a Dropbox account</a></button>
                             </div>
                         </div>
+
+                        <div className={this.state.dialog === 'preloading' ? 'preloading' : 'hidden_dialog'}>
+                            <img src='dist/app-images/trezor.svg' className='no-circle'/>
+
+                            <div className='dialog-content'>
+                                <h1><b></b>Password Manager</h1>
+                                <span className='spinner'></span>
+                            </div>
+                        </div>
+
 
                         <div
                             className={this.state.dialog === 'accept_dropbox_user' ? 'accept_dropbox_user' : 'hidden_dialog'}>

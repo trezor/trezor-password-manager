@@ -6,22 +6,58 @@ button, .button {
   padding: 6px 12px;
   margin-bottom: 5px;
   cursor: pointer;
+  line-height: 20px;
   @include border-radius(2px);
   @include transition(all 0.2s ease-in-out);
 
+  &:hover, &:focus {
+    text-decoration: none;
+  }
+
+  &.shadow {
+    &:hover {
+      @include box-shadow(0px 0px 10px -1px rgba(0, 0, 0, 0.65));
+    }
+  }
+
   &.blue-btn {
-    background-color: $c_blue;
-    border-color: $c_blue;
+    background-color: $c_blue !important;
+    border-color: $c_blue !important;
+    color: $c_white;
+
+    &:hover {
+      color: $c_black;
+    }
   }
 
   &.green-btn {
-    background-color: $c_green;
-    border-color: $c_green;
+    background-color: $c_green !important;
+    border-color: $c_green !important;
+    color: $c_white;
+
+    &:hover {
+      color: $c_black;
+    }
   }
 
   &.red-btn {
-    background-color: $c_pink;
-    border-color: $c_pink;
+    background-color: $c_pink !important;
+    border-color: $c_pink !important;
+    color: $c_white;
+
+    &:hover {
+      color: $c_black;
+    }
+  }
+
+  &.white-btn {
+    background-color: $c_white !important;
+    border-color: $c_white !important;
+    color: $c_black;
+
+    &:hover {
+      color: $c_black;
+    }
   }
 
   &:disabled {
