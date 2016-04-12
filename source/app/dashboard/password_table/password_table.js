@@ -66,7 +66,7 @@ var React = require('react'),
                     var tempArray = Object.keys(this.state.entries).map((key) => {
                         return {
                             'key': key,
-                            'title': this.state.entries[key].title
+                            'title': this.isUrl(this.state.entries[key].title) ? this.decomposeUrl(this.state.entries[key].title).domain : this.state.entries[key].title
                         }
                     }).sort((a, b) => {
                         return a.title.localeCompare(b.title);
@@ -94,10 +94,34 @@ var React = require('react'),
             }
         },
 
+        decomposeUrl(url) {
+            var title = {index: url.indexOf('://')};
+            if (title.index > -1) {
+                title.protocol = url.substring(0, title.index + 3);
+                title.domain = url.split('/')[2];
+                title.path = url.slice(title.protocol.length + title.domain.length, url.length);
+            } else {
+                title.protocol = false;
+                title.domain = url.split('/')[0];
+                title.path = url.slice(title.domain.length, url.length);
+            }
+            return title;
+        },
+
+        isUrl(url){
+            return url.match(/[a-z]+\.[a-z][a-z]+(\/.*)?$/i) != null
+        },
+
         checkFilterMatching(obj) {
-            return obj.title.toLowerCase().indexOf(this.state.filter) > -1 ||
+            let findMatchingTag = false;
+            window.myStore.getTagTitleArrayById(obj.tags).map((key) => {
+               if(key.toLowerCase().indexOf(this.state.filter) > -1) findMatchingTag = true;
+            });
+            return findMatchingTag ||
+                obj.title.toLowerCase().indexOf(this.state.filter) > -1 ||
                 obj.note.toLowerCase().indexOf(this.state.filter) > -1 ||
                 obj.username.toLowerCase().indexOf(this.state.filter) > -1;
+
         },
 
         activeTag(obj) {
