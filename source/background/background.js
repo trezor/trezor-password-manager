@@ -50,6 +50,14 @@ var StorageMgmt = require('./classes/storage_mgmt'),
                 '0': {
                     'title': 'All',
                     'icon': 'home'
+                },
+                '1': {
+                    'title': 'Social',
+                    'icon': 'person-stalker'
+                },
+                '2': {
+                    'title': 'Bitcoin',
+                    'icon': 'social-bitcoin'
                 }
             },
             'entries': {}

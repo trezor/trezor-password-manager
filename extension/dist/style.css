@@ -3051,7 +3051,8 @@ html, body {
   font-size: 14px;
   background-color: #edf0f0;
   color: #797979;
-  overflow-x: hidden; }
+  overflow-x: hidden;
+  overflow-y: scroll; }
   html > div:first-child, body > div:first-child {
     height: 100%;
     min-height: 100%;
