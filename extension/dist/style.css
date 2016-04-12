@@ -4287,7 +4287,8 @@ aside.left-panel {
           .dashboard .card .entry.edit-mode .safe-note textarea, .dashboard .card .entry.edit-mode .note textarea {
             resize: none; }
         .dashboard .card .entry.edit-mode .form-buttons {
-          visibility: visible; }
+          visibility: visible;
+          z-index: 10; }
           .dashboard .card .entry.edit-mode .form-buttons .lock-btn {
             -webkit-transform: rotateY(180deg);
             -moz-transform: rotateY(180deg);
