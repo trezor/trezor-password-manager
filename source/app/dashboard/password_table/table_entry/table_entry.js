@@ -536,7 +536,7 @@ var React = require('react'),
 
                                 {this.state.key_value != null &&
                                 <DropdownButton title='' noCaret pullRight id='dropdown-no-caret'>
-                                    <MenuItem eventKey='1' onSelect={this.removeEntry}><i className='ion-close'></i>
+                                    <MenuItem eventKey='1' onSelect={this.removeEntry}><i className='ion-trash-a'></i>
                                         Remove entry</MenuItem>
                                 </DropdownButton>
                                 }

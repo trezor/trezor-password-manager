@@ -141,7 +141,7 @@ var React = require('react'),
                                 </button>
                                 <br />
                                 <button className='no-style'><a href='https://www.dropbox.com' target='_blank'>I don't
-                                    have a Dropbox account</a></button>
+                                    have a Dropbox account.</a></button>
                             </div>
                         </div>
 
@@ -164,7 +164,7 @@ var React = require('react'),
                                     <b> {this.state.dropboxUsername}</b>
                                 </button>
                                 <br />
-                                <button className='no-style' onClick={this.disconnectDropbox}>Sign with a different
+                                <button className='no-style' onClick={this.disconnectDropbox}>Sign in with a different
                                     account
                                 </button>
                             </div>
@@ -175,7 +175,7 @@ var React = require('react'),
 
                             <h1>Connect your <br/> <b className='smallcaps'>TREZOR</b> device.</h1>
                             <br />
-                            <button className='no-style'><a href='https://www.buytrezor.com' target='_blank'>I don't
+                            <button className='no-style'><a href='https://www.buytrezor.com?a=tpm' target='_blank'>I don't
                                 have a TREZOR device</a></button>
                         </div>
 
