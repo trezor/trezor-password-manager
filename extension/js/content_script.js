@@ -173,7 +173,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         removeTrezorDialog();
                     }
                 }
-            }, 250);
+            }, 350);
             break;
 
         case 'showTrezorMsg':
