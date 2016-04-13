@@ -52,9 +52,8 @@ let visibleDialog = false,
             loginFormsArrs = [];
         for (let i = 0; i < tempFormArr.length; i++) {
             let inputs = tempFormArr[i].getElementsByTagName('input'),
-                visibleInputs = countVisibleInputs(inputs),
                 hasPwdInput = hasOnePasswordInput(inputs);
-            if (hasPwdInput && visibleInputs) {
+            if (hasPwdInput) {
                 loginFormsArrs.push(tempFormArr[i]);
             }
         }
