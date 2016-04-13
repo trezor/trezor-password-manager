@@ -68,7 +68,7 @@ let visibleDialog = false,
             appendNoResultsDialog();
             setTimeout(() => {
                 removeNoResultsDialog();
-            }, 1750);
+            }, 2150);
         }else {
             for (let i = 0; i < loginForms.length; i++) {
                 let inputs = loginForms[i].getElementsByTagName('input');
@@ -100,9 +100,9 @@ let visibleDialog = false,
         wrapperDiv.setAttribute('style', 'position: fixed; left: 0px; right: 0px; top: 30%; background: transparent; z-index: 99999; height: 180px; width: 100%;');
         wrapperDiv.setAttribute('id', 'no-results-trezor');
         let dialogDiv = document.createElement('div');
-        dialogDiv.setAttribute('style', 'position: relative; background: rgba(0,0,0,.7); height: 40px; width: 200px; border-radius: 6px; -webkit-border-radius: 6px; margin: 0 auto; text-align: center;');
+        dialogDiv.setAttribute('style', 'position: relative; background: rgba(0,0,0,.7); height: 40px; width: 260px; border-radius: 6px; -webkit-border-radius: 6px; margin: 0 auto; text-align: center;');
         let textBlock = document.createElement('span');
-        textBlock.innerHTML = 'Could not find login form, sorry!';
+        textBlock.innerHTML = 'Couldn\'t find login form, sorry!';
         textBlock.setAttribute('style', 'position: relative; width: 100%; margin: 0 auto; text-align: center; color: white; font-weight: bold; line-height: 40px; font-size: 16px;');
         dialogDiv.appendChild(textBlock);
         document.body.appendChild(wrapperDiv);
