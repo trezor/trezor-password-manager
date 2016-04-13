@@ -13,8 +13,8 @@ var React = require('react'),
                 showErrorModal: false,
                 errorTitle: 'Error!',
                 errorSolutionSteps: [
-                    'Check your connection.',
-                    'Make sure you have TREZOR Chrome Extension installed.',
+                    'Check your Internet connection.',
+                    'Make sure you have the latest version of TREZOR Chrome Extension.',
                     'Try to restart TREZOR Password Manager.',
                     'In case of ongoing problems contact our support.'
                 ],
