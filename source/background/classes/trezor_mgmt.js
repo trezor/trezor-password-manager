@@ -123,6 +123,7 @@ class TrezorMgmt {
     }
 
     checkVersions() {
+        this.storage.emit('checkReopen');
         if (this.current_ext_version !== '') {
             if (!this.versionCompare(this.current_ext_version, MINIMAL_EXTENSION_VERSION)) {
                 // bad version

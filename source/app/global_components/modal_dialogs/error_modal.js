@@ -295,6 +295,7 @@ var React = require('react'),
         },
 
         restartApp() {
+            localStorage.setItem('tpmRestart', 'reopen');
             chrome.runtime.reload();
         },
 

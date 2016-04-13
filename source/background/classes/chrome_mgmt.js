@@ -6,14 +6,13 @@ class ChromeMgmt {
     constructor(storage) {
         this.storage = storage;
         this.storage.on('decryptedPassword', (data) => this.fillLoginForm(data));
+        this.storage.on('checkReopen', () => this.checkReopen());
         this.activeHost = '';
         this.hasCredentials = false;
         chrome.tabs.onUpdated.addListener(() => this.detectActiveUrl());
         chrome.tabs.onActivated.addListener(() => this.detectActiveUrl());
         chrome.commands.onCommand.addListener((c) => this.chromeCommands(c));
-        chrome.browserAction.onClicked.addListener(() => {
-            chrome.tabs.create({'url': chrome.extension.getURL('index.html'), 'selected': true});
-        });
+        chrome.browserAction.onClicked.addListener(() => this.openAppTab());
     }
 
     exists() {
@@ -27,6 +26,17 @@ class ChromeMgmt {
             return Promise.reject(new Error('Global chrome.runtime.sendMessage does not exist; probably not whitelisted website in extension manifest'));
         }
         return Promise.resolve();
+    }
+
+    checkReopen() {
+        if(localStorage.getItem('tpmRestart') === 'reopen') {
+            localStorage.setItem('tpmRestart', 'nope');
+            this.openAppTab();
+        }
+    }
+
+    openAppTab() {
+        chrome.tabs.create({'url': chrome.extension.getURL('index.html'), 'selected': true});
     }
 
     detectActiveUrl() {
