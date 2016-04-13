@@ -3972,8 +3972,6 @@ aside.left-panel {
             color: #797979; }
           .dashboard .card .entry.list-mode:hover .username {
             color: rgba(121, 121, 121, 0.9); }
-          .dashboard .card .entry.list-mode:hover .note input:disabled {
-            border-left-color: #3498db !important; }
         .dashboard .card .entry.list-mode .title {
           padding-top: 10px;
           font-size: 1.4em;
@@ -4004,10 +4002,9 @@ aside.left-panel {
           padding: 0 0 4px 5px;
           border: 0;
           line-height: 1.2em;
-          max-height: 17px;
+          max-height: 19px;
           border-left: 3px solid rgba(121, 121, 121, 0.3) !important;
-          font-style: italic;
-          font-size: 0.9em;
+          font-size: 1.1em;
           color: rgba(121, 121, 121, 0.7);
           outline: none;
           overflow: hidden;

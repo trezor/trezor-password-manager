@@ -149,12 +149,6 @@
           .username {
             color: rgba($c_grey_content_font, .9);
           }
-
-          .note {
-            input:disabled {
-              border-left-color: $c_blue !important;
-            }
-          }
         }
 
         .title {
@@ -196,10 +190,9 @@
             padding: 0 0 4px 5px;
             border: 0;
             line-height: 1.2em;
-            max-height: 17px;
+            max-height: 19px;
             border-left: 3px solid rgba($c_grey_content_font, .3) !important;
-            font-style: italic;
-            font-size: 0.9em;
+            font-size: 1.1em;
             color: rgba($c_grey_content_font, .7);
             outline: none;
             overflow: hidden;
