@@ -322,7 +322,7 @@ class TrezorMgmt {
 
     getEncryptionKey(session) {
         return session.cipherKeyValue(PATH, this.cryptoData.keyPhrase, this.cryptoData.nonce, this.cryptoData.enc, this.cryptoData.askOnEnc, true).then((result) => {
-            this.storage.emit('sendMessage', 'loading', 'We are getting there');
+            this.storage.emit('sendMessage', 'loading', 'We\'re getting there ...');
             this.storage.masterKey = result.message.value;
             let temp = this.storage.masterKey;
             this.storage.encryptionKey = new Buffer(temp.substring(temp.length / 2, temp.length), 'hex');

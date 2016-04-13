@@ -116,7 +116,7 @@ var React = require('react'),
                         solution: [
                             'Go to Chrome web store.',
                             'Download and install TREZOR Chrome Extension.',
-                            'Restart app - TREZOR Password Manager.'
+                            'Restart TREZOR Password Manager.'
                         ],
                         restartAction: true,
                         supportAction: false,
@@ -185,13 +185,14 @@ var React = require('react'),
                     return {
                         errorTitle: 'Not enough Dropbox space',
                         solution: [
-                            'You have reached your Dropbox quota.',
-                            'Clean up your Dropbox folder or buy more space.'
+                            'Clean up your Dropbox folder or buy more space.',
+                            'Sign in with a different account.',
+                            'Restart TREZOR Password Manager.'
                         ],
-                        restartAction: false,
+                        restartAction: true,
                         supportAction: false,
                         redirectAction: true,
-                        closeAction: true,
+                        closeAction: false,
                         redirectText: 'Dropbox.com',
                         redirectTo: 'https://www.dropbox.com/',
                         supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + mailFooterTemplate
