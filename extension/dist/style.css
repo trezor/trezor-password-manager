@@ -3621,10 +3621,10 @@ button, .button {
     .footer.white a {
       color: #fff; }
   .footer.black {
-    margin-top: -12px;
-    padding: 0 15px 0 0;
-    position: relative;
-    float: right; }
+    padding: 0 10px 0 0;
+    position: absolute;
+    bottom: 15px;
+    right: 10px; }
     .footer.black a {
       color: #797979; }
 
@@ -4368,7 +4368,6 @@ form.filter {
 
 .dashboard-layout {
   max-width: 1290px;
-  height: 100%;
   min-height: 100%;
   position: relative; }
   .dashboard-layout > div {
