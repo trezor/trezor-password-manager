@@ -154,7 +154,6 @@ var React = require('react'),
                             </div>
                         </div>
 
-
                         <div
                             className={this.state.dialog === 'accept_dropbox_user' ? 'accept_dropbox_user' : 'hidden_dialog'}>
                             <img src='dist/app-images/dropbox.svg'/>
