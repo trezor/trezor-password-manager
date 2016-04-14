@@ -3051,8 +3051,7 @@ html, body {
   font-size: 14px;
   background-color: #edf0f0;
   color: #797979;
-  overflow-x: hidden;
-  overflow-y: scroll; }
+  overflow-x: hidden; }
   html > div:first-child, body > div:first-child {
     height: 100%;
     min-height: 100%;
@@ -3060,6 +3059,9 @@ html, body {
     html > div:first-child > div, body > div:first-child > div {
       height: 100%;
       min-height: 100%; }
+
+html {
+  margin-left: calc(100vw - 100%); }
 
 ul.dropdown-menu {
   border: 0;
@@ -3186,6 +3188,14 @@ button, .button {
     border-radius: 50%;
     display: inline-block;
     vertical-align: middle; }
+  .home .preloading i,
+  .home .accept_dropbox_user i,
+  .home .connect_trezor i,
+  .home .connect_dropbox i,
+  .home .loading_dialog i,
+  .home .button_dialog i {
+    display: block;
+    margin-top: -20px; }
   .home .preloading h1,
   .home .accept_dropbox_user h1,
   .home .connect_trezor h1,

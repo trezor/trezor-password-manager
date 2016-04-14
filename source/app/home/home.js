@@ -164,9 +164,10 @@ var React = require('react'),
                                     <b> {this.state.dropboxUsername}</b>
                                 </button>
                                 <br />
-                                <button className='no-style' onClick={this.disconnectDropbox}>Sign in with a different
+                                <button className='no-style' onClick={this.disconnectDropbox}>Use different
                                     account.
                                 </button>
+                                <i>(Manage your accounts via Dropbox.com)</i>
                             </div>
                         </div>
 

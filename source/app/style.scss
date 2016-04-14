@@ -20,7 +20,6 @@ html, body {
   background-color: $c_grey_bg;
   color: $c_grey_content_font;
   overflow-x: hidden;
-  overflow-y: scroll;
 
   & > div:first-child {
     height: 100%;
@@ -32,6 +31,10 @@ html, body {
       min-height: 100%;
     }
   }
+}
+
+html {
+  margin-left: calc(100vw - 100%);
 }
 
 ul.dropdown-menu {

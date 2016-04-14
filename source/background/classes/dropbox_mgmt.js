@@ -66,9 +66,14 @@ class DropboxMgmt {
             case Dropbox.ApiError.INVALID_PARAM:
             case Dropbox.ApiError.OAUTH_ERROR:
             case Dropbox.ApiError.INVALID_METHOD:
-            default:
                 console.warn('Network error, check connection ', error.status);
                 this.storage.emit('sendMessage', 'errorMsg', {code: 'DB_NETWORK_ERROR', msg: error.status});
+        }
+
+        if (error.code === 'access_denied') {
+            this.storage.emit('disconnectDropbox');
+            this.storage.emit('sendMessage', 'errorMsg', {code: 'DB_ACCESS_DENIED', msg: error.description});
+            this.client.reset();
         }
     }
 

@@ -250,6 +250,22 @@ var React = require('react'),
                         };
                     }
                     break;
+
+                case 'DB_ACCESS_DENIED':
+                    return {
+                        errorTitle: 'We needs permissions',
+                        solution: [
+                            'Sign to Dropbox and allow permissions access'
+                        ],
+                        restartAction: false,
+                        supportAction: false,
+                        redirectAction: false,
+                        closeAction: true,
+                        redirectText: '',
+                        redirectTo: '',
+                        supportDefaultMailText: ''
+                    };
+                    break;
             }
             return {
                 errorTitle: 'Error',

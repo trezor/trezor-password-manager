@@ -154,6 +154,7 @@ chromeManager.exists().then(() => {
     window.onerror = saveErroLog;
     storage.on('decryptContent', contentDecrypted);
     storage.on('initStorageFile', initNewFile);
+    storage.on('disconnectDropbox', init);
     storage.on('loadFile', () => dropboxManager.loadFile());
     storage.on('disconnectedTrezor', userLoggedOut);
     storage.on('decryptPassword', (entry) => decrypteAndInject(entry));
