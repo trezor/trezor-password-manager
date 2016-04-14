@@ -239,7 +239,7 @@ var React = require('react'),
                                     className='ion-calendar'></i>Date</MenuItem>
                                 <MenuItem eventKey='2' active={this.state.orderType === 'note'}
                                           onSelect={this.changeOrder.bind(null, 'note')}><i
-                                    className='ion-calendar'></i>Note</MenuItem>
+                                    className='ion-ios-list-outline'></i>Note</MenuItem>
                             </DropdownButton>
                         </div>
                     </div>
