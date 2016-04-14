@@ -62,18 +62,34 @@ var React = require('react'),
             if (rawArr.length > 0) {
                 if (this.state.orderType === 'date') {
                     return rawArr.reverse();
-                } else {
-                    var tempArray = Object.keys(this.state.entries).map((key) => {
-                        let title = this.state.entries[key].title;
-                        if(this.isUrl(title)) {
-                            title = this.state.orderType === 'alphabetical' ? this.decomposeUrl(title).domain : this.getDomain(title);
+                } if(this.state.orderType === 'note') {
+                    let tempArray = Object.keys(this.state.entries).map((key) => {
+                        let pattern = this.state.entries[key].note.length > 0 ? this.state.entries[key].note :  this.state.entries[key].title;
+                        if(this.isUrl(pattern)) {
+                            pattern = this.decomposeUrl(pattern).domain;
                         }
                         return {
                             'key': key,
-                            'title': title
+                            'pattern': pattern
                         }
                     }).sort((a, b) => {
-                        return a.title.localeCompare(b.title);
+                        return a.pattern.localeCompare(b.pattern);
+                    });
+                    return Object.keys(tempArray).map((obj) => {
+                        return tempArray[obj].key
+                    });
+                } else {
+                    let tempArray = Object.keys(this.state.entries).map((key) => {
+                        let pattern = this.state.entries[key].title;
+                        if(this.isUrl(pattern)) {
+                            pattern = this.state.orderType === 'alphabetical' ? this.decomposeUrl(pattern).domain : this.getDomain(pattern);
+                        }
+                        return {
+                            'key': key,
+                            'pattern': pattern
+                        }
+                    }).sort((a, b) => {
+                        return a.pattern.localeCompare(b.pattern);
                     });
                     return Object.keys(tempArray).map((obj) => {
                         return tempArray[obj].key
@@ -220,7 +236,10 @@ var React = require('react'),
                                     className='ion-ios-world-outline'></i>Domain Alphabetical</MenuItem>
                                 <MenuItem eventKey='2' active={this.state.orderType === 'date'}
                                           onSelect={this.changeOrder.bind(null, 'date')}><i
-                                    className='ion-calendar'></i>Date added</MenuItem>
+                                    className='ion-calendar'></i>Date</MenuItem>
+                                <MenuItem eventKey='2' active={this.state.orderType === 'note'}
+                                          onSelect={this.changeOrder.bind(null, 'note')}><i
+                                    className='ion-calendar'></i>Note</MenuItem>
                             </DropdownButton>
                         </div>
                     </div>
