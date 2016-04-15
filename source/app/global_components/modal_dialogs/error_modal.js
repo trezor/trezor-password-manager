@@ -334,11 +334,10 @@ var React = require('react'),
                                 {solution}
                             </ul>
                         </Modal.Body>
-
                         <div className='btn-controls'>
                             {this.state.redirectAction ? <a href={this.state.redirectTo} target='_blank'
                                                             className='button shadow blue-btn'>{this.state.redirectText}</a> : ''}
-                            {this.state.supportAction ? <a className='button shadow green-btn'
+                            {this.state.supportAction ? <a className='button shadow green-btn' target='_top'
                                                            href={'mailto:support@satoshilabs.com?subject=TREZOR Password Manager bug report&body=' + this.state.supportDefaultMailText}>Contact
                                 support</a> : ''}
                             {this.state.restartAction ?

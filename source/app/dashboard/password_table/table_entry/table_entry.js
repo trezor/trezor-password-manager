@@ -3,6 +3,7 @@
 require('whatwg-fetch');
 
 var React = require('react'),
+    tld = require('tldjs'),
     DropdownButton = require('react-bootstrap').DropdownButton,
     MenuItem = require('react-bootstrap').MenuItem,
     Tooltip = require('react-bootstrap').Tooltip,
@@ -47,9 +48,9 @@ var React = require('react'),
         },
 
         componentDidMount() {
-            if (this.isUrl(this.decomposeUrl(this.state.title).domain)) {
+            if (this.isUrl(this.removeProtocolPrefix(this.state.title))) {
                 this.setState({
-                    image_src: 'https://logo.clearbit.com/' + this.decomposeUrl(this.state.title).domain
+                    image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title)
                 });
             }
         },
@@ -77,18 +78,8 @@ var React = require('react'),
             return url.match(/[a-z]+\.[a-z][a-z]+(\/.*)?$/i) != null
         },
 
-        decomposeUrl(url) {
-            var title = {index: url.indexOf('://')};
-            if (title.index > -1) {
-                title.protocol = url.substring(0, title.index + 3);
-                title.domain = url.split('/')[2];
-                title.path = url.slice(title.protocol.length + title.domain.length, url.length);
-            } else {
-                title.protocol = false;
-                title.domain = url.split('/')[0];
-                title.path = url.slice(title.domain.length, url.length);
-            }
-            return title;
+        removeProtocolPrefix(url) {
+            return url.indexOf('://') > -1 ? url.substring(0, url.indexOf('://') + 3).split('/')[2] : url.split('/')[0];
         },
 
         setTrezorWaitingBackface(msg) {
@@ -181,9 +172,9 @@ var React = require('react'),
                 });
             } else {
                 var oldValues = window.myStore.getEntryValuesById(this.state.key_value);
-                if (this.isUrl(this.decomposeUrl(this.state.title).domain)) {
+                if (this.isUrl(this.removeProtocolPrefix(this.state.title))) {
                     this.setState({
-                        image_src: 'https://logo.clearbit.com/' + this.decomposeUrl(this.state.title).domain
+                        image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title)
                     });
                 }
                 this.setState({
@@ -263,9 +254,9 @@ var React = require('react'),
         },
 
         titleOnBlur() {
-            if (this.isUrl(this.decomposeUrl(this.state.title).domain)) {
+            if (this.isUrl(this.removeProtocolPrefix(this.state.title))) {
                 this.setState({
-                    image_src: 'https://logo.clearbit.com/' + this.decomposeUrl(this.state.title).domain
+                    image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title)
                 });
             } else {
                 this.setState({
@@ -366,7 +357,7 @@ var React = require('react'),
                 copyClipboardUsr = (
                     <Tooltip id='clipboard-usr'>{this.state.clipboard_usr ? 'Copied!' : 'Copy to clipboard'}</Tooltip>),
                 entryTitle = 'Item/URL',
-                entryTitleVal = this.isUrl(this.state.title) ? this.decomposeUrl(this.state.title).domain : this.state.title,
+                entryTitleVal = this.isUrl(this.state.title) ? this.removeProtocolPrefix(this.state.title) : this.state.title,
                 noteArea = null,
                 unlockEntry = this.state.mode === 'list-mode' ? (<Tooltip id='unlock'>Edit entry</Tooltip>) : (
                     <Tooltip id='unlock'>Close entry</Tooltip>),

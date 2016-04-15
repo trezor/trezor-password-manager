@@ -1,13 +1,11 @@
 'use strict';
 
 var React = require('react'),
-    Router = require('react-router'),
-    DataService = require('../../global_components/data_service'),
+    tld = require('tldjs'),
     TableEntry = require('./table_entry/table_entry'),
     FilterInput = require('./filter_input/filter_input'),
     DropdownButton = require('react-bootstrap').DropdownButton,
     MenuItem = require('react-bootstrap').MenuItem,
-    {Link} = Router,
 
     PasswordTable = React.createClass({
 
@@ -66,7 +64,7 @@ var React = require('react'),
                     let tempArray = Object.keys(this.state.entries).map((key) => {
                         let pattern = this.state.entries[key].note.length > 0 ? this.state.entries[key].note :  this.state.entries[key].title;
                         if(this.isUrl(pattern)) {
-                            pattern = this.decomposeUrl(pattern).domain;
+                            pattern = this.removeProtocolPrefix(pattern);
                         }
                         return {
                             'key': key,
@@ -82,7 +80,7 @@ var React = require('react'),
                     let tempArray = Object.keys(this.state.entries).map((key) => {
                         let pattern = this.state.entries[key].title;
                         if(this.isUrl(pattern)) {
-                            pattern = this.state.orderType === 'alphabetical' ? this.decomposeUrl(pattern).domain : this.getDomain(pattern);
+                            pattern = this.state.orderType === 'alphabetical' ? this.removeProtocolPrefix(pattern) : tld.getDomain(pattern);
                         }
                         return {
                             'key': key,
@@ -100,10 +98,6 @@ var React = require('react'),
             }
         },
 
-        getDomain(domain) {
-          return domain.match(/[^.\s\/]+\.([a-z]{3,}|[a-z]{2}.[a-z]{2})$/)[0];
-        },
-
         changeTag(e) {
             if (e === undefined) {
                 this.setState({
@@ -118,18 +112,8 @@ var React = require('react'),
             }
         },
 
-        decomposeUrl(url) {
-            var title = {index: url.indexOf('://')};
-            if (title.index > -1) {
-                title.protocol = url.substring(0, title.index + 3);
-                title.domain = url.split('/')[2];
-                title.path = url.slice(title.protocol.length + title.domain.length, url.length);
-            } else {
-                title.protocol = false;
-                title.domain = url.split('/')[0];
-                title.path = url.slice(title.domain.length, url.length);
-            }
-            return title;
+        removeProtocolPrefix(url) {
+            return url.indexOf('://') > -1 ? url.substring(0, url.indexOf('://') + 3).split('/')[2] : url.split('/')[0];
         },
 
         isUrl(url){
