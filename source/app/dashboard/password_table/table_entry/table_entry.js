@@ -79,7 +79,7 @@ var React = require('react'),
         },
 
         removeProtocolPrefix(url) {
-            return url.indexOf('://') > -1 ? url.substring(0, url.indexOf('://') + 3).split('/')[2] : url.split('/')[0];
+            return url.indexOf('://') > -1 ? url.substring(url.indexOf('://') + 3, url.length).split('/')[0] : url.split('/')[0];
         },
 
         setTrezorWaitingBackface(msg) {
