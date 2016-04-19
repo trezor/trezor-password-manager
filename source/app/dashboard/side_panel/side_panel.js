@@ -60,6 +60,7 @@ var React = require('react'),
         },
 
         addTag() {
+            //chrome.runtime.sendMessage({type: 'clearSession', content: ''});
             window.myStore.emit('openAddTag');
         },
 

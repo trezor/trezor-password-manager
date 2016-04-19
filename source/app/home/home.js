@@ -32,7 +32,6 @@ var React = require('react'),
 
         chromeMsgHandler(request, sender, sendResponse) {
             switch (request.type) {
-
                 // DROPBOX PHASE
                 case 'dropboxInitialized':
                     this.setState({
@@ -60,6 +59,9 @@ var React = require('react'),
                 case 'showPinDialog':
                     this.setState({
                         dialog: 'pin_dialog'
+                    });
+                    chrome.tabs.getCurrent((tab) => {
+                        sendResponse({type:'pinVisible', tab: tab});
                     });
                     break;
 
@@ -94,6 +96,7 @@ var React = require('react'),
                     this.transitionTo('dashboard');
                     break;
             }
+            return true;
         },
 
         sendMessage(msgType, msgContent) {

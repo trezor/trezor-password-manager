@@ -20,11 +20,13 @@ var React = require('react'),
         },
 
         chromePinModalMsgHandler(request, sender, sendResponse) {
-
             switch (request.type) {
                 case 'showPinDialog':
                     this.setState({
                         showPinModal: true
+                    });
+                    chrome.tabs.getCurrent((tab) => {
+                        sendResponse({type:'pinVisible', tab: tab});
                     });
                     break;
 
@@ -32,6 +34,7 @@ var React = require('react'),
                     this.closePinModal();
                     break;
             }
+            return true;
         },
 
         closePinModal() {

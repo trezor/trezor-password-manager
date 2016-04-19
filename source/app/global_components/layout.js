@@ -5,6 +5,26 @@ var React = require('react'),
     ErrorModal = require('./modal_dialogs/error_modal'),
     { RouteHandler } = Router,
     Layout = React.createClass({
+
+        componentDidMount() {
+            chrome.runtime.onMessage.addListener(this.chromeLayoutModalMsgHandler);
+        },
+
+        componentWillUnmount() {
+            chrome.runtime.onMessage.removeListener(this.chromeLayoutModalMsgHandler);
+        },
+
+        chromeLayoutModalMsgHandler(request, sender, sendResponse) {
+            switch (request.type) {
+                case 'isAppOpen':
+                    chrome.tabs.getCurrent((tab) => {
+                        sendResponse({type:'openApp', tab: tab});
+                    });
+                    break;
+            }
+            return true;
+        },
+
         render() {
             return (
                 <div>

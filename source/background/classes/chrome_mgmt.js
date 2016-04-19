@@ -9,6 +9,7 @@ class ChromeMgmt {
         this.storage.on('checkReopen', () => this.checkReopen());
         this.activeHost = '';
         this.hasCredentials = false;
+        this.accessTabId = 0;
         chrome.tabs.onUpdated.addListener(() => this.detectActiveUrl());
         chrome.tabs.onActivated.addListener(() => this.detectActiveUrl());
         chrome.commands.onCommand.addListener((c) => this.chromeCommands(c));
@@ -29,14 +30,26 @@ class ChromeMgmt {
     }
 
     checkReopen() {
-        if(localStorage.getItem('tpmRestart') === 'reopen') {
+        if (localStorage.getItem('tpmRestart') === 'reopen') {
             localStorage.setItem('tpmRestart', 'nope');
             this.openAppTab();
         }
     }
 
     openAppTab() {
-        chrome.tabs.create({'url': chrome.extension.getURL('index.html'), 'selected': true});
+        chrome.runtime.sendMessage({type: 'isAppOpen', content: ''}, (response) => {
+            if (!!response) {
+                this.focusTab(response.tab.id);
+            } else {
+                chrome.tabs.create({'url': this.storage.appUrl, 'selected': true}, (tab) => {
+                    this.focusTab(tab.id);
+                });
+            }
+        });
+    }
+
+    focusTab(tabId) {
+        chrome.tabs.update(tabId, {selected: true});
     }
 
     detectActiveUrl() {
@@ -71,6 +84,10 @@ class ChromeMgmt {
                 }
                 break;
 
+            case 'clear_session':
+                this.storage.emit('clearSession');
+                break;
+
             case 'restart_app':
                 chrome.runtime.reload();
                 break;
@@ -86,17 +103,18 @@ class ChromeMgmt {
                     entry = obj;
                 }
             });
-        }
-        chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
-            if (typeof tabs[0] !== 'undefined') {
-                if (this.storage.isUrl(tabs[0].url)) {
-                    if (this.storage.decomposeUrl(tabs[0].url).host === this.activeHost) {
-                        this.injectContentScript(tabs[0].id, 'showTrezorMsg', null);
-                        this.storage.emit('decryptPassword', entry);
+            chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
+                if (typeof tabs[0] !== 'undefined') {
+                    if (this.storage.isUrl(tabs[0].url)) {
+                        if (this.storage.decomposeUrl(tabs[0].url).host === this.activeHost) {
+                            this.accessTabId = tabs[0].id;
+                            this.injectContentScript(tabs[0].id, 'showTrezorMsg', null);
+                            this.storage.emit('decryptPassword', entry);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     updateBadgeStatus(status) {
@@ -157,19 +175,11 @@ class ChromeMgmt {
     }
 
     fillLoginForm(data) {
-        chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
-            if (typeof tabs[0] !== 'undefined') {
-                if (this.storage.isUrl(tabs[0].url)) {
-                    if (typeof data === 'undefined') {
-                        data = {};
-                        data.content = null;
-                    }
-                    if (this.storage.decomposeUrl(tabs[0].url).host === this.activeHost) {
-                        this.injectContentScript(tabs[0].id, 'fillData', data.content);
-                    }
-                }
-            }
-        });
+        if (typeof data === 'undefined') {
+            data = {content: null};
+        }
+        this.injectContentScript(parseInt(this.accessTabId), 'fillData', data.content);
+        this.accessTabId = 0;
     }
 
     openTabAndLogin(data) {
@@ -178,6 +188,11 @@ class ChromeMgmt {
         });
     }
 
+    tryRefocusToAccessTab() {
+        if(this.accessTabId !== 0) {
+            this.focusTab(parseInt(this.accessTabId));
+        }
+    }
 
     sendMessage(msgType, msgContent) {
         chrome.runtime.sendMessage({type: msgType, content: msgContent});

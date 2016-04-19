@@ -11,6 +11,8 @@ class StorageMgmt extends EventEmitter {
         this.masterKey = '';
         this.encryptionKey = '';
         this.decryptedContent = false;
+        this.appUrl = chrome.extension.getURL('index.html');
+
     }
 
     isUrl(url) {

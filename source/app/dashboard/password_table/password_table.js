@@ -60,10 +60,11 @@ var React = require('react'),
             if (rawArr.length > 0) {
                 if (this.state.orderType === 'date') {
                     return rawArr.reverse();
-                } if(this.state.orderType === 'note') {
+                }
+                if (this.state.orderType === 'note') {
                     let tempArray = Object.keys(this.state.entries).map((key) => {
-                        let pattern = this.state.entries[key].note.length > 0 ? this.state.entries[key].note :  this.state.entries[key].title;
-                        if(this.isUrl(pattern)) {
+                        let pattern = this.state.entries[key].note.length > 0 ? this.state.entries[key].note : this.state.entries[key].title;
+                        if (this.isUrl(pattern)) {
                             pattern = this.removeProtocolPrefix(pattern);
                         }
                         return {
@@ -79,7 +80,7 @@ var React = require('react'),
                 } else {
                     let tempArray = Object.keys(this.state.entries).map((key) => {
                         let pattern = this.state.entries[key].title;
-                        if(this.isUrl(pattern)) {
+                        if (this.isUrl(pattern)) {
                             pattern = this.state.orderType === 'alphabetical' ? this.removeProtocolPrefix(pattern) : tld.getDomain(pattern);
                         }
                         return {
@@ -123,7 +124,7 @@ var React = require('react'),
         checkFilterMatching(obj) {
             let findMatchingTag = false;
             window.myStore.getTagTitleArrayById(obj.tags).map((key) => {
-               if(key.toLowerCase().indexOf(this.state.filter) > -1) findMatchingTag = true;
+                if (key.toLowerCase().indexOf(this.state.filter) > -1) findMatchingTag = true;
             });
             return findMatchingTag ||
                 obj.title.toLowerCase().indexOf(this.state.filter) > -1 ||

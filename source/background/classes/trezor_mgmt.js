@@ -170,7 +170,7 @@ class TrezorMgmt {
 
     pinCallback(type, callback) {
         this.trezorDevice.pinCallback = callback;
-        this.storage.emit('sendMessage', 'showPinDialog');
+        this.storage.emit('showPinDialog');
     }
 
     pinEnter(pin) {

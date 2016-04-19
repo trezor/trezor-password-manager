@@ -83,13 +83,28 @@ var StorageMgmt = require('./classes/storage_mgmt'),
         storage.phase = 'LOADED';
     },
 
-    decrypteAndInject = (entry) => {
+    decryptAndInject = (entry) => {
         trezorManager.decryptFullEntry(entry, (data) => chromeManager.fillLoginForm(data));
     },
 
     saveErroLog = (errorMsg, url, lineNumber, column, errorObj) => {
         console.log(errorMsg, url, lineNumber, column, errorObj);
-        window.tpmErroLog.push('%0D%0A Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber + ' Column: ' + column + ' StackTrace: ' +  errorObj);
+        window.tpmErroLog.push('%0D%0A Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber + ' Column: ' + column + ' StackTrace: ' + errorObj);
+    },
+
+    showPinDialog = () => {
+        chrome.runtime.sendMessage({type: 'showPinDialog', content: ''}, (response) => {
+            if (!!response) {
+                if (response.type === 'pinVisible') {
+                    chromeManager.focusTab(response.tab.id);
+                }
+            } else {
+                chromeManager.openAppTab();
+                setTimeout(() => {
+                    showPinDialog();
+                }, 1300);
+            }
+        });
     },
 
     chromeMessaging = (request, sender, sendResponse) => {
@@ -110,6 +125,7 @@ var StorageMgmt = require('./classes/storage_mgmt'),
 
             case 'trezorPin':
                 trezorManager.pinEnter(request.content);
+                chromeManager.tryRefocusToAccessTab();
                 break;
 
             case 'disconnectDropbox':
@@ -155,9 +171,11 @@ chromeManager.exists().then(() => {
     storage.on('decryptContent', contentDecrypted);
     storage.on('initStorageFile', initNewFile);
     storage.on('disconnectDropbox', init);
+    storage.on('showPinDialog', showPinDialog);
+    storage.on('clearSession', () => trezorManager.clearSession());
     storage.on('loadFile', () => dropboxManager.loadFile());
     storage.on('disconnectedTrezor', userLoggedOut);
-    storage.on('decryptPassword', (entry) => decrypteAndInject(entry));
+    storage.on('decryptPassword', (entry) => decryptAndInject(entry));
     storage.on('sendMessage', (type, content) => chromeManager.sendMessage(type, content));
 });
 
