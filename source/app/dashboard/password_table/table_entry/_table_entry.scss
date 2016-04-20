@@ -181,34 +181,7 @@
           }
         }
 
-        .note {
-
-          input:disabled {
-            max-width: 300px;
-            margin: 4px 0 8px 2px;
-            background: transparent;
-            padding: 0 0 4px 5px;
-            border: 0;
-            line-height: 1.2em;
-            max-height: 19px;
-            border-left: 3px solid rgba($c_grey_content_font, .3) !important;
-            font-size: 1.1em;
-            color: rgba($c_grey_content_font, .7);
-            outline: none;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            resize: none;
-            @include appearance-none();
-          }
-
-          span {
-            display: inline-block;
-            width: 0;
-            overflow: hidden;
-          }
-        }
-
-        .password, .tags, .safe-note {
+        .title-label, .password, .tags, .safe-note, .available-tags {
           display: none;
         }
 
@@ -237,10 +210,6 @@
               cursor: pointer;
             }
           }
-        }
-
-        .available-tags {
-          display: none;
         }
       }
       &:hover {
@@ -421,7 +390,7 @@
           padding-top: 10px;
         }
 
-        .title, .username, .password, .tags, .safe-note, .note {
+        .title, .title-label, .username, .password, .tags, .safe-note {
           color: $c_grey_content_font;
           padding-bottom: 3px;
           margin-bottom: 3px;
@@ -526,7 +495,15 @@
           }
         }
 
-        .safe-note, .note {
+        .tags {
+          padding-left: 130px;
+        }
+
+        .available-tags {
+          padding-left: 205px;
+        }
+
+        .safe-note {
           padding-left: 130px;
 
           span {

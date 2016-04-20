@@ -258,10 +258,20 @@ var React = require('react'),
                 this.setState({
                     image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title)
                 });
+                if(this.state.note.length === 0) {
+                    this.setState({
+                        note: tld.getDomain(this.state.title)
+                    });
+                }
             } else {
                 this.setState({
                     image_src: 'dist/app-images/transparent.png'
                 });
+                if(this.state.note.length === 0) {
+                    this.setState({
+                        note: this.state.title
+                    });
+                }
             }
         },
 
@@ -357,11 +367,9 @@ var React = require('react'),
                 copyClipboardUsr = (
                     <Tooltip id='clipboard-usr'>{this.state.clipboard_usr ? 'Copied!' : 'Copy to clipboard'}</Tooltip>),
                 entryTitle = 'Item/URL',
-                entryTitleVal = this.isUrl(this.state.title) ? this.removeProtocolPrefix(this.state.title) : this.state.title,
-                noteArea = null,
+                entryTitleVal = this.state.note.length === 0 ? this.removeProtocolPrefix(this.state.title) : this.state.note,
                 unlockEntry = this.state.mode === 'list-mode' ? (<Tooltip id='unlock'>Edit entry</Tooltip>) : (
                     <Tooltip id='unlock'>Close entry</Tooltip>),
-                interator = 0,
                 title = this.state.mode === 'list-mode' ?
                     (<a href={this.isUrl(this.state.title) ? this.setProtocolPrefix(this.state.title) : null}
                         className='title-input'>{entryTitleVal}</a>) : (
@@ -398,11 +406,10 @@ var React = require('react'),
                 });
 
             if (this.state.show_available) {
-                var tags_available = this.state.tags_available.map((key) => {
-                    interator++;
+                var tags_available = this.state.tags_available.map((key ,i = 0) => {
                     return (<span className='tagsinput-available-tag'
                                   onClick={this.switchTag.bind(null , key)}
-                                  key={key}>{ key }</span>)
+                                  key={i++}>{ key }</span>)
                 });
             } else if (this.state.tag_globa_title_array.length !== this.state.tags_titles.length + 1) {
                 tags.push(<span key={'tagsinput-input'+0}
@@ -414,25 +421,6 @@ var React = require('react'),
 
             if (this.state.title.length) {
                 entryTitle = this.isUrl(this.state.title) ? 'URL' : 'Item';
-            }
-
-            if (this.state.mode === 'list-mode' && this.state.note.length) {
-                noteArea = (
-                    <input type='text'
-                           autoComplete='off'
-                           value={this.state.note}
-                           disabled='disabled'
-                           spellCheck='false'
-                           name='note'/>)
-
-            } else if (this.state.mode === 'edit-mode') {
-                noteArea = (
-                    <TextareaAutosize type='text'
-                                      autoComplete='off'
-                                      onChange={this.handleChange}
-                                      onKeyUp={this.keyPressed}
-                                      value={this.state.note}
-                                      name='note'/>)
             }
 
             return (
@@ -448,6 +436,16 @@ var React = require('react'),
                             <div className='title'>
                                 {entryTitle}
                                 {title}
+                            </div>
+
+                            <div className='title-label'>
+                                <span>Label </span>
+                                <input type='text'
+                                       autoComplete='off'
+                                       value={this.state.note}
+                                       name='note'
+                                       onChange={this.handleChange}
+                                       onKeyUp={this.keyPressed}/>
                             </div>
 
                             <div className='username'>
@@ -478,12 +476,6 @@ var React = require('react'),
                             </div>
 
                             <div className='available-tags'>{tags_available}</div>
-
-
-                            <div className='note'>
-                                <span>Note </span>
-                                {noteArea}
-                            </div>
 
                             <div className='safe-note'>
                                 <span>Secret Note </span>
