@@ -14,6 +14,9 @@ class DropboxMgmt {
         this.username = false;
         this.loadedData = '';
         this.client = new Dropbox.Client({key: APIKEY});
+        this.client.onError.addListener((error) => {
+            this.handleDropboxError(error);
+        });
     }
 
     disconnected() {
@@ -68,6 +71,7 @@ class DropboxMgmt {
             case Dropbox.ApiError.INVALID_METHOD:
                 console.warn('Network error, check connection ', error.status);
                 this.storage.emit('sendMessage', 'errorMsg', {code: 'DB_NETWORK_ERROR', msg: error.status});
+                break;
         }
 
         if (error.code === 'access_denied') {
@@ -79,13 +83,8 @@ class DropboxMgmt {
 
     connectToDropbox() {
         this.client.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: receiverRelativePath}));
-        this.client.onError.addListener((error) => {
-            this.handleDropboxError(error);
-        });
         this.client.authenticate((error, data) => {
-            if (error) {
-                return this.handleDropboxError(error);
-            } else {
+            if (!error) {
                 if (this.isAuth()) {
                     this.setDropboxUsername();
                     this.storage.emit('sendMessage', 'dropboxConnected');
@@ -96,10 +95,7 @@ class DropboxMgmt {
 
     setDropboxUsername() {
         this.client.getAccountInfo((error, accountInfo) => {
-            if (error) {
-                this.handleDropboxError(error);
-                this.connectToDropbox();
-            } else {
+            if (!error) {
                 this.username = accountInfo.name;
                 this.storage.emit('sendMessage', 'setDropboxUsername', accountInfo.name);
             }
@@ -108,56 +104,42 @@ class DropboxMgmt {
 
     signOutDropbox() {
         this.client.signOut((error, accountInfo) => {
-            if (error) {
-                this.handleDropboxError(error);
+            if (!error) {
+                this.storage.emit('sendMessage', 'dropboxDisconnected');
+                this.username = false;
+                this.filename = false;
+                this.loadedData = '';
+                this.storage.phase = 'DROPBOX';
             }
-            this.storage.emit('sendMessage', 'dropboxDisconnected');
-            this.username = false;
-            this.filename = false;
-            this.loadedData = '';
-            this.storage.phase = 'DROPBOX';
         });
     }
 
     loadFile() {
-        try {
-            if (!this.filename) {
-                try {
-                    let fileKey = this.storage.masterKey.substring(0, this.storage.masterKey.length / 2);
-                    this.filename = crypto.createHmac('sha256', fileKey).update(FILENAME_MESS).digest('hex') + '.pswd';
-                } catch (ex) {
-                    console.log('Crypto failed: ', ex);
-                    //TODO soon please
-                }
+        if (!this.filename) {
+            try {
+                let fileKey = this.storage.masterKey.substring(0, this.storage.masterKey.length / 2);
+                this.filename = crypto.createHmac('sha256', fileKey).update(FILENAME_MESS).digest('hex') + '.pswd';
+            } catch (ex) {
+                console.log('Crypto failed: ', ex);
+                //TODO soon please
             }
-            this.client.readFile(this.filename, {arrayBuffer: true}, (error, data) => {
-                if (error) {
-                    return this.handleDropboxError(error);
-                } else {
-                    if (!(Buffer.isBuffer(data))) {
-                        data = this.toBuffer(data);
-                    }
-                    this.saveLoadedData(data);
-                }
-            });
-        } catch (err) {
-            return this.handleDropboxError(err);
         }
+        this.client.readFile(this.filename, {arrayBuffer: true}, (error, data) => {
+            if (!error) {
+                if (!(Buffer.isBuffer(data))) {
+                    data = this.toBuffer(data);
+                }
+                this.saveLoadedData(data);
+            }
+        });
     }
 
     saveFile(data) {
-        try {
-            this.client.writeFile(this.filename, data, (error, stat) => {
-                if (error) {
-                    console.error('Dropbox problem: ', error);
-                    return this.handleDropboxError(error);
-                } else {
-                    this.loadFile();
-                }
-            });
-        } catch (err) {
-            return this.handleDropboxError(err);
-        }
+        this.client.writeFile(this.filename, data, (error, stat) => {
+            if (!error) {
+                this.loadFile();
+            }
+        });
     }
 
     saveLoadedData(data) {

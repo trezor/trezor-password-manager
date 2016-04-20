@@ -33,10 +33,12 @@ class TrezorMgmt {
             'enc': true,
             'askOnEnc': true
         };
-        list.on('transport', (transport) => this.checkTransport(transport));
-        list.on('connect', (device) => this.connectedNewTrezor(device));
-        list.on('error', (error) => {
-            console.error('List error:', error);
+        this.list = list;
+
+        this.list.on('transport', (transport) => this.checkTransport(transport));
+        this.list.on('connect', (device) => this.connectedNewTrezor(device));
+        this.list.on('error', (error) => {
+            console.log('List error:', error);
             if (this.storage.phase === 'LOADED') {
                 this.disconnectCallback();
             }

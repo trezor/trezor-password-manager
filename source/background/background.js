@@ -167,7 +167,6 @@ chromeManager.exists().then(() => {
 }).then((list) => {
     trezorManager = new TrezorMgmt(storage, list);
     dropboxManager = new DropboxMgmt(storage);
-    window.onerror = saveErroLog;
     storage.on('decryptContent', contentDecrypted);
     storage.on('initStorageFile', initNewFile);
     storage.on('disconnectDropbox', init);
