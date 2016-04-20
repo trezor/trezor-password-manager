@@ -50,7 +50,7 @@ var React = require('react'),
         componentDidMount() {
             if (this.isUrl(this.removeProtocolPrefix(this.state.title))) {
                 this.setState({
-                    image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title)
+                    image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title) + '?size=100'
                 });
             }
         },
@@ -174,7 +174,7 @@ var React = require('react'),
                 var oldValues = window.myStore.getEntryValuesById(this.state.key_value);
                 if (this.isUrl(this.removeProtocolPrefix(this.state.title))) {
                     this.setState({
-                        image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title)
+                        image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title) + '?size=100'
                     });
                 }
                 this.setState({
@@ -256,7 +256,7 @@ var React = require('react'),
         titleOnBlur() {
             if (this.isUrl(this.removeProtocolPrefix(this.state.title))) {
                 this.setState({
-                    image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title)
+                    image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title) + '?size=100'
                 });
                 if(this.state.note.length === 0) {
                     this.setState({
@@ -366,7 +366,7 @@ var React = require('react'),
                     <Tooltip id='clipboard-pwd'>{this.state.clipboard_pwd ? 'Copied!' : 'Copy to clipboard'}</Tooltip>),
                 copyClipboardUsr = (
                     <Tooltip id='clipboard-usr'>{this.state.clipboard_usr ? 'Copied!' : 'Copy to clipboard'}</Tooltip>),
-                entryTitle = 'Item/URL',
+                entryTitle = 'Item/URL *',
                 entryTitleVal = this.state.note.length === 0 ? this.removeProtocolPrefix(this.state.title) : this.state.note,
                 unlockEntry = this.state.mode === 'list-mode' ? (<Tooltip id='unlock'>Edit entry</Tooltip>) : (
                     <Tooltip id='unlock'>Close entry</Tooltip>),
@@ -399,10 +399,10 @@ var React = require('react'),
                         />),
 
 
-                tags = this.state.tags_titles.map((key) => {
+                tags = this.state.tags_titles.map((key, i = 0) => {
                     return (<span className='tagsinput-tag'
                                   onClick={this.switchTag.bind(null , key)}
-                                  key={key}>{key}<i className='icon ion-close'></i></span>)
+                                  key={i++}>{key}<i className='icon ion-close'></i></span>)
                 });
 
             if (this.state.show_available) {
@@ -420,7 +420,7 @@ var React = require('react'),
             }
 
             if (this.state.title.length) {
-                entryTitle = this.isUrl(this.state.title) ? 'URL' : 'Item';
+                entryTitle = this.isUrl(this.state.title) ? 'URL *' : 'Item *';
             }
 
             return (
@@ -434,7 +434,7 @@ var React = require('react'),
                             </div>
 
                             <div className='title'>
-                                {entryTitle}
+                                <span>{entryTitle}</span>
                                 {title}
                             </div>
 

@@ -3994,7 +3994,7 @@ aside.left-panel {
             color: #797979;
             font-size: 1.1em; }
           .dashboard .card .entry.list-mode .title span {
-            display: inline-block;
+            display: none;
             width: 0;
             overflow: hidden; }
         .dashboard .card .entry.list-mode .username {
