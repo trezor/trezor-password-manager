@@ -8,6 +8,7 @@ var React = require('react'),
     MenuItem = require('react-bootstrap').MenuItem,
     Tooltip = require('react-bootstrap').Tooltip,
     OverlayTrigger = require('react-bootstrap').OverlayTrigger,
+    Overlay = require('react-bootstrap').Overlay,
     TextareaAutosize = require('react-textarea-autosize'),
     Clipboard = require('clipboard-js'),
     Password = require('../../../global_components/password_mgmt'),
@@ -33,7 +34,8 @@ var React = require('react'),
                 waiting_trezor_msg: '',
                 clipboard_pwd: false,
                 clipboard_usr: false,
-                saving_entry: false
+                saving_entry: false,
+                showMandatoryField: false
             };
         },
 
@@ -188,43 +190,53 @@ var React = require('react'),
         saveEntry(e) {
             e.preventDefault();
             if (!this.state.saving_entry) {
-                this.setState({
-                    saving_entry: true
-                });
-                var tags_id = [];
-                this.state.tags_titles.map((key) => {
-                    tags_id.push(window.myStore.getTagIdByTitle(key));
-                });
+                if (this.state.title.length > 0) {
+                    this.setState({
+                        saving_entry: true
+                    });
+                    var tags_id = [];
+                    this.state.tags_titles.map((key) => {
+                        tags_id.push(window.myStore.getTagIdByTitle(key));
+                    });
 
-                var data = {
-                    title: this.state.title,
-                    username: this.state.username,
-                    password: this.state.password,
-                    nonce: this.state.nonce,
-                    tags: tags_id,
-                    safe_note: this.state.safe_note,
-                    note: this.state.note
-                };
+                    var data = {
+                        title: this.state.title,
+                        username: this.state.username,
+                        password: this.state.password,
+                        nonce: this.state.nonce,
+                        tags: tags_id,
+                        safe_note: this.state.safe_note,
+                        note: this.state.note
+                    };
 
-                chrome.runtime.sendMessage({type: 'encryptFullEntry', content: data}, (response) => {
-                    data.password = response.content.password;
-                    data.safe_note = response.content.safe_note;
-                    data.nonce = response.content.nonce;
-                    if (this.state.key_value) {
-                        this.setState({
-                            mode: 'list-mode',
-                            content_changed: '',
-                            password: response.content.password,
-                            safe_note: response.content.safe_note,
-                            nonce: response.content.nonce,
-                            saving_entry: false
-                        });
-                        this.titleOnBlur();
-                        window.myStore.saveDataToEntryById(this.state.key_value, data);
-                    } else {
-                        window.myStore.addNewEntry(data);
-                    }
-                });
+                    chrome.runtime.sendMessage({type: 'encryptFullEntry', content: data}, (response) => {
+                        data.password = response.content.password;
+                        data.safe_note = response.content.safe_note;
+                        data.nonce = response.content.nonce;
+                        if (this.state.key_value) {
+                            this.setState({
+                                mode: 'list-mode',
+                                content_changed: '',
+                                password: response.content.password,
+                                safe_note: response.content.safe_note,
+                                nonce: response.content.nonce,
+                                saving_entry: false
+                            });
+                            this.titleOnBlur();
+                            window.myStore.saveDataToEntryById(this.state.key_value, data);
+                        } else {
+                            window.myStore.addNewEntry(data);
+                        }
+                    });
+                } else {
+                    // TITLE (item/url) is mandatory field - so fill it
+                    React.findDOMNode(this.refs.title).focus();
+                    this.setState({
+                        showMandatoryField: true
+                    });
+
+                }
+
             }
         },
 
@@ -258,7 +270,7 @@ var React = require('react'),
                 this.setState({
                     image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title) + '?size=100'
                 });
-                if(this.state.note.length === 0) {
+                if (this.state.note.length === 0) {
                     this.setState({
                         note: tld.getDomain(this.state.title)
                     });
@@ -267,7 +279,7 @@ var React = require('react'),
                 this.setState({
                     image_src: 'dist/app-images/transparent.png'
                 });
-                if(this.state.note.length === 0) {
+                if (this.state.note.length === 0) {
                     this.setState({
                         note: this.state.title
                     });
@@ -362,6 +374,7 @@ var React = require('react'),
             var showPassword = (<Tooltip id='show'>Show/hide password</Tooltip>),
                 generatePassword = (<Tooltip id='generate'>Generate password</Tooltip>),
                 openEntryTab = (<Tooltip id='open'>Open and login</Tooltip>),
+                mandatoryField = (<Tooltip id='mandatory' placement='right'>This field is mandatory!</Tooltip>),
                 copyClipboardPwd = (
                     <Tooltip id='clipboard-pwd'>{this.state.clipboard_pwd ? 'Copied!' : 'Copy to clipboard'}</Tooltip>),
                 copyClipboardUsr = (
@@ -377,19 +390,21 @@ var React = require('react'),
                            autoComplete='off'
                            value={this.state.title}
                            name='title'
+                           ref='title'
                            onChange={this.handleChange}
                            onKeyUp={this.keyPressed}
-                           onBlur={this.titleOnBlur}/>),
+                           onBlur={this.titleOnBlur}/>
+                ),
 
                 username = this.state.mode === 'list-mode' ?
-                    (<OverlayTrigger placement='bottom' overlay={copyClipboardUsr}>
+                    (this.state.username.length !== 0 ? <OverlayTrigger placement='bottom' overlay={copyClipboardUsr}>
                         <input type='text'
                                autoComplete='off'
                                value={this.state.username}
                                onClick={this.copyUsernameToClipboard}
                                name='username'
                                disabled='disabled'/>
-                    </OverlayTrigger>) : (
+                    </OverlayTrigger> : null) : (
                     <input type='text'
                            autoComplete='off'
                            value={this.state.username}
@@ -406,7 +421,7 @@ var React = require('react'),
                 });
 
             if (this.state.show_available) {
-                var tags_available = this.state.tags_available.map((key ,i = 0) => {
+                var tags_available = this.state.tags_available.map((key, i = 0) => {
                     return (<span className='tagsinput-available-tag'
                                   onClick={this.switchTag.bind(null , key)}
                                   key={i++}>{ key }</span>)
@@ -522,6 +537,14 @@ var React = require('react'),
                                     <MenuItem eventKey='1' onSelect={this.removeEntry}><i className='ion-trash-a'></i>
                                         Remove entry</MenuItem>
                                 </DropdownButton>
+                                }
+
+                                {this.state.mode === 'edit-mode' &&
+                                <Overlay show={this.state.showMandatoryField}
+                                         container={this}
+                                         onHide={() => this.setState({ showMandatoryField: false })}
+                                         target={() => React.findDOMNode(this.refs.title)}
+                                         placement='right'>{mandatoryField}</Overlay>
                                 }
 
                                 <div className='content-btns'>

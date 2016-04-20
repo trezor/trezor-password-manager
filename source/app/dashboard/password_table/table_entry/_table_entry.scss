@@ -151,36 +151,6 @@
           }
         }
 
-        .title {
-          padding-top: 10px;
-          font-size: 1.4em;
-          @include transition(all 50ms ease-in-out);
-          color: rgba($c_grey_content_font, 1);
-
-          a {
-            color: rgba($c_grey_content_font, 1);
-            font-size: 1.1em;
-          }
-
-          span {
-            display: none;
-            width: 0;
-            overflow: hidden;
-          }
-        }
-
-        .username {
-          padding-top: 0;
-          font-size: 1.05em;
-          color: rgba($c_grey_content_font, .8);
-
-          span {
-            display: inline-block;
-            width: 0;
-            overflow: hidden;
-          }
-        }
-
         .title-label, .password, .tags, .safe-note, .available-tags {
           display: none;
         }
@@ -209,6 +179,40 @@
             &:disabled {
               cursor: pointer;
             }
+          }
+        }
+
+        .title {
+          padding-top: 10px;
+          font-size: 1.4em;
+          @include transition(all 50ms ease-in-out);
+          color: rgba($c_grey_content_font, 1);
+
+          a {
+            color: rgba($c_grey_content_font, 1);
+            font-size: 1.1em;
+          }
+
+          span {
+            display: none;
+            width: 0;
+            overflow: hidden;
+          }
+        }
+
+        .username {
+          padding-top: 0;
+          font-size: 1.05em;
+          color: rgba($c_grey_content_font, .8);
+
+          input {
+            width: auto;
+          }
+
+          span {
+            display: none;
+            width: 0;
+            overflow: hidden;
           }
         }
       }
@@ -410,7 +414,7 @@
             display: inline-block;
             border: none;
             width: 100%;
-            max-width: 210px;
+            max-width: 215px;
             padding: 5px 7px;
             background-color: rgba($c_grey_bg_header_hover, .9);
             outline: none;
@@ -564,9 +568,9 @@
 // tooltip aligment hacks
 
 #clipboard-usr {
-  margin-left: -120px;
+  margin-left: -30px;
   .tooltip-arrow {
-    left: 32px !important;
+    left: 30px !important;
   }
 }
 
