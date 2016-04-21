@@ -16,7 +16,7 @@ var React = require('react'),
                 dropboxUsername: '',
                 deviceStatus: 'disconnected',
                 dialog: 'preloading',
-                loadingText: 'Doing math ...'
+                loadingText: 'Waking up ...'
             }
         },
 

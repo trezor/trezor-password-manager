@@ -17,7 +17,7 @@ var React = require('react'),
                 entries: window.myStore.data.entries,
                 filter: '',
                 newEntry: false,
-                orderType: window.myStore.data.config.orderType || 'date'
+                orderType: window.myStore.data.config.orderType || 'note'
             }
         },
 
@@ -213,18 +213,15 @@ var React = require('react'),
                             {this.state.active_id != 0 ? dropdown : null}
                             <DropdownButton title='' className='dropdown order' noCaret pullRight
                                             id='order-dropdown-no-caret'>
-                                <MenuItem eventKey='1' active={this.state.orderType === 'alphabetical'}
-                                          onSelect={this.changeOrder.bind(null, 'alphabetical')}><i
-                                    className='ion-at'></i>Alphabetical</MenuItem>
-                                <MenuItem eventKey='1' active={this.state.orderType === 'domain_alphabetical'}
+                                <MenuItem eventKey='1' active={this.state.orderType === 'note'}
+                                          onSelect={this.changeOrder.bind(null, 'note')}><i
+                                    className='ion-ios-list-outline'></i>Title</MenuItem>
+                                <MenuItem eventKey='2' active={this.state.orderType === 'domain_alphabetical'}
                                           onSelect={this.changeOrder.bind(null, 'domain_alphabetical')}><i
-                                    className='ion-ios-world-outline'></i>Domain Alphabetical</MenuItem>
-                                <MenuItem eventKey='2' active={this.state.orderType === 'date'}
+                                    className='ion-ios-world-outline'></i>Domain</MenuItem>
+                                <MenuItem eventKey='3' active={this.state.orderType === 'date'}
                                           onSelect={this.changeOrder.bind(null, 'date')}><i
                                     className='ion-calendar'></i>Date</MenuItem>
-                                <MenuItem eventKey='2' active={this.state.orderType === 'note'}
-                                          onSelect={this.changeOrder.bind(null, 'note')}><i
-                                    className='ion-ios-list-outline'></i>Note</MenuItem>
                             </DropdownButton>
                         </div>
                     </div>
