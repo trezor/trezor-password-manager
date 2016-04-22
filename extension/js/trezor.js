@@ -669,7 +669,7 @@ var Device = function (_EventEmitter) {
                 _this.clearSessionTime = _this.deviceList.options.clearSessionTime;
             }
         }
-        if (_this.deviceList.options.rememberDevicePasshprase) {
+        if (_this.deviceList.options.rememberDevicePassphrase) {
             _this.rememberPlaintextPassphrase = true;
         }
 
@@ -695,6 +695,12 @@ var Device = function (_EventEmitter) {
         value: function waitForSessionAndRun(fn, options) {
             var options_ = options == null ? {} : options;
             return this.run(fn, _extends({}, options_, { waiting: true }));
+        }
+    }, {
+        key: 'runAggressive',
+        value: function runAggressive(fn, options) {
+            var options_ = options == null ? {} : options;
+            return this.run(fn, _extends({}, options_, { aggressive: true }));
         }
 
         // Initializes device with the given descriptor,
@@ -1010,7 +1016,7 @@ var Device = function (_EventEmitter) {
             var onChangedSessions = function onChangedSessions(device) {
                 if (device === _this8) {
                     _this8.changedSessionsEvent.emit(_this8.isUsed(), _this8.isUsedHere());
-                    if (_this8.isStolen() && _this8.activityInProgress) {
+                    if (_this8.isStolen() && _this8.currentSessionObject != null) {
                         _this8._stolenEvent.emit();
                     }
                 }

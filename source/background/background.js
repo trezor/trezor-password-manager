@@ -153,17 +153,13 @@ var StorageMgmt = require('./classes/storage_mgmt'),
             case 'openTabAndLogin':
                 chromeManager.openTabAndLogin(request.content);
                 break;
-
-            case 'clearSession':
-                trezorManager.clearSession();
-                break;
         }
         return true;
     };
 
 chromeManager.exists().then(() => {
     chrome.runtime.onMessage.addListener(chromeMessaging);
-    return new trezor.DeviceList();
+    return new trezor.DeviceList({clearSession: true, /*clearSessionTime: 100 (by default, 15 minutes)*/});
 }).then((list) => {
     trezorManager = new TrezorMgmt(storage, list);
     dropboxManager = new DropboxMgmt(storage);
