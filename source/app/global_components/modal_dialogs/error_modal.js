@@ -1,6 +1,6 @@
 'use strict';
 
-const mailHeaderTemplate = 'Hi SatoshiLabs,%0D%0A%0D%0AI have experienced some errors with TREZOR Password Manager. It\'s impossible to solve it by your "Simple steps solution".%0D%0A%0D%0AProblem is titled and described as:%0D%0A%0D%0A',
+const mailHeaderTemplate = 'Hi SatoshiLabs,%0D%0A%0D%0AI have experienced some errors with TREZOR Password Manager. It\'s impossible to solve it by your instructions.%0D%0A%0D%0AProblem is titled and described as:%0D%0A%0D%0A',
     mailFooterTemplate = '%0D%0A%0D%0ALooking forward for your reply and thank you for your time!%0D%0A%0D%0ABest regards,%0D%0A[MY NAME]';
 
 var React = require('react'),
@@ -9,7 +9,9 @@ var React = require('react'),
     ErrorModal = React.createClass({
 
         getInitialState() {
+
             return {
+                userInfo: '',
                 showErrorModal: false,
                 errorTitle: 'Error!',
                 errorSolutionSteps: [
@@ -28,6 +30,11 @@ var React = require('react'),
 
         componentDidMount() {
             chrome.runtime.onMessage.addListener(this.chromeErrorModalMsgHandler);
+            chrome.runtime.getPlatformInfo((info) => {
+                this.setState({
+                    userInfo: '%0D%0A%0D%0APlatform info:%0D%0A' + JSON.stringify(info) + '%0D%0A'
+                })
+            });
         },
 
         componentWillUnmount() {
@@ -55,7 +62,7 @@ var React = require('react'),
                             redirectAction: true,
                             redirectText: 'Chrome Extension',
                             redirectTo: 'https://chrome.google.com/webstore/detail/trezor-chrome-extension/jcjjhjgimijdkoamemaghajlhegmoclj',
-                            supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + mailFooterTemplate
+                            supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + this.state.userInfo + mailFooterTemplate
                         };
                     }
                     return {
@@ -158,7 +165,7 @@ var React = require('react'),
                         closeAction: false,
                         redirectText: 'mytrezor.com',
                         redirectTo: 'https://mytrezor.com',
-                        supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + mailFooterTemplate
+                        supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + this.state.userInfo +  mailFooterTemplate
                     };
                     break;
 
@@ -177,7 +184,7 @@ var React = require('react'),
                         closeAction: false,
                         redirectText: 'Dropbox.com',
                         redirectTo: 'https://www.dropbox.com/',
-                        supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + mailFooterTemplate
+                        supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + this.state.userInfo +  mailFooterTemplate
                     };
                     break;
 
@@ -195,7 +202,7 @@ var React = require('react'),
                         closeAction: false,
                         redirectText: 'Dropbox.com',
                         redirectTo: 'https://www.dropbox.com/',
-                        supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + mailFooterTemplate
+                        supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + this.state.userInfo +  mailFooterTemplate
                     };
                     break;
 
@@ -213,7 +220,7 @@ var React = require('react'),
                         closeAction: true,
                         redirectText: 'Dropbox.com',
                         redirectTo: 'https://www.dropbox.com/',
-                        supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + mailFooterTemplate
+                        supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + this.state.userInfo +  mailFooterTemplate
                     };
                     break;
 
@@ -277,7 +284,7 @@ var React = require('react'),
                 ],
                 restartAction: true,
                 supportAction: true,
-                supportDefaultMailText: mailHeaderTemplate + JSON.stringify(content) + window.tpmErroLog + mailFooterTemplate
+                supportDefaultMailText: mailHeaderTemplate + JSON.stringify(content) + window.tpmErroLog + this.state.userInfo +  mailFooterTemplate
             };
         },
 
@@ -329,7 +336,7 @@ var React = require('react'),
                                 className='ion-bug'></i> {this.state.errorTitle}</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            <b>Simple step solution:</b>
+                            <b>Try this:</b>
                             <ul>
                                 {solution}
                             </ul>
@@ -337,7 +344,7 @@ var React = require('react'),
                         <div className='btn-controls'>
                             {this.state.redirectAction ? <a href={this.state.redirectTo} target='_blank'
                                                             className='button shadow blue-btn'>{this.state.redirectText}</a> : ''}
-                            {this.state.supportAction ? <a className='button shadow green-btn' target='_top'
+                            {this.state.supportAction ? <a className='button shadow green-btn' target='_blank'
                                                            href={'mailto:support@satoshilabs.com?subject=TREZOR Password Manager bug report&body=' + this.state.supportDefaultMailText}>Contact
                                 support</a> : ''}
                             {this.state.restartAction ?

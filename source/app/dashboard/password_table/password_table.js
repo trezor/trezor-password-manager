@@ -60,28 +60,11 @@ var React = require('react'),
             if (rawArr.length > 0) {
                 if (this.state.orderType === 'date') {
                     return rawArr.reverse();
-                }
-                if (this.state.orderType === 'note') {
+                } else {
                     let tempArray = Object.keys(this.state.entries).map((key) => {
                         let pattern = this.state.entries[key].note.length > 0 ? this.state.entries[key].note : this.state.entries[key].title;
                         if (this.isUrl(pattern)) {
                             pattern = this.removeProtocolPrefix(pattern);
-                        }
-                        return {
-                            'key': key,
-                            'pattern': pattern
-                        }
-                    }).sort((a, b) => {
-                        return a.pattern.localeCompare(b.pattern);
-                    });
-                    return Object.keys(tempArray).map((obj) => {
-                        return tempArray[obj].key
-                    });
-                } else {
-                    let tempArray = Object.keys(this.state.entries).map((key) => {
-                        let pattern = this.state.entries[key].title;
-                        if (this.isUrl(pattern)) {
-                            pattern = this.state.orderType === 'alphabetical' ? this.removeProtocolPrefix(pattern) : tld.getDomain(pattern);
                         }
                         return {
                             'key': key,
@@ -216,9 +199,6 @@ var React = require('react'),
                                 <MenuItem eventKey='1' active={this.state.orderType === 'note'}
                                           onSelect={this.changeOrder.bind(null, 'note')}><i
                                     className='ion-ios-list-outline'></i>Title</MenuItem>
-                                <MenuItem eventKey='2' active={this.state.orderType === 'domain_alphabetical'}
-                                          onSelect={this.changeOrder.bind(null, 'domain_alphabetical')}><i
-                                    className='ion-ios-world-outline'></i>Domain</MenuItem>
                                 <MenuItem eventKey='3' active={this.state.orderType === 'date'}
                                           onSelect={this.changeOrder.bind(null, 'date')}><i
                                     className='ion-calendar'></i>Date</MenuItem>

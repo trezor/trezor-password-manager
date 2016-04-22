@@ -454,7 +454,7 @@ var React = require('react'),
                             </div>
 
                             <div className='title-label'>
-                                <span>Label </span>
+                                <span>Title </span>
                                 <input type='text'
                                        autoComplete='off'
                                        value={this.state.note}
