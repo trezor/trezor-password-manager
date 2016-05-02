@@ -36,6 +36,7 @@ class TrezorMgmt {
         this.list = list;
 
         this.list.on('transport', (transport) => this.checkTransport(transport));
+        this.list.on('connectUnacquired', (device) => this.connectedUnacquiredTrezor(device));
         this.list.on('connect', (device) => this.connectedNewTrezor(device));
         this.list.on('error', (error) => {
             console.log('List error:', error);
@@ -92,13 +93,13 @@ class TrezorMgmt {
                 //TODO it smart asshole!
                 switch (operation) {
                     case 'encKey':
-                        this.trezorDevice.waitForSessionAndRun((session) => this.getEncryptionKey(session));
+                        this.trezorDevice.runAggressive((session) => this.getEncryptionKey(session));
                         break;
                     case 'encEntry':
-                        this.trezorDevice.waitForSessionAndRun((session) => this.sendEncryptCallback(session));
+                        this.trezorDevice.runAggressive((session) => this.sendEncryptCallback(session));
                         break;
                     case 'decEntry':
-                        this.trezorDevice.waitForSessionAndRun((session) => this.sendDecryptCallback(session));
+                        this.trezorDevice.runAggressive((session) => this.sendDecryptCallback(session));
                         break;
                 }
                 break;
@@ -142,19 +143,53 @@ class TrezorMgmt {
         this.connectTrezor();
     }
 
+    connectedUnacquiredTrezor(unacquiredDevice) {
+        this.unacquiredDevice = unacquiredDevice;
+        this.unacquiredDevice.once('disconnect', () => this.disconnectedUnacquiredTrezor());
+        this.unacquiredDevice.once('connect', () => this.disconnectedUnacquiredTrezor());
+    }
+
+    disconnectedUnacquiredTrezor() {
+        this.unacquiredDevice = null;
+    }
+
+    stealTrezor() {
+        if (this.unacquiredDevice != null) {
+            this.unacquiredDevice.steal(); // no need to run connectTrezor again, will run automatically
+        }
+    }
+
     connectTrezor() {
-        if (this.storage.phase === 'TREZOR' && this.trezorDevice != null) {
+        if (this.storage.phase === 'TREZOR') {
+            var doSteal = this.trezorDevice == null;
+            if (doSteal) {
+                this.stealTrezor();
+                return;
+            }
             try {
                 this.storage.emit('sendMessage', 'trezorConnected');
                 this.trezorDevice.on('pin', (type, callback) => this.pinCallback(type, callback));
                 this.trezorDevice.on('passphrase', (callback) => this.passphraseCallback(callback));
                 this.trezorDevice.on('button', (type, callback) => this.buttonCallback(type, callback));
-                this.trezorDevice.on('disconnect', () => this.disconnectCallback());
+                this.trezorDevice.once('disconnect', () => this.disconnectCallback());
+
+                var onChangedSessions = () => {
+                    if (this.trezorDevice.isStolen()) {
+                        // if device is stolen before we read encryption key...
+                        if (this.storage.masterKey === '') {
+                            // a quick hack - pretend that the device is disconnected if it's stolen
+                            this.storage.emit('disconnectedTrezor');
+                        }
+                        this.trezorDevice.removeListener('changedSessions', onChangedSessions);
+                    }
+                };
+                this.trezorDevice.on('changedSessions', onChangedSessions);
+
                 if (this.trezorDevice.isBootloader()) {
                     this.storage.emit('sendMessage', 'errorMsg', {code: 'T_BOOTLOADER'});
                     throw new Error('Device is in bootloader mode, re-connected it');
                 }
-                this.trezorDevice.waitForSessionAndRun((session) => this.getEncryptionKey(session));
+                this.trezorDevice.runAggressive((session) => this.getEncryptionKey(session));
 
             } catch (error) {
                 this.storage.emit('sendMessage', 'errorMsg', {code: 'T_DEVICE', msg: error});
@@ -268,7 +303,7 @@ class TrezorMgmt {
                 'enc': true,
                 'askOnEnc': false
             };
-            this.trezorDevice.waitForSessionAndRun((session) => this.sendEncryptCallback(session));
+            this.trezorDevice.runAggressive((session) => this.sendEncryptCallback(session));
         });
     }
 
@@ -303,7 +338,7 @@ class TrezorMgmt {
             'enc': false,
             'askOnEnc': false
         };
-        this.trezorDevice.waitForSessionAndRun((session) => this.sendDecryptCallback(session));
+        this.trezorDevice.runAggressive((session) => this.sendDecryptCallback(session));
     }
 
     sendDecryptCallback(session) {
