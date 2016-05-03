@@ -1,7 +1,7 @@
 {
   "name": "TREZOR Password Manager",
   "description": "Really secure password manager using TREZOR.",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "author": "SatoshiLabs",
   "short_name": "TREZOR Password Manager",
   "commands": {

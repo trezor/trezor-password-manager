@@ -47,6 +47,7 @@ var React = require('react'),
 
         errorHandler(content) {
             switch (content.code) {
+
                 case 'T_LIST':
                     if (this.isOnline()) {
                         return {
@@ -64,21 +65,22 @@ var React = require('react'),
                             redirectTo: 'https://chrome.google.com/webstore/detail/trezor-chrome-extension/jcjjhjgimijdkoamemaghajlhegmoclj',
                             supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + this.state.userInfo + mailFooterTemplate
                         };
+                    } else {
+                        return {
+                            errorTitle: 'You are offline',
+                            solution: [
+                                'Connect to the Internet.',
+                                'Try to restart TREZOR Password Manager.'
+                            ],
+                            restartAction: true,
+                            supportAction: false,
+                            redirectAction: false,
+                            closeAction: false,
+                            redirectText: '',
+                            redirectTo: '',
+                            supportDefaultMailText: ''
+                        };
                     }
-                    return {
-                        errorTitle: 'You are offline',
-                        solution: [
-                            'Connect to the Internet.',
-                            'Try to restart TREZOR Password Manager.'
-                        ],
-                        restartAction: true,
-                        supportAction: false,
-                        redirectAction: false,
-                        closeAction: false,
-                        redirectText: '',
-                        redirectTo: '',
-                        supportDefaultMailText: ''
-                    };
                     break;
 
                 case 'T_NOT_INIT':
@@ -118,21 +120,38 @@ var React = require('react'),
                     break;
 
                 case 'T_NO_TRANSPORT':
-                    return {
-                        errorTitle: 'TREZOR Chrome Extension not installed',
-                        solution: [
-                            'Go to Chrome web store.',
-                            'Download and install TREZOR Chrome Extension.',
-                            'Restart TREZOR Password Manager.'
-                        ],
-                        restartAction: true,
-                        supportAction: false,
-                        redirectAction: true,
-                        closeAction: false,
-                        redirectText: 'Chrome Extension',
-                        redirectTo: 'https://chrome.google.com/webstore/detail/trezor-chrome-extension/jcjjhjgimijdkoamemaghajlhegmoclj',
-                        supportDefaultMailText: ''
-                    };
+                    if (this.isOnline()) {
+                        return {
+                            errorTitle: 'TREZOR Chrome Extension not installed',
+                            solution: [
+                                'Go to Chrome web store.',
+                                'Download and install TREZOR Chrome Extension.',
+                                'Restart TREZOR Password Manager.'
+                            ],
+                            restartAction: true,
+                            supportAction: false,
+                            redirectAction: true,
+                            closeAction: false,
+                            redirectText: 'Chrome Extension',
+                            redirectTo: 'https://chrome.google.com/webstore/detail/trezor-chrome-extension/jcjjhjgimijdkoamemaghajlhegmoclj',
+                            supportDefaultMailText: ''
+                        };
+                    } else {
+                        return {
+                            errorTitle: 'You are offline',
+                            solution: [
+                                'Connect to the Internet.',
+                                'Try to restart TREZOR Password Manager.'
+                            ],
+                            restartAction: true,
+                            supportAction: false,
+                            redirectAction: false,
+                            closeAction: false,
+                            redirectText: '',
+                            redirectTo: '',
+                            supportDefaultMailText: ''
+                        };
+                    }
                     break;
 
                 case 'T_BOOTLOADER':

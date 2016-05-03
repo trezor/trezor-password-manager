@@ -26,6 +26,7 @@ class TrezorMgmt {
         this.storage = storage;
         this.trezorDevice = null;
         this.trezorConnected = false;
+        this.transportLoading = true;
         this.current_ext_version = '';
         this.cryptoData = {
             'keyPhrase': DEFAULT_KEYPHRASE,
@@ -34,15 +35,16 @@ class TrezorMgmt {
             'askOnEnc': true
         };
         this.list = list;
-
         this.list.on('transport', (transport) => this.checkTransport(transport));
         this.list.on('connectUnacquired', (device) => this.connectedUnacquiredTrezor(device));
         this.list.on('connect', (device) => this.connectedNewTrezor(device));
         this.list.on('error', (error) => {
             console.log('List error:', error);
+            this.transportLoading = false;
             if (this.storage.phase === 'LOADED') {
                 this.disconnectCallback();
             }
+            this.storage.emit('checkReopen');
             this.storage.emit('sendMessage', 'errorMsg', {code: 'T_LIST', msg: error});
         });
     }
@@ -108,6 +110,7 @@ class TrezorMgmt {
 
     checkTransport(transport) {
         this.current_ext_version = transport.version;
+        this.transportLoading = false;
         this.checkVersions();
     }
 
@@ -127,14 +130,19 @@ class TrezorMgmt {
 
     checkVersions() {
         this.storage.emit('checkReopen');
-        if (this.current_ext_version !== '') {
-            if (!this.versionCompare(this.current_ext_version, MINIMAL_EXTENSION_VERSION)) {
-                // bad version
-                this.storage.emit('sendMessage', 'errorMsg', {code: 'T_OLD_VERSION', msg: this.current_ext_version});
+        if(!this.transportLoading) {
+            if (this.current_ext_version !== '') {
+                if (!this.versionCompare(this.current_ext_version, MINIMAL_EXTENSION_VERSION)) {
+                    // bad version
+                    this.storage.emit('sendMessage', 'errorMsg', {code: 'T_OLD_VERSION', msg: this.current_ext_version});
+                } else {
+                    // good version
+                    // this.storage.emit('sendMessage', 'errorMsg', {code: 'T_OLD_VERSION', msg: this.current_ext_version});
+                }
+            } else {
+                // no extension
+                this.storage.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT', msg: this.current_ext_version});
             }
-        } else {
-            // no extension
-            this.storage.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT', msg: this.current_ext_version});
         }
     }
 
