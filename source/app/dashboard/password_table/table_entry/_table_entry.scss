@@ -155,6 +155,16 @@
           display: none;
         }
 
+        .password-shadow {
+          visibility: hidden;
+          border-left: 1px solid $c_grey_content_font;
+          
+          i {
+            font-size: 0.65em;
+            padding: 0 3px 2px 0;
+          }
+        }
+
         .title, .username {
           input, a {
             width: 80%;
@@ -183,13 +193,13 @@
         }
 
         .title {
-          padding-top: 10px;
+          padding-top: 12px;
           font-size: 1.4em;
           @include transition(all 50ms ease-in-out);
-          color: rgba($c_grey_content_font, 1);
+          color: $c_grey_content_font;
 
           a {
-            color: rgba($c_grey_content_font, 1);
+            color: $c_grey_content_font;
             font-size: 1.1em;
           }
 
@@ -201,12 +211,17 @@
         }
 
         .username {
-          padding-top: 0;
-          font-size: 1.05em;
-          color: rgba($c_grey_content_font, .8);
+          padding-top: 2px;
 
-          input {
+          a {
+            display: inline-block;
+            max-width: 150px;
             width: auto;
+            padding-bottom: 3px;
+            font-size: 1.1em;
+            color: rgba($c_grey_content_font, .8);
+            cursor: pointer;
+            margin-right: 10px;
           }
 
           span {
@@ -217,6 +232,10 @@
         }
       }
       &:hover {
+        .password-shadow {
+          visibility: visible;
+        }
+        
         .form-buttons {
           visibility: visible;
         }
@@ -277,21 +296,6 @@
             &:hover {
               i:after {
                 content: "\f2bf";
-                color: $c_grey_content_font;
-              }
-            }
-          }
-
-          &.open-tab-btn {
-            top: 0;
-            right: 80px;
-            i:after {
-              content: "\f39c";
-
-            }
-            &:hover {
-              i:after {
-                content: "\f39c";
                 color: $c_grey_content_font;
               }
             }
@@ -539,10 +543,6 @@
             }
           }
 
-          .open-tab-btn {
-            right: -150px;
-          }
-
           .clipboard-btn {
             right: -180px;
           }
@@ -565,12 +565,6 @@
   }
 }
 
-// tooltip aligment hacks
-
-#clipboard-usr {
-  margin-left: -30px;
-  .tooltip-arrow {
-    left: 30px !important;
-  }
+.pointer {
+  cursor: pointer;
 }
-

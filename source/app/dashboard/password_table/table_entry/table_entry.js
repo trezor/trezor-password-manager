@@ -381,11 +381,10 @@ var React = require('react'),
                     <Tooltip id='clipboard-usr'>{this.state.clipboard_usr ? 'Copied!' : 'Copy username'}</Tooltip>),
                 entryTitle = 'Item/URL *',
                 entryTitleVal = this.state.note.length === 0 ? this.removeProtocolPrefix(this.state.title) : this.state.note,
-                unlockEntry = this.state.mode === 'list-mode' ? (<Tooltip id='unlock'>Edit entry</Tooltip>) : (
-                    <Tooltip id='unlock'>Close entry</Tooltip>),
                 title = this.state.mode === 'list-mode' ?
-                    (<a href={this.isUrl(this.state.title) ? this.setProtocolPrefix(this.state.title) : null}
-                        className='title-input'>{entryTitleVal}</a>) : (
+                    (this.state.username.length === 0 ?
+                        <a href={this.isUrl(this.state.title) ? this.setProtocolPrefix(this.state.title) : null}>{entryTitleVal}</a> :
+                        <a onClick={this.isUrl(this.state.title) ? this.openTabAndLogin : null} className={this.isUrl(this.state.title) ? 'pointer' : null}>{entryTitleVal}</a>) : (
                     <input type='text'
                            autoComplete='off'
                            value={this.state.title}
@@ -398,12 +397,7 @@ var React = require('react'),
 
                 username = this.state.mode === 'list-mode' ?
                     (this.state.username.length !== 0 ? <OverlayTrigger placement='bottom' overlay={copyClipboardUsr}>
-                        <input type='text'
-                               autoComplete='off'
-                               value={this.state.username}
-                               onClick={this.copyUsernameToClipboard}
-                               name='username'
-                               disabled='disabled'/>
+                        <a onClick={this.copyUsernameToClipboard}>{this.state.username}</a>
                     </OverlayTrigger> : null) : (
                     <input type='text'
                            autoComplete='off'
@@ -412,6 +406,15 @@ var React = require('react'),
                            onChange={this.handleChange}
                            onKeyUp={this.keyPressed}
                         />),
+
+                passwordShadow = this.state.mode === 'list-mode' ? (<OverlayTrigger placement='bottom' overlay={copyClipboardPwd}>
+                    <a onClick={this.copyPasswordToClipboard} className='password-shadow'>
+                        <i className='icon ion-asterisk'></i>
+                        <i className='icon ion-asterisk'></i>
+                        <i className='icon ion-asterisk'></i>
+                        <i className='icon ion-asterisk'></i>
+                        <i className='icon ion-asterisk'></i></a>
+                </OverlayTrigger>) : null,
 
 
                 tags = this.state.tags_titles.map((key, i = 0) => {
@@ -466,6 +469,7 @@ var React = require('react'),
                             <div className='username'>
                                 <span>Username </span>
                                 {username}
+                                {passwordShadow}
                             </div>
 
                             <div className='password'>
@@ -506,31 +510,10 @@ var React = require('react'),
                             <div className='form-buttons'>
 
                                 {this.state.key_value != null &&
-                                <OverlayTrigger placement='top' overlay={unlockEntry}>
                                     <span className='btn lock-btn' onClick={this.changeMode}>
                                         <i></i>
                                     </span>
-                                </OverlayTrigger>
                                 }
-
-                                {this.state.key_value != null &&
-                                <OverlayTrigger placement='top' overlay={copyClipboardPwd}>
-                                    <span
-                                        className={ this.state.clipboard_pwd ? 'btn clipboard-btn copied' : 'btn clipboard-btn'}
-                                        onClick={this.copyPasswordToClipboard}>
-                                        <i></i>
-                                    </span>
-                                </OverlayTrigger>
-                                }
-
-                                {this.isUrl(this.state.title) && this.state.key_value != null &&
-                                <OverlayTrigger placement='top' overlay={openEntryTab}>
-                                    <span className='btn open-tab-btn' onClick={this.openTabAndLogin}>
-                                        <i></i>
-                                    </span>
-                                </OverlayTrigger>
-                                }
-
 
                                 {this.state.key_value != null &&
                                 <DropdownButton title='' noCaret pullRight id='dropdown-no-caret'>
