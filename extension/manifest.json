@@ -17,12 +17,6 @@
       },
       "description": "Fill login form with fitting credentials."
     },
-    "clear_session": {
-      "suggested_key": {
-        "default": "Alt+Shift+I"
-      },
-      "description": "Clear session."
-    },
     "restart_app": {
       "suggested_key": {
         "default": "Alt+Shift+U"

@@ -376,9 +376,9 @@ var React = require('react'),
                 openEntryTab = (<Tooltip id='open'>Open and login</Tooltip>),
                 mandatoryField = (<Tooltip id='mandatory' placement='right'>This field is mandatory!</Tooltip>),
                 copyClipboardPwd = (
-                    <Tooltip id='clipboard-pwd'>{this.state.clipboard_pwd ? 'Copied!' : 'Copy to clipboard'}</Tooltip>),
+                    <Tooltip id='clipboard-pwd'>{this.state.clipboard_pwd ? 'Copied!' : 'Copy password'}</Tooltip>),
                 copyClipboardUsr = (
-                    <Tooltip id='clipboard-usr'>{this.state.clipboard_usr ? 'Copied!' : 'Copy to clipboard'}</Tooltip>),
+                    <Tooltip id='clipboard-usr'>{this.state.clipboard_usr ? 'Copied!' : 'Copy username'}</Tooltip>),
                 entryTitle = 'Item/URL *',
                 entryTitleVal = this.state.note.length === 0 ? this.removeProtocolPrefix(this.state.title) : this.state.note,
                 unlockEntry = this.state.mode === 'list-mode' ? (<Tooltip id='unlock'>Edit entry</Tooltip>) : (

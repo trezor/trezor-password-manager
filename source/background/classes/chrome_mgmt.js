@@ -7,7 +7,7 @@ class ChromeMgmt {
         this.storage = storage;
         this.storage.on('decryptedPassword', (data) => this.fillLoginForm(data));
         this.storage.on('checkReopen', () => this.checkReopen());
-        this.activeHost = '';
+        this.activeDomain = '';
         this.hasCredentials = false;
         this.accessTabId = 0;
         chrome.tabs.onUpdated.addListener(() => this.detectActiveUrl());
@@ -57,8 +57,8 @@ class ChromeMgmt {
             chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
                 if (typeof tabs[0] !== 'undefined') {
                     if (this.storage.isUrl(tabs[0].url)) {
-                        this.activeHost = this.storage.decomposeUrl(tabs[0].url).host;
-                        if (this.matchingContent(this.activeHost)) {
+                        this.activeDomain = this.storage.decomposeUrl(tabs[0].url).domain;
+                        if (this.matchingContent(this.activeDomain)) {
                             this.updateBadgeStatus(this.storage.phase);
                             this.hasCredentials = true;
                         } else {
@@ -80,7 +80,7 @@ class ChromeMgmt {
         switch (command) {
             case 'fill_login_form':
                 if (this.hasCredentials) {
-                    this.fillCredentials(this.activeHost);
+                    this.fillCredentials(this.activeDomain);
                 }
                 break;
 
@@ -106,7 +106,7 @@ class ChromeMgmt {
             chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
                 if (typeof tabs[0] !== 'undefined') {
                     if (this.storage.isUrl(tabs[0].url)) {
-                        if (this.storage.decomposeUrl(tabs[0].url).host === this.activeHost) {
+                        if (this.storage.decomposeUrl(tabs[0].url).domain === this.activeDomain) {
                             this.accessTabId = tabs[0].id;
                             this.injectContentScript(tabs[0].id, 'showTrezorMsg', null);
                             this.storage.emit('decryptPassword', entry);
@@ -189,7 +189,7 @@ class ChromeMgmt {
     }
 
     tryRefocusToAccessTab() {
-        if(this.accessTabId !== 0) {
+        if (this.accessTabId !== 0) {
             this.focusTab(parseInt(this.accessTabId));
         }
     }
