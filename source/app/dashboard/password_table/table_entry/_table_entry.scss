@@ -106,6 +106,15 @@
           @include border-radius(2px);
         }
 
+        a {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 50px;
+          height: 50px;
+          display: block;
+        }
+
         i {
           font-size: 1.5em;
           color: $c_white;
@@ -151,14 +160,14 @@
           }
         }
 
-        .title-label, .password, .tags, .safe-note, .available-tags {
+        .title-label, .password, .tags, .safe-note, .available-tags, .actions {
           display: none;
         }
 
         .password-shadow {
           visibility: hidden;
           border-left: 1px solid $c_grey_content_font;
-          
+
           i {
             font-size: 0.65em;
             padding: 0 3px 2px 0;
@@ -235,7 +244,7 @@
         .password-shadow {
           visibility: visible;
         }
-        
+
         .form-buttons {
           visibility: visible;
         }
@@ -246,119 +255,20 @@
         visibility: hidden;
         top: 20px;
         right: 20px;
-        width: 50px;
+        width: 80px;
         height: 150px;
 
-        .btn {
+        .edit-btn {
           display: block;
-          position: absolute;
-          width: 30px;
-          height: 30px;
-          border: 1px solid transparent;
-          line-height: 30px;
-          text-align: center;
-          cursor: pointer;
-          overflow: hidden;
-          @include unselectable();
-
-          &:hover {
-            color: $c_grey_content_font;
-            border: 1px solid rgba($c_grey_content_font, .1);
-            background: $c_white;
-            @include box-shadow(0px 0px 2px 0px rgba($c_grey_font, 0.6));
-          }
-
-          i {
-            font-size: 1.35em;
-            display: block;
-            width: 30px;
-            height: 30px;
-            line-height: 30px;
-            position: absolute;
-            top: 0;
-            right: 0;
-            left: 0;
-
-            &:after {
-              font-family: "ionicons" !important;
-              color: rgba($c_grey_content_font, .6);
-            }
-          }
-
-          &.lock-btn {
-            top: 0;
-            right: 0;
-
-            i:after {
-              content: "\f2bf";
-
-            }
-            &:hover {
-              i:after {
-                content: "\f2bf";
-                color: $c_grey_content_font;
-              }
-            }
-          }
-
-          &.clipboard-btn {
-            top: 0;
-            right: 40px;
-            i:after {
-              content: "\f41b";
-            }
-            &.copied, &.copied:hover {
-              i:after {
-                color: $c_green;
-                content: "\f383";
-              }
-            }
-            &:hover {
-              i:after {
-                content: "\f41b";
-                color: $c_grey_content_font;
-              }
-            }
-          }
         }
 
-        .dropdown {
-          position: absolute;
-          right: -150px;
-          top: 40px;
-          @include transition(all 0.2s ease-in-out);
-
-          button {
-            width: 30px;
-            height: 30px;
-            background-color: transparent;
-            border: 1px solid rgba($c_grey_content_font, .1);
-            outline: 0;
-            @include box-shadow(none);
-            @include border-radius(4px);
-
-            &:hover:after {
-              color: $c_grey_content_font;
-              @include transition(all 0.2s ease-in-out);
-            }
-
-            &:after {
-              position: absolute;
-              right: 7px;
-              bottom: -2px;
-              display: block;
-              color: rgba($c_grey_content_font, .5);
-              content: "\f43c";
-              font-size: 1.2em;
-              font-family: 'ionicons' !important;
-              @include transition(all 0.2s ease-in-out);
-            }
-          }
+        .close-btn {
+          display: none;
         }
 
         .content-btns {
           position: absolute;
-          margin-top: 10px;
+          top: 5px;
           right: -250px;
           @include transition(all 0.2s ease-in-out);
 
@@ -370,19 +280,15 @@
       }
 
       &.edited {
-
         .form-buttons {
-
-          .lock-btn {
-            right: -150px;
+          .close-btn {
+            display: none !important;
           }
 
           .content-btns {
             right: 0;
           }
-
         }
-
       }
 
       &.edit-mode {
@@ -398,7 +304,7 @@
           padding-top: 10px;
         }
 
-        .title, .title-label, .username, .password, .tags, .safe-note {
+        .title, .title-label, .username, .password, .tags, .safe-note, .actions {
           color: $c_grey_content_font;
           padding-bottom: 3px;
           margin-bottom: 3px;
@@ -414,7 +320,7 @@
             font-weight: bold;
           }
 
-          input, textarea, span.tagsinput {
+          input, textarea, span.tagsinput, div.button {
             display: inline-block;
             border: none;
             width: 100%;
@@ -424,6 +330,11 @@
             outline: none;
             font-size: 1.1em;
             @include border-radius(2px);
+          }
+
+          .button > span {
+            width: auto !important;
+            padding-top: 0 !important;
           }
 
           .tagsinput {
@@ -501,6 +412,10 @@
             font-size: 3em;
             @include transition(all 50ms ease-in-out);
           }
+
+          a {
+            display: none;
+          }
         }
 
         .tags {
@@ -511,7 +426,7 @@
           padding-left: 205px;
         }
 
-        .safe-note {
+        .safe-note, .actions {
           padding-left: 130px;
 
           span {
@@ -523,37 +438,24 @@
           }
         }
 
+        .actions {
+          padding-top: 10px;
+        }
+
         .form-buttons {
           visibility: visible;
           z-index: 10;
 
-          .lock-btn {
-            @include transform(rotateY(180deg));
-            border: 1px solid rgba($c_grey_content_font, .1);
+          .edit-btn {
+            display: none;
+          }
 
-            i:after {
-              content: "\f2d7";
-              color: $c_grey_content_font;
-            }
-            &:hover {
-              i:after {
-                content: "\f2d7";
-                color: $c_grey_content_font;
-              }
-            }
+          .close-btn {
+            display: block;
           }
 
           .clipboard-btn {
             right: -180px;
-          }
-
-          .dropdown {
-            right: 30px;
-            @include transition(all 0.2s ease-in-out);
-
-            &:hover {
-              @include box-shadow(0px 0px 4px -1px rgba($c_grey_font, 0.5));
-            }
           }
         }
       }

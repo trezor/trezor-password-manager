@@ -10,6 +10,12 @@ button, .button {
   @include border-radius(2px);
   @include transition(all 0.2s ease-in-out);
 
+  &.icon {
+    span {
+      padding-left: 8px;
+    }
+  }
+
   &:hover, &:focus {
     text-decoration: none;
   }
@@ -50,13 +56,36 @@ button, .button {
     }
   }
 
-  &.white-btn {
-    background-color: $c_white !important;
-    border-color: $c_white !important;
-    color: $c_black;
+  &.black-btn {
+    background: #000 !important;
+    border-color: #000 !important;
+    color: $c_grey_content_font;
 
     &:hover {
+      color: $c_white;
+    }
+  }
+
+  &.transparent-btn {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    color: $c_grey_content_font;
+
+    &:hover {
+      background-color: $c_white !important;
+      border-color: $c_white !important;
       color: $c_black;
+    }
+  }
+
+  &.white-btn {
+    background-color: $c_white !important;
+    border-color: rgba($c_grey_content_font, .6) !important;
+    color: $c_grey_content_font !important;
+
+    &:hover {
+      color: $c_black !important;
+      border-color: $c_grey_content_font !important;
     }
   }
 

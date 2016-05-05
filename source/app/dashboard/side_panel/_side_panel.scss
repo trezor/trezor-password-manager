@@ -145,9 +145,8 @@ aside.left-panel {
     }
 
     &.add-tag-btn {
-      position: absolute;
-      bottom: 0;
       border-top: 1px solid $c_blue_dark_very_much;
+      border-bottom: 1px solid $c_blue_dark_very_much;
       width: 100%;
 
       i {

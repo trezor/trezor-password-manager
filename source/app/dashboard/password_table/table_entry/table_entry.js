@@ -384,7 +384,8 @@ var React = require('react'),
                 title = this.state.mode === 'list-mode' ?
                     (this.state.username.length === 0 ?
                         <a href={this.isUrl(this.state.title) ? this.setProtocolPrefix(this.state.title) : null}>{entryTitleVal}</a> :
-                        <a onClick={this.isUrl(this.state.title) ? this.openTabAndLogin : null} className={this.isUrl(this.state.title) ? 'pointer' : null}>{entryTitleVal}</a>) : (
+                        <a onClick={this.isUrl(this.state.title) ? this.openTabAndLogin : null}
+                           className={this.isUrl(this.state.title) ? 'pointer' : null}>{entryTitleVal}</a>) : (
                     <input type='text'
                            autoComplete='off'
                            value={this.state.title}
@@ -407,14 +408,15 @@ var React = require('react'),
                            onKeyUp={this.keyPressed}
                         />),
 
-                passwordShadow = this.state.mode === 'list-mode' ? (<OverlayTrigger placement='bottom' overlay={copyClipboardPwd}>
-                    <a onClick={this.copyPasswordToClipboard} className='password-shadow'>
-                        <i className='icon ion-asterisk'></i>
-                        <i className='icon ion-asterisk'></i>
-                        <i className='icon ion-asterisk'></i>
-                        <i className='icon ion-asterisk'></i>
-                        <i className='icon ion-asterisk'></i></a>
-                </OverlayTrigger>) : null,
+                passwordShadow = this.state.mode === 'list-mode' ? (
+                    <OverlayTrigger placement='bottom' overlay={copyClipboardPwd}>
+                        <a onClick={this.copyPasswordToClipboard} className='password-shadow'>
+                            <i className='icon ion-asterisk'></i>
+                            <i className='icon ion-asterisk'></i>
+                            <i className='icon ion-asterisk'></i>
+                            <i className='icon ion-asterisk'></i>
+                            <i className='icon ion-asterisk'></i></a>
+                    </OverlayTrigger>) : null,
 
 
                 tags = this.state.tags_titles.map((key, i = 0) => {
@@ -449,6 +451,10 @@ var React = require('react'),
                                 <img src={this.state.image_src}
                                      onError={this.handleError}/>
                                 <i className={'icon ion-' + window.myStore.getTagIconById(this.state.tags_id[this.state.tags_id.length-1])}></i>
+                                {this.state.username.length === 0 ?
+                                    <a href={this.isUrl(this.state.title) ? this.setProtocolPrefix(this.state.title) : null} className={this.isUrl(this.state.title) ? 'pointer' : null}></a> :
+                                    <a onClick={this.isUrl(this.state.title) ? this.openTabAndLogin : null} className={this.isUrl(this.state.title) ? 'pointer' : null}></a>
+                                }
                             </div>
 
                             <div className='title'>
@@ -506,20 +512,24 @@ var React = require('react'),
                                                   spellCheck='false'
                                                   name='safe_note'/>
                             </div>
+                            {this.state.key_value != null &&
+                            <div className='actions'>
+                                <span>Actions </span>
 
+                                <div className='button close-btn red-btn icon ion-trash-a'
+                                     onClick={this.removeEntry}><span>Remove entry</span></div>
+                            </div>
+                            }
                             <div className='form-buttons'>
 
                                 {this.state.key_value != null &&
-                                    <span className='btn lock-btn' onClick={this.changeMode}>
-                                        <i></i>
-                                    </span>
+                                <span className='button edit-btn transparent-btn icon ion-edit'
+                                      onClick={this.changeMode}><span>Edit</span></span>
                                 }
 
                                 {this.state.key_value != null &&
-                                <DropdownButton title='' noCaret pullRight id='dropdown-no-caret'>
-                                    <MenuItem eventKey='1' onSelect={this.removeEntry}><i className='ion-trash-a'></i>
-                                        Remove entry</MenuItem>
-                                </DropdownButton>
+                                <span className='button close-btn transparent-btn icon ion-close-round'
+                                      onClick={this.changeMode}><span>Close</span></span>
                                 }
 
                                 {this.state.mode === 'edit-mode' &&
@@ -533,7 +543,7 @@ var React = require('react'),
                                 <div className='content-btns'>
                                     <span className='button green-btn'
                                           onClick={this.state.saving_entry ? false : this.saveEntry}>{this.state.saving_entry ? 'Saving' : 'Save'}</span>
-                                    <span className='button red-btn'
+                                    <span className='button white-btn'
                                           onClick={this.state.saving_entry ? false : this.discardChanges}>Discard</span>
                                 </div>
                             </div>

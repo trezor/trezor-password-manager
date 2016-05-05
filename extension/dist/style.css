@@ -3101,6 +3101,8 @@ button, .button {
   -moz-transition: all 0.2s ease-in-out;
   -o-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out; }
+  button.icon span, .button.icon span {
+    padding-left: 8px; }
   button:hover, button:focus, .button:hover, .button:focus {
     text-decoration: none; }
   button.shadow:hover, .button.shadow:hover {
@@ -3126,12 +3128,27 @@ button, .button {
     color: #fff; }
     button.red-btn:hover, .button.red-btn:hover {
       color: #000; }
+  button.black-btn, .button.black-btn {
+    background: #000 !important;
+    border-color: #000 !important;
+    color: #797979; }
+    button.black-btn:hover, .button.black-btn:hover {
+      color: #fff; }
+  button.transparent-btn, .button.transparent-btn {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    color: #797979; }
+    button.transparent-btn:hover, .button.transparent-btn:hover {
+      background-color: #fff !important;
+      border-color: #fff !important;
+      color: #000; }
   button.white-btn, .button.white-btn {
     background-color: #fff !important;
-    border-color: #fff !important;
-    color: #000; }
+    border-color: rgba(121, 121, 121, 0.6) !important;
+    color: #797979 !important; }
     button.white-btn:hover, .button.white-btn:hover {
-      color: #000; }
+      color: #000 !important;
+      border-color: #797979 !important; }
   button:disabled, .button:disabled {
     opacity: .5; }
 
@@ -3749,9 +3766,8 @@ aside.left-panel {
         .navigation ul > li > a span {
           display: none; } }
     .navigation ul > li.add-tag-btn {
-      position: absolute;
-      bottom: 0;
       border-top: 1px solid #162338;
+      border-bottom: 1px solid #162338;
       width: 100%; }
       .navigation ul > li.add-tag-btn i {
         color: #3498db; }
@@ -3943,6 +3959,13 @@ aside.left-panel {
           -moz-border-radius: 2px;
           -ms-border-radius: 2px;
           border-radius: 2px; }
+        .dashboard .card .entry .avatar a {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 50px;
+          height: 50px;
+          display: block; }
         .dashboard .card .entry .avatar i {
           font-size: 1.5em;
           color: #fff;
@@ -3982,7 +4005,7 @@ aside.left-panel {
             color: #797979; }
           .dashboard .card .entry.list-mode:hover .username {
             color: rgba(121, 121, 121, 0.9); }
-        .dashboard .card .entry.list-mode .title-label, .dashboard .card .entry.list-mode .password, .dashboard .card .entry.list-mode .tags, .dashboard .card .entry.list-mode .safe-note, .dashboard .card .entry.list-mode .available-tags {
+        .dashboard .card .entry.list-mode .title-label, .dashboard .card .entry.list-mode .password, .dashboard .card .entry.list-mode .tags, .dashboard .card .entry.list-mode .safe-note, .dashboard .card .entry.list-mode .available-tags, .dashboard .card .entry.list-mode .actions {
           display: none; }
         .dashboard .card .entry.list-mode .password-shadow {
           visibility: hidden;
@@ -4052,108 +4075,15 @@ aside.left-panel {
         visibility: hidden;
         top: 20px;
         right: 20px;
-        width: 50px;
+        width: 80px;
         height: 150px; }
-        .dashboard .card .entry .form-buttons .btn {
-          display: block;
-          position: absolute;
-          width: 30px;
-          height: 30px;
-          border: 1px solid transparent;
-          line-height: 30px;
-          text-align: center;
-          cursor: pointer;
-          overflow: hidden;
-          -webkit-touch-callout: none;
-          -webkit-user-select: none;
-          -khtml-user-select: none;
-          -moz-user-select: none;
-          -ms-user-select: none;
-          user-select: none; }
-          .dashboard .card .entry .form-buttons .btn:hover {
-            color: #797979;
-            border: 1px solid rgba(121, 121, 121, 0.1);
-            background: #fff;
-            -webkit-box-shadow: 0px 0px 2px 0px rgba(180, 182, 189, 0.6);
-            -moz-box-shadow: 0px 0px 2px 0px rgba(180, 182, 189, 0.6);
-            -o-box-shadow: 0px 0px 2px 0px rgba(180, 182, 189, 0.6);
-            box-shadow: 0px 0px 2px 0px rgba(180, 182, 189, 0.6); }
-          .dashboard .card .entry .form-buttons .btn i {
-            font-size: 1.35em;
-            display: block;
-            width: 30px;
-            height: 30px;
-            line-height: 30px;
-            position: absolute;
-            top: 0;
-            right: 0;
-            left: 0; }
-            .dashboard .card .entry .form-buttons .btn i:after {
-              font-family: "ionicons" !important;
-              color: rgba(121, 121, 121, 0.6); }
-          .dashboard .card .entry .form-buttons .btn.lock-btn {
-            top: 0;
-            right: 0; }
-            .dashboard .card .entry .form-buttons .btn.lock-btn i:after {
-              content: "\f2bf"; }
-            .dashboard .card .entry .form-buttons .btn.lock-btn:hover i:after {
-              content: "\f2bf";
-              color: #797979; }
-          .dashboard .card .entry .form-buttons .btn.clipboard-btn {
-            top: 0;
-            right: 40px; }
-            .dashboard .card .entry .form-buttons .btn.clipboard-btn i:after {
-              content: "\f41b"; }
-            .dashboard .card .entry .form-buttons .btn.clipboard-btn.copied i:after, .dashboard .card .entry .form-buttons .btn.clipboard-btn.copied:hover i:after {
-              color: #3BC0C3;
-              content: "\f383"; }
-            .dashboard .card .entry .form-buttons .btn.clipboard-btn:hover i:after {
-              content: "\f41b";
-              color: #797979; }
-        .dashboard .card .entry .form-buttons .dropdown {
-          position: absolute;
-          right: -150px;
-          top: 40px;
-          -webkit-transition: all 0.2s ease-in-out;
-          -moz-transition: all 0.2s ease-in-out;
-          -o-transition: all 0.2s ease-in-out;
-          transition: all 0.2s ease-in-out; }
-          .dashboard .card .entry .form-buttons .dropdown button {
-            width: 30px;
-            height: 30px;
-            background-color: transparent;
-            border: 1px solid rgba(121, 121, 121, 0.1);
-            outline: 0;
-            -webkit-box-shadow: none;
-            -moz-box-shadow: none;
-            -o-box-shadow: none;
-            box-shadow: none;
-            -webkit-border-radius: 4px;
-            -moz-border-radius: 4px;
-            -ms-border-radius: 4px;
-            border-radius: 4px; }
-            .dashboard .card .entry .form-buttons .dropdown button:hover:after {
-              color: #797979;
-              -webkit-transition: all 0.2s ease-in-out;
-              -moz-transition: all 0.2s ease-in-out;
-              -o-transition: all 0.2s ease-in-out;
-              transition: all 0.2s ease-in-out; }
-            .dashboard .card .entry .form-buttons .dropdown button:after {
-              position: absolute;
-              right: 7px;
-              bottom: -2px;
-              display: block;
-              color: rgba(121, 121, 121, 0.5);
-              content: "\f43c";
-              font-size: 1.2em;
-              font-family: 'ionicons' !important;
-              -webkit-transition: all 0.2s ease-in-out;
-              -moz-transition: all 0.2s ease-in-out;
-              -o-transition: all 0.2s ease-in-out;
-              transition: all 0.2s ease-in-out; }
+        .dashboard .card .entry .form-buttons .edit-btn {
+          display: block; }
+        .dashboard .card .entry .form-buttons .close-btn {
+          display: none; }
         .dashboard .card .entry .form-buttons .content-btns {
           position: absolute;
-          margin-top: 10px;
+          top: 5px;
           right: -250px;
           -webkit-transition: all 0.2s ease-in-out;
           -moz-transition: all 0.2s ease-in-out;
@@ -4161,8 +4091,8 @@ aside.left-panel {
           transition: all 0.2s ease-in-out; }
           .dashboard .card .entry .form-buttons .content-btns .button {
             margin-left: 10px; }
-      .dashboard .card .entry.edited .form-buttons .lock-btn {
-        right: -150px; }
+      .dashboard .card .entry.edited .form-buttons .close-btn {
+        display: none !important; }
       .dashboard .card .entry.edited .form-buttons .content-btns {
         right: 0; }
       .dashboard .card .entry.edit-mode {
@@ -4175,12 +4105,12 @@ aside.left-panel {
         cursor: default; }
         .dashboard .card .entry.edit-mode .title {
           padding-top: 10px; }
-        .dashboard .card .entry.edit-mode .title, .dashboard .card .entry.edit-mode .title-label, .dashboard .card .entry.edit-mode .username, .dashboard .card .entry.edit-mode .password, .dashboard .card .entry.edit-mode .tags, .dashboard .card .entry.edit-mode .safe-note {
+        .dashboard .card .entry.edit-mode .title, .dashboard .card .entry.edit-mode .title-label, .dashboard .card .entry.edit-mode .username, .dashboard .card .entry.edit-mode .password, .dashboard .card .entry.edit-mode .tags, .dashboard .card .entry.edit-mode .safe-note, .dashboard .card .entry.edit-mode .actions {
           color: #797979;
           padding-bottom: 3px;
           margin-bottom: 3px;
           z-index: 1; }
-          .dashboard .card .entry.edit-mode .title span, .dashboard .card .entry.edit-mode .title-label span, .dashboard .card .entry.edit-mode .username span, .dashboard .card .entry.edit-mode .password span, .dashboard .card .entry.edit-mode .tags span, .dashboard .card .entry.edit-mode .safe-note span {
+          .dashboard .card .entry.edit-mode .title span, .dashboard .card .entry.edit-mode .title-label span, .dashboard .card .entry.edit-mode .username span, .dashboard .card .entry.edit-mode .password span, .dashboard .card .entry.edit-mode .tags span, .dashboard .card .entry.edit-mode .safe-note span, .dashboard .card .entry.edit-mode .actions span {
             display: inline-block;
             vertical-align: middle;
             text-transform: uppercase;
@@ -4188,7 +4118,7 @@ aside.left-panel {
             text-align: left;
             font-size: .8em;
             font-weight: bold; }
-          .dashboard .card .entry.edit-mode .title input, .dashboard .card .entry.edit-mode .title textarea, .dashboard .card .entry.edit-mode .title span.tagsinput, .dashboard .card .entry.edit-mode .title-label input, .dashboard .card .entry.edit-mode .title-label textarea, .dashboard .card .entry.edit-mode .title-label span.tagsinput, .dashboard .card .entry.edit-mode .username input, .dashboard .card .entry.edit-mode .username textarea, .dashboard .card .entry.edit-mode .username span.tagsinput, .dashboard .card .entry.edit-mode .password input, .dashboard .card .entry.edit-mode .password textarea, .dashboard .card .entry.edit-mode .password span.tagsinput, .dashboard .card .entry.edit-mode .tags input, .dashboard .card .entry.edit-mode .tags textarea, .dashboard .card .entry.edit-mode .tags span.tagsinput, .dashboard .card .entry.edit-mode .safe-note input, .dashboard .card .entry.edit-mode .safe-note textarea, .dashboard .card .entry.edit-mode .safe-note span.tagsinput {
+          .dashboard .card .entry.edit-mode .title input, .dashboard .card .entry.edit-mode .title textarea, .dashboard .card .entry.edit-mode .title span.tagsinput, .dashboard .card .entry.edit-mode .title div.button, .dashboard .card .entry.edit-mode .title-label input, .dashboard .card .entry.edit-mode .title-label textarea, .dashboard .card .entry.edit-mode .title-label span.tagsinput, .dashboard .card .entry.edit-mode .title-label div.button, .dashboard .card .entry.edit-mode .username input, .dashboard .card .entry.edit-mode .username textarea, .dashboard .card .entry.edit-mode .username span.tagsinput, .dashboard .card .entry.edit-mode .username div.button, .dashboard .card .entry.edit-mode .password input, .dashboard .card .entry.edit-mode .password textarea, .dashboard .card .entry.edit-mode .password span.tagsinput, .dashboard .card .entry.edit-mode .password div.button, .dashboard .card .entry.edit-mode .tags input, .dashboard .card .entry.edit-mode .tags textarea, .dashboard .card .entry.edit-mode .tags span.tagsinput, .dashboard .card .entry.edit-mode .tags div.button, .dashboard .card .entry.edit-mode .safe-note input, .dashboard .card .entry.edit-mode .safe-note textarea, .dashboard .card .entry.edit-mode .safe-note span.tagsinput, .dashboard .card .entry.edit-mode .safe-note div.button, .dashboard .card .entry.edit-mode .actions input, .dashboard .card .entry.edit-mode .actions textarea, .dashboard .card .entry.edit-mode .actions span.tagsinput, .dashboard .card .entry.edit-mode .actions div.button {
             display: inline-block;
             border: none;
             width: 100%;
@@ -4201,10 +4131,13 @@ aside.left-panel {
             -moz-border-radius: 2px;
             -ms-border-radius: 2px;
             border-radius: 2px; }
-          .dashboard .card .entry.edit-mode .title .tagsinput, .dashboard .card .entry.edit-mode .title-label .tagsinput, .dashboard .card .entry.edit-mode .username .tagsinput, .dashboard .card .entry.edit-mode .password .tagsinput, .dashboard .card .entry.edit-mode .tags .tagsinput, .dashboard .card .entry.edit-mode .safe-note .tagsinput {
+          .dashboard .card .entry.edit-mode .title .button > span, .dashboard .card .entry.edit-mode .title-label .button > span, .dashboard .card .entry.edit-mode .username .button > span, .dashboard .card .entry.edit-mode .password .button > span, .dashboard .card .entry.edit-mode .tags .button > span, .dashboard .card .entry.edit-mode .safe-note .button > span, .dashboard .card .entry.edit-mode .actions .button > span {
+            width: auto !important;
+            padding-top: 0 !important; }
+          .dashboard .card .entry.edit-mode .title .tagsinput, .dashboard .card .entry.edit-mode .title-label .tagsinput, .dashboard .card .entry.edit-mode .username .tagsinput, .dashboard .card .entry.edit-mode .password .tagsinput, .dashboard .card .entry.edit-mode .tags .tagsinput, .dashboard .card .entry.edit-mode .safe-note .tagsinput, .dashboard .card .entry.edit-mode .actions .tagsinput {
             padding: 1px !important;
             min-height: 27px; }
-            .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .title-label .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .safe-note .tagsinput span.tagsinput-tag {
+            .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .title-label .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .safe-note .tagsinput span.tagsinput-tag, .dashboard .card .entry.edit-mode .actions .tagsinput span.tagsinput-tag {
               width: auto;
               float: left;
               color: #fff;
@@ -4216,14 +4149,14 @@ aside.left-panel {
               -moz-border-radius: 2px;
               -ms-border-radius: 2px;
               border-radius: 2px; }
-              .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .title-label .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .safe-note .tagsinput span.tagsinput-tag span {
+              .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .title-label .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .safe-note .tagsinput span.tagsinput-tag span, .dashboard .card .entry.edit-mode .actions .tagsinput span.tagsinput-tag span {
                 width: auto;
                 padding-right: 4px; }
-              .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .title-label .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .safe-note .tagsinput span.tagsinput-tag i {
+              .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .title-label .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .safe-note .tagsinput span.tagsinput-tag i, .dashboard .card .entry.edit-mode .actions .tagsinput span.tagsinput-tag i {
                 font-size: .8em; }
-              .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .title-label .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .safe-note .tagsinput span.tagsinput-tag:hover {
+              .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .title-label .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .safe-note .tagsinput span.tagsinput-tag:hover, .dashboard .card .entry.edit-mode .actions .tagsinput span.tagsinput-tag:hover {
                 background-color: #979898; }
-            .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .title-label .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .safe-note .tagsinput span.tagsinput-input {
+            .dashboard .card .entry.edit-mode .title .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .title-label .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .username .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .password .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .tags .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .safe-note .tagsinput span.tagsinput-input, .dashboard .card .entry.edit-mode .actions .tagsinput span.tagsinput-input {
               cursor: pointer;
               border: 1px dashed #b4b6bd;
               padding: 3px 7px 3px 7px !important;
@@ -4268,45 +4201,30 @@ aside.left-panel {
             -moz-transition: all 50ms ease-in-out;
             -o-transition: all 50ms ease-in-out;
             transition: all 50ms ease-in-out; }
+          .dashboard .card .entry.edit-mode .avatar a {
+            display: none; }
         .dashboard .card .entry.edit-mode .tags {
           padding-left: 130px; }
         .dashboard .card .entry.edit-mode .available-tags {
           padding-left: 205px; }
-        .dashboard .card .entry.edit-mode .safe-note {
+        .dashboard .card .entry.edit-mode .safe-note, .dashboard .card .entry.edit-mode .actions {
           padding-left: 130px; }
-          .dashboard .card .entry.edit-mode .safe-note span {
+          .dashboard .card .entry.edit-mode .safe-note span, .dashboard .card .entry.edit-mode .actions span {
             vertical-align: top;
             padding-top: 6px; }
-          .dashboard .card .entry.edit-mode .safe-note textarea {
+          .dashboard .card .entry.edit-mode .safe-note textarea, .dashboard .card .entry.edit-mode .actions textarea {
             resize: none; }
+        .dashboard .card .entry.edit-mode .actions {
+          padding-top: 10px; }
         .dashboard .card .entry.edit-mode .form-buttons {
           visibility: visible;
           z-index: 10; }
-          .dashboard .card .entry.edit-mode .form-buttons .lock-btn {
-            -webkit-transform: rotateY(180deg);
-            -moz-transform: rotateY(180deg);
-            -o-transform: rotateY(180deg);
-            transform: rotateY(180deg);
-            border: 1px solid rgba(121, 121, 121, 0.1); }
-            .dashboard .card .entry.edit-mode .form-buttons .lock-btn i:after {
-              content: "\f2d7";
-              color: #797979; }
-            .dashboard .card .entry.edit-mode .form-buttons .lock-btn:hover i:after {
-              content: "\f2d7";
-              color: #797979; }
+          .dashboard .card .entry.edit-mode .form-buttons .edit-btn {
+            display: none; }
+          .dashboard .card .entry.edit-mode .form-buttons .close-btn {
+            display: block; }
           .dashboard .card .entry.edit-mode .form-buttons .clipboard-btn {
             right: -180px; }
-          .dashboard .card .entry.edit-mode .form-buttons .dropdown {
-            right: 30px;
-            -webkit-transition: all 0.2s ease-in-out;
-            -moz-transition: all 0.2s ease-in-out;
-            -o-transition: all 0.2s ease-in-out;
-            transition: all 0.2s ease-in-out; }
-            .dashboard .card .entry.edit-mode .form-buttons .dropdown:hover {
-              -webkit-box-shadow: 0px 0px 4px -1px rgba(180, 182, 189, 0.5);
-              -moz-box-shadow: 0px 0px 4px -1px rgba(180, 182, 189, 0.5);
-              -o-box-shadow: 0px 0px 4px -1px rgba(180, 182, 189, 0.5);
-              box-shadow: 0px 0px 4px -1px rgba(180, 182, 189, 0.5); }
       .dashboard .card .entry .submit-btn {
         display: none; }
 
