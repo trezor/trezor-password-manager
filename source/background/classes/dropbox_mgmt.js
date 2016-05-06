@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) Peter Privalinec, SatoshiLabs
+ *
+ * Licensed under Microsoft Reference Source License (Ms-RSL)
+ * see LICENSE.md file for details
+ */
+
 'use strict';
 
 const FILENAME_MESS = '5f91add3fa1c3c76e90c90a3bd0999e2bd7833d06a483fe884ee60397aca277a',

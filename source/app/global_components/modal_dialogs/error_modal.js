@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) Peter Privalinec, SatoshiLabs
+ *
+ * Licensed under Microsoft Reference Source License (Ms-RSL)
+ * see LICENSE.md file for details
+ */
+
 'use strict';
 
 const mailHeaderTemplate = 'Hi SatoshiLabs,%0D%0A%0D%0AI have experienced some errors with TREZOR Password Manager. It\'s impossible to solve it by your instructions.%0D%0A%0D%0AProblem is titled and described as:%0D%0A%0D%0A',

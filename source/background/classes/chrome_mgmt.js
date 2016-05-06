@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) Peter Privalinec, SatoshiLabs
+ *
+ * Licensed under Microsoft Reference Source License (Ms-RSL)
+ * see LICENSE.md file for details
+ */
+
 'use strict';
 
 var Promise = require('es6-promise').Promise;
