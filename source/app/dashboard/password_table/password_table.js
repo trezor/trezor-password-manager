@@ -112,14 +112,21 @@ var React = require('react'),
         },
 
         checkFilterMatching(obj) {
-            let findMatchingTag = false;
-            window.myStore.getTagTitleArrayById(obj.tags).map((key) => {
-                if (key.toLowerCase().indexOf(this.state.filter) > -1) findMatchingTag = true;
+            let filterArr = this.state.filter.match(/[^ ]+/g);
+            let filterMatch = 0;
+            filterArr.map((term) => {
+                let tempVal = false;
+                window.myStore.getTagTitleArrayById(obj.tags).map((key) => {
+                    if (key.toLowerCase().indexOf(term) > -1) tempVal = true;
+                });
+                if(obj.title.toLowerCase().indexOf(term) > -1 ||
+                    obj.note.toLowerCase().indexOf(term) > -1 ||
+                    obj.username.toLowerCase().indexOf(term) > -1) {
+                    tempVal = true;
+                }
+                filterMatch += tempVal;
             });
-            return findMatchingTag ||
-                obj.title.toLowerCase().indexOf(this.state.filter) > -1 ||
-                obj.note.toLowerCase().indexOf(this.state.filter) > -1 ||
-                obj.username.toLowerCase().indexOf(this.state.filter) > -1;
+            return filterMatch >= filterArr.length;
         },
 
         activeTag(obj) {
