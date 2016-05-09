@@ -374,13 +374,13 @@ var React = require('react'),
         },
 
         removeEntry() {
-            window.myStore.removeEntry(this.state.key_value);
+            //window.myStore.removeEntry(this.state.key_value);
+            window.myStore.emit('openRemoveEntry', this.state.key_value);
         },
 
         render() {
             var showPassword = (<Tooltip id='show'>Show/hide password</Tooltip>),
                 generatePassword = (<Tooltip id='generate'>Generate password</Tooltip>),
-                openEntryTab = (<Tooltip id='open'>Open and login</Tooltip>),
                 mandatoryField = (<Tooltip id='mandatory' placement='right'>This field is mandatory!</Tooltip>),
                 copyClipboardPwd = (
                     <Tooltip id='clipboard-pwd'>{this.state.clipboard_pwd ? 'Copied!' : 'Copy password'}</Tooltip>),

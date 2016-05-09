@@ -158,7 +158,6 @@ var React = require('react'),
                 newIcon: icons[icons.indexOf(icon)],
                 showRemoveModal: true
             });
-
         },
 
         closeRemoveModal() {

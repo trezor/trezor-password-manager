@@ -14,6 +14,7 @@ var React = require('react'),
     Service = require('../global_components/data_service'),
     Footer = require('../global_components/footer/footer'),
     TagModal = require('../global_components/modal_dialogs/tag_modal'),
+    EntryModal = require('../global_components/modal_dialogs/entry_modal'),
     PinModal = require('../global_components/modal_dialogs/pin_modal'),
 
     DashboardLayout = React.createClass({
@@ -66,6 +67,7 @@ var React = require('react'),
                     {this.state.ready ?
                         <div>
                             <TagModal />
+                            <EntryModal />
                             <PinModal />
                             <SidePanel />
                             <section className='content'>
