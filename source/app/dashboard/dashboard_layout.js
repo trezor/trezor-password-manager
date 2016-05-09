@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Peter Privalinec, SatoshiLabs
+ * Copyright (c) Peter Jensen, SatoshiLabs
  *
  * Licensed under Microsoft Reference Source License (Ms-RSL)
  * see LICENSE.md file for details
