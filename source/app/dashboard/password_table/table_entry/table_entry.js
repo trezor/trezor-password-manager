@@ -374,7 +374,6 @@ var React = require('react'),
         },
 
         removeEntry() {
-            //window.myStore.removeEntry(this.state.key_value);
             window.myStore.emit('openRemoveEntry', this.state.key_value);
         },
 

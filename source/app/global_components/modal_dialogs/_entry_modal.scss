@@ -1,0 +1,32 @@
+.entry-modal {
+
+  .modal-content {
+    .modal-body {
+      .avatar {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        float: left;
+
+        & > span {
+          width: 100px;
+          height: 100px;
+        }
+
+        img {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          width: 100px;
+          height: 100px;
+        }
+      }
+
+      .title {
+        float: left;
+      }
+    }
+  }
+
+}

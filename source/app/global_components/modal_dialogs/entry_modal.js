@@ -32,7 +32,7 @@ var React = require('react'),
         },
 
         openRemoveEntry(entryId) {
-            var title = window.myStore.getEntryTitleById(parseInt(entryId));
+            let title = window.myStore.getEntryTitleById(parseInt(entryId));
             this.setState({
                 entryId: entryId,
                 title: title,
@@ -62,8 +62,8 @@ var React = require('react'),
 
         render() {
             return (
-                <div className='remove-modal'>
-                    <Modal show={this.state.showRemoveModal} onHide={this.closeRemoveModal}>
+                <div className='entry-modal'>
+                    <Modal show={this.state.showRemoveModal} onHide={this.closeRemoveModal} dialogClassName='entry-modal'>
                         <Modal.Body>
                             <div>
                                 <a className='icon ion-close-round close-btn' onClick={this.closeRemoveModal}/>

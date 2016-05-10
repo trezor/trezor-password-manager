@@ -3562,6 +3562,25 @@ button, .button {
     .modal-body div .close-btn:hover {
       color: #979898; }
 
+.entry-modal .modal-content .modal-body .avatar {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  float: left; }
+  .entry-modal .modal-content .modal-body .avatar > span {
+    width: 100px;
+    height: 100px; }
+  .entry-modal .modal-content .modal-body .avatar img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100px;
+    height: 100px; }
+
+.entry-modal .modal-content .modal-body .title {
+  float: left; }
+
 .pin-modal-dialog {
   width: 320px;
   text-align: center; }
@@ -4216,6 +4235,8 @@ aside.left-panel {
             resize: none; }
         .dashboard .card .entry.edit-mode .actions {
           padding-top: 10px; }
+          .dashboard .card .entry.edit-mode .actions > span {
+            padding-top: 10px; }
         .dashboard .card .entry.edit-mode .form-buttons {
           visibility: visible;
           z-index: 10; }

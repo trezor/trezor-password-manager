@@ -440,6 +440,10 @@
 
         .actions {
           padding-top: 10px;
+
+          & > span {
+            padding-top: 10px;
+          }
         }
 
         .form-buttons {
