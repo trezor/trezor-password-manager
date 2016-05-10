@@ -223,10 +223,10 @@ var React = require('react'),
                                            disabled
                                            value={'Remove ' + this.state.newTagTitle + ' ?'}/>
                                     <div className='btn-controls'>
-                                        <button className='btn shadow green-btn' onClick={this.removeTagCloseModal}>Yes,
+                                        <button className='btn shadow red-btn' onClick={this.removeTagCloseModal}>Yes,
                                             remove
                                         </button>
-                                        <button className='btn shadow red-btn' onClick={this.closeRemoveModal}>No</button>
+                                        <button className='btn shadow white-btn' onClick={this.closeRemoveModal}>No</button>
                                     </div>
                                 </span>
                             </div>

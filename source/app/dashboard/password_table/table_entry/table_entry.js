@@ -52,7 +52,6 @@ var React = require('react'),
                 tags_titles: window.myStore.getTagTitleArrayById(nextProps.tags),
                 tag_globa_title_array: window.myStore.getTagTitleArray(),
                 tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value, nextProps.tags)
-
             });
         },
 
@@ -173,7 +172,10 @@ var React = require('react'),
                         this.setState({
                             password: response.content.password,
                             safe_note: response.content.safe_note,
-                            mode: 'edit-mode'
+                            mode: 'edit-mode',
+                            tags_titles: window.myStore.getTagTitleArrayById(this.state.tags_id),
+                            tag_globa_title_array: window.myStore.getTagTitleArray(),
+                            tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value, this.state.tags_id)
                         });
                     }
                     this.setTrezorWaitingBackface(false);
