@@ -168,16 +168,18 @@ class Store extends EventEmitter {
         return Service.saveContext(this.data);
     }
 
-    getPossibleToAddTagsForEntry(entryId) {
-        var entryData = Object.getOwnPropertyDescriptor(this.data.entries, entryId),
-            allTags = this.getTagIdArray(),
+    getPossibleToAddTagsForEntry(entryId, tempTagArr) {
+        var allTags = this.getTagIdArray(),
             resultTagArray = [];
-        if (!entryData) {
-            var temp = this.getTagTitleArray();
-            temp.splice(0, 1);
-            resultTagArray = temp;
+        if(typeof entryId === 'undefined') {
+            allTags.splice(0, 1);
+            allTags.map((key) => {
+                if (tempTagArr.indexOf(key) === -1) {
+                    resultTagArray.push(this.getTagTitleById(key));
+                }
+            });
         } else {
-            entryData = entryData.value;
+            var entryData = Object.getOwnPropertyDescriptor(this.data.entries, entryId).value;
             allTags.splice(0, 1);
             allTags.map((key) => {
                 if (entryData.tags.indexOf(key) === -1) {

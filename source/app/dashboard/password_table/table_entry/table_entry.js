@@ -34,7 +34,7 @@ var React = require('react'),
                 note: this.props.note,
                 safe_note: this.props.safe_note,
                 tag_globa_title_array: window.myStore.getTagTitleArray(),
-                tags_available: window.myStore.getPossibleToAddTagsForEntry(this.props.key_value),
+                tags_available: window.myStore.getPossibleToAddTagsForEntry(this.props.key_value, this.props.tags),
                 show_available: false,
                 content_changed: this.props.content_changed || '',
                 waiting_trezor: '',
@@ -51,7 +51,7 @@ var React = require('react'),
                 tags_id: nextProps.tags,
                 tags_titles: window.myStore.getTagTitleArrayById(nextProps.tags),
                 tag_globa_title_array: window.myStore.getTagTitleArray(),
-                tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value)
+                tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value, nextProps.tags)
 
             });
         },
@@ -257,7 +257,7 @@ var React = require('react'),
                     tags_id: oldValues.tags,
                     tags_titles: window.myStore.getTagTitleArrayById(oldValues.tags),
                     show_available: false,
-                    tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value),
+                    tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value, oldValues.tags),
                     safe_note: oldValues.safe_note,
                     note: oldValues.note,
                     mode: 'list-mode'

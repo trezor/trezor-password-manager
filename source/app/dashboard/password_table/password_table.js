@@ -185,6 +185,7 @@ var React = require('react'),
                         }
                     }
                 }),
+                newTagArr = this.state.active_id === 0 ? [] : [this.state.active_id],
                 dropdown = (
                     <DropdownButton title='' className='dropdown edit' noCaret pullRight id='edit-dropdown-no-caret'>
                         <MenuItem eventKey='1' onSelect={this.openTagEditor}><i className='ion-edit'></i> Edit
@@ -220,19 +221,19 @@ var React = require('react'),
                         </div>
                     </div>
                     <div className='row dashboard'>
-                        {this.state.newEntry ?
+                        {this.state.newEntry &&
                             <TableEntry key={undefined}
                                         key_value={undefined}
                                         title=''
                                         username=''
                                         password=''
-                                        tags={[]}
+                                        tags={newTagArr}
                                         note=''
                                         nonce=''
                                         safe_note=''
                                         mode={'edit-mode'}
                                         content_changed={'edited'}
-                                /> : null }
+                                />}
                         {password_table}
 
                     </div>
