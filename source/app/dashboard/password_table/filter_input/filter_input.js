@@ -30,12 +30,18 @@ var React = require('react'),
             event.preventDefault();
         },
 
+        clearFilter() {
+            this.setState({filter: ''});
+            window.myStore.emit('filter', '');
+        },
+
         render(){
             return (
                 <span>
-                    <form role='filter' className='filter' onSubmit={this.submitForm}>
+                    <form role='filter' className={this.state.filter.length > 0 ? 'filter active' : 'filter'} onSubmit={this.submitForm}>
                         <input type='text' ref='filter' placeholder='Quick filter ...' value={this.state.filter}
                                onChange={this.handleChange} className='form-control'/>
+                        <i className='icon ion-close-round clear' onClick={this.clearFilter}></i>
                     </form>
                 </span>
             )

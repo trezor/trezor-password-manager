@@ -4271,6 +4271,12 @@ form.filter {
       -moz-box-shadow: none;
       -o-box-shadow: none;
       box-shadow: none; }
+  form.filter .clear {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    padding: 5px;
+    display: none; }
   form.filter:before {
     display: block;
     position: absolute;
@@ -4279,6 +4285,11 @@ form.filter {
     content: "\f2f5";
     font-size: 1.3em;
     font-family: 'ionicons'; }
+  form.filter.active input {
+    border-color: #3498db; }
+  form.filter.active .clear {
+    display: block;
+    cursor: pointer; }
 
 .dashboard-layout {
   max-width: 1290px;

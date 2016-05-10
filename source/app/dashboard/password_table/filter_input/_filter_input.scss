@@ -20,6 +20,14 @@ form.filter {
     }
   }
 
+  .clear {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    padding: 5px;
+    display: none;
+  }
+
   &:before {
     display: block;
     position: absolute;
@@ -28,5 +36,17 @@ form.filter {
     content: "\f2f5";
     font-size: 1.3em;
     font-family: 'ionicons';
+  }
+
+  &.active {
+
+    input {
+      border-color: $c_blue;
+    }
+
+    .clear {
+      display: block;
+      cursor: pointer;
+    }
   }
 }
