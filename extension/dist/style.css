@@ -3570,13 +3570,6 @@ button, .button {
   .entry-modal .modal-content .modal-body .avatar > span {
     width: 100px;
     height: 100px; }
-  .entry-modal .modal-content .modal-body .avatar img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    width: 100px;
-    height: 100px; }
 
 .entry-modal .modal-content .modal-body .title {
   float: left; }

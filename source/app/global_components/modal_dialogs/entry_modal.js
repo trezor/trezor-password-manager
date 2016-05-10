@@ -9,7 +9,6 @@
 
 
 var React = require('react'),
-    tld = require('tldjs'),
     Modal = require('react-bootstrap').Modal,
 
     EntryModal = React.createClass({
@@ -17,7 +16,6 @@ var React = require('react'),
         getInitialState() {
             return {
                 showRemoveModal: false,
-                image_src: 'dist/app-images/transparent.png',
                 title: '',
                 entryId: ''
             };
@@ -36,7 +34,6 @@ var React = require('react'),
             this.setState({
                 entryId: entryId,
                 title: title,
-                image_src: 'https://logo.clearbit.com/' + tld.getDomain(title) + '?size=100',
                 showRemoveModal: true
             });
         },
@@ -45,12 +42,6 @@ var React = require('react'),
             window.myStore.removeEntry(this.state.entryId);
             this.setState({
                 showRemoveModal: false
-            });
-        },
-
-        handleError() {
-            this.setState({
-                image_src: 'dist/app-images/transparent.png'
             });
         },
 
@@ -63,16 +54,14 @@ var React = require('react'),
         render() {
             return (
                 <div className='entry-modal'>
-                    <Modal show={this.state.showRemoveModal} onHide={this.closeRemoveModal} dialogClassName='entry-modal'>
+                    <Modal show={this.state.showRemoveModal} onHide={this.closeRemoveModal}
+                           dialogClassName='entry-modal'>
                         <Modal.Body>
                             <div>
                                 <a className='icon ion-close-round close-btn' onClick={this.closeRemoveModal}/>
-
                                 <div className='avatar'>
                                 <span>
-                                <img src={this.state.image_src}
-                                     onError={this.handleError}/>
-                                <i className={'icon ion-work'}></i>
+                                <i className='icon ion-trash-a'></i>
                                 </span>
                                 </div>
                                 <span className='title edited'>
