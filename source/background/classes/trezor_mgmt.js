@@ -49,7 +49,7 @@ class TrezorMgmt {
             console.log('List error:', error);
             this.transportLoading = false;
             if (this.storage.phase === 'LOADED') {
-                this.disconnectCallback();
+                this.storage.emit('disconnectedTrezor');
             }
             this.storage.emit('checkReopen');
             this.storage.emit('sendMessage', 'errorMsg', {code: 'T_LIST', msg: error});
@@ -86,6 +86,7 @@ class TrezorMgmt {
             case CIPHER_CANCEL:
                 //TODO do it smart asshole!
                 if (operation === 'encKey') {
+                    this.storage.emit('disconnectedTrezor');
                     return never;
                 } else {
                     fallback();
