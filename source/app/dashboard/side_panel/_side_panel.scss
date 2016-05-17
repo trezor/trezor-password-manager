@@ -86,6 +86,9 @@ aside.left-panel {
   ul > li {
     position: relative;
     cursor: pointer;
+    float: left;
+    clear: both;
+    width: 100%;
     @include unselectable();
 
     &.active:hover > a, &.active > a {
@@ -140,6 +143,88 @@ aside.left-panel {
       span {
         @media screen and (max-width: $break-small) {
           display: none;
+        }
+      }
+    }
+
+    &.active:hover > .dropdown, &.active > .dropdown {
+      display: block;
+    }
+
+    .dropdown {
+      display: none;
+      position: relative;
+      float: right;
+      margin-top: -45px;
+      width: 45px;
+      height: 45px;
+      transition: all 300ms;
+
+      &.open {
+        transition: all 300ms;
+        margin-bottom: 74px;
+
+        & > .dropdown-toggle {
+          background: transparent;
+
+          &:after {
+            color: $c_blue !important;
+          }
+        }
+
+        & > .dropdown-menu {
+          width: 210px;
+          border-left: 4px solid $c_blue;
+          background: $c_blue_dark_very_much;
+          padding: 0;
+          @include border-radius(0);
+
+          & > li > a {
+            font-size: .9em;
+            padding-left: 16px !important;
+
+            &:hover {
+              background: $c_blue;
+            }
+
+            & > i {
+              margin-top: -3px;
+            }
+          }
+        }
+
+      }
+
+      button.dropdown {
+        display: block;
+        width: 45px;
+        text-align: right;
+        height: 45px;
+        margin-top: 0;
+        line-height: 45px;
+        font-size: 1.2em;
+        padding: 0;
+        color: $c_grey_content_font;
+        background-color: transparent;
+        border: 0;
+        outline: 0;
+        @include box-shadow(none);
+        @include border-radius(0);
+
+        &:active, &:focus, .btn-group.open .dropdown-toggle {
+          @include box-shadow(none);
+        }
+
+        &.edit:after {
+          display: block;
+          color: $c_grey_content_font;
+          width: 45px;
+          height: 45px;
+          line-height: 45px;
+          text-align: center;
+          content: "\f20b";
+          font-size: 1em;
+          font-family: 'ionicons' !important;
         }
       }
     }

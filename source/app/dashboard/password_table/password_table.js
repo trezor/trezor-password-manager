@@ -137,21 +137,13 @@ var React = require('react'),
             return this.state.filter.length > 0;
         },
 
-        openTagEditor() {
-            window.myStore.emit('openEditTag', this.state.active_id);
-        },
-
-        openDeleteTagModal() {
-            window.myStore.emit('openRemoveTag', this.state.active_id);
-        },
-
         toggleNewEntry() {
             this.state.newEntry ? this.setState({newEntry: false}) : this.setState({newEntry: true})
         },
 
         render(){
-            var raw_table = this.getProperOrderArr();
-            var password_table = raw_table.map((key) => {
+            var raw_table = this.getProperOrderArr(),
+                password_table = raw_table.map((key) => {
                     var obj = this.state.entries[key];
                     if (this.activeTag(obj)) {
                         if (this.filterIsSet()) {
@@ -185,14 +177,7 @@ var React = require('react'),
                         }
                     }
                 }),
-                newTagArr = this.state.active_id === 0 ? [] : [this.state.active_id],
-                dropdown = (
-                    <DropdownButton title='' className='dropdown edit' noCaret pullRight id='edit-dropdown-no-caret'>
-                        <MenuItem eventKey='1' onSelect={this.openTagEditor}><i className='ion-edit'></i> Edit
-                            tag</MenuItem>
-                        <MenuItem eventKey='2' onSelect={this.openDeleteTagModal}><i className='ion-close'></i> Remove
-                            tag</MenuItem>
-                    </DropdownButton>);
+                newTagArr = this.state.active_id === 0 ? [] : [this.state.active_id];
 
             return (
                 <div className='wraper container-fluid'>
@@ -208,7 +193,6 @@ var React = require('react'),
                             <FilterInput eventEmitter={this.props.eventEmitter}/>
                         </div>
                         <div className='col-md-3 col-sm-1 col-xs-2 text-right'>
-                            {this.state.active_id != 0 ? dropdown : null}
                             <DropdownButton title='' className='dropdown order' noCaret pullRight
                                             id='order-dropdown-no-caret'>
                                 <MenuItem eventKey='1' active={this.state.orderType === 'note'}

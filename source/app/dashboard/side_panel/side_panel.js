@@ -8,6 +8,8 @@
 "use strict";
 
 var React = require('react'),
+    MenuItem = require('react-bootstrap').MenuItem,
+    DropdownButton = require('react-bootstrap').DropdownButton,
     DataService = require('../../global_components/data_service'),
     SidePanel = React.createClass({
 
@@ -67,23 +69,37 @@ var React = require('react'),
         },
 
         addTag() {
-            //chrome.runtime.sendMessage({type: 'clearSession', content: ''});
             window.myStore.emit('openAddTag');
         },
 
+        openTagEditor() {
+            window.myStore.emit('openEditTag', this.state.active_id);
+        },
+
+        openDeleteTagModal() {
+            window.myStore.emit('openRemoveTag', this.state.active_id);
+        },
+
         render(){
-            var tag_array = Object.keys(this.state.tags).map((key, i=0) => {
-                var obj = this.state.tags[key];
-                return (
-                    <li key={i++} className={this.state.active_id == key ? 'active' : ''}>
-                        <a data-tag-key={key}
-                           data-tag-name={obj.title}
-                           onClick={this.changeTagAndEmitt.bind(null, key)}
-                           onTouchStart={this.changeTagAndEmitt.bind(null, key)}>
-                            <i className={"icon ion-" + obj.icon}></i>
-                            <span className="nav-label">{obj.title}</span>
-                        </a></li>)
-            });
+            var editDropdown = (
+                <DropdownButton title='' className='dropdown edit' noCaret pullRight id='edit-dropdown-no-caret'>
+                    <MenuItem eventKey='1' onSelect={this.openTagEditor}><i className='ion-edit'></i> Edit
+                        tag</MenuItem>
+                    <MenuItem eventKey='2' onSelect={this.openDeleteTagModal}><i className='ion-close'></i> Remove
+                        tag</MenuItem>
+                </DropdownButton>),
+                tag_array = Object.keys(this.state.tags).map((key, i = 0) => {
+                    var obj = this.state.tags[key];
+                    return (
+                        <li key={i++} className={this.state.active_id == key ? 'active' : ''}>
+                            <a data-tag-key={key}
+                               data-tag-name={obj.title}
+                               onClick={this.changeTagAndEmitt.bind(null, key)}
+                               onTouchStart={this.changeTagAndEmitt.bind(null, key)}>
+                                <i className={"icon ion-" + obj.icon}></i>
+                                <span className="nav-label">{obj.title}</span>
+                            </a>{this.state.active_id !== 0 && editDropdown}</li>)
+                });
 
             return (
                 <aside className="left-panel">
