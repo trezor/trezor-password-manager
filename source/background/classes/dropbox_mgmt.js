@@ -96,6 +96,9 @@ class DropboxMgmt {
                     this.setDropboxUsername();
                     this.storage.emit('sendMessage', 'dropboxConnected');
                 }
+            } else {
+                this.client.reset();
+                this.storage.emit('sendMessage', 'dropboxDisconnected');
             }
         });
     }
@@ -117,6 +120,9 @@ class DropboxMgmt {
                 this.filename = false;
                 this.loadedData = '';
                 this.storage.phase = 'DROPBOX';
+            } else {
+                this.client.reset();
+                this.storage.emit('sendMessage', 'dropboxDisconnected');
             }
         });
     }
