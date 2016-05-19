@@ -85,7 +85,7 @@ var React = require('react'),
                     });
                 }
             } else {
-                return rawArr;
+                return false;
             }
         },
 
@@ -138,12 +138,12 @@ var React = require('react'),
         },
 
         toggleNewEntry() {
-            this.state.newEntry ? this.setState({newEntry: false}) : this.setState({newEntry: true})
+             this.setState({newEntry: !this.state.newEntry});
         },
 
         render(){
             var raw_table = this.getProperOrderArr(),
-                password_table = raw_table.map((key) => {
+                password_table = !!raw_table ? raw_table.map((key) => {
                     var obj = this.state.entries[key];
                     if (this.activeTag(obj)) {
                         if (this.filterIsSet()) {
@@ -176,7 +176,7 @@ var React = require('react'),
                             )
                         }
                     }
-                }),
+                }) : (<span className='no-entries'>No entries here yet</span>),
                 newTagArr = this.state.active_id === 0 ? [] : [this.state.active_id];
 
             return (

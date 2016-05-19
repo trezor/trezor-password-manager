@@ -25,9 +25,7 @@ gulp.task('production-app', () => {
         .bundle()
         .pipe(source('app.js'))
         .pipe(buffer())
-        .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(uglify())
-        .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('./extension/dist/'))
 });
 
@@ -40,9 +38,7 @@ gulp.task('production-bg', () => {
         .bundle()
         .pipe(source('background.js'))
         .pipe(buffer())
-        .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(uglify())
-        .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('./extension/js'))
 });
 
