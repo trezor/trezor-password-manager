@@ -7,8 +7,8 @@
 
 'use strict';
 
-const mailHeaderTemplate = 'Hi SatoshiLabs,%0D%0A%0D%0AI have experienced some errors with TREZOR Password Manager. It\'s impossible to solve it by your instructions.%0D%0A%0D%0AProblem is titled and described as:%0D%0A%0D%0A',
-    mailFooterTemplate = '%0D%0A%0D%0ALooking forward for your reply and thank you for your time!%0D%0A%0D%0ABest regards,%0D%0A[MY NAME]';
+const mailHeaderTemplate = 'Hi SatoshiLabs,%0D%0A%0D%0AI have experienced some errors with my TREZOR Password Manager and I wasn\'t able to resolve them by following your instructions.%0D%0A%0D%0ADetail of the issue:%0D%0A%0D%0A',
+    mailFooterTemplate = '%0D%0A%0D%0ALooking forward to your reply.%0D%0A%0D%0ABest regards,%0D%0A[MY NAME]';
 
 var React = require('react'),
     Modal = require('react-bootstrap').Modal,
