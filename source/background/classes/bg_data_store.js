@@ -6,14 +6,16 @@
  */
 
 'use strict';
-var EventEmitter = require('events');
+var FILENAME_MESS = '5f91add3fa1c3c76e90c90a3bd0999e2bd7833d06a483fe884ee60397aca277a',
+    EventEmitter = require('events'),
+    crypto = require('crypto');
 
-class StorageMgmt extends EventEmitter {
+class BgDataStore extends EventEmitter {
 
     constructor() {
         super();
-        /* DROPBOX, TREZOR, LOADED */
-        this.phase = 'DROPBOX';
+        /* STORAGE, TREZOR, LOADED */
+        this.phase = 'STORAGE';
         this.decryptedContent = false;
         this.masterKey = '';
         this.encryptionKey = '';
@@ -24,6 +26,11 @@ class StorageMgmt extends EventEmitter {
 
     isUrl(url) {
         return url.match(/[a-z]+\.[a-z][a-z]+(\/.*)?$/i) != null
+    }
+
+    getFileName() {
+        let fileKey = this.masterKey.substring(0, this.masterKey.length / 2);
+        return crypto.createHmac('sha256', fileKey).update(FILENAME_MESS).digest('hex') + '.pswd';
     }
 
     decomposeUrl(url) {
@@ -61,4 +68,4 @@ class StorageMgmt extends EventEmitter {
 
 }
 
-module.exports = StorageMgmt;
+module.exports = BgDataStore;

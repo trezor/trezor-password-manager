@@ -117,6 +117,13 @@ var React = require('react'),
             this.sendMessage('connectDropbox');
         },
 
+        connectDrive() {
+            this.setState({
+                dialog: 'preloading'
+            });
+            this.sendMessage('connectDrive');
+        },
+
         disconnectDropbox() {
             this.sendMessage('disconnectDropbox');
         },
@@ -150,8 +157,8 @@ var React = require('react'),
                                 <button className='dropbox-login' onClick={this.connectDropbox}>Sign in with Dropbox
                                 </button>
                                 <br />
-                                <button className='no-style'><a href='https://www.dropbox.com' target='_blank'>I don't
-                                    have a Dropbox account.</a></button>
+                                <button className='dropbox-login' onClick={this.connectDrive}>Sign in with Drive
+                                </button>
                             </div>
                         </div>
 

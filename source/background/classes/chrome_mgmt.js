@@ -10,10 +10,10 @@
 var Promise = require('es6-promise').Promise;
 class ChromeMgmt {
 
-    constructor(storage) {
-        this.storage = storage;
-        this.storage.on('decryptedPassword', (data) => this.fillLoginForm(data));
-        this.storage.on('checkReopen', () => this.checkReopen());
+    constructor(bgStore) {
+        this.bgStore = bgStore;
+        this.bgStore.on('decryptedPassword', (data) => this.fillLoginForm(data));
+        this.bgStore.on('checkReopen', () => this.checkReopen());
         this.activeDomain = '';
         this.hasCredentials = false;
         this.accessTabId = 0;
@@ -48,7 +48,7 @@ class ChromeMgmt {
             if (!!response) {
                 this.focusTab(response.tab.id);
             } else {
-                chrome.tabs.create({'url': this.storage.appUrl, 'selected': true}, (tab) => {
+                chrome.tabs.create({'url': this.bgStore.appUrl, 'selected': true}, (tab) => {
                     this.focusTab(tab.id);
                 });
             }
@@ -60,13 +60,13 @@ class ChromeMgmt {
     }
 
     detectActiveUrl() {
-        if (this.storage.phase === 'LOADED' && this.storage.decryptedContent) {
+        if (this.bgStore.phase === 'LOADED' && this.bgStore.decryptedContent) {
             chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
                 if (typeof tabs[0] !== 'undefined') {
-                    if (this.storage.isUrl(tabs[0].url)) {
-                        this.activeDomain = this.storage.decomposeUrl(tabs[0].url).domain;
+                    if (this.bgStore.isUrl(tabs[0].url)) {
+                        this.activeDomain = this.bgStore.decomposeUrl(tabs[0].url).domain;
                         if (this.matchingContent(this.activeDomain)) {
-                            this.updateBadgeStatus(this.storage.phase);
+                            this.updateBadgeStatus(this.bgStore.phase);
                             this.hasCredentials = true;
                         } else {
                             this.updateBadgeStatus('ERROR');
@@ -92,7 +92,7 @@ class ChromeMgmt {
                 break;
 
             case 'clear_session':
-                this.storage.emit('clearSession');
+                this.bgStore.emit('clearSession');
                 break;
 
             case 'restart_app':
@@ -103,20 +103,20 @@ class ChromeMgmt {
 
     fillCredentials(host) {
         let entry = false;
-        if (this.storage.decryptedContent) {
-            Object.keys(this.storage.decryptedContent.entries).map((key) => {
-                let obj = this.storage.decryptedContent.entries[key];
+        if (this.bgStore.decryptedContent) {
+            Object.keys(this.bgStore.decryptedContent.entries).map((key) => {
+                let obj = this.bgStore.decryptedContent.entries[key];
                 if (obj.title.indexOf(host) > -1 || host.indexOf(obj.title) > -1) {
                     entry = obj;
                 }
             });
             chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
                 if (typeof tabs[0] !== 'undefined') {
-                    if (this.storage.isUrl(tabs[0].url)) {
-                        if (this.storage.decomposeUrl(tabs[0].url).domain === this.activeDomain) {
+                    if (this.bgStore.isUrl(tabs[0].url)) {
+                        if (this.bgStore.decomposeUrl(tabs[0].url).domain === this.activeDomain) {
                             this.accessTabId = tabs[0].id;
                             this.injectContentScript(tabs[0].id, 'showTrezorMsg', null);
-                            this.storage.emit('decryptPassword', entry);
+                            this.bgStore.emit('decryptPassword', entry);
                         }
                     }
                 }
@@ -127,7 +127,7 @@ class ChromeMgmt {
     updateBadgeStatus(status) {
         let badgeState = {
             LOADED: {color: [59, 192, 195, 255], defaultText: '\u0020'},
-            DROPBOX: {color: [237, 199, 85, 100], defaultText: '\u0020'},
+            STORAGE: {color: [237, 199, 85, 100], defaultText: '\u0020'},
             TREZOR: {color: [237, 199, 85, 100], defaultText: '\u0020'},
             ERROR: {color: [255, 255, 0, 100], defaultText: '\u0020'},
             OFF: {color: [255, 255, 0, 100], defaultText: ''}
@@ -139,9 +139,9 @@ class ChromeMgmt {
 
     matchingContent(host) {
         let entry = false;
-        if (this.storage.decryptedContent && typeof host !== 'undefined') {
-            Object.keys(this.storage.decryptedContent.entries).map((key) => {
-                let obj = this.storage.decryptedContent.entries[key];
+        if (this.bgStore.decryptedContent && typeof host !== 'undefined') {
+            Object.keys(this.bgStore.decryptedContent.entries).map((key) => {
+                let obj = this.bgStore.decryptedContent.entries[key];
                 if (obj.title.indexOf(host) > -1 || host.indexOf(obj.title) > -1) {
                     entry = obj;
                 }

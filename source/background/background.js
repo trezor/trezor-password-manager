@@ -9,25 +9,27 @@
 
 window.tpmErroLog = [];
 // Storage will be used for background internal messaging (extends EventEmitter) ...
-var StorageMgmt = require('./classes/storage_mgmt'),
-    storage = new StorageMgmt(),
+var BgDataStore = require('./classes/bg_data_store'),
+    bgStore = new BgDataStore(),
 // Chrome manager will maintain most of injection and other (tab <-> background <-> app) context manipulation
     ChromeMgmt = require('./classes/chrome_mgmt'),
-    chromeManager = new ChromeMgmt(storage),
+    chromeManager = new ChromeMgmt(bgStore),
     TrezorMgmt = require('./classes/trezor_mgmt'),
     trezorManager = {},
     DropboxMgmt = require('./classes/dropbox_mgmt'),
     dropboxManager = {},
+    DriveMgmt = require('./classes/drive_mgmt'),
+    driveManager = {},
 
 // GENERAL STUFF
 
     init = () => {
         trezorManager.checkVersions();
-        switch (storage.phase) {
+        switch (bgStore.phase) {
             case 'LOADED':
-                chromeManager.sendMessage('decryptedContent', JSON.stringify(storage.decryptedContent));
+                chromeManager.sendMessage('decryptedContent', JSON.stringify(bgStore.decryptedContent));
                 break;
-            case 'DROPBOX':
+            case 'STORAGE':
                 if (dropboxManager.isAuth() && !dropboxManager.username) {
                     dropboxManager.setDropboxUsername();
                 } else if (!dropboxManager.isAuth()) {
@@ -37,11 +39,11 @@ var StorageMgmt = require('./classes/storage_mgmt'),
                 }
                 break;
             case 'TREZOR':
-                if (storage.masterKey === '') {
-                    storage.phase = 'DROPBOX';
+                if (bgStore.masterKey === '') {
+                    bgStore.phase = 'STORAGE';
                     init();
                 } else {
-                    storage.phase = 'LOADED';
+                    bgStore.phase = 'LOADED';
                 }
                 break;
         }
@@ -69,25 +71,25 @@ var StorageMgmt = require('./classes/storage_mgmt'),
             },
             'entries': {}
         };
-        trezorManager.encrypt(basicObjectBlob, storage.encryptionKey).then((res) => {
+        trezorManager.encrypt(basicObjectBlob, bgStore.encryptionKey).then((res) => {
             dropboxManager.saveFile(res);
         });
     },
 
     userLoggedOut = () => {
-        storage.decryptedContent = false;
+        bgStore.decryptedContent = false;
         chromeManager.updateBadgeStatus('OFF');
         chromeManager.sendMessage('trezorDisconnected');
         dropboxManager.disconnected();
-        storage.phase = 'DROPBOX';
+        bgStore.phase = 'STORAGE';
         init();
     },
 
     contentDecrypted = () => {
-        let tempDecryptedData = trezorManager.decrypt(dropboxManager.loadedData, storage.encryptionKey);
+        let tempDecryptedData = trezorManager.decrypt(dropboxManager.loadedData, bgStore.encryptionKey);
         chromeManager.sendMessage('decryptedContent', tempDecryptedData);
-        storage.decryptedContent = typeof tempDecryptedData === 'object' ? tempDecryptedData : JSON.parse(tempDecryptedData);
-        storage.phase = 'LOADED';
+        bgStore.decryptedContent = typeof tempDecryptedData === 'object' ? tempDecryptedData : JSON.parse(tempDecryptedData);
+        bgStore.phase = 'LOADED';
     },
 
     decryptAndInject = (entry) => {
@@ -124,8 +126,12 @@ var StorageMgmt = require('./classes/storage_mgmt'),
                 dropboxManager.connectToDropbox();
                 break;
 
+            case 'connectDrive':
+                driveManager.connectToDrive();
+                break;
+
             case 'initTrezorPhase':
-                storage.phase = 'TREZOR';
+                bgStore.phase = 'TREZOR';
                 chromeManager.sendMessage('trezorDisconnected');
                 trezorManager.connectTrezor();
                 break;
@@ -140,7 +146,7 @@ var StorageMgmt = require('./classes/storage_mgmt'),
                 break;
 
             case 'saveContent':
-                trezorManager.encrypt(request.content, storage.encryptionKey).then((res) => {
+                trezorManager.encrypt(request.content, bgStore.encryptionKey).then((res) => {
                     dropboxManager.saveFile(res);
                 });
                 break;
@@ -172,16 +178,17 @@ chromeManager.exists().then(() => {
     chrome.runtime.onMessage.addListener(chromeMessaging);
     return new trezor.DeviceList({clearSession: true /*clearSessionTime: 100 (by default, 15 minutes)*/});
 }).then((list) => {
-    trezorManager = new TrezorMgmt(storage, list);
-    dropboxManager = new DropboxMgmt(storage);
-    storage.on('decryptContent', contentDecrypted);
-    storage.on('initStorageFile', initNewFile);
-    storage.on('disconnectDropbox', init);
-    storage.on('showPinDialog', showPinDialog);
-    storage.on('clearSession', () => trezorManager.clearSession());
-    storage.on('loadFile', () => dropboxManager.loadFile());
-    storage.on('disconnectedTrezor', userLoggedOut);
-    storage.on('decryptPassword', (entry) => decryptAndInject(entry));
-    storage.on('sendMessage', (type, content) => chromeManager.sendMessage(type, content));
+    trezorManager = new TrezorMgmt(bgStore, list);
+    dropboxManager = new DropboxMgmt(bgStore);
+    driveManager = new DriveMgmt(bgStore);
+    bgStore.on('decryptContent', contentDecrypted);
+    bgStore.on('initStorageFile', initNewFile);
+    bgStore.on('disconnectDropbox', init);
+    bgStore.on('showPinDialog', showPinDialog);
+    bgStore.on('clearSession', () => trezorManager.clearSession());
+    bgStore.on('loadFile', () => dropboxManager.loadFile());
+    bgStore.on('disconnectedTrezor', userLoggedOut);
+    bgStore.on('decryptPassword', (entry) => decryptAndInject(entry));
+    bgStore.on('sendMessage', (type, content) => chromeManager.sendMessage(type, content));
 });
 
