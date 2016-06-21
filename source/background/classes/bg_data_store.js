@@ -16,10 +16,14 @@ class BgDataStore extends EventEmitter {
         super();
         /* STORAGE, TREZOR, LOADED */
         this.phase = 'STORAGE';
+        this.storageType = false;
+        this.username = false;
         this.decryptedContent = false;
         this.masterKey = '';
         this.encryptionKey = '';
         this.decryptedContent = false;
+        this.fileName = false;
+        this.fileId = false;
         this.appUrl = chrome.extension.getURL('index.html');
 
     }
@@ -28,9 +32,27 @@ class BgDataStore extends EventEmitter {
         return url.match(/[a-z]+\.[a-z][a-z]+(\/.*)?$/i) != null
     }
 
-    getFileName() {
+    setFileName() {
         let fileKey = this.masterKey.substring(0, this.masterKey.length / 2);
-        return crypto.createHmac('sha256', fileKey).update(FILENAME_MESS).digest('hex') + '.pswd';
+        this.fileName = crypto.createHmac('sha256', fileKey).update(FILENAME_MESS).digest('hex') + '.pswd';
+    }
+
+    setUsername(username, storageType) {
+        this.username = username;
+        this.storageType = storageType;
+        this.emit('sendMessage', 'setUsername', {username: this.username, storageType: this.storageType});
+    }
+
+    disconnect() {
+        this.phase = 'STORAGE';
+        this.storageType = false;
+        this.username = false;
+        this.decryptedContent = false;
+        this.masterKey = '';
+        this.encryptionKey = '';
+        this.fileName = false;
+        this.fileId = false;
+        this.decryptedContent = false;
     }
 
     decomposeUrl(url) {

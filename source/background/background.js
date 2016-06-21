@@ -30,12 +30,12 @@ var BgDataStore = require('./classes/bg_data_store'),
                 chromeManager.sendMessage('decryptedContent', JSON.stringify(bgStore.decryptedContent));
                 break;
             case 'STORAGE':
-                if (dropboxManager.isAuth() && !dropboxManager.username) {
-                    dropboxManager.setDropboxUsername();
+                if (dropboxManager.isAuth() && !bgStore.username) {
+                    //dropboxManager.setDropboxUsername();
                 } else if (!dropboxManager.isAuth()) {
-                    chromeManager.sendMessage('dropboxInitialized');
-                } else if (dropboxManager.isAuth() && !!dropboxManager.username) {
-                    chromeManager.sendMessage('setDropboxUsername', dropboxManager.username);
+                    chromeManager.sendMessage('initialized');
+                } else if (dropboxManager.isAuth() && !!bgStore.username) {
+                    chromeManager.sendMessage('setUsername', {username: bgStore.username});
                 }
                 break;
             case 'TREZOR':
@@ -72,16 +72,18 @@ var BgDataStore = require('./classes/bg_data_store'),
             'entries': {}
         };
         trezorManager.encrypt(basicObjectBlob, bgStore.encryptionKey).then((res) => {
-            dropboxManager.saveFile(res);
+            if (bgStore.storageType === 'DROPBOX') {
+                dropboxManager.saveFile(res);
+            } else {
+                driveManager.createNewDataFile(res);
+            }
         });
     },
 
     userLoggedOut = () => {
-        bgStore.decryptedContent = false;
+        bgStore.disconnect();
         chromeManager.updateBadgeStatus('OFF');
         chromeManager.sendMessage('trezorDisconnected');
-        dropboxManager.disconnected();
-        bgStore.phase = 'STORAGE';
         init();
     },
 
@@ -99,6 +101,14 @@ var BgDataStore = require('./classes/bg_data_store'),
     saveErroLog = (errorMsg, url, lineNumber, column, errorObj) => {
         console.log(errorMsg, url, lineNumber, column, errorObj);
         window.tpmErroLog.push('%0D%0A Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber + ' Column: ' + column + ' StackTrace: ' + errorObj);
+    },
+
+    loadFile = () => {
+        if (bgStore.storageType === 'DROPBOX') {
+            dropboxManager.loadFile();
+        } else {
+            driveManager.loadFile();
+        }
     },
 
     showPinDialog = () => {
@@ -123,17 +133,17 @@ var BgDataStore = require('./classes/bg_data_store'),
                 break;
 
             case 'connectDropbox':
-                dropboxManager.connectToDropbox();
+                dropboxManager.connect();
                 break;
 
             case 'connectDrive':
-                driveManager.connectToDrive();
+                driveManager.connect();
                 break;
 
             case 'initTrezorPhase':
                 bgStore.phase = 'TREZOR';
                 chromeManager.sendMessage('trezorDisconnected');
-                trezorManager.connectTrezor();
+                trezorManager.connect();
                 break;
 
             case 'trezorPin':
@@ -141,8 +151,12 @@ var BgDataStore = require('./classes/bg_data_store'),
                 chromeManager.tryRefocusToAccessTab();
                 break;
 
-            case 'disconnectDropbox':
-                dropboxManager.signOutDropbox();
+            case 'disconnect':
+                if (bgStore.storageType === 'DROPBOX') {
+                    dropboxManager.signOut();
+                } else {
+                    driveManager.signOut();
+                }
                 break;
 
             case 'saveContent':
@@ -183,10 +197,10 @@ chromeManager.exists().then(() => {
     driveManager = new DriveMgmt(bgStore);
     bgStore.on('decryptContent', contentDecrypted);
     bgStore.on('initStorageFile', initNewFile);
-    bgStore.on('disconnectDropbox', init);
+    bgStore.on('disconnect', init);
     bgStore.on('showPinDialog', showPinDialog);
     bgStore.on('clearSession', () => trezorManager.clearSession());
-    bgStore.on('loadFile', () => dropboxManager.loadFile());
+    bgStore.on('loadFile', loadFile);
     bgStore.on('disconnectedTrezor', userLoggedOut);
     bgStore.on('decryptPassword', (entry) => decryptAndInject(entry));
     bgStore.on('sendMessage', (type, content) => chromeManager.sendMessage(type, content));

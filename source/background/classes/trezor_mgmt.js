@@ -44,7 +44,7 @@ class TrezorMgmt {
         this.list = list;
         this.list.on('transport', (transport) => this.checkTransport(transport));
         this.list.on('connectUnacquired', (device) => this.connectedUnacquiredTrezor(device));
-        this.list.on('connect', (device) => this.connectedNewTrezor(device));
+        this.list.on('connect', (device) => this.connectedNew(device));
         this.list.on('error', (error) => {
             console.log('List error:', error);
             this.transportLoading = false;
@@ -154,9 +154,9 @@ class TrezorMgmt {
         }
     }
 
-    connectedNewTrezor(device) {
+    connectedNew(device) {
         this.trezorDevice = device;
-        this.connectTrezor();
+        this.connect();
     }
 
     connectedUnacquiredTrezor(unacquiredDevice) {
@@ -175,7 +175,7 @@ class TrezorMgmt {
         }
     }
 
-    connectTrezor() {
+    connect() {
         if (this.bgStore.phase === 'TREZOR') {
             var doSteal = this.trezorDevice == null;
             if (doSteal) {

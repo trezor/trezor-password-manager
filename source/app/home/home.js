@@ -19,8 +19,9 @@ var React = require('react'),
         getInitialState() {
             return {
                 trezorReady: false,
-                dropboxReady: false,
-                dropboxUsername: '',
+                storageReady: false,
+                username: '',
+                storageType: '',
                 deviceStatus: 'disconnected',
                 dialog: 'preloading',
                 loadingText: 'Waking up ...'
@@ -39,30 +40,35 @@ var React = require('react'),
 
         chromeMsgHandler(request, sender, sendResponse) {
             switch (request.type) {
-                // DROPBOX PHASE
-                case 'dropboxInitialized':
+
+                // STORAGE PHASE
+
+                case 'initialized':
                     this.setState({
-                        dialog: 'connect_dropbox',
-                        dropboxReady: true
+                        dialog: 'connect_storage',
+                        storageReady: true
                     });
                     break;
 
-                case 'dropboxDisconnected':
+                case 'setUsername':
                     this.setState({
-                        dialog: 'connect_dropbox',
-                        dropboxUsername: '',
-                        dropboxReady: false
+                        dialog: 'accept_user',
+                        username: request.content.username,
+                        storageType: request.content.storageType
                     });
                     break;
 
-                case 'setDropboxUsername':
+                case 'disconnected':
                     this.setState({
-                        dialog: 'accept_dropbox_user',
-                        dropboxUsername: request.content
+                        dialog: 'connect_storage',
+                        username: '',
+                        storageType: '',
+                        storageReady: false
                     });
                     break;
 
                 // TREZOR PHASE
+
                 case 'showPinDialog':
                     this.setState({
                         dialog: 'pin_dialog'
@@ -124,8 +130,8 @@ var React = require('react'),
             this.sendMessage('connectDrive');
         },
 
-        disconnectDropbox() {
-            this.sendMessage('disconnectDropbox');
+        disconnect() {
+            this.sendMessage('disconnect');
         },
 
         initTrezorPhase() {
@@ -133,7 +139,7 @@ var React = require('react'),
         },
 
         checkStates() {
-            if (this.state.trezorReady && this.state.dropboxReady) {
+            if (this.state.trezorReady && this.state.storageReady) {
                 this.transitionTo('dashboard');
             }
         },
@@ -149,7 +155,7 @@ var React = require('react'),
                     <div className='overlay-color'></div>
                     <div className='home'>
 
-                        <div className={this.state.dialog === 'connect_dropbox' ? 'connect_dropbox' : 'hidden_dialog'}>
+                        <div className={this.state.dialog === 'connect_storage' ? 'connect_storage' : 'hidden_dialog'}>
                             <img src='dist/app-images/trezor.svg' className='no-circle'/>
 
                             <div className='dialog-content'>
@@ -157,7 +163,7 @@ var React = require('react'),
                                 <button className='dropbox-login' onClick={this.connectDropbox}>Sign in with Dropbox
                                 </button>
                                 <br />
-                                <button className='dropbox-login' onClick={this.connectDrive}>Sign in with Drive
+                                <button className='drive-login' onClick={this.connectDrive}>Sign in with Drive
                                 </button>
                             </div>
                         </div>
@@ -172,18 +178,18 @@ var React = require('react'),
                         </div>
 
                         <div
-                            className={this.state.dialog === 'accept_dropbox_user' ? 'accept_dropbox_user' : 'hidden_dialog'}>
-                            <img src='dist/app-images/dropbox.svg'/>
+                            className={this.state.dialog === 'accept_user' ? 'accept_user' : 'hidden_dialog'}>
+                            <img src={'dist/app-images/' + this.state.storageType.toLowerCase() + '.svg'} />
 
                             <div>
                                 <button onClick={this.initTrezorPhase} className='accept-btn'>Continue as
-                                    <b> {this.state.dropboxUsername}</b>
+                                    <b> {this.state.username}</b>
                                 </button>
                                 <br />
-                                <button className='no-style' onClick={this.disconnectDropbox}>Use different
-                                    account.
+                                <button className='no-style' onClick={this.disconnect}>Use different
+                                    account or service.
                                 </button>
-                                <i>(Manage your accounts via Dropbox.com)</i>
+                                {this.state.storageType === 'DROPBOX' ? <i>(Manage your accounts via Dropbox.com)</i> : <i>(Manage your accounts via myaccount.google.com)</i>}
                             </div>
                         </div>
 

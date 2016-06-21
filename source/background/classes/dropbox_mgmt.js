@@ -14,19 +14,10 @@ class DropboxMgmt {
 
     constructor(bgStore) {
         this.bgStore = bgStore;
-        this.filename = false;
-        this.username = false;
-        this.loadedData = '';
         this.client = new Dropbox.Client({key: APIKEY});
         this.client.onError.addListener((error) => {
             this.handleDropboxError(error);
         });
-    }
-
-    disconnected() {
-        this.filename = false;
-        this.username = false;
-        this.loadedData = '';
     }
 
     isAuth() {
@@ -85,17 +76,16 @@ class DropboxMgmt {
         }
     }
 
-    connectToDropbox() {
+    connect() {
         this.client.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: receiverRelativePath}));
         this.client.authenticate((error, data) => {
             if (!error) {
                 if (this.isAuth()) {
                     this.setDropboxUsername();
-                    this.bgStore.emit('sendMessage', 'dropboxConnected');
                 }
             } else {
                 this.client.reset();
-                this.bgStore.emit('sendMessage', 'dropboxDisconnected');
+                this.bgStore.emit('sendMessage', 'disconnected');
             }
         });
     }
@@ -103,38 +93,33 @@ class DropboxMgmt {
     setDropboxUsername() {
         this.client.getAccountInfo((error, accountInfo) => {
             if (!error) {
-                this.username = accountInfo.name;
-                this.bgStore.emit('sendMessage', 'setDropboxUsername', accountInfo.name);
+                this.bgStore.setUsername(accountInfo.name, 'DROPBOX');
             }
         });
     }
 
-    signOutDropbox() {
+    signOut() {
         this.client.signOut((error, accountInfo) => {
             if (!error) {
-                this.bgStore.emit('sendMessage', 'dropboxDisconnected');
-                this.username = false;
-                this.filename = false;
-                this.loadedData = '';
-                this.bgStore.phase = 'STORAGE';
+                this.bgStore.emit('sendMessage', 'disconnected');
+                this.bgStore.disconnect();
             } else {
                 this.client.reset();
-                this.bgStore.emit('sendMessage', 'dropboxDisconnected');
+                this.bgStore.emit('sendMessage', 'disconnected');
             }
         });
     }
 
     loadFile() {
-        if (!this.filename) {
+        if (!this.bgStore.fileName) {
             try {
-
-                this.filename = this.bgStore.getFileName();
+                this.bgStore.setFileName();
             } catch (ex) {
                 console.log('Crypto failed: ', ex);
                 //TODO soon please
             }
         }
-        this.client.readFile(this.filename, {arrayBuffer: true}, (error, data) => {
+        this.client.readFile(this.bgStore.fileName, {arrayBuffer: true}, (error, data) => {
             if (!error) {
                 if (!(Buffer.isBuffer(data))) {
                     data = this.toBuffer(data);
@@ -145,7 +130,7 @@ class DropboxMgmt {
     }
 
     saveFile(data) {
-        this.client.writeFile(this.filename, data, (error, stat) => {
+        this.client.writeFile(this.fileName, data, (error, stat) => {
             if (!error) {
                 this.loadFile();
             }
@@ -153,7 +138,7 @@ class DropboxMgmt {
     }
 
     saveLoadedData(data) {
-        this.loadedData = data;
+        this.bgStore.loadedData = data;
         this.bgStore.emit('decryptContent');
     }
 }

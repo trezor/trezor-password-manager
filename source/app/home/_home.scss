@@ -39,9 +39,9 @@
   }
 
   .preloading,
-  .accept_dropbox_user,
+  .accept_user,
   .connect_trezor,
-  .connect_dropbox,
+  .connect_storage,
   .loading_dialog,
   .button_dialog {
 
@@ -148,9 +148,17 @@
       }
 
       &.dropbox-login {
+        width: 240px;
         padding-left: 60px;
         background: $c_white url(app-images/dropbox-blue.svg) no-repeat 20px 8px;
         background-size: 30px 30px;
+      }
+
+      &.drive-login {
+        width: 240px;
+        padding-left: 45px;
+        background: $c_white url(app-images/drive-blue.svg) no-repeat 20px 8px;
+        background-size: 28px 28px;
       }
 
       &.accept-btn {
@@ -161,7 +169,7 @@
   }
 
   .preloading,
-  .connect_dropbox {
+  .connect_storage {
     img {
       width: 210px;
       height: 210px;
