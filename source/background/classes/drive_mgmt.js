@@ -21,11 +21,14 @@ class DriveMgmt {
         this.token = false;
     }
 
-    createCORSRequest(method, url, authorize) {
+    createCORSRequest(method, url, authorize = false, isFolder = false) {
         let xhr = new XMLHttpRequest();
         xhr.open(method, url, true);
         if (authorize) {
             xhr.setRequestHeader('Authorization', 'Bearer ' + this.token);
+        }
+        if (isFolder) {
+            xhr.setRequestHeader('Content-Type', 'application/json');
         }
         return xhr;
     }
@@ -40,11 +43,8 @@ class DriveMgmt {
     getDriveUsername() {
         let url = 'https://www.googleapis.com/drive/v2/about';
         let xhr = this.createCORSRequest('GET', url, true);
-        if (!xhr) {
-            alert('CORS not supported');
-            return;
-        }
         xhr.onerror = () => {
+            // TODO
             alert('Woops, there was an error making the request.');
         };
         xhr.onload = () => {
@@ -54,51 +54,116 @@ class DriveMgmt {
         xhr.send();
     }
 
-    setDataFileId() {
-        let url = 'https://www.googleapis.com/drive/v2/files?maxResults=1000&spaces=appDataFolder&key=' + API_Key;
-        let xhr = this.createCORSRequest('GET', url, true);
-        if (!xhr) {
-            alert('CORS not supported');
-            return;
-        }
-        xhr.onerror = () => {
-            alert('Woops, there was an error making the request.');
-        };
-        xhr.onload = () => {
-            let allFiles = JSON.parse(xhr.responseText).items,
-                fileId = false;
-            Object.keys(allFiles).forEach((key) => {
-                if(allFiles[key].title === this.bgStore.fileName) {
-                    fileId = allFiles[key].id
+    getAppFolderName() {
+        return new Promise((resolve, reject) => {
+            this.getFileIdByName('Apps').then((id) => {
+                let appsFolderId = id;
+                if (!!appsFolderId) {
+                    this.getFileIdByName('TREZOR Password Manager', appsFolderId).then((tpmFolderId) => {
+                        if (!!tpmFolderId) {
+                            this.bgStore.tpmFolderId = tpmFolderId;
+                            resolve(tpmFolderId);
+                        } else {
+                            this.createFolder('TREZOR Password Manager', appsFolderId).then((tpmFolderId) => {
+                                this.bgStore.tpmFolderId = tpmFolderId;
+                                resolve(tpmFolderId);
+                            });
+                        }
+                    });
+                } else {
+                    this.createFolder('Apps').then((id) => {
+                        let appsFolderId = id;
+                        this.createFolder('TREZOR Password Manager', appsFolderId).then((tpmFolderId) => {
+                            this.bgStore.tpmFolderId = tpmFolderId;
+                            resolve(tpmFolderId);
+                        });
+                    });
                 }
             });
-            if(fileId) {
-                console.log('FOUND', fileId);
-            } else {
-                this.bgStore.emit('initStorageFile');
-            }
+        });
+    }
 
-        };
-        xhr.send();
+    getAppFileStorage() {
+        return new Promise((resolve, reject) => {
+            this.getFileIdByName(this.bgStore.fileName, this.bgStore.tpmFolderId).then((fileId) => {
+                if (!!fileId) {
+                    this.bgStore.fileId = fileId;
+                    resolve(fileId);
+                } else {
+                    this.bgStore.emit('initStorageFile');
+                    reject;
+                }
+            });
+        });
+    }
+
+    createFolder(title, parentId = false) {
+        return new Promise((resolve, reject) => {
+            let url = 'https://www.googleapis.com/drive/v2/files';
+            let xhr = this.createCORSRequest('POST', url, true, true);
+            xhr.onerror = () => {
+                // TODO
+                alert('Woops, there was an error making the request.');
+            };
+            xhr.onload = () => {
+                let output = JSON.parse(xhr.responseText);
+                resolve(output.id);
+            };
+            let body = {
+                "title": title,
+                "mimeType": 'application/vnd.google-apps.folder'
+            };
+            if (parentId) {
+                body.parents = [{"id": parentId}];
+            }
+            xhr.send(JSON.stringify(body));
+        });
+    }
+
+    getFileIdByName(fileName, folderId = 'root', checkOwner = false) {
+        console.log('get file name by id called w:', fileName, folderId);
+        return new Promise((resolve, reject) => {
+            let url = "https://www.googleapis.com/drive/v2/files/" + folderId + "/children?maxResults=1000&orderBy=createdDate&q=title = '" + fileName + "'";
+            let xhr = this.createCORSRequest('GET', url, true);
+            var fileId = false;
+            xhr.onerror = (e) => {
+                // TODO
+                alert('Woops, there was an error making the request.', e);
+                reject(e);
+            };
+            xhr.onload = () => {
+                let output = JSON.parse(xhr.responseText);
+                if (typeof output.items !== 'undefined') {
+                    if (typeof output.items[0] !== 'undefined') {
+                        fileId = output.items[0].id;
+                    }
+                }
+                resolve(fileId);
+            };
+            xhr.send();
+        });
     }
 
     loadFile() {
         if (!this.bgStore.fileName) {
-            try {
-                this.bgStore.setFileName();
-            } catch (ex) {
-                console.log('Crypto failed: ', ex);
-                //TODO soon please
-            }
+            this.bgStore.setFileName();
         }
 
-        if (!this.fileId) {
-            this.setDataFileId();
+        if (!this.bgStore.tpmFolderId) {
+            this.getAppFolderName().then(() => {
+                this.getAppFileStorage().then((fileId) => {
+                    loadFileContent(fileId);
+                });
+            });
+        }
+
+        if (!this.bgStore.fileId) {
+            this.getAppFileStorage().then((fileId) => {
+                loadFileContent(fileId);
+            });
         } else {
-            this.loadFileContent();
+            loadFileContent(fileId);
         }
-
-
     }
 
     loadFileContent() {
@@ -106,9 +171,17 @@ class DriveMgmt {
     }
 
     createNewDataFile(data) {
+        var blob = new Blob(data, {
+            type: "text/plain;charset=utf-8;"
+        });
         var uploader = new MediaUploader({
-            file: data,
-            token: this.token
+            file: blob,
+            token: this.token,
+            metadata: {
+                'title': this.bgStore.fileName,
+                'parents': [{'id': this.bgStore.tpmFolderId}],
+                'mimeType': 'application/octet-stream'
+            }
         });
         uploader.upload();
     }
