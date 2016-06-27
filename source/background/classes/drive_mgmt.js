@@ -6,8 +6,8 @@
  */
 
 'use strict';
-
-const scopes = [
+const API_URL = 'https://www.googleapis.com/drive/v2',
+    scopes = [
         "https://www.googleapis.com/auth/drive",
         "https://www.googleapis.com/auth/drive.file",
         "https://www.googleapis.com/auth/drive.appdata"
@@ -21,7 +21,7 @@ class DriveMgmt {
         this.token = false;
     }
 
-    createCORSRequest(method, url, authorize = false, isFolder = false) {
+    createCORSRequest(method, url, authorize = false, isFolder = false, readingFile = false) {
         let xhr = new XMLHttpRequest();
         xhr.open(method, url, true);
         if (authorize) {
@@ -29,6 +29,11 @@ class DriveMgmt {
         }
         if (isFolder) {
             xhr.setRequestHeader('Content-Type', 'application/json');
+        }
+        if (readingFile) {
+            xhr.responseType = 'arraybuffer';
+            xhr.setRequestHeader('Content-Type', 'text/plain;charset=UTF-8');
+            xhr.overrideMimeType('text/plain;charset=UTF-8');
         }
         return xhr;
     }
@@ -40,16 +45,27 @@ class DriveMgmt {
         });
     }
 
+    toBuffer(ab) {
+        let buffer = new Buffer(ab.byteLength),
+            view = new Uint8Array(ab);
+        for (var i = 0; i < buffer.length; ++i) {
+            buffer[i] = view[i];
+        }
+        return buffer;
+    }
+
     getDriveUsername() {
-        let url = 'https://www.googleapis.com/drive/v2/about';
+        let url = API_URL + '/about';
         let xhr = this.createCORSRequest('GET', url, true);
         xhr.onerror = () => {
             // TODO
             alert('Woops, there was an error making the request.');
         };
         xhr.onload = () => {
-            let name = JSON.parse(xhr.responseText).name;
-            this.bgStore.setUsername(name, 'DRIVE');
+            if (xhr.status == 200) {
+                let name = JSON.parse(xhr.responseText).name;
+                this.bgStore.setUsername(name, 'DRIVE');
+            }
         };
         xhr.send();
     }
@@ -99,15 +115,17 @@ class DriveMgmt {
 
     createFolder(title, parentId = false) {
         return new Promise((resolve, reject) => {
-            let url = 'https://www.googleapis.com/drive/v2/files';
+            let url = API_URL + '/files';
             let xhr = this.createCORSRequest('POST', url, true, true);
             xhr.onerror = () => {
                 // TODO
                 alert('Woops, there was an error making the request.');
             };
             xhr.onload = () => {
-                let output = JSON.parse(xhr.responseText);
-                resolve(output.id);
+                if (xhr.status == 200) {
+                    let output = JSON.parse(xhr.responseText);
+                    resolve(output.id);
+                }
             };
             let body = {
                 "title": title,
@@ -121,9 +139,8 @@ class DriveMgmt {
     }
 
     getFileIdByName(fileName, folderId = 'root', checkOwner = false) {
-        console.log('get file name by id called w:', fileName, folderId);
         return new Promise((resolve, reject) => {
-            let url = "https://www.googleapis.com/drive/v2/files/" + folderId + "/children?maxResults=1000&orderBy=createdDate&q=title = '" + fileName + "'";
+            let url = API_URL + "/files/" + folderId + "/children?maxResults=1000&orderBy=createdDate&q=title = '" + fileName + "'";
             let xhr = this.createCORSRequest('GET', url, true);
             var fileId = false;
             xhr.onerror = (e) => {
@@ -132,13 +149,15 @@ class DriveMgmt {
                 reject(e);
             };
             xhr.onload = () => {
-                let output = JSON.parse(xhr.responseText);
-                if (typeof output.items !== 'undefined') {
-                    if (typeof output.items[0] !== 'undefined') {
-                        fileId = output.items[0].id;
+                if (xhr.status == 200) {
+                    let output = JSON.parse(xhr.responseText);
+                    if (typeof output.items !== 'undefined') {
+                        if (typeof output.items[0] !== 'undefined') {
+                            fileId = output.items[0].id;
+                        }
                     }
+                    resolve(fileId);
                 }
-                resolve(fileId);
             };
             xhr.send();
         });
@@ -150,44 +169,73 @@ class DriveMgmt {
         }
 
         if (!this.bgStore.tpmFolderId) {
-            this.getAppFolderName().then(() => {
+            this.getAppFolderName().then((folderId) => {
                 this.getAppFileStorage().then((fileId) => {
-                    loadFileContent(fileId);
+                    this.loadFileContent(fileId);
                 });
             });
-        }
-
-        if (!this.bgStore.fileId) {
-            this.getAppFileStorage().then((fileId) => {
-                loadFileContent(fileId);
-            });
         } else {
-            loadFileContent(fileId);
+            if (!this.bgStore.fileId) {
+                this.getAppFileStorage().then((fileId) => {
+                    this.loadFileContent(fileId);
+                });
+            } else {
+                this.loadFileContent(this.bgStore.fileId);
+            }
         }
     }
 
-    loadFileContent() {
-
+    loadFileContent(fileId) {
+        return new Promise((resolve, reject) => {
+            let url = API_URL + "/files/" + fileId + "?alt=media";
+            let xhr = this.createCORSRequest('GET', url, true, false, true);
+            xhr.onerror = (e) => {
+                // TODO
+                alert('Woops, there was an error making the request.', e);
+                reject(e);
+            };
+            xhr.onload = () => {
+                if (xhr.status == 200) {
+                    var dataArr = new Uint8Array(xhr.response);
+                    this.bgStore.setData(dataArr);
+                    resolve(dataArr);
+                }
+            };
+            xhr.send();
+        });
     }
 
     createNewDataFile(data) {
-        var blob = new Blob(data, {
-            type: "text/plain;charset=utf-8;"
+        this.saveFile(data).then((fileId) => {
+            this.bgStore.fileId = fileId;
+            this.loadFileContent(fileId);
         });
-        var uploader = new MediaUploader({
-            file: blob,
-            token: this.token,
-            metadata: {
-                'title': this.bgStore.fileName,
-                'parents': [{'id': this.bgStore.tpmFolderId}],
-                'mimeType': 'application/octet-stream'
-            }
-        });
-        uploader.upload();
     }
 
-    updateDataFile() {
+    saveFile(data) {
+        return new Promise((resolve, reject) => {
+            let blob = new Blob([data.buffer], {type: 'text/plain;charset=UTF-8'});
+            let uploader = new MediaUploader({
+                file: blob,
+                token: this.token,
+                fileId: this.bgStore.fileId,
+                contentType: 'text/plain;charset=UTF-8',
+                metadata: {
+                    'title': this.bgStore.fileName,
+                    'fileId': this.bgStore.fileId,
+                    'parents': [{'id': this.bgStore.tpmFolderId}],
+                    'mimeType': 'text/plain;charset=UTF-8'
+                },
+                onComplete: (data) => {
+                    resolve(JSON.parse(data).id);
+                }
+            });
+            uploader.upload();
+        });
+    }
 
+    updateFile(data) {
+        this.saveFile(data);
     }
 }
 

@@ -31,7 +31,7 @@ var BgDataStore = require('./classes/bg_data_store'),
                 break;
             case 'STORAGE':
                 if (dropboxManager.isAuth() && !bgStore.username) {
-                    //dropboxManager.setDropboxUsername();
+                    //dropboxManager.getDropboxUsername();
                 } else if (!dropboxManager.isAuth()) {
                     chromeManager.sendMessage('initialized');
                 } else if (dropboxManager.isAuth() && !!bgStore.username) {
@@ -73,7 +73,7 @@ var BgDataStore = require('./classes/bg_data_store'),
         };
         trezorManager.encrypt(basicObjectBlob, bgStore.encryptionKey).then((res) => {
             if (bgStore.storageType === 'DROPBOX') {
-                dropboxManager.saveFile(res);
+                dropboxManager.createNewDataFile(res);
             } else {
                 driveManager.createNewDataFile(res);
             }
@@ -88,7 +88,7 @@ var BgDataStore = require('./classes/bg_data_store'),
     },
 
     contentDecrypted = () => {
-        let tempDecryptedData = trezorManager.decrypt(dropboxManager.loadedData, bgStore.encryptionKey);
+        let tempDecryptedData = trezorManager.decrypt(bgStore.loadedData, bgStore.encryptionKey);
         chromeManager.sendMessage('decryptedContent', tempDecryptedData);
         bgStore.decryptedContent = typeof tempDecryptedData === 'object' ? tempDecryptedData : JSON.parse(tempDecryptedData);
         bgStore.phase = 'LOADED';
@@ -101,6 +101,14 @@ var BgDataStore = require('./classes/bg_data_store'),
     saveErroLog = (errorMsg, url, lineNumber, column, errorObj) => {
         console.log(errorMsg, url, lineNumber, column, errorObj);
         window.tpmErroLog.push('%0D%0A Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber + ' Column: ' + column + ' StackTrace: ' + errorObj);
+    },
+
+    saveContent = (data) => {
+        if (bgStore.storageType === 'DROPBOX') {
+            dropboxManager.saveFile(data);
+        } else {
+            driveManager.updateFile(data);
+        }
     },
 
     loadFile = () => {
@@ -161,7 +169,7 @@ var BgDataStore = require('./classes/bg_data_store'),
 
             case 'saveContent':
                 trezorManager.encrypt(request.content, bgStore.encryptionKey).then((res) => {
-                    dropboxManager.saveFile(res);
+                    saveContent(res);
                 });
                 break;
 

@@ -56,6 +56,7 @@ var React = require('react'),
                         username: request.content.username,
                         storageType: request.content.storageType
                     });
+                    this.initTrezorPhase();
                     break;
 
                 case 'disconnected':
@@ -117,16 +118,20 @@ var React = require('react'),
         },
 
         connectDropbox() {
+            /*
             this.setState({
                 dialog: 'preloading'
             });
+            */
             this.sendMessage('connectDropbox');
         },
 
         connectDrive() {
+            /*
             this.setState({
                 dialog: 'preloading'
             });
+            */
             this.sendMessage('connectDrive');
         },
 

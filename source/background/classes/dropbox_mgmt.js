@@ -24,15 +24,6 @@ class DropboxMgmt {
         return this.client.isAuthenticated();
     }
 
-    toBuffer(ab) {
-        let buffer = new Buffer(ab.byteLength),
-            view = new Uint8Array(ab);
-        for (var i = 0; i < buffer.length; ++i) {
-            buffer[i] = view[i];
-        }
-        return buffer;
-    }
-
     handleDropboxError(error) {
         console.warn('Dropbox error:', error);
         switch (error.status) {
@@ -81,7 +72,7 @@ class DropboxMgmt {
         this.client.authenticate((error, data) => {
             if (!error) {
                 if (this.isAuth()) {
-                    this.setDropboxUsername();
+                    this.getDropboxUsername();
                 }
             } else {
                 this.client.reset();
@@ -90,7 +81,7 @@ class DropboxMgmt {
         });
     }
 
-    setDropboxUsername() {
+    getDropboxUsername() {
         this.client.getAccountInfo((error, accountInfo) => {
             if (!error) {
                 this.bgStore.setUsername(accountInfo.name, 'DROPBOX');
@@ -121,25 +112,21 @@ class DropboxMgmt {
         }
         this.client.readFile(this.bgStore.fileName, {arrayBuffer: true}, (error, data) => {
             if (!error) {
-                if (!(Buffer.isBuffer(data))) {
-                    data = this.toBuffer(data);
-                }
-                this.saveLoadedData(data);
+                this.bgStore.setData(data);
             }
         });
     }
 
     saveFile(data) {
-        this.client.writeFile(this.fileName, data, (error, stat) => {
+        this.client.writeFile(this.bgStore.fileName, data, (error, stat) => {
             if (!error) {
                 this.loadFile();
             }
         });
     }
 
-    saveLoadedData(data) {
-        this.bgStore.loadedData = data;
-        this.bgStore.emit('decryptContent');
+    createNewDataFile(data) {
+        this.saveFile(data);
     }
 }
 

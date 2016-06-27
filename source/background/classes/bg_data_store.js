@@ -19,6 +19,7 @@ class BgDataStore extends EventEmitter {
         this.storageType = false;
         this.username = false;
         this.decryptedContent = false;
+        this.loadedData = false;
         this.masterKey = '';
         this.encryptionKey = '';
         this.decryptedContent = false;
@@ -31,6 +32,24 @@ class BgDataStore extends EventEmitter {
 
     isUrl(url) {
         return url.match(/[a-z]+\.[a-z][a-z]+(\/.*)?$/i) != null
+    }
+
+    toBuffer(ab) {
+        let buffer = new Buffer(ab.byteLength),
+            view = new Uint8Array(ab);
+        for (var i = 0; i < buffer.length; ++i) {
+            buffer[i] = view[i];
+        }
+        return buffer;
+    }
+
+    setData(dataBlob) {
+        let data = dataBlob;
+        if (!(Buffer.isBuffer(data))) {
+            data = this.toBuffer(data);
+        }
+        this.loadedData = data;
+        this.emit('decryptContent');
     }
 
     setFileName() {
@@ -49,10 +68,12 @@ class BgDataStore extends EventEmitter {
         this.storageType = false;
         this.username = false;
         this.decryptedContent = false;
+        this.loadedData = false;
         this.masterKey = '';
         this.encryptionKey = '';
         this.fileName = false;
         this.fileId = false;
+        this.tpmFolderId = false;
         this.decryptedContent = false;
     }
 
