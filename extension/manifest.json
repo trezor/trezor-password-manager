@@ -50,8 +50,7 @@
     "client_id": "275799074029-esko3u3r12q2pl0tipvb0ate8vd853oe.apps.googleusercontent.com",
     "scopes": [
       "https://www.googleapis.com/auth/drive",
-      "https://www.googleapis.com/auth/drive.file",
-      "https://www.googleapis.com/auth/drive.appdata"
+      "https://www.googleapis.com/auth/drive.file"
     ]
   },
   "web_accessible_resources": [

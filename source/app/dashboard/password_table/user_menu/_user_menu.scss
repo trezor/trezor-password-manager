@@ -1,0 +1,23 @@
+.user-menu {
+  margin-left: 20px;
+
+  button.dropbox {
+    background: url(app-images/dropbox-grey.svg) no-repeat 6px 8px;
+    background-size: 17px 17px;
+
+    &:active, &:focus, .btn-group.open, .dropdown-toggle {
+      background: url(app-images/dropbox-grey.svg) no-repeat 6px 8px;
+      background-size: 17px 17px;
+    }
+  }
+
+  button.drive {
+    background: url(app-images/drive-grey.svg) no-repeat 6px 8px;
+    background-size: 17px 17px;
+
+    &:active, &:focus, .btn-group.open, .dropdown-toggle {
+      background: url(app-images/drive-grey.svg) no-repeat 6px 8px;
+      background-size: 17px 17px;
+    }
+  }
+}

@@ -21,7 +21,7 @@ var React = require('react'),
                 trezorReady: false,
                 storageReady: false,
                 username: '',
-                storageType: '',
+                storageType: 'DROPBOX',
                 deviceStatus: 'disconnected',
                 dialog: 'preloading',
                 loadingText: 'Waking up ...'
@@ -56,7 +56,7 @@ var React = require('react'),
                         username: request.content.username,
                         storageType: request.content.storageType
                     });
-                    this.initTrezorPhase();
+                    //this.initTrezorPhase();
                     break;
 
                 case 'disconnected':
@@ -118,20 +118,16 @@ var React = require('react'),
         },
 
         connectDropbox() {
-            /*
             this.setState({
                 dialog: 'preloading'
             });
-            */
             this.sendMessage('connectDropbox');
         },
 
         connectDrive() {
-            /*
             this.setState({
                 dialog: 'preloading'
             });
-            */
             this.sendMessage('connectDrive');
         },
 

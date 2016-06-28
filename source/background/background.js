@@ -161,9 +161,9 @@ var BgDataStore = require('./classes/bg_data_store'),
 
             case 'disconnect':
                 if (bgStore.storageType === 'DROPBOX') {
-                    dropboxManager.signOut();
+                    dropboxManager.disconnect();
                 } else {
-                    driveManager.signOut();
+                    driveManager.disconnect();
                 }
                 break;
 

@@ -3,7 +3,7 @@ aside.left-panel {
   color: $c_grey_content_font;
   overflow: hidden;
   outline: none;
-  width: 210px;
+  width: 240px;
   position: fixed;
   min-height: 100%;
   height: 100%;
@@ -75,7 +75,7 @@ aside.left-panel {
 }
 
 .navigation {
-  margin: 20px 0 20px;
+  margin: 24px 0 20px;
   height: 100%;
 
   @media screen and (max-width: $break-small) {

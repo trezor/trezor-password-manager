@@ -45,13 +45,10 @@ class DriveMgmt {
         });
     }
 
-    toBuffer(ab) {
-        let buffer = new Buffer(ab.byteLength),
-            view = new Uint8Array(ab);
-        for (var i = 0; i < buffer.length; ++i) {
-            buffer[i] = view[i];
-        }
-        return buffer;
+    disconnect() {
+        chrome.identity.removeCachedAuthToken({'token': this.token}, () => {
+            console.log('DISCONNNECTED GOOGLE!');
+        });
     }
 
     getDriveUsername() {

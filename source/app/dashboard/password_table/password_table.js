@@ -11,6 +11,7 @@ var React = require('react'),
     tld = require('tldjs'),
     TableEntry = require('./table_entry/table_entry'),
     FilterInput = require('./filter_input/filter_input'),
+    UserMenu = require('./user_menu/user_menu'),
     DropdownButton = require('react-bootstrap').DropdownButton,
     MenuItem = require('react-bootstrap').MenuItem,
 
@@ -193,15 +194,16 @@ var React = require('react'),
                             <FilterInput eventEmitter={this.props.eventEmitter}/>
                         </div>
                         <div className='col-md-3 col-sm-1 col-xs-2 text-right'>
-                            <DropdownButton title='' className='dropdown order' noCaret pullRight
+                            <DropdownButton title='Sort' className='dropdown order' noCaret pullRight
                                             id='order-dropdown-no-caret'>
-                                <MenuItem eventKey='1' active={this.state.orderType === 'note'}
+                                <MenuItem active={this.state.orderType === 'note'}
                                           onSelect={this.changeOrder.bind(null, 'note')}><i
                                     className='ion-ios-list-outline'></i>Title</MenuItem>
-                                <MenuItem eventKey='3' active={this.state.orderType === 'date'}
+                                <MenuItem active={this.state.orderType === 'date'}
                                           onSelect={this.changeOrder.bind(null, 'date')}><i
                                     className='ion-calendar'></i>Date</MenuItem>
                             </DropdownButton>
+                            <UserMenu />
                         </div>
                     </div>
                     <div className='row dashboard'>

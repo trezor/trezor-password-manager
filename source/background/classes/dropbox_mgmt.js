@@ -7,7 +7,7 @@
 
 'use strict';
 
-const receiverRelativePath = '/html/chrome_oauth_receiver.html',
+const receiverPath = '/html/chrome_oauth_receiver.html',
     APIKEY = 's340kh3l0vla1nv';
 
 class DropboxMgmt {
@@ -68,13 +68,14 @@ class DropboxMgmt {
     }
 
     connect() {
-        this.client.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: receiverRelativePath}));
+        this.client.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: receiverPath}));
         this.client.authenticate((error, data) => {
             if (!error) {
                 if (this.isAuth()) {
                     this.getDropboxUsername();
                 }
             } else {
+                console.log('CONNECT STOP');
                 this.client.reset();
                 this.bgStore.emit('sendMessage', 'disconnected');
             }
@@ -89,7 +90,7 @@ class DropboxMgmt {
         });
     }
 
-    signOut() {
+    disconnect() {
         this.client.signOut((error, accountInfo) => {
             if (!error) {
                 this.bgStore.emit('sendMessage', 'disconnected');

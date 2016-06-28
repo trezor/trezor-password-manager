@@ -3673,7 +3673,7 @@ aside.left-panel {
   color: #797979;
   overflow: hidden;
   outline: none;
-  width: 210px;
+  width: 240px;
   position: fixed;
   min-height: 100%;
   height: 100%;
@@ -3731,7 +3731,7 @@ aside.left-panel {
         display: none; } }
 
 .navigation {
-  margin: 20px 0 20px;
+  margin: 24px 0 20px;
   height: 100%; }
   @media screen and (max-width: 768px) {
     .navigation {
@@ -3868,7 +3868,7 @@ aside.left-panel {
         color: #3498db; }
 
 .content {
-  margin-left: 210px;
+  margin-left: 240px;
   height: 100%; }
   @media screen and (max-width: 768px) {
     .content {
@@ -3882,12 +3882,11 @@ aside.left-panel {
       .content .wraper .page-title div button.add:hover {
         color: #fff; }
       .content .wraper .page-title div button.dropdown {
-        width: 40px;
         text-align: right;
         height: 34px;
         line-height: 34px;
-        font-size: 1.2em;
-        padding: 0 18px 0 0;
+        font-size: 1.1em;
+        padding: 0 6px 0 30px;
         color: #797979;
         background-color: transparent;
         border: 0;
@@ -3900,20 +3899,20 @@ aside.left-panel {
         -moz-border-radius: 2px;
         -ms-border-radius: 2px;
         border-radius: 2px; }
-        .content .wraper .page-title div button.dropdown:active, .content .wraper .page-title div button.dropdown:focus, .content .wraper .page-title div button.dropdown .btn-group.open .dropdown-toggle {
+        .content .wraper .page-title div button.dropdown:active, .content .wraper .page-title div button.dropdown:focus, .content .wraper .page-title div button.dropdown .btn-group.open, .content .wraper .page-title div button.dropdown .dropdown-toggle {
           -webkit-box-shadow: none;
           -moz-box-shadow: none;
           -o-box-shadow: none;
           box-shadow: none; }
         .content .wraper .page-title div button.dropdown.order:after {
           position: absolute;
-          right: 5px;
-          bottom: .9em;
+          bottom: .85em;
+          margin-left: -27px;
           display: block;
           color: #797979;
           width: 20px;
           height: 20px;
-          content: "\f20d";
+          content: "\f39d";
           font-size: 1em;
           font-family: 'ionicons' !important; }
     .content .wraper .no-entries {
@@ -4213,7 +4212,7 @@ aside.left-panel {
             display: inline-block;
             border: none;
             width: 100%;
-            max-width: 215px;
+            max-width: 315px;
             padding: 5px 7px;
             background-color: rgba(237, 241, 242, 0.9);
             outline: none;
@@ -4323,6 +4322,21 @@ aside.left-panel {
 
 .pointer {
   cursor: pointer; }
+
+.user-menu {
+  margin-left: 20px; }
+  .user-menu button.dropbox {
+    background: url(app-images/dropbox-grey.svg) no-repeat 6px 8px;
+    background-size: 17px 17px; }
+    .user-menu button.dropbox:active, .user-menu button.dropbox:focus, .user-menu button.dropbox .btn-group.open, .user-menu button.dropbox .dropdown-toggle {
+      background: url(app-images/dropbox-grey.svg) no-repeat 6px 8px;
+      background-size: 17px 17px; }
+  .user-menu button.drive {
+    background: url(app-images/drive-grey.svg) no-repeat 6px 8px;
+    background-size: 17px 17px; }
+    .user-menu button.drive:active, .user-menu button.drive:focus, .user-menu button.drive .btn-group.open, .user-menu button.drive .dropdown-toggle {
+      background: url(app-images/drive-grey.svg) no-repeat 6px 8px;
+      background-size: 17px 17px; }
 
 form.filter {
   display: block;
