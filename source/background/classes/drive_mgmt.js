@@ -47,7 +47,7 @@ class DriveMgmt {
 
     disconnect() {
         chrome.identity.removeCachedAuthToken({'token': this.token}, () => {
-            console.log('DISCONNNECTED GOOGLE!');
+            this.bgStore.emit('sendMessage', 'disconnected');
         });
     }
 

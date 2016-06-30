@@ -190,7 +190,7 @@ var React = require('react'),
                                 <button className='no-style' onClick={this.disconnect}>Use different
                                     account or service.
                                 </button>
-                                {this.state.storageType === 'DROPBOX' ? <i>(Manage your accounts via Dropbox.com)</i> : <i>(Manage your accounts via myaccount.google.com)</i>}
+                                {this.state.storageType === 'DROPBOX' ? <i>(Manage your accounts via Dropbox.com)</i> : <i>(Manage your accounts via browser settings)</i>}
                             </div>
                         </div>
 

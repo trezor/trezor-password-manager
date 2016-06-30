@@ -75,7 +75,6 @@ class DropboxMgmt {
                     this.getDropboxUsername();
                 }
             } else {
-                console.log('CONNECT STOP');
                 this.client.reset();
                 this.bgStore.emit('sendMessage', 'disconnected');
             }
