@@ -30,12 +30,10 @@ var BgDataStore = require('./classes/bg_data_store'),
                 chromeManager.sendMessage('decryptedContent', JSON.stringify(bgStore.decryptedContent));
                 break;
             case 'STORAGE':
-                if (dropboxManager.isAuth() && !bgStore.username) {
-                    //dropboxManager.getDropboxUsername();
-                } else if (!dropboxManager.isAuth()) {
+                if (!!bgStore.storageType && !!bgStore.username) {
+                    chromeManager.sendMessage('setUsername', {username: bgStore.username, storageType: bgStore.storageType});
+                } else {
                     chromeManager.sendMessage('initialized');
-                } else if (dropboxManager.isAuth() && !!bgStore.username) {
-                    chromeManager.sendMessage('setUsername', {username: bgStore.username});
                 }
                 break;
             case 'TREZOR':

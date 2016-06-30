@@ -65,8 +65,6 @@ class BgDataStore extends EventEmitter {
 
     disconnect() {
         this.phase = 'STORAGE';
-        this.storageType = false;
-        this.username = false;
         this.decryptedContent = false;
         this.loadedData = false;
         this.masterKey = '';
