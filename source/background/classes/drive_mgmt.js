@@ -6,19 +6,46 @@
  */
 
 'use strict';
-const API_URL = 'https://www.googleapis.com/drive/v2',
-    scopes = [
-        "https://www.googleapis.com/auth/drive",
-        "https://www.googleapis.com/auth/drive.file",
-        "https://www.googleapis.com/auth/drive.appdata"
-    ],
-    API_Key = 'AIzaSyDNcyX6piYuaG0oW0P0kc6e_mgdyLrxFrg';
+const API_URL = 'https://www.googleapis.com/drive/v2';
 
 class DriveMgmt {
 
     constructor(bgStore) {
         this.bgStore = bgStore;
         this.token = false;
+    }
+
+    handleDriveError(error) {
+        console.warn('Drive error:', error);
+        switch (error.status) {
+            case 400:
+                console.warn('Bad request');
+                break;
+
+            case 401:
+                console.warn('Invalid Token/Credentials');
+                if (typeof this.token != 'undefined') {
+                    this.disconnect();
+                } else {
+                    this.connect();
+                }
+
+                break;
+
+            case 403:
+                console.warn('Daily limit exceeded!');
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'GD_RATE_LIMITED', msg: error.status});
+                break;
+
+            case 404:
+                console.warn('File not found!');
+                break;
+
+            case 500:
+                console.warn('Backend error!');
+                break;
+
+        }
     }
 
     createCORSRequest(method, url, authorize = false, isFolder = false, readingFile = false) {
@@ -54,14 +81,13 @@ class DriveMgmt {
     getDriveUsername() {
         let url = API_URL + '/about';
         let xhr = this.createCORSRequest('GET', url, true);
-        xhr.onerror = () => {
-            // TODO
-            alert('Woops, there was an error making the request.');
-        };
+        xhr.onerror = () => this.handleDriveError(xhr);
         xhr.onload = () => {
             if (xhr.status == 200) {
                 let name = JSON.parse(xhr.responseText).name;
                 this.bgStore.setUsername(name, 'DRIVE');
+            } else {
+                this.handleDriveError(xhr);
             }
         };
         xhr.send();
@@ -99,6 +125,7 @@ class DriveMgmt {
     getAppFileStorage() {
         return new Promise((resolve, reject) => {
             this.getFileIdByName(this.bgStore.fileName, this.bgStore.tpmFolderId).then((fileId) => {
+
                 if (!!fileId) {
                     this.bgStore.fileId = fileId;
                     resolve(fileId);
@@ -114,14 +141,13 @@ class DriveMgmt {
         return new Promise((resolve, reject) => {
             let url = API_URL + '/files';
             let xhr = this.createCORSRequest('POST', url, true, true);
-            xhr.onerror = () => {
-                // TODO
-                alert('Woops, there was an error making the request.');
-            };
+            xhr.onerror = () => this.handleDriveError(xhr);
             xhr.onload = () => {
                 if (xhr.status == 200) {
                     let output = JSON.parse(xhr.responseText);
                     resolve(output.id);
+                } else {
+                    this.handleDriveError(xhr.status);
                 }
             };
             let body = {
@@ -135,16 +161,12 @@ class DriveMgmt {
         });
     }
 
-    getFileIdByName(fileName, folderId = 'root', checkOwner = false) {
+    getFileIdByName(fileName, folderId = 'root') {
         return new Promise((resolve, reject) => {
-            let url = API_URL + "/files/" + folderId + "/children?maxResults=1000&orderBy=createdDate&q=title = '" + fileName + "'";
+            let url = API_URL + "/files/" + folderId + "/children?maxResults=1000&orderBy=createdDate&q=title = '" + fileName + "' and trashed = false";
             let xhr = this.createCORSRequest('GET', url, true);
             var fileId = false;
-            xhr.onerror = (e) => {
-                // TODO
-                alert('Woops, there was an error making the request.', e);
-                reject(e);
-            };
+            xhr.onerror = () => this.handleDriveError(xhr);
             xhr.onload = () => {
                 if (xhr.status == 200) {
                     let output = JSON.parse(xhr.responseText);
@@ -187,8 +209,7 @@ class DriveMgmt {
             let url = API_URL + "/files/" + fileId + "?alt=media";
             let xhr = this.createCORSRequest('GET', url, true, false, true);
             xhr.onerror = (e) => {
-                // TODO
-                alert('Woops, there was an error making the request.', e);
+                this.handleDriveError(xhr);
                 reject(e);
             };
             xhr.onload = () => {

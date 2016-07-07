@@ -106,7 +106,8 @@ var React = require('react'),
                     break;
 
                 case 'decryptedContent':
-                    window.myStore = new Store(request.content);
+                    window.myStore = new Store(request.content, this.state.username, this.state.storageType);
+
                     this.transitionTo('dashboard');
                     break;
             }

@@ -12,8 +12,10 @@ var Service = require('./data_service'),
 
 class Store extends EventEmitter {
 
-    constructor(data) {
+    constructor(data, username, storageType) {
         super();
+        this.username = username;
+        this.storageType = storageType;
         this.data = typeof data === 'object' ? data : JSON.parse(data);
         chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.chromeStoreMsgHandler(request, sender, sendResponse));
         this.emit('update', this.data);

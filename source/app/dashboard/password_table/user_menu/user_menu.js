@@ -14,8 +14,8 @@ var React = require('react'),
 
         getInitialState() {
             return {
-                username: 'Peter Jensen',
-                storageType: 'DRIVE'
+                username: window.myStore.username,
+                storageType: window.myStore.storageType
             }
         },
 

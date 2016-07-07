@@ -45,9 +45,9 @@
       "js/background.js"
     ]
   },
-  "content_security_policy": "script-src 'self' https://apis.google.com; object-src 'self'",
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://apis.google.com/; object-src 'self'",
   "oauth2": {
-    "client_id": "275799074029-esko3u3r12q2pl0tipvb0ate8vd853oe.apps.googleusercontent.com",
+    "client_id": "296429812941-3j4ehdvfichcn8usrehn80t07p02pf5n.apps.googleusercontent.com",
     "scopes": [
       "https://www.googleapis.com/auth/drive",
       "https://www.googleapis.com/auth/drive.file"
