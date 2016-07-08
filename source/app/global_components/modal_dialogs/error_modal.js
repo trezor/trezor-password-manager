@@ -8,7 +8,11 @@
 'use strict';
 
 const mailHeaderTemplate = 'Hi SatoshiLabs,%0D%0A%0D%0AI have experienced some errors with my TREZOR Password Manager and I wasn\'t able to resolve them by following your instructions.%0D%0A%0D%0ADetail of the issue:%0D%0A%0D%0A',
-    mailFooterTemplate = '%0D%0A%0D%0ALooking forward to your reply.%0D%0A%0D%0ABest regards,%0D%0A[MY NAME]';
+    mailFooterTemplate = '%0D%0A%0D%0ALooking forward to your reply.%0D%0A%0D%0ABest regards,%0D%0A[MY NAME]',
+    DB_homepage = 'https://www.dropbox.com',
+    DB_status = 'https://status.dropbox.com/',
+    GD_homepage = 'https://drive.google.com',
+    GD_status = 'http://www.google.com/appsstatus#hl=en&v=status';
 
 var React = require('react'),
     Modal = require('react-bootstrap').Modal,
@@ -195,9 +199,10 @@ var React = require('react'),
                     };
                     break;
 
-                case 'DB_INVALID_TOKEN':
+                // INVALID TOKEN error only for dropbox, cos Drive is handling it itself in CHROME.identity API
+                case 'INVALID_TOKEN':
                     return {
-                        errorTitle: 'Problem with Dropbox detected',
+                        errorTitle: 'There is a problem with storage',
                         solution: [
                             'Clear browser cache and restart Chrome.',
                             'Try to re-login to your Dropbox account.',
@@ -208,17 +213,17 @@ var React = require('react'),
                         supportAction: true,
                         redirectAction: true,
                         closeAction: false,
-                        redirectText: 'Dropbox.com',
-                        redirectTo: 'https://www.dropbox.com/',
+                        redirectText: content.storage + '.com',
+                        redirectTo: DB_homepage,
                         supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + this.state.userInfo +  mailFooterTemplate
                     };
                     break;
 
-                case 'DB_OVER_QUOTA':
+                case 'OVER_QUOTA':
                     return {
-                        errorTitle: 'Not enough Dropbox space',
+                        errorTitle: 'Not enough storage space',
                         solution: [
-                            'Clean up your Dropbox folder or buy more space.',
+                            'Clean up your ' + content.storage + ' storage folder or buy more space.',
                             'Sign in with a different account.',
                             'Restart TREZOR Password Manager.'
                         ],
@@ -226,44 +231,44 @@ var React = require('react'),
                         supportAction: false,
                         redirectAction: true,
                         closeAction: false,
-                        redirectText: 'Dropbox.com',
-                        redirectTo: 'https://www.dropbox.com/',
+                        redirectText: content.storage === 'Dropbox' ? 'Dropbox.com' : 'Drive.google.com',
+                        redirectTo: content.storage === 'Dropbox' ? DB_homepage : GD_homepage,
                         supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + this.state.userInfo +  mailFooterTemplate
                     };
                     break;
 
-                case 'DB_RATE_LIMITED':
+                case 'RATE_LIMITED':
                     return {
-                        errorTitle: 'Dropbox rate limit reached',
+                        errorTitle: 'Storage limit reached',
                         solution: [
-                            'You have reached Dropbox limits.',
-                            'Check Dropbox.com if service is running.',
-                            'Get in touch with Dropbox support.'
+                            'You have reached ' + content.storage + ' limits.',
+                            'Check ' + content.storage + ' status if service is running.',
+                            'Get in touch with ' + content.storage + ' support.'
                         ],
                         restartAction: false,
                         supportAction: true,
                         redirectAction: true,
                         closeAction: true,
-                        redirectText: 'Dropbox.com',
-                        redirectTo: 'https://www.dropbox.com/',
+                        redirectText: content.storage + ' status',
+                        redirectTo: content.storage === 'Dropbox' ? DB_status : GD_status,
                         supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + this.state.userInfo +  mailFooterTemplate
                     };
                     break;
 
-                case 'DB_NETWORK_ERROR':
+                case 'NETWORK_ERROR':
                     if (this.isOnline()) {
                         return {
-                            errorTitle: 'Dropbox is down (or very slow)',
+                            errorTitle: content.storage + ' is down (or very slow)',
                             solution: [
                                 'Check your internet connection.',
-                                'Check Dropbox service status.'
+                                'Check ' + content.storage + ' service status.'
                             ],
                             restartAction: false,
                             supportAction: false,
                             redirectAction: true,
                             closeAction: true,
-                            redirectText: 'Dropbox.com',
-                            redirectTo: 'https://www.dropbox.com/',
+                            redirectText: content.storage + ' status',
+                            redirectTo: content.storage === 'Dropbox' ? DB_status : GD_status,
                             supportDefaultMailText: ''
                         };
                     } else {
@@ -284,11 +289,11 @@ var React = require('react'),
                     }
                     break;
 
-                case 'DB_ACCESS_DENIED':
+                case 'ACCESS_DENIED':
                     return {
-                        errorTitle: 'We needs permissions',
+                        errorTitle: 'Missing permissions',
                         solution: [
-                            'Sign to Dropbox and allow permissions access'
+                            'Sign to ' + content.storage + ' and allow access permissions'
                         ],
                         restartAction: false,
                         supportAction: false,
@@ -340,7 +345,6 @@ var React = require('react'),
             } else {
                 e.preventDefault();
             }
-
         },
 
         restartApp() {

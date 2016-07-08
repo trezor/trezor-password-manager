@@ -25,11 +25,11 @@ class DropboxMgmt {
     }
 
     handleDropboxError(error) {
-        console.warn('Dropbox error:', error);
+        console.warn('Dropbox error: ', error);
         switch (error.status) {
             case Dropbox.ApiError.INVALID_TOKEN:
                 console.warn('User token expired ', error.status);
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'DB_INVALID_TOKEN', msg: error.status});
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'INVALID_TOKEN', msg: error.status, storage:'Dropbox'});
                 break;
 
             case Dropbox.ApiError.NOT_FOUND:
@@ -39,30 +39,30 @@ class DropboxMgmt {
 
             case Dropbox.ApiError.OVER_QUOTA:
                 console.warn('Dropbox quota overreached ', error.status);
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'DB_OVER_QUOTA', msg: error.status});
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'OVER_QUOTA', msg: error.status, storage:'Dropbox'});
                 break;
 
             case Dropbox.ApiError.RATE_LIMITED:
                 console.warn('Too many API calls ', error.status);
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'DB_RATE_LIMITED', msg: error.status});
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'RATE_LIMITED', msg: error.status, storage:'Dropbox'});
                 break;
 
             case Dropbox.ApiError.NETWORK_ERROR:
                 console.warn('Network error, check connection ', error.status);
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'DB_NETWORK_ERROR', msg: error.status});
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'NETWORK_ERROR', msg: error.status, storage:'Dropbox'});
                 break;
 
             case Dropbox.ApiError.INVALID_PARAM:
             case Dropbox.ApiError.OAUTH_ERROR:
             case Dropbox.ApiError.INVALID_METHOD:
                 console.warn('Network error, check connection ', error.status);
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'DB_NETWORK_ERROR', msg: error.status});
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'NETWORK_ERROR', msg: error.status, storage:'Dropbox'});
                 break;
         }
 
         if (error.code === 'access_denied') {
             this.bgStore.emit('disconnectDropbox');
-            this.bgStore.emit('sendMessage', 'errorMsg', {code: 'DB_ACCESS_DENIED', msg: error.description});
+            this.bgStore.emit('sendMessage', 'errorMsg', {code: 'ACCESS_DENIED', msg: error.description, storage:'Dropbox'});
             this.client.reset();
         }
     }

@@ -18,8 +18,13 @@ class DriveMgmt {
     handleDriveError(error) {
         console.warn('Drive error:', error);
         switch (error.status) {
+            case 0:
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'NETWORK_ERROR', msg: error.status, storage:'Drive'});
+                break;
+
             case 400:
                 console.warn('Bad request');
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'NETWORK_ERROR', msg: error.status, storage:'Drive'});
                 break;
 
             case 401:
@@ -34,7 +39,7 @@ class DriveMgmt {
 
             case 403:
                 console.warn('Daily limit exceeded!');
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'GD_RATE_LIMITED', msg: error.status});
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'OVER_QUOTA', msg: error.status, storage:'Drive'});
                 break;
 
             case 404:
@@ -43,6 +48,7 @@ class DriveMgmt {
 
             case 500:
                 console.warn('Backend error!');
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'NETWORK_ERROR', msg: error.status, storage:'Drive'});
                 break;
 
         }
@@ -81,7 +87,9 @@ class DriveMgmt {
     getDriveUsername() {
         let url = API_URL + '/about';
         let xhr = this.createCORSRequest('GET', url, true);
-        xhr.onerror = () => this.handleDriveError(xhr);
+        xhr.onerror = (e) => {
+            this.handleDriveError(xhr);
+        };
         xhr.onload = () => {
             if (xhr.status == 200) {
                 let name = JSON.parse(xhr.responseText).name;
@@ -141,7 +149,9 @@ class DriveMgmt {
         return new Promise((resolve, reject) => {
             let url = API_URL + '/files';
             let xhr = this.createCORSRequest('POST', url, true, true);
-            xhr.onerror = () => this.handleDriveError(xhr);
+            xhr.onerror = () => {
+                this.handleDriveError(xhr);
+            };
             xhr.onload = () => {
                 if (xhr.status == 200) {
                     let output = JSON.parse(xhr.responseText);
@@ -166,7 +176,9 @@ class DriveMgmt {
             let url = API_URL + "/files/" + folderId + "/children?maxResults=1000&orderBy=createdDate&q=title = '" + fileName + "' and trashed = false";
             let xhr = this.createCORSRequest('GET', url, true);
             var fileId = false;
-            xhr.onerror = () => this.handleDriveError(xhr);
+            xhr.onerror = () => {
+                this.handleDriveError(xhr);
+            };
             xhr.onload = () => {
                 if (xhr.status == 200) {
                     let output = JSON.parse(xhr.responseText);
@@ -206,7 +218,7 @@ class DriveMgmt {
 
     loadFileContent(fileId) {
         return new Promise((resolve, reject) => {
-            let url = API_URL + "/files/" + fileId + "?alt=media";
+            let url = API_URL + '/files/' + fileId + '?alt=media';
             let xhr = this.createCORSRequest('GET', url, true, false, true);
             xhr.onerror = (e) => {
                 this.handleDriveError(xhr);
