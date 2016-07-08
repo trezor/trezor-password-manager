@@ -34,7 +34,6 @@ class DriveMgmt {
                 } else {
                     this.connect();
                 }
-
                 break;
 
             case 403:

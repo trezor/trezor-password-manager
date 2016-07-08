@@ -19,6 +19,10 @@ var React = require('react'),
             }
         },
 
+        logout() {
+            window.myStore.logout();
+        },
+
         componentDidMount() {
         },
 
@@ -30,7 +34,7 @@ var React = require('react'),
                                     pullRight
                                     noCaret
                                     id='user-dropdown'>
-                        <MenuItem><i className='ion-power'></i>Logout</MenuItem>
+                        <MenuItem onSelect={this.logout}><i className='ion-power'></i>Logout</MenuItem>
                     </DropdownButton>
                 </span>
             )

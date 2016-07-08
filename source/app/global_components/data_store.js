@@ -30,8 +30,8 @@ class Store extends EventEmitter {
     chromeStoreMsgHandler(request, sender, sendResponse) {
         switch (request.type) {
             case 'decryptedContent':
-                if (request.content !== JSON.stringify(this.data)) {
-                    this.updateData(request.content);
+                if (request.content.data !== JSON.stringify(this.data)) {
+                    this.updateData(request.content.data);
                 }
                 break;
         }
@@ -224,6 +224,10 @@ class Store extends EventEmitter {
 
     hideNewEntry() {
         return this.emit('toggleNewEntry');
+    }
+
+    logout() {
+        chrome.runtime.sendMessage({type: 'logout'});
     }
 }
 
