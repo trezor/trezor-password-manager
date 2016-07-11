@@ -25,6 +25,7 @@ var React = require('react'),
                 entries: window.myStore.data.entries,
                 filter: '',
                 newEntry: false,
+                newEntryDomain: '',
                 orderType: window.myStore.data.config.orderType || 'note'
             }
         },
@@ -42,6 +43,8 @@ var React = require('react'),
             window.myStore.removeListener('toggleNewEntry', this.toggleNewEntry);
             window.myStore.removeListener('update', this.updateTableContent);
         },
+
+
 
         updateTableContent(data) {
             this.setState({
@@ -138,8 +141,11 @@ var React = require('react'),
             return this.state.filter.length > 0;
         },
 
-        toggleNewEntry() {
-             this.setState({newEntry: !this.state.newEntry});
+        toggleNewEntry(newDomain = '') {
+             this.setState({
+                 newEntry: !this.state.newEntry,
+                 newEntryDomain: newDomain
+             });
         },
 
         render(){
@@ -210,12 +216,12 @@ var React = require('react'),
                         {this.state.newEntry &&
                             <TableEntry key={undefined}
                                         key_value={undefined}
-                                        title=''
+                                        title={this.state.newEntryDomain}
                                         username=''
                                         password=''
                                         tags={newTagArr}
                                         note=''
-                                        nonce=''
+                                        nonce={this.state.newEntryDomain}
                                         safe_note=''
                                         mode={'edit-mode'}
                                         content_changed={'edited'}

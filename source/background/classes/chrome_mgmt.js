@@ -44,14 +44,18 @@ class ChromeMgmt {
     }
 
     openAppTab() {
-        chrome.runtime.sendMessage({type: 'isAppOpen', content: ''}, (response) => {
-            if (!!response) {
-                this.focusTab(response.tab.id);
-            } else {
-                chrome.tabs.create({'url': this.bgStore.appUrl, 'selected': true}, (tab) => {
-                    this.focusTab(tab.id);
-                });
-            }
+        return new Promise((resolve, reject) => {
+            chrome.runtime.sendMessage({type: 'isAppOpen', content: ''}, (response) => {
+                if (!!response) {
+                    this.focusTab(response.tab.id);
+                    resolve(response.tab.id);
+                } else {
+                    chrome.tabs.create({'url': this.bgStore.appUrl, 'selected': true}, (tab) => {
+                        this.focusTab(tab.id);
+                        resolve(tab.id);
+                    });
+                }
+            });
         });
     }
 
@@ -72,6 +76,7 @@ class ChromeMgmt {
                             this.updateBadgeStatus('ERROR');
                             this.hasCredentials = false;
                         }
+                        this.updateContextMenuItem(this.hasCredentials);
                     } else {
                         this.updateBadgeStatus('ERROR');
                         this.hasCredentials = false;
@@ -83,12 +88,18 @@ class ChromeMgmt {
         }
     }
 
+    fillOrSave() {
+        if (this.hasCredentials) {
+            this.fillCredentials(this.activeDomain);
+        } else {
+            this.saveEntry(this.activeDomain);
+        }
+    }
+
     chromeCommands(command) {
         switch (command) {
             case 'fill_login_form':
-                if (this.hasCredentials) {
-                    this.fillCredentials(this.activeDomain);
-                }
+                this.fillOrSave();
                 break;
 
             case 'clear_session':
@@ -122,6 +133,14 @@ class ChromeMgmt {
                 }
             });
         }
+    }
+
+    saveEntry(domain) {
+        this.openAppTab().then((tabId) => {
+            setTimeout(() => {
+                this.sendTabMessage(tabId, 'saveEntry', domain);
+            }, 1300);
+        });
     }
 
     updateBadgeStatus(status) {
@@ -207,6 +226,28 @@ class ChromeMgmt {
 
     sendTabMessage(tabId, type, data) {
         chrome.tabs.sendMessage(tabId, {type: type, content: data});
+    }
+
+    createContextMenuItem() {
+        chrome.contextMenus.removeAll(() => {
+            chrome.contextMenus.create({
+                "id": "tpmMenuItem",
+                "title": "Open password manager",
+                "contexts": ["page", "selection", "image", "link"],
+                "onclick": () => {
+                    this.openAppTab()
+                }
+            });
+        });
+    }
+
+    updateContextMenuItem(hasItem) {
+        chrome.contextMenus.update("tpmMenuItem", {
+            "title": hasItem ? "Fill login credentials" : "Save entry to password manager",
+            "onclick": () => {
+                this.fillOrSave()
+            }
+        });
     }
 }
 

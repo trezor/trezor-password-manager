@@ -34,7 +34,7 @@ var React = require('react'),
                                     pullRight
                                     noCaret
                                     id='user-dropdown'>
-                        <MenuItem onSelect={this.logout}><i className='ion-power'></i>Logout</MenuItem>
+                        <MenuItem onSelect={this.logout}><i className='ion-person-stalker'></i>Switch user</MenuItem>
                     </DropdownButton>
                 </span>
             )

@@ -51,6 +51,7 @@ var setuped = false,
             trezorManager.checkVersions();
             switch (bgStore.phase) {
                 case 'LOADED':
+                    chromeManager.createContextMenuItem();
                     chromeManager.sendMessage('decryptedContent', {
                         data: JSON.stringify(bgStore.decryptedContent),
                         username: bgStore.username,
@@ -119,6 +120,7 @@ var setuped = false,
 
     contentDecrypted = () => {
         let tempDecryptedData = trezorManager.decrypt(bgStore.loadedData, bgStore.encryptionKey);
+        chromeManager.createContextMenuItem();
         chromeManager.sendMessage('decryptedContent', {
             data: tempDecryptedData,
             username: bgStore.username,
@@ -160,10 +162,11 @@ var setuped = false,
                     chromeManager.focusTab(response.tab.id);
                 }
             } else {
-                chromeManager.openAppTab();
-                setTimeout(() => {
-                    showPinDialog();
-                }, 1300);
+                chromeManager.openAppTab().then(() => {
+                    setTimeout(() => {
+                        showPinDialog();
+                    }, 1300);
+                });
             }
         });
     },
@@ -228,6 +231,7 @@ var setuped = false,
                 break;
 
             case 'logout':
+                trezorManager.clearSession();
                 userLoggedOut();
                 break;
         }
