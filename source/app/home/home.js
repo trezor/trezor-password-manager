@@ -188,8 +188,8 @@ var React = require('react'),
                                     <b> {this.state.username}</b>
                                 </button>
                                 <br />
-                                <button className='no-style' onClick={this.disconnect}>Use different
-                                    account or service.
+                                <button className='no-style' onClick={this.disconnect}>Logout and use different
+                                    account.
                                 </button>
                                 {this.state.storageType === 'DROPBOX' ? <i>(Manage your accounts via Dropbox.com)</i> : <i>(Manage your accounts via browser settings)</i>}
                             </div>

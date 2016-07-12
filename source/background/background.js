@@ -111,6 +111,13 @@ var setuped = false,
         });
     },
 
+    userSwitch = () => {
+        bgStore.userSwitch();
+        chromeManager.updateBadgeStatus('OFF');
+        chromeManager.sendMessage('trezorDisconnected');
+        init();
+    },
+
     userLoggedOut = () => {
         bgStore.disconnect();
         chromeManager.updateBadgeStatus('OFF');
@@ -230,9 +237,8 @@ var setuped = false,
                 trezorManager.clearSession();
                 break;
 
-            case 'logout':
-                trezorManager.clearSession();
-                userLoggedOut();
+            case 'userSwitch':
+                userSwitch();
                 break;
         }
         return true;

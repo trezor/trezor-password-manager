@@ -14,6 +14,7 @@ class ChromeMgmt {
         this.bgStore = bgStore;
         this.bgStore.on('decryptedPassword', (data) => this.fillLoginForm(data));
         this.bgStore.on('checkReopen', () => this.checkReopen());
+        this.activeUrl = '';
         this.activeDomain = '';
         this.hasCredentials = false;
         this.accessTabId = 0;
@@ -47,12 +48,14 @@ class ChromeMgmt {
         return new Promise((resolve, reject) => {
             chrome.runtime.sendMessage({type: 'isAppOpen', content: ''}, (response) => {
                 if (!!response) {
-                    this.focusTab(response.tab.id);
-                    resolve(response.tab.id);
+                    this.focusTab(response.tab.id).then(() => {
+                        resolve(response.tab.id);
+                    });
                 } else {
                     chrome.tabs.create({'url': this.bgStore.appUrl, 'selected': true}, (tab) => {
-                        this.focusTab(tab.id);
-                        resolve(tab.id);
+                        this.focusTab(tab.id).then(() => {
+                            resolve(tab.id);
+                        });
                     });
                 }
             });
@@ -60,7 +63,11 @@ class ChromeMgmt {
     }
 
     focusTab(tabId) {
-        chrome.tabs.update(tabId, {selected: true});
+        return new Promise((resolve, reject) => {
+            chrome.tabs.update(tabId, {selected: true}, (tab) => {
+                resolve(tab);
+            });
+        });
     }
 
     detectActiveUrl() {
@@ -68,7 +75,8 @@ class ChromeMgmt {
             chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
                 if (typeof tabs[0] !== 'undefined') {
                     if (this.bgStore.isUrl(tabs[0].url)) {
-                        this.activeDomain = this.bgStore.decomposeUrl(tabs[0].url).domain;
+                        this.activeUrl = tabs[0].url;
+                        this.activeDomain = this.bgStore.decomposeUrl(this.activeUrl).domain;
                         if (this.matchingContent(this.activeDomain)) {
                             this.updateBadgeStatus(this.bgStore.phase);
                             this.hasCredentials = true;
@@ -92,7 +100,7 @@ class ChromeMgmt {
         if (this.hasCredentials) {
             this.fillCredentials(this.activeDomain);
         } else {
-            this.saveEntry(this.activeDomain);
+            this.saveEntry();
         }
     }
 
@@ -135,11 +143,18 @@ class ChromeMgmt {
         }
     }
 
-    saveEntry(domain) {
+    saveEntry() {
+        var domain = this.activeUrl;
         this.openAppTab().then((tabId) => {
             setTimeout(() => {
-                this.sendTabMessage(tabId, 'saveEntry', domain);
-            }, 1300);
+                chrome.runtime.sendMessage({type: 'saveEntry', content: domain}, (response) => {
+                    if (!response) {
+                        setTimeout(() => {
+                            chrome.runtime.sendMessage({type: 'saveEntry', content: domain});
+                        }, 800);
+                    }
+                });
+            }, 300);
         });
     }
 
@@ -243,7 +258,7 @@ class ChromeMgmt {
 
     updateContextMenuItem(hasItem) {
         chrome.contextMenus.update("tpmMenuItem", {
-            "title": hasItem ? "Fill login credentials" : "Save entry to password manager",
+            "title": hasItem ? "Login to " + this.activeDomain : "Save " + this.activeDomain,
             "onclick": () => {
                 this.fillOrSave()
             }

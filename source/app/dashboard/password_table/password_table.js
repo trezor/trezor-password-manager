@@ -25,7 +25,7 @@ var React = require('react'),
                 entries: window.myStore.data.entries,
                 filter: '',
                 newEntry: false,
-                newEntryDomain: '',
+                newEntryUrl: '',
                 orderType: window.myStore.data.config.orderType || 'note'
             }
         },
@@ -35,6 +35,8 @@ var React = require('react'),
             window.myStore.on('filter', this.setupFilter);
             window.myStore.on('toggleNewEntry', this.toggleNewEntry);
             window.myStore.on('update', this.updateTableContent);
+            chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.chromeTableMsgHandler(request, sender, sendResponse));
+
         },
 
         componentWillUnmount() {
@@ -42,9 +44,18 @@ var React = require('react'),
             window.myStore.removeListener('filter', this.setupFilter);
             window.myStore.removeListener('toggleNewEntry', this.toggleNewEntry);
             window.myStore.removeListener('update', this.updateTableContent);
+            chrome.runtime.onMessage.removeListener(this.chromeTableMsgHandler);
         },
 
-
+        chromeTableMsgHandler(request, sender, sendResponse) {
+            switch (request.type) {
+                case 'saveEntry':
+                    this.openNewEntry(request.content);
+                    sendResponse({type:'entrySaving'});
+                    break;
+            }
+            return true;
+        },
 
         updateTableContent(data) {
             this.setState({
@@ -123,7 +134,7 @@ var React = require('react'),
                 window.myStore.getTagTitleArrayById(obj.tags).map((key) => {
                     if (key.toLowerCase().indexOf(term) > -1) tempVal = true;
                 });
-                if(obj.title.toLowerCase().indexOf(term) > -1 ||
+                if (obj.title.toLowerCase().indexOf(term) > -1 ||
                     obj.note.toLowerCase().indexOf(term) > -1 ||
                     obj.username.toLowerCase().indexOf(term) > -1) {
                     tempVal = true;
@@ -141,11 +152,18 @@ var React = require('react'),
             return this.state.filter.length > 0;
         },
 
-        toggleNewEntry(newDomain = '') {
-             this.setState({
-                 newEntry: !this.state.newEntry,
-                 newEntryDomain: newDomain
-             });
+        openNewEntry(url) {
+            this.setState({
+                newEntryUrl: url,
+                newEntry: true
+            });
+        },
+
+        toggleNewEntry() {
+            this.setState({
+                newEntryUrl: '',
+                newEntry: !this.state.newEntry
+            });
         },
 
         render(){
@@ -214,18 +232,18 @@ var React = require('react'),
                     </div>
                     <div className='row dashboard'>
                         {this.state.newEntry &&
-                            <TableEntry key={undefined}
-                                        key_value={undefined}
-                                        title={this.state.newEntryDomain}
-                                        username=''
-                                        password=''
-                                        tags={newTagArr}
-                                        note=''
-                                        nonce={this.state.newEntryDomain}
-                                        safe_note=''
-                                        mode={'edit-mode'}
-                                        content_changed={'edited'}
-                                />}
+                        <TableEntry key={undefined}
+                                    key_value={undefined}
+                                    title={this.state.newEntryUrl}
+                                    username=''
+                                    password=''
+                                    tags={newTagArr}
+                                    note={this.state.newEntryUrl.length ? tld.getDomain(this.state.newEntryUrl) : ''}
+                                    nonce=''
+                                    safe_note=''
+                                    mode={'edit-mode'}
+                                    content_changed={'edited'}
+                            />}
                         {password_table}
 
                     </div>

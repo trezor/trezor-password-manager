@@ -226,8 +226,8 @@ class Store extends EventEmitter {
         return this.emit('toggleNewEntry');
     }
 
-    logout() {
-        chrome.runtime.sendMessage({type: 'logout'});
+    userSwitch() {
+        chrome.runtime.sendMessage({type: 'userSwitch'});
     }
 }
 

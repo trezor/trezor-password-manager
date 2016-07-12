@@ -22,7 +22,6 @@ class BgDataStore extends EventEmitter {
         this.loadedData = false;
         this.masterKey = '';
         this.encryptionKey = '';
-        this.decryptedContent = false;
         this.fileName = false;
         this.fileId = false;
         this.tpmFolderId = false;
@@ -63,7 +62,7 @@ class BgDataStore extends EventEmitter {
         this.emit('sendMessage', 'setUsername', {username: this.username, storageType: this.storageType});
     }
 
-    disconnect() {
+    userSwitch() {
         this.phase = 'STORAGE';
         this.decryptedContent = false;
         this.loadedData = false;
@@ -72,7 +71,13 @@ class BgDataStore extends EventEmitter {
         this.fileName = false;
         this.fileId = false;
         this.tpmFolderId = false;
-        this.decryptedContent = false;
+    }
+
+    disconnect() {
+        this.phase = 'STORAGE';
+        this.storageType = false;
+        this.username = false;
+        this.userSwitch();
     }
 
     decomposeUrl(url) {

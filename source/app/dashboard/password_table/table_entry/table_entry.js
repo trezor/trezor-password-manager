@@ -7,8 +7,6 @@
 
 'use strict';
 
-require('whatwg-fetch');
-
 var React = require('react'),
     tld = require('tldjs'),
     DropdownButton = require('react-bootstrap').DropdownButton,
@@ -398,7 +396,7 @@ var React = require('react'),
                            autoComplete='off'
                            value={this.state.title}
                            name='title'
-                           ref='title'
+                           ref={this.state.key_value ? 'title' : 'newTitle'}
                            onChange={this.handleChange}
                            onKeyUp={this.keyPressed}
                            onBlur={this.titleOnBlur}/>

@@ -91,12 +91,12 @@ class DropboxMgmt {
 
     disconnect() {
         this.client.signOut((error, accountInfo) => {
+            window.open('https://www.dropbox.com/logout', '_blank').focus();
+            this.bgStore.emit('sendMessage', 'disconnected');
             if (!error) {
-                this.bgStore.emit('sendMessage', 'disconnected');
                 this.bgStore.disconnect();
             } else {
                 this.client.reset();
-                this.bgStore.emit('sendMessage', 'disconnected');
             }
         });
     }
