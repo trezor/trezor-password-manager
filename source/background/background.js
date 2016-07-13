@@ -249,4 +249,11 @@ var setuped = false,
 
 chrome.runtime.onMessage.addListener(chromeMessaging);
 
+// check if app shouldnt reopen after software restart
+if (localStorage.getItem('tpmRestart') === 'reopen') {
+    setTimeout(() => {
+        init();
+    }, 1500);
+}
+
 
