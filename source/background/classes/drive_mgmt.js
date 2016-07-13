@@ -265,7 +265,9 @@ class DriveMgmt {
     }
 
     updateFile(data) {
-        this.saveFile(data);
+        this.saveFile(data).then((id) => {
+            this.loadFileContent(id);
+        });
     }
 }
 

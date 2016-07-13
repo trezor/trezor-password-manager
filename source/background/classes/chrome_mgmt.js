@@ -84,7 +84,7 @@ class ChromeMgmt {
                             this.updateBadgeStatus('ERROR');
                             this.hasCredentials = false;
                         }
-                        this.updateContextMenuItem(this.hasCredentials);
+                        this.createContextMenuItem(this.hasCredentials);
                     } else {
                         this.updateBadgeStatus('ERROR');
                         this.hasCredentials = false;
@@ -243,25 +243,20 @@ class ChromeMgmt {
         chrome.tabs.sendMessage(tabId, {type: type, content: data});
     }
 
-    createContextMenuItem() {
-        chrome.contextMenus.removeAll(() => {
-            chrome.contextMenus.create({
-                "id": "tpmMenuItem",
-                "title": "Open password manager",
-                "contexts": ["page", "selection", "image", "link"],
-                "onclick": () => {
-                    this.openAppTab()
-                }
-            });
-        });
+    clearContextMenuItem() {
+        chrome.contextMenus.removeAll();
     }
 
-    updateContextMenuItem(hasItem) {
-        chrome.contextMenus.update("tpmMenuItem", {
-            "title": hasItem ? "Login to " + this.activeDomain : "Save " + this.activeDomain,
-            "onclick": () => {
-                this.fillOrSave()
-            }
+    createContextMenuItem(hasItem) {
+        chrome.contextMenus.removeAll(() => {
+            chrome.contextMenus.create({
+                "contexts": ["page", "selection", "image", "link"],
+                "title": hasItem ? "Login to " + this.activeDomain : "Save " + this.activeDomain,
+                "onclick": () => {
+                    this.fillOrSave()
+                }
+            });
+
         });
     }
 }

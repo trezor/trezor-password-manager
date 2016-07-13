@@ -36,7 +36,7 @@ var setuped = false,
             bgStore.on('showPinDialog', showPinDialog);
             bgStore.on('clearSession', () => trezorManager.clearSession());
             bgStore.on('loadFile', loadFile);
-            bgStore.on('disconnectedTrezor', userLoggedOut);
+            bgStore.on('disconnectedTrezor', userSwitch);
             bgStore.on('decryptPassword', (entry) => decryptAndInject(entry));
             bgStore.on('sendMessage', (type, content) => chromeManager.sendMessage(type, content));
             setuped = true;
@@ -114,6 +114,7 @@ var setuped = false,
     userSwitch = () => {
         bgStore.userSwitch();
         chromeManager.updateBadgeStatus('OFF');
+        chromeManager.clearContextMenuItem();
         chromeManager.sendMessage('trezorDisconnected');
         init();
     },
@@ -121,6 +122,7 @@ var setuped = false,
     userLoggedOut = () => {
         bgStore.disconnect();
         chromeManager.updateBadgeStatus('OFF');
+        chromeManager.clearContextMenuItem();
         chromeManager.sendMessage('trezorDisconnected');
         init();
     },
@@ -209,6 +211,7 @@ var setuped = false,
                 } else {
                     driveManager.disconnect();
                 }
+                userLoggedOut();
                 break;
 
             case 'saveContent':
