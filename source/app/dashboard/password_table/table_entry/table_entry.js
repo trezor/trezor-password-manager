@@ -26,11 +26,13 @@ var React = require('react'),
                 title: this.props.title,
                 username: this.props.username,
                 password: this.props.password,
+                password_visible: false,
                 nonce: this.props.nonce,
                 tags_id: this.props.tags,
                 tags_titles: window.myStore.getTagTitleArrayById(this.props.tags) || [],
                 note: this.props.note,
                 safe_note: this.props.safe_note,
+                safe_note_visible: false,
                 tag_globa_title_array: window.myStore.getTagTitleArray(),
                 tags_available: window.myStore.getPossibleToAddTagsForEntry(this.props.key_value, this.props.tags),
                 show_available: false,
@@ -171,6 +173,8 @@ var React = require('react'),
                             password: response.content.password,
                             safe_note: response.content.safe_note,
                             mode: 'edit-mode',
+                            password_visible: false,
+                            safe_note_visible: false,
                             tags_titles: window.myStore.getTagTitleArrayById(this.state.tags_id),
                             tag_globa_title_array: window.myStore.getTagTitleArray(),
                             tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value, this.state.tags_id)
@@ -188,6 +192,8 @@ var React = require('react'),
                 }
                 this.setState({
                     mode: 'list-mode',
+                    password_visible: false,
+                    safe_note_visible: false,
                     password: oldValues.password,
                     safe_note: oldValues.safe_note
                 })
@@ -225,6 +231,8 @@ var React = require('react'),
                                 mode: 'list-mode',
                                 content_changed: '',
                                 password: response.content.password,
+                                password_visible: false,
+                                safe_note_visible: false,
                                 safe_note: response.content.safe_note,
                                 nonce: response.content.nonce,
                                 saving_entry: false
@@ -299,12 +307,15 @@ var React = require('react'),
         },
 
         togglePassword() {
-            var input = React.findDOMNode(this.refs.password);
-            if (input.getAttribute('type') === 'text') {
-                input.setAttribute('type', 'password');
-            } else {
-                input.setAttribute('type', 'text');
-            }
+            this.setState({
+                password_visible: !this.state.password_visible
+            });
+        },
+
+        toggleNote() {
+            this.setState({
+                safe_note_visible: !this.state.safe_note_visible
+            });
         },
 
         hidePassword() {
@@ -378,7 +389,8 @@ var React = require('react'),
         },
 
         render() {
-            var showPassword = (<Tooltip id='show'>Show/hide password</Tooltip>),
+            var showPassword = (<Tooltip id='show'>{this.state.password_visible ? 'Hide password': 'Show password'}</Tooltip>),
+                showNote = (<Tooltip id='show'>{this.state.safe_note_visible ? 'Hide note': 'Show note'}</Tooltip>),
                 generatePassword = (<Tooltip id='generate'>Generate password</Tooltip>),
                 mandatoryField = (<Tooltip id='mandatory' placement='right'>This field is mandatory!</Tooltip>),
                 copyClipboardPwd = (
@@ -486,7 +498,7 @@ var React = require('react'),
 
                             <div className='password'>
                                 <span>Password </span>
-                                <input type='password'
+                                <input type={this.state.password_visible ? 'text' : 'password'}
                                        autoComplete='off'
                                        ref='password'
                                        name='password'
@@ -494,7 +506,7 @@ var React = require('react'),
                                        onKeyUp={this.keyPressed}
                                        value={this.state.password}/>
                                 <OverlayTrigger placement='top' overlay={showPassword}>
-                                    <i className='button ion-eye' onClick={this.togglePassword}></i>
+                                    <i className={this.state.password_visible ? 'button ion-eye-disabled' : 'button ion-eye'} onClick={this.togglePassword}></i>
                                 </OverlayTrigger>
                                 <OverlayTrigger placement='top' overlay={generatePassword}>
                                     <i className='button ion-loop' onClick={this.generatePassword}></i>
@@ -510,13 +522,25 @@ var React = require('react'),
 
                             <div className='safe-note'>
                                 <span>Secret Note </span>
+                                {this.state.safe_note_visible ?
+
                                 <TextareaAutosize type='text'
+                                                  ref='safe_note'
                                                   autoComplete='off'
                                                   onChange={this.handleChange}
                                                   onKeyUp={this.keyPressed}
                                                   value={this.state.safe_note.toString()}
                                                   spellCheck='false'
-                                                  name='safe_note'/>
+                                                  name='safe_note'/> :
+                                    <input type='password'
+                                           ref='safe_note'
+                                           autoComplete='off'
+                                           onChange={this.handleChange}
+                                           onKeyUp={this.keyPressed} value={this.state.safe_note.toString()} name='safe_note' />
+                                }
+                                <OverlayTrigger placement='top' overlay={showNote}>
+                                    <i className={this.state.safe_note_visible ? 'button ion-eye-disabled' : 'button ion-eye'} onClick={this.toggleNote}></i>
+                                </OverlayTrigger>
                             </div>
                             {this.state.key_value != null &&
                             <div className='actions'>

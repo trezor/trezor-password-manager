@@ -127,12 +127,13 @@
         }
       }
 
-      .password {
+      .password, .safe-note {
         .button {
           position: relative;
           z-index: 2;
           display: inline-block;
           text-align: center;
+          vertical-align: top;
           width: 27px;
           height: 27px;
           padding: 0;

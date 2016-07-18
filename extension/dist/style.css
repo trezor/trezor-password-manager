@@ -4068,11 +4068,12 @@ aside.left-panel {
           -moz-transition: all 50ms ease-in-out;
           -o-transition: all 50ms ease-in-out;
           transition: all 50ms ease-in-out; }
-      .dashboard .card .entry .password .button {
+      .dashboard .card .entry .password .button, .dashboard .card .entry .safe-note .button {
         position: relative;
         z-index: 2;
         display: inline-block;
         text-align: center;
+        vertical-align: top;
         width: 27px;
         height: 27px;
         padding: 0;
