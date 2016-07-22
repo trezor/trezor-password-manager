@@ -246,7 +246,11 @@ var React = require('react'),
                     });
                 } else {
                     // TITLE (item/url) is mandatory field - so fill it
-                    React.findDOMNode(this.refs.title).focus();
+                    if (this.state.key_value) {
+                        React.findDOMNode(this.refs.title).focus();
+                    } else {
+                        React.findDOMNode(this.refs.newTitle).focus();
+                    }
                     this.setState({
                         showMandatoryField: true
                     });
@@ -390,8 +394,9 @@ var React = require('react'),
         },
 
         render() {
-            var showPassword = (<Tooltip id='show'>{this.state.password_visible ? 'Hide password': 'Show password'}</Tooltip>),
-                showNote = (<Tooltip id='show'>{this.state.safe_note_visible ? 'Hide note': 'Show note'}</Tooltip>),
+            var showPassword = (
+                    <Tooltip id='show'>{this.state.password_visible ? 'Hide password' : 'Show password'}</Tooltip>),
+                showNote = (<Tooltip id='show'>{this.state.safe_note_visible ? 'Hide note' : 'Show note'}</Tooltip>),
                 generatePassword = (<Tooltip id='generate'>Generate password</Tooltip>),
                 mandatoryField = (<Tooltip id='mandatory' placement='right'>This field is mandatory!</Tooltip>),
                 copyClipboardPwd = (
@@ -471,8 +476,10 @@ var React = require('react'),
                                      onError={this.handleError}/>
                                 <i className={'icon ion-' + window.myStore.getTagIconById(this.state.tags_id[this.state.tags_id.length-1])}></i>
                                 {this.state.username.length === 0 ?
-                                    <a href={this.isUrl(this.state.title) ? this.setProtocolPrefix(this.state.title) : null} className={this.isUrl(this.state.title) ? 'pointer' : null}></a> :
-                                    <a onClick={this.isUrl(this.state.title) ? this.openTabAndLogin : null} className={this.isUrl(this.state.title) ? 'pointer' : null}></a>
+                                    <a href={this.isUrl(this.state.title) ? this.setProtocolPrefix(this.state.title) : null}
+                                       className={this.isUrl(this.state.title) ? 'pointer' : null}></a> :
+                                    <a onClick={this.isUrl(this.state.title) ? this.openTabAndLogin : null}
+                                       className={this.isUrl(this.state.title) ? 'pointer' : null}></a>
                                 }
                             </div>
 
@@ -507,7 +514,8 @@ var React = require('react'),
                                        onKeyUp={this.keyPressed}
                                        value={this.state.password}/>
                                 <OverlayTrigger placement='top' overlay={showPassword}>
-                                    <i className={this.state.password_visible ? 'button ion-eye-disabled' : 'button ion-eye'} onClick={this.togglePassword}></i>
+                                    <i className={this.state.password_visible ? 'button ion-eye-disabled' : 'button ion-eye'}
+                                       onClick={this.togglePassword}></i>
                                 </OverlayTrigger>
                                 <OverlayTrigger placement='top' overlay={generatePassword}>
                                     <i className='button ion-loop' onClick={this.generatePassword}></i>
@@ -525,22 +533,24 @@ var React = require('react'),
                                 <span>Secret Note </span>
                                 {this.state.safe_note_visible ?
 
-                                <TextareaAutosize type='text'
-                                                  ref='safe_note'
-                                                  autoComplete='off'
-                                                  onChange={this.handleChange}
-                                                  onKeyUp={this.keyPressed}
-                                                  value={this.state.safe_note.toString()}
-                                                  spellCheck='false'
-                                                  name='safe_note'/> :
+                                    <TextareaAutosize type='text'
+                                                      ref='safe_note'
+                                                      autoComplete='off'
+                                                      onChange={this.handleChange}
+                                                      onKeyUp={this.keyPressed}
+                                                      value={this.state.safe_note.toString()}
+                                                      spellCheck='false'
+                                                      name='safe_note'/> :
                                     <input type='password'
                                            ref='safe_note'
                                            autoComplete='off'
                                            onChange={this.handleChange}
-                                           onKeyUp={this.keyPressed} value={this.state.safe_note.toString()} name='safe_note' />
+                                           onKeyUp={this.keyPressed} value={this.state.safe_note.toString()}
+                                           name='safe_note'/>
                                 }
                                 <OverlayTrigger placement='top' overlay={showNote}>
-                                    <i className={this.state.safe_note_visible ? 'button ion-eye-disabled' : 'button ion-eye'} onClick={this.toggleNote}></i>
+                                    <i className={this.state.safe_note_visible ? 'button ion-eye-disabled' : 'button ion-eye'}
+                                       onClick={this.toggleNote}></i>
                                 </OverlayTrigger>
                             </div>
                             {this.state.key_value != null &&
@@ -567,7 +577,7 @@ var React = require('react'),
                                 <Overlay show={this.state.showMandatoryField}
                                          container={this}
                                          onHide={() => this.setState({ showMandatoryField: false })}
-                                         target={() => React.findDOMNode(this.refs.title)}
+                                         target={() => React.findDOMNode(this.state.key_value ? this.refs.title : this.refs.newTitle)}
                                          placement='right'>{mandatoryField}</Overlay>
                                 }
 
