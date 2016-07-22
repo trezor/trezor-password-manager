@@ -8,6 +8,7 @@
 'use strict';
 var FILENAME_MESS = '5f91add3fa1c3c76e90c90a3bd0999e2bd7833d06a483fe884ee60397aca277a',
     EventEmitter = require('events'),
+    validator = require('validator'),
     crypto = require('crypto');
 
 class BgDataStore extends EventEmitter {
@@ -29,8 +30,8 @@ class BgDataStore extends EventEmitter {
 
     }
 
-    isUrl(url) {
-        return url.match(/[a-z]+\.[a-z][a-z]+(\/.*)?$/i) != null
+    isUrl(str) {
+        return validator.isURL(str);
     }
 
     toBuffer(ab) {

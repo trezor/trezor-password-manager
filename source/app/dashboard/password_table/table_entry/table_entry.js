@@ -9,6 +9,7 @@
 
 var React = require('react'),
     tld = require('tldjs'),
+    validator = require('validator'),
     DropdownButton = require('react-bootstrap').DropdownButton,
     MenuItem = require('react-bootstrap').MenuItem,
     Tooltip = require('react-bootstrap').Tooltip,
@@ -83,7 +84,7 @@ var React = require('react'),
         },
 
         isUrl(url){
-            return url.match(/[a-z]+\.[a-z][a-z]+(\/.*)?$/i) != null
+            return validator.isURL(url);
         },
 
         removeProtocolPrefix(url) {
