@@ -50,6 +50,7 @@
     "client_id": "296429812941-3j4ehdvfichcn8usrehn80t07p02pf5n.apps.googleusercontent.com",
     "scopes": [
       "https://www.googleapis.com/auth/drive",
+      "https://www.googleapis.com/auth/drive.install",
       "https://www.googleapis.com/auth/drive.file"
     ]
   },
@@ -75,6 +76,9 @@
     "http://*/",
     "https://*/",
     "nativeMessaging",
-    "https://*.dropbox.com/*"
+    "https://*.dropbox.com/*",
+    "https://www.google.com/accounts/OAuthGetRequestToken",
+    "https://www.google.com/accounts/OAuthAuthorizeToken",
+    "https://www.google.com/accounts/OAuthGetAccessToken"
   ]
 }

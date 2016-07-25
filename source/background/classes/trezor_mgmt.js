@@ -52,7 +52,7 @@ class TrezorMgmt {
                 this.bgStore.emit('disconnectedTrezor');
             }
             this.bgStore.emit('checkReopen');
-            this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_LIST', msg: error});
+            this.bgStore.emit('retrySetup');
         });
     }
 

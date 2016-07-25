@@ -9,7 +9,9 @@
 
 window.tpmErroLog = [];
 // Storage will be used for background internal messaging (extends EventEmitter) ...
-var setuped = false,
+var Promise = require('es6-promise').Promise,
+    setupReady = false,
+    retries = 3,
     BgDataStore = require('./classes/bg_data_store'),
     bgStore = new BgDataStore(),
 // Chrome manager will maintain most of injection and other (tab <-> background <-> app) context manipulation
@@ -27,25 +29,28 @@ var setuped = false,
         chromeManager.exists().then(() => {
             return new trezor.DeviceList({clearSession: true /*clearSessionTime: 100 (by default, 15 minutes)*/});
         }).then((list) => {
-            trezorManager = new TrezorMgmt(bgStore, list);
-            dropboxManager = new DropboxMgmt(bgStore);
-            driveManager = new DriveMgmt(bgStore);
             bgStore.on('decryptContent', contentDecrypted);
             bgStore.on('initStorageFile', initNewFile);
             bgStore.on('disconnect', init);
             bgStore.on('showPinDialog', showPinDialog);
-            bgStore.on('clearSession', () => trezorManager.clearSession());
+            bgStore.on('retrySetup', setupRetry);
             bgStore.on('loadFile', loadFile);
             bgStore.on('disconnectedTrezor', userSwitch);
+
+            trezorManager = new TrezorMgmt(bgStore, list);
+            dropboxManager = new DropboxMgmt(bgStore);
+            driveManager = new DriveMgmt(bgStore);
+
+            bgStore.on('clearSession', () => trezorManager.clearSession());
             bgStore.on('decryptPassword', (entry) => decryptAndInject(entry));
             bgStore.on('sendMessage', (type, content) => chromeManager.sendMessage(type, content));
-            setuped = true;
+            setupReady = true;
             init();
         });
     },
 
     init = () => {
-        if (!setuped) {
+        if (!setupReady) {
             preSetup();
         } else {
             trezorManager.checkVersions();
@@ -77,6 +82,19 @@ var setuped = false,
                     }
                     break;
             }
+        }
+    },
+
+    setupRetry = () => {
+        setupReady = false;
+        if(retries-- != 0) {
+            setTimeout(() => {
+                init();
+            }, 1500);
+        } else {
+            setupReady = true;
+            init();
+            bgStore.emit('sendMessage', 'errorMsg', {code: 'T_LIST', msg: error});
         }
     },
 

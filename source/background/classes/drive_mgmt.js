@@ -6,7 +6,13 @@
  */
 
 'use strict';
-const API_URL = 'https://www.googleapis.com/drive/v2';
+const API_URL = 'https://www.googleapis.com/drive/v2',
+    scopes = [
+        "https://www.googleapis.com/auth/drive",
+        "https://www.googleapis.com/auth/drive.install",
+        "https://www.googleapis.com/auth/drive.file"
+    ];
+    // SCOPES are also defined in manifest file, these one should override those in manifest ... but keep them the same!
 
 class DriveMgmt {
 
@@ -19,17 +25,25 @@ class DriveMgmt {
         console.warn('Drive error:', error);
         switch (error.status) {
             case 0:
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'NETWORK_ERROR', msg: error.status, storage:'Drive'});
+                this.bgStore.emit('sendMessage', 'errorMsg', {
+                    code: 'NETWORK_ERROR',
+                    msg: error.status,
+                    storage: 'Drive'
+                });
                 break;
 
             case 400:
                 console.warn('Bad request');
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'NETWORK_ERROR', msg: error.status, storage:'Drive'});
+                this.bgStore.emit('sendMessage', 'errorMsg', {
+                    code: 'NETWORK_ERROR',
+                    msg: error.status,
+                    storage: 'Drive'
+                });
                 break;
 
             case 401:
                 console.warn('Invalid Token/Credentials');
-                if (typeof this.token != 'undefined') {
+                if (typeof this.token !== 'undefined') {
                     this.disconnect();
                 } else {
                     this.connect();
@@ -38,7 +52,7 @@ class DriveMgmt {
 
             case 403:
                 console.warn('Daily limit exceeded!');
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'OVER_QUOTA', msg: error.status, storage:'Drive'});
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'OVER_QUOTA', msg: error.status, storage: 'Drive'});
                 break;
 
             case 404:
@@ -47,7 +61,11 @@ class DriveMgmt {
 
             case 500:
                 console.warn('Backend error!');
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'NETWORK_ERROR', msg: error.status, storage:'Drive'});
+                this.bgStore.emit('sendMessage', 'errorMsg', {
+                    code: 'NETWORK_ERROR',
+                    msg: error.status,
+                    storage: 'Drive'
+                });
                 break;
 
         }
@@ -71,9 +89,35 @@ class DriveMgmt {
     }
 
     connect() {
-        chrome.identity.getAuthToken({'interactive': true}, (token) => {
+        this.obtainToken().then((token) => {
             this.token = token;
             this.getDriveUsername();
+        }, (error) => {
+            console.warn(error);
+            this.obtainToken().then((token) => {
+                this.token = token;
+                this.getDriveUsername();
+
+            });
+        });
+    }
+
+    obtainToken() {
+        return new Promise((resolve, reject) => {
+            chrome.identity.getAuthToken({'interactive': true, 'scopes': scopes}, (token) => {
+                if (typeof token === 'undefined') {
+                    chrome.identity.getAuthToken({'interactive': true, 'scopes': scopes}, (token) => {
+                        if (typeof token === 'undefined') {
+                            reject(chrome.runtime.lastErrror);
+                        } else {
+                            resolve(token);
+                        }
+                    });
+                } else {
+                    resolve(token);
+                }
+            });
+
         });
     }
 
@@ -94,6 +138,11 @@ class DriveMgmt {
             if (xhr.status == 200) {
                 let name = JSON.parse(xhr.responseText).name;
                 this.bgStore.setUsername(name, 'DRIVE');
+            } else if (xhr.status == 401) {
+                this.obtainToken().then((token) => {
+                    this.token = token;
+                    this.getDriveUsername();
+                });
             } else {
                 this.handleDriveError(xhr);
             }
@@ -119,7 +168,7 @@ class DriveMgmt {
                     });
                 } else {
                     this.createFolder('Apps').then((id) => {
-                        let appsFolderId = id;
+                        appsFolderId = id;
                         this.createFolder('TREZOR Password Manager', appsFolderId).then((tpmFolderId) => {
                             this.bgStore.tpmFolderId = tpmFolderId;
                             resolve(tpmFolderId);
@@ -133,13 +182,12 @@ class DriveMgmt {
     getAppFileStorage() {
         return new Promise((resolve, reject) => {
             this.getFileIdByName(this.bgStore.fileName, this.bgStore.tpmFolderId).then((fileId) => {
-
                 if (!!fileId) {
                     this.bgStore.fileId = fileId;
                     resolve(fileId);
                 } else {
                     this.bgStore.emit('initStorageFile');
-                    reject;
+                    reject();
                 }
             });
         });
@@ -188,6 +236,13 @@ class DriveMgmt {
                         }
                     }
                     resolve(fileId);
+                }
+
+                if (xhr.status == 401) {
+                    this.obtainToken().then((token) => {
+                        this.token = token;
+                        this.loadFile();
+                    });
                 }
             };
             xhr.send();
@@ -258,6 +313,9 @@ class DriveMgmt {
                 },
                 onComplete: (data) => {
                     resolve(JSON.parse(data).id);
+                },
+                onError: (data) => {
+                    reject(JSON.parse(data));
                 }
             });
             uploader.upload();
@@ -267,6 +325,16 @@ class DriveMgmt {
     updateFile(data) {
         this.saveFile(data).then((id) => {
             this.loadFileContent(id);
+        }, (xhr) => {
+            if(xhr.error.code == 401) {
+                this.obtainToken().then((token) => {
+                    this.token = token;
+                    this.updateFile(data);
+                });
+            } else {
+                xhr.error.status = xhr.error.code;
+                this.handleDriveError(xhr.error);
+            }
         });
     }
 }

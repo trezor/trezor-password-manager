@@ -27,9 +27,9 @@ var React = require('react'),
         },
 
         componentDidMount() {
-            chrome.runtime.onMessage.addListener(this.chromeDashboardMsgHandler);
             if (this.storeExists()) {
                 this.setState({ready: true});
+                chrome.runtime.onMessage.addListener(this.chromeDashboardMsgHandler);
             } else {
                 this.transitionTo('home');
             }
@@ -45,7 +45,7 @@ var React = require('react'),
                     this.setState({
                         ready: false
                     });
-                    window.myStore = null;
+                    window.myStore = undefined;
                     this.transitionTo('home');
                     break;
             }
@@ -58,7 +58,7 @@ var React = require('react'),
         },
 
         storeExists() {
-            return window.myStore != null;
+            return typeof window.myStore !== 'undefined';
         },
 
         render(){
