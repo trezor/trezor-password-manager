@@ -29,7 +29,7 @@ var crypto = require('crypto');
 
 class TrezorMgmt {
 
-    constructor(bgStore, list) {
+    constructor(bgStore, list, retriesOpening) {
         this.bgStore = bgStore;
         this.trezorDevice = null;
         this.trezorConnected = false;
@@ -52,7 +52,11 @@ class TrezorMgmt {
                 this.bgStore.emit('disconnectedTrezor');
             }
             this.bgStore.emit('checkReopen');
-            this.bgStore.emit('retrySetup');
+            if (retriesOpening != 0) {
+                this.bgStore.emit('retrySetup');
+            } else {
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_LIST', msg: error});
+            }
         });
     }
 
@@ -138,11 +142,14 @@ class TrezorMgmt {
 
     checkVersions() {
         this.bgStore.emit('checkReopen');
-        if(!this.transportLoading) {
+        if (!this.transportLoading) {
             if (this.current_ext_version !== '') {
                 if (!this.versionCompare(this.current_ext_version, MINIMAL_EXTENSION_VERSION)) {
                     // bad version
-                    this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_OLD_VERSION', msg: this.current_ext_version});
+                    this.bgStore.emit('sendMessage', 'errorMsg', {
+                        code: 'T_OLD_VERSION',
+                        msg: this.current_ext_version
+                    });
                 } else {
                     // good version
                     // this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_OLD_VERSION', msg: this.current_ext_version});

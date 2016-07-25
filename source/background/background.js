@@ -11,7 +11,7 @@ window.tpmErroLog = [];
 // Storage will be used for background internal messaging (extends EventEmitter) ...
 var Promise = require('es6-promise').Promise,
     setupReady = false,
-    retries = 3,
+    retriesOpening = 3,
     BgDataStore = require('./classes/bg_data_store'),
     bgStore = new BgDataStore(),
 // Chrome manager will maintain most of injection and other (tab <-> background <-> app) context manipulation
@@ -37,7 +37,7 @@ var Promise = require('es6-promise').Promise,
             bgStore.on('loadFile', loadFile);
             bgStore.on('disconnectedTrezor', userSwitch);
 
-            trezorManager = new TrezorMgmt(bgStore, list);
+            trezorManager = new TrezorMgmt(bgStore, list, retriesOpening);
             dropboxManager = new DropboxMgmt(bgStore);
             driveManager = new DriveMgmt(bgStore);
 
@@ -87,14 +87,13 @@ var Promise = require('es6-promise').Promise,
 
     setupRetry = () => {
         setupReady = false;
-        if(retries-- != 0) {
+        if(retriesOpening-- != 0) {
             setTimeout(() => {
                 init();
             }, 1500);
         } else {
             setupReady = true;
             init();
-            bgStore.emit('sendMessage', 'errorMsg', {code: 'T_LIST', msg: error});
         }
     },
 
