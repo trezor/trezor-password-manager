@@ -35,6 +35,7 @@ class TrezorMgmt {
         this.trezorConnected = false;
         this.transportLoading = true;
         this.current_ext_version = '';
+        this.retriesOpening = retriesOpening;
         this.cryptoData = {
             'keyPhrase': DEFAULT_KEYPHRASE,
             'nonce': DEFAULT_NONCE,
@@ -45,19 +46,21 @@ class TrezorMgmt {
         this.list.on('transport', (transport) => this.checkTransport(transport));
         this.list.on('connectUnacquired', (device) => this.connectedUnacquiredTrezor(device));
         this.list.on('connect', (device) => this.connectedNew(device));
-        this.list.on('error', (error) => {
-            console.log('List error:', error);
-            this.transportLoading = false;
-            if (this.bgStore.phase === 'LOADED') {
-                this.bgStore.emit('disconnectedTrezor');
-            }
-            this.bgStore.emit('checkReopen');
-            if (retriesOpening != 0) {
-                this.bgStore.emit('retrySetup');
-            } else {
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_LIST', msg: error});
-            }
-        });
+        this.list.on('error', (error) => this.errorList(error));
+    }
+
+    errorList(error) {
+        console.log('List error:', error);
+        this.transportLoading = false;
+        if (this.bgStore.phase === 'LOADED') {
+            this.bgStore.emit('disconnectedTrezor');
+        }
+        this.bgStore.emit('checkReopen');
+        if (this.retriesOpening != 0) {
+            this.bgStore.emit('retrySetup');
+        } else {
+            this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_LIST', msg: error});
+        }
     }
 
     handleTrezorError(error, operation, fallback) {

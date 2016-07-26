@@ -87,7 +87,7 @@ var Promise = require('es6-promise').Promise,
 
     setupRetry = () => {
         setupReady = false;
-        if(retriesOpening-- != 0) {
+        if (retriesOpening-- != 0) {
             setTimeout(() => {
                 init();
             }, 1500);
@@ -197,6 +197,25 @@ var Promise = require('es6-promise').Promise,
         });
     },
 
+    windowClose = () => {
+        chrome.windows.getAll((windows) => {
+            if (windows.length == 0) {
+                bgStore.disconnect();
+                chromeManager.updateBadgeStatus('OFF');
+                chromeManager.clearContextMenuItem();
+            }
+        })
+    },
+
+    disconnect = () => {
+        if (bgStore.storageType === 'DROPBOX') {
+            dropboxManager.disconnect();
+        } else {
+            driveManager.disconnect();
+        }
+        userLoggedOut();
+    },
+
     chromeMessaging = (request, sender, sendResponse) => {
         switch (request.type) {
             case 'initPlease':
@@ -223,12 +242,7 @@ var Promise = require('es6-promise').Promise,
                 break;
 
             case 'disconnect':
-                if (bgStore.storageType === 'DROPBOX') {
-                    dropboxManager.disconnect();
-                } else {
-                    driveManager.disconnect();
-                }
-                userLoggedOut();
+                disconnect();
                 break;
 
             case 'saveContent':
@@ -265,6 +279,9 @@ var Promise = require('es6-promise').Promise,
     };
 
 chrome.runtime.onMessage.addListener(chromeMessaging);
+
+//handling when all windows are closed to clear context etc ...
+chrome.windows.onRemoved.addListener(() => windowClose());
 
 // check if app shouldnt reopen after software restart
 if (localStorage.getItem('tpmRestart') === 'reopen') {

@@ -91,7 +91,7 @@ class DropboxMgmt {
 
     disconnect() {
         this.client.signOut((error, accountInfo) => {
-            window.open('https://www.dropbox.com/logout', '_blank').focus();
+            window.open('https://www.dropbox.com/logout', '_blank');
             this.bgStore.emit('sendMessage', 'disconnected');
             if (!error) {
                 this.bgStore.disconnect();
