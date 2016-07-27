@@ -63,13 +63,10 @@ let visibleDialog = false,
 
     setInputValues = (content) => {
         let loginForms = getLoginForm();
-        removeTrezorDialog();
-        if(loginForms.length === 0) {
-            appendNoResultsDialog();
-            setTimeout(() => {
-                removeNoResultsDialog();
-            }, 2150);
-        }else {
+        if (loginForms.length === 0) {
+            morphToNoResult();
+        } else {
+            morphToSuccess();
             for (let i = 0; i < loginForms.length; i++) {
                 let inputs = loginForms[i].getElementsByTagName('input');
                 for (let j = 0; j < inputs.length; j++) {
@@ -90,72 +87,84 @@ let visibleDialog = false,
         }
     },
 
-    removeNoResultsDialog = () => {
-            let doc = document.getElementById('no-results-trezor');
-            document.body.removeChild(doc);
-    },
-
-    appendNoResultsDialog = () => {
-        let wrapperDiv = document.createElement('div');
-        wrapperDiv.setAttribute('style', 'position: fixed; left: 0px; right: 0px; top: 30%; background: transparent; z-index: 99999; height: 180px; width: 100%;');
-        wrapperDiv.setAttribute('id', 'no-results-trezor');
-        let dialogDiv = document.createElement('div');
-        dialogDiv.setAttribute('style', 'position: relative; background: rgba(0,0,0,.7); height: 40px; width: 260px; border-radius: 6px; -webkit-border-radius: 6px; margin: 0 auto; text-align: center;');
-        let textBlock = document.createElement('span');
-        textBlock.innerHTML = 'Couldn\'t find login form, sorry!';
-        textBlock.setAttribute('style', 'position: relative; width: 100%; margin: 0 auto; text-align: center; color: white; font-weight: bold; line-height: 40px; font-size: 16px;');
-        dialogDiv.appendChild(textBlock);
-        document.body.appendChild(wrapperDiv);
-
-        if (document.head.createShadowRoot) {
-            let shadow = wrapperDiv.createShadowRoot();
-            shadow.appendChild(dialogDiv);
-        } else {
-            wrapperDiv.appendChild(dialogDiv);
-        }
-    },
-
     removeTrezorDialog = () => {
         if (visibleDialog) {
-            let doc = document.getElementById('waiting-trezor'),
-                css = document.getElementById('trezor-css');
-            document.body.removeChild(doc);
-            document.getElementsByTagName('head')[0].removeChild(css);
-            visibleDialog = false;
+            let wrapperDiv = document.getElementById('tWaitingTrezor');
+            wrapperDiv.className = 'tWaitingTrezorQuiting';
+
+            setTimeout(() => {
+                document.body.removeChild(wrapperDiv);
+                visibleDialog = false;
+            }, 300);
         }
     },
 
+// creating basic popup dialog
     appendTrezorDialog = () => {
         visibleDialog = true;
+        // main holder and wrapper
         let wrapperDiv = document.createElement('div');
-        wrapperDiv.setAttribute('style', 'position: fixed; left: 0px; right: 0px; top: 30%; background: transparent; z-index: 99999; height: 180px; width: 100%; animation: shakeitbaby 1.2s cubic-bezier(0.36, 0.07, 0, 0.1) infinite; transform: translate3d(0, 0, 0);');
-        wrapperDiv.setAttribute('id', 'waiting-trezor');
+        wrapperDiv.setAttribute('id', 'tWaitingTrezor');
+        wrapperDiv.className = 'tShakeItBaby';
 
+        // visible dialog itself
         let dialogDiv = document.createElement('div');
-        dialogDiv.setAttribute('style', 'position: relative; background: rgba(0,0,0,.7); height: 180px; width: 160px; border-radius: 6px; -webkit-border-radius: 6px; margin: 0 auto; text-align: center;');
+        dialogDiv.setAttribute('id', 'tWaitingTrezorDialog');
+
+        // upper text
+        let topTextBlock = document.createElement('span');
+        topTextBlock.setAttribute('id', 'tWaitingTrezorResponse');
+        topTextBlock.className = 'tTopTextBlock';
+        topTextBlock.innerHTML = 'Couldn\'t find login form, sorry!';
+        dialogDiv.appendChild(topTextBlock);
+
+        // logo image
         let imageElement = document.createElement('img');
+        imageElement.setAttribute('id', 'tWaitingTrezorImage');
         imageElement.src = chrome.extension.getURL('images/trezor.svg');
-        imageElement.setAttribute('style', 'display: block; width: 50%; margin: 0 auto; padding-top: 15px;');
         dialogDiv.appendChild(imageElement);
-        let textBlock = document.createElement('span');
-        textBlock.innerHTML = 'Look at TREZOR!';
-        textBlock.setAttribute('style', 'position: relative; width: 100%; margin: 0 auto; text-align: center; color: white; font-weight: bold; line-height: 40px; font-size: 16px;');
-        dialogDiv.appendChild(textBlock);
 
-        let css = document.createElement('style');
-        css.type = 'text/css';
-        css.setAttribute('id', 'trezor-css');
-        css.innerHTML = '@keyframes shakeitbaby {10%, 90% {transform: translate3d(-1px, 0, 0);} 20%, 80% {transform: translate3d(2px, 0, 0);}30%, 50%, 70% {transform: translate3d(-4px, 0, 0);}40%, 60% {transform: translate3d(4px, 0, 0);}';
-        document.getElementsByTagName('head')[0].appendChild(css);
+        // bottom text
+        let bottomTextBlock = document.createElement('span');
+        bottomTextBlock.setAttribute('id', 'tWaitingTrezorText');
+        bottomTextBlock.className = 'tBottomTextBlock';
+        bottomTextBlock.innerHTML = 'Confirm on TREZOR!';
+        dialogDiv.appendChild(bottomTextBlock);
+
         document.body.appendChild(wrapperDiv);
+        wrapperDiv.appendChild(dialogDiv);
+    },
 
-        if (document.head.createShadowRoot) {
-            let shadow = wrapperDiv.createShadowRoot();
-            shadow.appendChild(dialogDiv);
-        } else {
-            wrapperDiv.appendChild(dialogDiv);
-        }
+    morphToNoResult = () => {
+        let wrapperDiv = document.getElementById('tWaitingTrezor');
+        wrapperDiv.className = '';
+
+        let dialogDiv = document.getElementById('tWaitingTrezorDialog');
+        dialogDiv.className = 'tNoResult';
+
+        setTimeout(() => {
+            // remove dialog ugly way
+            removeTrezorDialog();
+        }, 1700);
+    },
+
+    morphToSuccess = () => {
+        let wrapperDiv = document.getElementById('tWaitingTrezor');
+        wrapperDiv.className = '';
+
+        let dialogDiv = document.getElementById('tWaitingTrezorDialog');
+        dialogDiv.className = 'tSucccess';
+
+        let imageElement = document.getElementById('tWaitingTrezorImage');
+        imageElement.src = chrome.extension.getURL('images/success.svg');
+
+        setTimeout(() => {
+            // remove dialog nice way
+            removeTrezorDialog();
+        }, 1200);
     };
+
+
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
@@ -173,7 +182,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         removeTrezorDialog();
                     }
                 }
-            }, 350);
+            }, 800);
             break;
 
         case 'showTrezorMsg':

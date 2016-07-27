@@ -18,8 +18,8 @@ class ChromeMgmt {
         this.activeDomain = '';
         this.hasCredentials = false;
         this.accessTabId = 0;
-        chrome.tabs.onUpdated.addListener(() => this.detectActiveUrl());
         chrome.tabs.onActivated.addListener(() => this.detectActiveUrl());
+        chrome.tabs.onUpdated.addListener(() => this.detectActiveUrl());
         chrome.commands.onCommand.addListener((c) => this.chromeCommands(c));
         chrome.browserAction.onClicked.addListener(() => this.openAppTab());
     }
@@ -86,6 +86,7 @@ class ChromeMgmt {
                         }
                         this.createContextMenuItem(this.hasCredentials);
                     } else {
+                        this.clearContextMenuItem();
                         this.updateBadgeStatus('ERROR');
                         this.hasCredentials = false;
                     }
@@ -160,10 +161,10 @@ class ChromeMgmt {
 
     updateBadgeStatus(status) {
         let badgeState = {
-            LOADED: {color: [59, 192, 195, 255], defaultText: '\u0020'},
+            LOADED: {color: [76, 175, 80, 255], defaultText: '\u0020'},
             STORAGE: {color: [237, 199, 85, 100], defaultText: '\u0020'},
             TREZOR: {color: [237, 199, 85, 100], defaultText: '\u0020'},
-            ERROR: {color: [255, 255, 0, 100], defaultText: '\u0020'},
+            ERROR: {color: [255, 173, 51, 255], defaultText: '\u0020'},
             OFF: {color: [255, 255, 0, 100], defaultText: ''}
         };
         chrome.browserAction.setBadgeText({text: badgeState[status].defaultText});
@@ -192,19 +193,21 @@ class ChromeMgmt {
         var tabId = id;
         chrome.tabs.sendMessage(tabId, {type: 'isScriptExecuted'}, (response) => {
             if (chrome.runtime.lastError) {
-                chrome.tabs.executeScript(tabId, {file: 'js/content_script.js', runAt: 'document_start'}, () => {
-                    chrome.tabs.sendMessage(tabId, {type: 'isScriptExecuted'}, (response) => {
-                        if (response.type === 'scriptReady') {
-                            this.sendTabMessage(tabId, type, data);
-                        } else {
-                            chrome.tabs.executeScript(tabId, {file: 'js/content_script.js'}, () => {
-                                if (chrome.runtime.lastError) {
-                                    console.error(chrome.runtime.lastError);
-                                    throw Error('Unable to inject script into tab ' + tabId);
-                                }
+                chrome.tabs.insertCSS(tabId, {file: 'css/content_style.css', runAt: 'document_start'}, () => {
+                    chrome.tabs.executeScript(tabId, {file: 'js/content_script.js', runAt: 'document_start'}, () => {
+                        chrome.tabs.sendMessage(tabId, {type: 'isScriptExecuted'}, (response) => {
+                            if (response.type === 'scriptReady') {
                                 this.sendTabMessage(tabId, type, data);
-                            });
-                        }
+                            } else {
+                                chrome.tabs.executeScript(tabId, {file: 'js/content_script.js'}, () => {
+                                    if (chrome.runtime.lastError) {
+                                        console.error(chrome.runtime.lastError);
+                                        throw Error('Unable to inject script into tab ' + tabId);
+                                    }
+                                    this.sendTabMessage(tabId, type, data);
+                                });
+                            }
+                        });
                     });
                 });
             } else {

@@ -3679,7 +3679,11 @@ aside.left-panel {
   height: 100%;
   top: 0;
   left: 0;
-  z-index: 100; }
+  z-index: 100;
+  -webkit-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  -o-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); }
   @media screen and (max-width: 768px) {
     aside.left-panel {
       width: 80px; } }
@@ -3809,7 +3813,7 @@ aside.left-panel {
           .navigation ul > li .dropdown.open > .dropdown-toggle:after {
             color: #3498db !important; }
         .navigation ul > li .dropdown.open > .dropdown-menu {
-          width: 210px;
+          width: 240px;
           border-left: 4px solid #3498db;
           background: #162338;
           padding: 0;

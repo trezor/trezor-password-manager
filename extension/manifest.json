@@ -1,7 +1,7 @@
 {
   "name": "TREZOR Password Manager",
   "description": "Really secure password manager using TREZOR.",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "author": "SatoshiLabs",
   "short_name": "TREZOR Password Manager",
   "commands": {
@@ -56,7 +56,9 @@
   },
   "web_accessible_resources": [
     "html/chrome_oauth_receiver.html",
-    "images/trezor.svg"
+    "images/trezor.svg",
+    "images/success.svg",
+    "css/content_style.css"
   ],
   "externally_connectable": {
     "ids": [
