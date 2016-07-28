@@ -22,6 +22,7 @@ var React = require('react'),
         getInitialState() {
             return {
                 image_src: 'dist/app-images/transparent.png',
+                image_visible: true,
                 mode: this.props.mode || 'list-mode',
                 key_value: this.props.key_value,
                 title: this.props.title,
@@ -77,9 +78,10 @@ var React = require('react'),
             }
         },
 
-        handleError() {
+        handleImageError() {
             this.setState({
-                image_src: 'dist/app-images/transparent.png'
+                image_src: 'dist/app-images/transparent.png',
+                image_visible: false
             });
         },
 
@@ -471,9 +473,8 @@ var React = require('react'),
                 <div className={'card ' + this.state.waiting_trezor}>
                     <div className={ this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}>
                         <form onSubmit={this.state.saving_entry ? false : this.saveEntry}>
-                            <div className='avatar'>
-                                <img src={this.state.image_src}
-                                     onError={this.handleError}/>
+                            <div className={this.state.image_visible ? 'avatar white-bg' : 'avatar'}>
+                                {this.state.image_visible && <img src={this.state.image_src} onError={this.handleImageError} />}
                                 <i className={'icon ion-' + window.myStore.getTagIconById(this.state.tags_id[this.state.tags_id.length-1])}></i>
                                 {this.state.username.length === 0 ?
                                     <a href={this.isUrl(this.state.title) ? this.setProtocolPrefix(this.state.title) : null}

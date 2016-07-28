@@ -98,11 +98,10 @@
 
         img {
           width: 100%;
-          height: 100%;
           position: absolute;
-          top: 0;
+          top: 50%;
           left: 0;
-          right: 50px;
+          @include transform(translateY(-50%));
           @include border-radius(2px);
         }
 
@@ -124,6 +123,10 @@
           vertical-align: middle;
           display: inline-block;
           @include transition(all 50ms ease-in-out);
+        }
+
+        &.white-bg {
+          background-color: $c_white;
         }
       }
 
