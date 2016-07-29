@@ -74,39 +74,27 @@ class Store extends EventEmitter {
     }
 
     changeTagById(tagId, newTagTitle, newTagIcon, save = true) {
-        var tagData = Object.getOwnPropertyDescriptor(this.data.tags, tagId).value,
-            oldTagTitleArray = this.getTagTitleArray();
-        if (oldTagTitleArray.indexOf(newTagTitle) == -1) {
-            tagData.title = newTagTitle;
-            tagData.icon = newTagIcon;
-            this.saveDataToTagById(tagId, tagData);
-            this.emit('update', this.data);
-            save && Service.saveContext(this.data);
-            return true;
-        } else {
-            return false;
-        }
+        var tagData = Object.getOwnPropertyDescriptor(this.data.tags, tagId).value;
+        tagData.title = newTagTitle;
+        tagData.icon = newTagIcon;
+        this.saveDataToTagById(tagId, tagData);
+        this.emit('update', this.data);
+        save && Service.saveContext(this.data);
     }
 
     saveDataToTagById(tagId, data) {
         return Object.defineProperty(this.data.tags, tagId, {value: data});
     }
 
-    addNewTag(newTitle, newIcon, save = true) {
-        var data = {
+    addNewTag(newTitle, newIcon) {
+        let data = {
                 "title": newTitle,
                 "icon": newIcon
             },
-            newId = parseInt(Object.keys(this.data.tags)[parseInt(Object.keys(this.data.tags).length) - 1]) + 1,
-            oldTagTitleArray = this.getTagTitleArray();
-        if (oldTagTitleArray.indexOf(newTitle) == -1) {
-            this.data.tags[newId] = data;
-            this.emit('update', this.data);
-            save && Service.saveContext(this.data);
-            return true;
-        } else {
-            return false;
-        }
+            newId = parseInt(Object.keys(this.data.tags)[parseInt(Object.keys(this.data.tags).length) - 1]) + 1;
+        this.data.tags[newId] = data;
+        this.emit('update', this.data);
+        Service.saveContext(this.data);
     }
 
     removeTag(tagId, save = true) {
@@ -166,7 +154,7 @@ class Store extends EventEmitter {
     getPossibleToAddTagsForEntry(entryId, tempTagArr) {
         var allTags = this.getTagIdArray(),
             resultTagArray = [];
-        if(typeof entryId === 'undefined') {
+        if (typeof entryId === 'undefined') {
             allTags.splice(0, 1);
             allTags.map((key) => {
                 if (tempTagArr.indexOf(key) === -1) {

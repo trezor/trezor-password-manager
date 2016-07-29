@@ -137,7 +137,8 @@ var React = require('react'),
         saveEditModal() {
             if (this.state.newTagId === '' && this.state.newTagTitle !== '') {
                 this.addNewTag();
-            } else {
+            }
+            if (this.state.newTagId !== '' && this.state.newTagTitle !== '') {
                 this.saveTagChanges();
             }
             this.closeEditModal();
