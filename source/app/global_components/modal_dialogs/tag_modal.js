@@ -120,8 +120,7 @@ var React = require('react'),
         },
 
         saveTagChanges() {
-            window.myStore.changeTagTitleById(parseInt(this.state.newTagId), this.state.newTagTitle);
-            window.myStore.changeTagIconById(parseInt(this.state.newTagId), this.state.newIcon);
+            window.myStore.changeTagById(parseInt(this.state.newTagId), this.state.newTagTitle, this.state.newIcon);
         },
 
         addNewTag() {
@@ -136,7 +135,7 @@ var React = require('react'),
         },
 
         saveEditModal() {
-            if (this.state.newTagId === '' && this.state.newTagTitle != '') {
+            if (this.state.newTagId === '' && this.state.newTagTitle !== '') {
                 this.addNewTag();
             } else {
                 this.saveTagChanges();

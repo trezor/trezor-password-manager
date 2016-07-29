@@ -73,33 +73,26 @@ class Store extends EventEmitter {
         });
     }
 
-    changeTagTitleById(tagId, newTagTitle) {
+    changeTagById(tagId, newTagTitle, newTagIcon, save = true) {
         var tagData = Object.getOwnPropertyDescriptor(this.data.tags, tagId).value,
             oldTagTitleArray = this.getTagTitleArray();
         if (oldTagTitleArray.indexOf(newTagTitle) == -1) {
             tagData.title = newTagTitle;
+            tagData.icon = newTagIcon;
             this.saveDataToTagById(tagId, tagData);
             this.emit('update', this.data);
-            Service.saveContext(this.data);
+            save && Service.saveContext(this.data);
             return true;
         } else {
             return false;
         }
     }
 
-    changeTagIconById(tagId, newTagIcon) {
-        var tagData = Object.getOwnPropertyDescriptor(this.data.tags, tagId).value;
-        tagData.icon = newTagIcon;
-        this.saveDataToTagById(tagId, tagData);
-        this.emit('update', this.data);
-        Service.saveContext(this.data);
-    }
-
     saveDataToTagById(tagId, data) {
         return Object.defineProperty(this.data.tags, tagId, {value: data});
     }
 
-    addNewTag(newTitle, newIcon) {
+    addNewTag(newTitle, newIcon, save = true) {
         var data = {
                 "title": newTitle,
                 "icon": newIcon
@@ -109,24 +102,24 @@ class Store extends EventEmitter {
         if (oldTagTitleArray.indexOf(newTitle) == -1) {
             this.data.tags[newId] = data;
             this.emit('update', this.data);
-            Service.saveContext(this.data);
+            save && Service.saveContext(this.data);
             return true;
         } else {
             return false;
         }
     }
 
-    removeTag(tagId) {
+    removeTag(tagId, save = true) {
+        this.emit('changeTag', 0);
         Object.keys(this.data.entries).map((key) => {
             var tags = this.data.entries[key].tags;
             if (tags.indexOf(parseInt(tagId)) > -1) {
-                this.removeTagFromEntry(tagId, key);
+                this.removeTagFromEntry(tagId, key, false);
             }
         });
-        this.emit('changeTag', 0);
         delete this.data.tags[tagId];
         this.emit('update', this.data);
-        Service.saveContext(this.data);
+        save && Service.saveContext(this.data);
     }
 
     hasTagId(tagId) {
@@ -149,25 +142,25 @@ class Store extends EventEmitter {
         });
     }
 
-    saveDataToEntryById(entryId, data) {
+    saveDataToEntryById(entryId, data, save = true) {
         Object.defineProperty(this.data.entries, entryId, {value: data});
         this.emit('changeTag');
-        return Service.saveContext(this.data);
+        save && Service.saveContext(this.data);
     }
 
     addTagToEntry(tagId, entryId) {
         var entryData = Object.getOwnPropertyDescriptor(this.data.entries, entryId).value;
         entryData.tags.push(parseInt(tagId));
-        this.saveDataToEntryById(entryId, entryData);
-        return Service.saveContext(this.data);
+        this.saveDataToEntryById(entryId, entryData, false);
+        Service.saveContext(this.data);
     }
 
-    removeTagFromEntry(tagId, entryId) {
+    removeTagFromEntry(tagId, entryId, save = true) {
         var entryData = Object.getOwnPropertyDescriptor(this.data.entries, entryId).value;
         var index = entryData.tags.indexOf(parseInt(tagId));
         entryData.tags.splice(index, 1);
-        this.saveDataToEntryById(entryId, entryData);
-        return Service.saveContext(this.data);
+        this.saveDataToEntryById(entryId, entryData, save);
+        save && Service.saveContext(this.data);
     }
 
     getPossibleToAddTagsForEntry(entryId, tempTagArr) {
@@ -198,7 +191,7 @@ class Store extends EventEmitter {
         this.data.entries[newId] = data;
         this.emit('update', this.data);
         Service.saveContext(this.data);
-        return this.emit('toggleNewEntry');
+        this.emit('toggleNewEntry');
     }
 
     removeEntry(entryId) {

@@ -224,7 +224,8 @@ class DriveMgmt {
             let url = API_URL + "/files/" + folderId + "/children?maxResults=1000&orderBy=createdDate&q=title = '" + fileName + "' and trashed = false";
             let xhr = this.createCORSRequest('GET', url, true);
             var fileId = false;
-            xhr.onerror = () => {
+            xhr.onerror = (e) => {
+                console.log(e, xhr);
                 this.handleDriveError(xhr);
             };
             xhr.onload = () => {

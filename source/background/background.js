@@ -146,7 +146,6 @@ var Promise = require('es6-promise').Promise,
 
     contentDecrypted = () => {
         let tempDecryptedData = trezorManager.decrypt(bgStore.loadedData, bgStore.encryptionKey);
-        chromeManager.createContextMenuItem();
         chromeManager.sendMessage('decryptedContent', {
             data: tempDecryptedData,
             username: bgStore.username,
