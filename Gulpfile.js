@@ -20,7 +20,7 @@ gulp.task('production-app', () => {
     var bundler = browserify({
         entries: ['./source/app/app.js'],
         debug: false
-    }).transform(babelify, {presets: ["es2015", "react"]});
+    }).transform(babelify, {presets: ["chrome-49", "react"]});
     return bundler
         .bundle()
         .pipe(source('app.js'))
@@ -33,7 +33,7 @@ gulp.task('production-bg', () => {
     var bundler = browserify({
         entries: ['./source/background/background.js'],
         debug: false
-    }).transform(babelify, {presets: ["es2015"]});
+    }).transform(babelify, {presets: ["chrome-49"]});
     return bundler
         .bundle()
         .pipe(source('background.js'))
@@ -46,7 +46,7 @@ gulp.task('dev-app', () => {
     var bundler = browserify({
         entries: ['./source/app/app.js'],
         debug: true
-    }).transform(babelify, {presets: ["es2015", "react"]});
+    }).transform(babelify, {presets: ["chrome-49", "react"]});
     return bundler
         .bundle()
         .on('error', (err) => {
@@ -61,7 +61,7 @@ gulp.task('dev-bg', () => {
     var bundler = browserify({
         entries: ['./source/background/background.js'],
         debug: true
-    }).transform(babelify, {presets: ["es2015"]});
+    }).transform(babelify, {presets: ["chrome-49"]});
     return bundler
         .bundle()
         .on('error', (err) => {
