@@ -29,7 +29,8 @@ class DropboxMgmt {
         switch (error.status) {
             case Dropbox.ApiError.INVALID_TOKEN:
                 console.warn('User token expired ', error.status);
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'INVALID_TOKEN', msg: error.status, storage:'Dropbox'});
+                this.connect();
+                //this.bgStore.emit('sendMessage', 'errorMsg', {code: 'INVALID_TOKEN', msg: error.status, storage:'Dropbox'});
                 break;
 
             case Dropbox.ApiError.NOT_FOUND:

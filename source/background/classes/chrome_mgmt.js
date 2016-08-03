@@ -76,16 +76,21 @@ class ChromeMgmt {
                 if (typeof tabs[0] !== 'undefined') {
                     if (this.bgStore.isUrl(tabs[0].url)) {
                         this.activeUrl = tabs[0].url;
-                        this.activeDomain = this.bgStore.decomposeUrl(this.activeUrl).domain;
-                        if (this.matchingContent(this.activeDomain)) {
-                            this.updateBadgeStatus(this.bgStore.phase);
-                            this.hasCredentials = true;
-                        } else {
-                            this.updateBadgeStatus('ERROR');
-                            this.hasCredentials = false;
+                        let newActiveDomain = this.bgStore.decomposeUrl(this.activeUrl).domain;
+                        if (this.activeDomain !== newActiveDomain) {
+                            this.activeDomain = newActiveDomain;
+                            if (this.matchingContent(this.activeDomain)) {
+                                this.updateBadgeStatus(this.bgStore.phase);
+                                this.hasCredentials = true;
+                            } else {
+                                this.updateBadgeStatus('ERROR');
+                                this.hasCredentials = false;
+                            }
+                            this.createContextMenuItem(this.hasCredentials);
                         }
-                        this.createContextMenuItem(this.hasCredentials);
                     } else {
+                        this.activeUrl = '';
+                        this.activeDomain = '';
                         this.clearContextMenuItem();
                         this.updateBadgeStatus('ERROR');
                         this.hasCredentials = false;
@@ -98,10 +103,12 @@ class ChromeMgmt {
     }
 
     fillOrSave() {
-        if (this.hasCredentials) {
-            this.fillCredentials(this.activeDomain);
-        } else {
-            this.saveEntry();
+        if(this.activeDomain !== '') {
+            if (this.hasCredentials) {
+                this.fillCredentials(this.activeDomain);
+            } else {
+                this.saveEntry();
+            }
         }
     }
 
@@ -253,9 +260,10 @@ class ChromeMgmt {
     createContextMenuItem(hasItem) {
         chrome.contextMenus.removeAll(() => {
             chrome.contextMenus.create({
-                "contexts": ["page", "selection", "image", "link"],
-                "title": hasItem ? "Login to " + this.activeDomain : "Save " + this.activeDomain,
-                "onclick": () => {
+                id: this.activeDomain,
+                contexts: ["page", "selection", "image", "link"],
+                title: hasItem ? "Login to " + this.activeDomain : "Save " + this.activeDomain,
+                onclick: () => {
                     this.fillOrSave()
                 }
             });

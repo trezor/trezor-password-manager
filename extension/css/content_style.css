@@ -7,7 +7,7 @@
     top: 30%;
     background: transparent;
     z-index: 99999 !important;
-    height: 185px;
+    height: 186px;
     width: 100%;
     overflow: hidden;
     font-family: 'Open Sans', sans-serif !important;
@@ -17,8 +17,8 @@
     position: relative;
     display: block;
     background: rgba(0, 0, 0, .7);
-    height: 185px;
-    width: 170px;
+    height: 186px;
+    width: 176px;
     border-radius: 4px;
     -webkit-border-radius: 4px;
     padding-top: 0;
