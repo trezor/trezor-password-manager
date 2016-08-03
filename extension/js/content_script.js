@@ -47,7 +47,7 @@ let visibleDialog = false,
         return submitElement;
     },
 
-    getLoginForm = () => {
+    getLoginForms = () => {
         let tempFormArr = document.getElementsByTagName('FORM'),
             loginFormsArrs = [];
         for (let i = 0; i < tempFormArr.length; i++) {
@@ -62,11 +62,19 @@ let visibleDialog = false,
 
 
     setInputValues = (content) => {
-        let loginForms = getLoginForm();
+        let loginForms = getLoginForms();
         if (loginForms.length === 0) {
-            morphToNoResult();
+            if (visibleDialog) {
+                morphToNoResult();
+            } else {
+                appendNoResultDialog();
+            }
         } else {
-            morphToSuccess();
+            if (visibleDialog) {
+                morphToSuccess();
+            } else {
+                appendSuccessDialog();
+            }
             for (let i = 0; i < loginForms.length; i++) {
                 let inputs = loginForms[i].getElementsByTagName('input');
                 for (let j = 0; j < inputs.length; j++) {
@@ -135,8 +143,64 @@ let visibleDialog = false,
         wrapperDiv.appendChild(dialogDiv);
     },
 
+    appendSuccessDialog = () => {
+        visibleDialog = true;
+        // main holder and wrapper
+        let wrapperDiv = document.createElement('div');
+        wrapperDiv.setAttribute('id', 'tWaitingTrezor');
+        wrapperDiv.className = '';
+
+        // visible dialog itself
+        let dialogDiv = document.createElement('div');
+        dialogDiv.setAttribute('id', 'tWaitingTrezorDialog');
+        dialogDiv.className = 'tSucccess';
+
+        // logo image
+        let imageElement = document.createElement('img');
+        imageElement.setAttribute('id', 'tWaitingTrezorImage');
+        imageElement.src = chrome.extension.getURL('images/success.svg');
+        dialogDiv.appendChild(imageElement);
+
+        document.body.appendChild(wrapperDiv);
+        wrapperDiv.appendChild(dialogDiv);
+
+        setTimeout(() => {
+            // remove dialog nice way
+            removeTrezorDialog();
+        }, 2500);
+    },
+
+    appendNoResultDialog = () => {
+        visibleDialog = true;
+        // main holder and wrapper
+        let wrapperDiv = document.createElement('div');
+        wrapperDiv.setAttribute('id', 'tWaitingTrezor');
+        wrapperDiv.className = '';
+
+        // visible dialog itself
+        let dialogDiv = document.createElement('div');
+        dialogDiv.setAttribute('id', 'tWaitingTrezorDialog');
+        dialogDiv.className = 'tNoResult';
+
+        // upper text
+        let topTextBlock = document.createElement('span');
+        topTextBlock.setAttribute('id', 'tWaitingTrezorResponse');
+        topTextBlock.className = 'tTopTextBlock';
+        topTextBlock.innerHTML = 'Couldn\'t find login form, sorry!';
+        dialogDiv.appendChild(topTextBlock);
+
+        document.body.appendChild(wrapperDiv);
+        wrapperDiv.appendChild(dialogDiv);
+
+        setTimeout(() => {
+            // remove dialog ugly way
+            removeTrezorDialog();
+        }, 2700);
+    },
+
     morphToNoResult = () => {
         let wrapperDiv = document.getElementById('tWaitingTrezor');
+        console.log('div ', wrapperDiv);
         wrapperDiv.className = '';
 
         let dialogDiv = document.getElementById('tWaitingTrezorDialog');
@@ -161,9 +225,8 @@ let visibleDialog = false,
         setTimeout(() => {
             // remove dialog nice way
             removeTrezorDialog();
-        }, 1200);
+        }, 1500);
     };
-
 
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {

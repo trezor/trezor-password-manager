@@ -26,8 +26,8 @@
     text-align: center;
     animation-name: tBigEntranceAnimation;
     -webkit-animation-name: tBigEntranceAnimation;
-    animation-duration: .8s;
-    -webkit-animation-duration: .8s;
+    animation-duration: .7s;
+    -webkit-animation-duration: .7s;
     animation-timing-function: ease-out;
     -webkit-animation-timing-function: ease-out;
     animation-iteration-count: 1;

@@ -473,7 +473,7 @@ var React = require('react'),
                 <div className={'card ' + this.state.waiting_trezor}>
                     <div className={ this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}>
                         <form onSubmit={this.state.saving_entry ? false : this.saveEntry}>
-                            <div className={this.state.image_visible ? 'avatar white-bg' : 'avatar'}>
+                            <div className={this.state.image_visible && this.isUrl(this.state.title) ? 'avatar white-bg' : 'avatar'}>
                                 {this.state.image_visible &&
                                 <img src={this.state.image_src} onError={this.handleImageError}/>}
                                 <i className={'icon ion-' + window.myStore.getTagIconById(this.state.tags_id[this.state.tags_id.length-1])}></i>
