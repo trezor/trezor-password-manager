@@ -44,6 +44,7 @@ var Promise = require('es6-promise').Promise,
             bgStore.on('clearSession', () => trezorManager.clearSession());
             bgStore.on('decryptPassword', (entry) => decryptAndInject(entry));
             bgStore.on('sendMessage', (type, content) => chromeManager.sendMessage(type, content));
+            chromeManager.updateBadgeStatus('OFF');
             setupReady = true;
             init();
         });
@@ -56,7 +57,6 @@ var Promise = require('es6-promise').Promise,
             trezorManager.checkVersions();
             switch (bgStore.phase) {
                 case 'LOADED':
-                    chromeManager.createContextMenuItem();
                     chromeManager.sendMessage('decryptedContent', {
                         data: JSON.stringify(bgStore.decryptedContent),
                         username: bgStore.username,

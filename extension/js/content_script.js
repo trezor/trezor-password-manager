@@ -1,6 +1,7 @@
 'use strict';
 
 let visibleDialog = false,
+    retry = 0,
     countVisibleInputs = (inputs) => {
         let visibleInputs = 0;
         for (let j = 0; j < inputs.length; j++) {
@@ -226,26 +227,40 @@ let visibleDialog = false,
             // remove dialog nice way
             removeTrezorDialog();
         }, 1500);
+    },
+
+    fillData = (request) => {
+        setTimeout(() => {
+            if (document.addEventListener) {
+                if (request.content != null) {
+                    if (document.readyState === 'complete') {
+                        retry = 0;
+                        setInputValues(request.content);
+                    } else {
+                        // document.addEventListener('DOMContentLoaded', setInputValues(request.content), false);
+                        // window.addEventListener('load', setInputValues(request.content), false);
+                        // really ugly shit - handle all "edge" cases
+                        if(retry++ < 30) {
+                            fillData(request);
+                        }
+                    }
+                } else {
+                    removeTrezorDialog();
+                }
+            } else {
+                // really ugly shit - handle all "edge" cases
+                if(retry++ < 30) {
+                    fillData(request);
+                }
+            }
+        }, 1000);
     };
 
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
         case 'fillData':
-            setTimeout(() => {
-                if (document.addEventListener) {
-                    if (request.content != null) {
-                        if (document.readyState === 'complete') {
-                            setInputValues(request.content);
-                        } else {
-                            document.addEventListener('DOMContentLoaded', setInputValues(request.content), false);
-                            window.addEventListener('load', setInputValues(request.content), false);
-                        }
-                    } else {
-                        removeTrezorDialog();
-                    }
-                }
-            }, 800);
+            fillData(request);
             break;
 
         case 'showTrezorMsg':
