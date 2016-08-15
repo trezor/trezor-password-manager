@@ -166,6 +166,29 @@
         font-size: 1em;
       }
     }
+
+    ol {
+      text-align: left;
+      width: 300px;
+      display: block;
+      list-style-type: decimal;
+      -webkit-margin-before: 1em;
+      -webkit-margin-after: 1em;
+      -webkit-margin-start: 0px;
+      -webkit-margin-end: 0px;
+      -webkit-padding-start: 40px;
+      margin: 0 auto;
+
+      li {
+        margin-top: 10px;
+        margin-bottom: 5px;
+      }
+
+      a {
+        color: white;
+        text-decoration: underline;
+      }
+    }
   }
 
   .preloading,

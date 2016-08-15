@@ -123,7 +123,6 @@ class DriveMgmt {
 
     disconnect() {
         chrome.identity.removeCachedAuthToken({'token': this.token}, () => {
-            window.open('https://accounts.google.com/logout', '_blank');
             this.bgStore.emit('sendMessage', 'disconnected');
         });
     }

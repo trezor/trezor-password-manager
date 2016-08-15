@@ -155,7 +155,6 @@ var React = require('react'),
                     <div className='overlay-hill'></div>
                     <div className='overlay-color'></div>
                     <div className='home'>
-
                         <div className={this.state.dialog === 'connect_storage' ? 'connect_storage' : 'hidden_dialog'}>
                             <img src='dist/app-images/trezor.svg' className='no-circle'/>
 
@@ -178,8 +177,7 @@ var React = require('react'),
                             </div>
                         </div>
 
-                        <div
-                            className={this.state.dialog === 'accept_user' ? 'accept_user' : 'hidden_dialog'}>
+                        <div className={this.state.dialog === 'accept_user' ? 'accept_user' : 'hidden_dialog'}>
                             <img src={'dist/app-images/' + this.state.storageType.toLowerCase() + '.svg'} />
 
                             <div>
@@ -187,10 +185,10 @@ var React = require('react'),
                                     <b> {this.state.username}</b>
                                 </button>
                                 <br />
-                                <button className='no-style' onClick={this.disconnect}>Logout and use different
-                                    account.
+                                <button className='no-style' onClick={this.disconnect}>
+                                    {this.state.storageType === 'DROPBOX' ? <p>Logout and use different account.</p> : <p>Switch to different service.</p>}
                                 </button>
-                                {this.state.storageType === 'DROPBOX' ? <i>(Manage your accounts via Dropbox.com)</i> : <i>(Manage your accounts via browser settings)</i>}
+                                {this.state.storageType === 'DROPBOX' ? <i>(Manage your accounts via Dropbox.com)</i> : <div><b>For logout or switch user follow instructions:</b><ol><li>In the upper right corner of the browser window, click the button for the current person.</li><li>Click Switch person.</li><li>Choose the person you want to switch to.</li><a href='https://support.google.com/chrome/answer/2364824?hl=en' target='_blank'>More info</a></ol></div>}
                             </div>
                         </div>
 
