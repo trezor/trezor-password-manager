@@ -67,7 +67,11 @@ class TrezorMgmt {
         let never = new Promise(() => {
         });
 
-        console.log(error);
+        // remove after long time period - for example around Christmas .) as well in bg_store
+        if (error instanceof SyntaxError && operation === 'decEntry') {
+            this.cryptoData.keyPhrase = this.displayOldKey(this.cryptoData.title, this.cryptoData.username);
+            return this.trezorDevice.runAggressive((session) => this.sendDecryptCallback(session));
+        }
 
         switch (error.message) {
             case NO_TRANSPORT:
@@ -307,12 +311,19 @@ class TrezorMgmt {
             return Buffer.concat([start, end]).toString('utf8');
         } catch (error) {
             console.error('error ', error);
+            return new Buffer([]).toString('utf8');
             //TODO
         }
     }
 
     displayKey(title, username) {
         title = this.bgStore.isUrl(title) ? this.bgStore.decomposeUrl(title).domain : title;
+        return 'Unlock ' + title + ' for user ' + username + '?';
+    }
+
+    // remove after long time period - for example around Christmas .) as well in bg_store
+    displayOldKey(title, username) {
+        title = this.bgStore.isUrlOldVal(title) ? this.bgStore.decomposeUrl(title).domain : title;
         return 'Unlock ' + title + ' for user ' + username + '?';
     }
 

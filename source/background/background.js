@@ -100,6 +100,7 @@ var Promise = require('es6-promise').Promise,
     initNewFile = () => {
         let basicObjectBlob = {
             'version': '0.0.1',
+            'extVersion':'0.5.11',
             'config': {
                 'orderType': 'date'
             },

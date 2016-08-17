@@ -34,6 +34,11 @@ class BgDataStore extends EventEmitter {
         return validator.isURL(str);
     }
 
+    // remove after long time period - for example around Christmas .) as well in trezor_mgmt
+    isUrlOldVal(str) {
+        return str.match(/[a-z]+\.[a-z][a-z]+(\/.*)?$/i) != null;
+    }
+
     toBuffer(ab) {
         let buffer = new Buffer(ab.byteLength),
             view = new Uint8Array(ab);
