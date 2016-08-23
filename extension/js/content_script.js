@@ -81,14 +81,16 @@ let visibleDialog = false,
                 for (let j = 0; j < inputs.length; j++) {
                     switch (inputs[j].type.toLowerCase()) {
                         case 'email':
+                            inputs[j].defaultValue = content.username;
                             inputs[j].value = content.username;
                             break;
                         case 'text':
+                            inputs[j].defaultValue = content.username;
                             inputs[j].value = content.username;
                             break;
                         case 'password':
+                            inputs[j].defaultValue = content.password;
                             inputs[j].value = content.password;
-                            inputs[j].focus();
                             break;
                     }
                 }

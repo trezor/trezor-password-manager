@@ -189,6 +189,15 @@ class TrezorMgmt {
         }
     }
 
+    userSwitch() {
+        this.cryptoData = {
+            'keyPhrase': DEFAULT_KEYPHRASE,
+            'nonce': DEFAULT_NONCE,
+            'enc': true,
+            'askOnEnc': true
+        };
+    }
+
     connect() {
         if (this.bgStore.phase === 'TREZOR') {
             var doSteal = this.trezorDevice == null;

@@ -100,7 +100,7 @@ var Promise = require('es6-promise').Promise,
     initNewFile = () => {
         let basicObjectBlob = {
             'version': '0.0.1',
-            'extVersion':'0.5.11',
+            'extVersion':'0.5.12',
             'config': {
                 'orderType': 'date'
             },
@@ -131,6 +131,7 @@ var Promise = require('es6-promise').Promise,
 
     userSwitch = () => {
         bgStore.userSwitch();
+        trezorManager.userSwitch();
         chromeManager.updateBadgeStatus('OFF');
         chromeManager.clearContextMenuItem();
         chromeManager.sendMessage('trezorDisconnected');
@@ -139,6 +140,7 @@ var Promise = require('es6-promise').Promise,
 
     userLoggedOut = () => {
         bgStore.disconnect();
+        trezorManager.userSwitch();
         chromeManager.updateBadgeStatus('OFF');
         chromeManager.clearContextMenuItem();
         chromeManager.sendMessage('trezorDisconnected');

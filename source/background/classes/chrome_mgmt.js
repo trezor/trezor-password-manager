@@ -133,6 +133,7 @@ class ChromeMgmt {
         if (this.bgStore.decryptedContent) {
             Object.keys(this.bgStore.decryptedContent.entries).map((key) => {
                 let obj = this.bgStore.decryptedContent.entries[key];
+                host = host.indexOf('www.') > -1 ? host.split('www.')[1] : host;
                 if (obj.title.indexOf(host) > -1 || host.indexOf(obj.title) > -1) {
                     entry = obj;
                 }
@@ -184,6 +185,7 @@ class ChromeMgmt {
         if (this.bgStore.decryptedContent && typeof host !== 'undefined') {
             Object.keys(this.bgStore.decryptedContent.entries).map((key) => {
                 let obj = this.bgStore.decryptedContent.entries[key];
+                host = host.indexOf('www.') > -1 ? host.split('www.')[1] : host;
                 if (obj.title.indexOf(host) > -1 || host.indexOf(obj.title) > -1) {
                     entry = obj;
                 }
