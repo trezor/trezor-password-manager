@@ -17,6 +17,7 @@ var Promise = require('es6-promise').Promise,
 // Chrome manager will maintain most of injection and other (tab <-> background <-> app) context manipulation
     ChromeMgmt = require('./classes/chrome_mgmt'),
     chromeManager = new ChromeMgmt(bgStore),
+    trezor = require('trezor.js'),
     TrezorMgmt = require('./classes/trezor_mgmt'),
     trezorManager = {},
     DropboxMgmt = require('./classes/dropbox_mgmt'),

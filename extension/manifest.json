@@ -40,7 +40,6 @@
     "persistent": true,
     "scripts": [
       "js/dropbox.min.js",
-      "js/trezor.js",
       "js/upload.js",
       "js/background.js"
     ]
