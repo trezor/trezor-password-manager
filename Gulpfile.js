@@ -2,6 +2,7 @@ var gulp = require('gulp'),
     sass = require('gulp-sass'),
     connect = require('gulp-connect'),
     uglify = require('gulp-uglify'),
+    cleanCSS = require('gulp-clean-css'),
     sourcemaps = require('gulp-sourcemaps'),
     babelify = require('babelify'),
     source = require('vinyl-source-stream'),
@@ -13,6 +14,13 @@ gulp.task('sass', function () {
         .pipe(sass())
         .pipe(gulp.dest('./extension/dist/'))
         .pipe(connect.reload())
+});
+
+gulp.task('production-sass', function () {
+    gulp.src('./source/app/*.scss')
+        .pipe(sass())
+        .pipe(cleanCSS())
+        .pipe(gulp.dest('./extension/dist/'))
 });
 
 gulp.task('production-app', () => {
@@ -75,7 +83,7 @@ gulp.task('dev-bg', () => {
 gulp.task('connect', () => {
     connect.server({
         root: 'app',
-        port: 3012,
+        port: 3014,
         livereload: true
     })
 });
@@ -93,4 +101,4 @@ gulp.task('watch', () => {
 
 gulp.task('default', ['production-app', 'production-bg', 'sass']);
 gulp.task('serve', ['dev-bg', 'dev-app', 'sass', 'connect', 'watch']);
-gulp.task('production', ['production-app', 'production-bg', 'sass']);
+gulp.task('production', ['production-app', 'production-bg', 'production-sass']);

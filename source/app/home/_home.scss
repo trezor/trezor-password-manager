@@ -31,7 +31,6 @@
   width: 100%;
   text-align: center;
   color: $c_white;
-  font-weight: 100;
   z-index: 2;
 
   .hidden_dialog {
@@ -69,6 +68,10 @@
       b {
         font-weight: 700;
         word-spacing: 1px;
+      }
+
+      span {
+        font-weight: 300;
       }
     }
 
