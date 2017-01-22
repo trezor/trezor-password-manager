@@ -98,7 +98,7 @@ var React = require('react'),
                     return {
                         errorTitle: 'TREZOR not initialized',
                         solution: [
-                            'Go to mytrezor.com.',
+                            'Go to TREZOR Wallet.',
                             'Initialize TREZOR device.',
                             'Try again.'
                         ],
@@ -106,8 +106,8 @@ var React = require('react'),
                         supportAction: false,
                         redirectAction: true,
                         closeAction: false,
-                        redirectText: 'mytrezor.com',
-                        redirectTo: 'https://mytrezor.com',
+                        redirectText: 'TREZOR Wallet',
+                        redirectTo: 'https://wallet.trezor.io',
                         supportDefaultMailText: ''
                     };
                     break;
@@ -116,7 +116,7 @@ var React = require('react'),
                     return {
                         errorTitle: 'Old firmware version',
                         solution: [
-                            'Go to mytrezor.com.',
+                            'Go to TREZOR Wallet.',
                             'Check and update your firmware.',
                             'Try again.'
                         ],
@@ -124,8 +124,8 @@ var React = require('react'),
                         supportAction: false,
                         redirectAction: true,
                         closeAction: true,
-                        redirectText: 'MyTrezor.com',
-                        redirectTo: 'https://mytrezor.com',
+                        redirectText: 'TREZOR Wallet',
+                        redirectTo: 'https://wallet.trezor.io',
                         supportDefaultMailText: ''
                     };
                     break;
@@ -169,14 +169,14 @@ var React = require('react'),
                     return {
                         errorTitle: 'You are in bootloader mode',
                         solution: [
-                            'If you really want to upgrade firmware go to mytrezor.com.'
+                            'If you really want to upgrade firmware go to TREZOR Wallet.'
                         ],
                         restartAction: true,
                         supportAction: false,
                         redirectAction: true,
                         closeAction: true,
-                        redirectText: 'mytrezor.com',
-                        redirectTo: 'https://mytrezor.com',
+                        redirectText: 'TREZOR Wallet',
+                        redirectTo: 'https://wallet.trezor.io',
                         supportDefaultMailText: ''
                     };
                     break;
@@ -185,7 +185,7 @@ var React = require('react'),
                     return {
                         errorTitle: 'Device problem detected',
                         solution: [
-                            'Try using mytrezor.com to check whether your device works fine.',
+                            'Try using TREZOR Wallet to check whether your device works fine.',
                             'In case of ongoing problems contact our support.',
                             'Try restarting TREZOR Password Manager.'
                         ],
@@ -193,8 +193,8 @@ var React = require('react'),
                         supportAction: true,
                         redirectAction: true,
                         closeAction: false,
-                        redirectText: 'mytrezor.com',
-                        redirectTo: 'https://mytrezor.com',
+                        redirectText: 'TREZOR Wallet',
+                        redirectTo: 'https://wallet.trezor.io',
                         supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + this.state.userInfo +  mailFooterTemplate
                     };
                     break;

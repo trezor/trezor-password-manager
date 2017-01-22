@@ -197,7 +197,7 @@ var React = require('react'),
 
                             <h1>Connect your <br/> <b className='smallcaps'>TREZOR</b> device.</h1>
                             <br />
-                            <button className='no-style'><a href='https://www.buytrezor.com?a=tpm' target='_blank'>I don't
+                            <button className='no-style'><a href='https://shop.trezor.io?a=tpm' target='_blank'>I don't
                                 have a TREZOR device.</a></button>
                         </div>
 
