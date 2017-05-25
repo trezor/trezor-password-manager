@@ -30,24 +30,28 @@ var Promise = require('es6-promise').Promise,
         chromeManager.exists().then(() => {
             return new trezor.DeviceList({clearSession: true /*clearSessionTime: 100 (by default, 15 minutes)*/});
         }).then((list) => {
-            bgStore.on('decryptContent', contentDecrypted);
-            bgStore.on('initStorageFile', initNewFile);
-            bgStore.on('disconnect', init);
-            bgStore.on('showPinDialog', showPinDialog);
-            bgStore.on('retrySetup', setupRetry);
-            bgStore.on('loadFile', loadFile);
-            bgStore.on('disconnectedTrezor', userSwitch);
+            try {
+                bgStore.on('decryptContent', contentDecrypted);
+                bgStore.on('initStorageFile', initNewFile);
+                bgStore.on('disconnect', init);
+                bgStore.on('showPinDialog', showPinDialog);
+                bgStore.on('retrySetup', setupRetry);
+                bgStore.on('loadFile', loadFile);
+                bgStore.on('disconnectedTrezor', userSwitch);
+                trezorManager = new TrezorMgmt(bgStore, list, retriesOpening);
+                dropboxManager = new DropboxMgmt(bgStore);
+                driveManager = new DriveMgmt(bgStore);
+                bgStore.on('clearSession', () => trezorManager.clearSession());
+                bgStore.on('decryptPassword', (entry) => decryptAndInject(entry));
+                bgStore.on('sendMessage', (type, content) => chromeManager.sendMessage(type, content));
+                chromeManager.updateBadgeStatus('OFF');
+                setupReady = true;
+                init();
+            }
+            catch(err) {
+                console.warn(err);
+            }
 
-            trezorManager = new TrezorMgmt(bgStore, list, retriesOpening);
-            dropboxManager = new DropboxMgmt(bgStore);
-            driveManager = new DriveMgmt(bgStore);
-
-            bgStore.on('clearSession', () => trezorManager.clearSession());
-            bgStore.on('decryptPassword', (entry) => decryptAndInject(entry));
-            bgStore.on('sendMessage', (type, content) => chromeManager.sendMessage(type, content));
-            chromeManager.updateBadgeStatus('OFF');
-            setupReady = true;
-            init();
         });
     },
 
@@ -88,13 +92,13 @@ var Promise = require('es6-promise').Promise,
 
     setupRetry = () => {
         setupReady = false;
-        if (retriesOpening-- != 0) {
+        if (retriesOpening-- === 0) {
+            setupReady = true;
+            init();
+        } else {
             setTimeout(() => {
                 init();
             }, 1500);
-        } else {
-            setupReady = true;
-            init();
         }
     },
 
@@ -227,6 +231,10 @@ var Promise = require('es6-promise').Promise,
 
             case 'connectDropbox':
                 dropboxManager.connect();
+                break;
+
+            case 'dropboxConnectToken':
+                dropboxManager.saveToken(request.content);
                 break;
 
             case 'connectDrive':

@@ -7,21 +7,21 @@
 
 'use strict';
 
-const receiverPath = '/html/chrome_oauth_receiver.html',
-    APIKEY = 's340kh3l0vla1nv';
+const fullReceiverPath = 'chrome-extension://imloifkgjagghnncjkhggdhalmcnfklk/html/chrome_oauth_receiver.html',
+    APIKEY = 'k1qq2saf035rn7c',
+    Dropbox = require('dropbox');
 
 class DropboxMgmt {
 
     constructor(bgStore) {
         this.bgStore = bgStore;
-        this.client = new Dropbox.Client({key: APIKEY});
-        this.client.onError.addListener((error) => {
-            this.handleDropboxError(error);
-        });
+        this.dbc = new Dropbox({clientId: APIKEY});
+        this.authToken = '';
+        this.authUrl = this.dbc.getAuthenticationUrl(fullReceiverPath);
     }
 
     isAuth() {
-        return this.client.isAuthenticated();
+        return this.authToken !== '';
     }
 
     handleDropboxError(error) {
@@ -41,66 +41,98 @@ class DropboxMgmt {
 
             case Dropbox.ApiError.OVER_QUOTA:
                 console.warn('Dropbox quota overreached ', error.status);
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'OVER_QUOTA', msg: error.status, storage:'Dropbox'});
+                this.bgStore.emit('sendMessage', 'errorMsg', {
+                    code: 'OVER_QUOTA',
+                    msg: error.status,
+                    storage: 'Dropbox'
+                });
                 break;
 
             case Dropbox.ApiError.RATE_LIMITED:
                 console.warn('Too many API calls ', error.status);
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'RATE_LIMITED', msg: error.status, storage:'Dropbox'});
+                this.bgStore.emit('sendMessage', 'errorMsg', {
+                    code: 'RATE_LIMITED',
+                    msg: error.status,
+                    storage: 'Dropbox'
+                });
                 break;
 
             case Dropbox.ApiError.NETWORK_ERROR:
                 console.warn('Network error, check connection ', error.status);
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'NETWORK_ERROR', msg: error.status, storage:'Dropbox'});
+                this.bgStore.emit('sendMessage', 'errorMsg', {
+                    code: 'NETWORK_ERROR',
+                    msg: error.status,
+                    storage: 'Dropbox'
+                });
                 break;
 
             case Dropbox.ApiError.INVALID_PARAM:
             case Dropbox.ApiError.OAUTH_ERROR:
             case Dropbox.ApiError.INVALID_METHOD:
                 console.warn('Network error, check connection ', error.status);
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'NETWORK_ERROR', msg: error.status, storage:'Dropbox'});
+                this.bgStore.emit('sendMessage', 'errorMsg', {
+                    code: 'NETWORK_ERROR',
+                    msg: error.status,
+                    storage: 'Dropbox'
+                });
                 break;
         }
 
         if (error.code === 'access_denied') {
             this.bgStore.emit('disconnectDropbox');
-            this.bgStore.emit('sendMessage', 'errorMsg', {code: 'ACCESS_DENIED', msg: error.description, storage:'Dropbox'});
+            this.bgStore.emit('sendMessage', 'errorMsg', {
+                code: 'ACCESS_DENIED',
+                msg: error.description,
+                storage: 'Dropbox'
+            });
             this.client.reset();
         }
     }
 
     connect() {
-        this.client.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: receiverPath}));
-        this.client.authenticate((error, data) => {
-            if (!error) {
-                if (this.isAuth()) {
-                    this.getDropboxUsername();
-                }
-            } else {
-                this.client.reset();
-                this.bgStore.emit('sendMessage', 'disconnected');
-            }
-        });
+        if (!this.isAuth()) {
+            window.open(this.authUrl);
+        } else {
+            this.dbc = new Dropbox({ accessToken: this.authToken });
+            this.getDropboxUsername();
+        }
+        /*
+         this.client.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: receiverPath}));
+         this.client.authenticate((error, data) => {
+         if (!error) {
+         if (this.isAuth()) {
+         this.getDropboxUsername();
+         }
+         } else {
+         this.client.reset();
+         this.bgStore.emit('sendMessage', 'disconnected');
+         }
+         });
+         */
+    }
+
+    saveToken(token) {
+        this.authToken = this.parseQuery(token).access_token;
+        this.connect();
     }
 
     getDropboxUsername() {
-        this.client.getAccountInfo((error, accountInfo) => {
-            if (!error) {
-                this.bgStore.setUsername(accountInfo.name, 'DROPBOX');
-            }
-        });
+        this.dbc.usersGetCurrentAccount()
+            .then((response) => {
+                this.bgStore.setUsername(response.name.display_name, 'DROPBOX');
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }
 
     disconnect() {
-        this.client.signOut((error, accountInfo) => {
+        if (this.isAuth()) {
+            this.authToken = '';
             window.open('https://www.dropbox.com/logout', '_blank');
+        } else {
             this.bgStore.emit('sendMessage', 'disconnected');
-            if (!error) {
-                this.bgStore.disconnect();
-            } else {
-                this.client.reset();
-            }
-        });
+        }
     }
 
     loadFile() {
@@ -129,6 +161,20 @@ class DropboxMgmt {
 
     createNewDataFile(data) {
         this.saveFile(data);
+    }
+
+    parseQuery(qstr) {
+        var query = Object.create(null);
+        if (typeof qstr !== 'string') {
+            return query;
+        }
+        qstr = qstr.trim().replace(/^(\?|#|&)/, '');
+        let a = (qstr[0] === '?' ? qstr.substr(1) : qstr).split('&');
+        for (let i = 0; i < a.length; i++) {
+            let b = a[i].split('=');
+            query[decodeURIComponent(b[0])] = decodeURIComponent(b[1] || '');
+        }
+        return query;
     }
 }
 
