@@ -281,7 +281,7 @@ class DriveMgmt {
             };
             xhr.onload = () => {
                 if (xhr.status == 200) {
-                    var dataArr = new Uint8Array(xhr.response);
+                    let dataArr = new Uint8Array(xhr.response);
                     this.bgStore.setData(dataArr);
                     resolve(dataArr);
                 }

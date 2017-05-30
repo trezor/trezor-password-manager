@@ -94,7 +94,7 @@ class DropboxMgmt {
         if (!this.isAuth()) {
             window.open(this.authUrl);
         } else {
-            this.dbc = new Dropbox({ accessToken: this.authToken });
+            this.dbc = new Dropbox({accessToken: this.authToken});
             this.getDropboxUsername();
         }
         /*
@@ -145,23 +145,29 @@ class DropboxMgmt {
                 //TODO soon please
             }
         }
-        console.warn('1 filename ', this.bgStore.fileName);
+        this.dbc.filesDownload({path: '/' + this.bgStore.fileName})
+            .then((response) => {
+                let myReader = new FileReader();
+                myReader.addEventListener('loadend', (e) => {
+                    this.bgStore.setData(e.srcElement.result);
+                });
+                myReader.readAsArrayBuffer(response.fileBlob);
 
-        /*
-        this.client.readFile(this.bgStore.fileName, {arrayBuffer: true}, (error, data) => {
-            if (!error) {
-                this.bgStore.setData(data);
-            }
-        });
-        */
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }
 
     saveFile(data) {
-        this.client.writeFile(this.bgStore.fileName, data, (error, stat) => {
-            if (!error) {
-                this.loadFile();
-            }
-        });
+        let blob = new Blob([data.buffer], {type: 'text/plain;charset=UTF-8'});
+        this.dbc.filesUpload({path: '/' + this.bgStore.fileName, contents: blob, mode: 'overwrite'})
+            .then((response) => {
+                console.log('saved! ', response);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }
 
     createNewDataFile(data) {
