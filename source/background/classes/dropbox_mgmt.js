@@ -9,6 +9,7 @@
 
 const fullReceiverPath = 'chrome-extension://imloifkgjagghnncjkhggdhalmcnfklk/html/chrome_oauth_receiver.html',
     APIKEY = 'k1qq2saf035rn7c',
+    logoutUrl = 'https://www.dropbox.com/logout',
     Dropbox = require('dropbox');
 
 class DropboxMgmt {
@@ -129,7 +130,7 @@ class DropboxMgmt {
     disconnect() {
         if (this.isAuth()) {
             this.authToken = '';
-            window.open('https://www.dropbox.com/logout', '_blank');
+            window.open(logoutUrl, '_blank');
         } else {
             this.bgStore.emit('sendMessage', 'disconnected');
         }
@@ -144,11 +145,15 @@ class DropboxMgmt {
                 //TODO soon please
             }
         }
+        console.warn('1 filename ', this.bgStore.fileName);
+
+        /*
         this.client.readFile(this.bgStore.fileName, {arrayBuffer: true}, (error, data) => {
             if (!error) {
                 this.bgStore.setData(data);
             }
         });
+        */
     }
 
     saveFile(data) {

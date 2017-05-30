@@ -18,12 +18,12 @@ var React = require('react'),
         },
 
         componentDidMount() {
-            chrome.runtime.onMessage.addListener(this.chromePinMsgHandler);
+            chrome.runtime.onMessage.addListener(this.chromePinDialogMsgHandler);
             window.addEventListener('keydown', this.pinKeydownHandler);
         },
 
         componentWillUnmount() {
-            chrome.runtime.onMessage.removeListener(this.chromePinMsgHandler);
+            chrome.runtime.onMessage.removeListener(this.chromePinDialogMsgHandler);
             window.removeEventListener('keydown', this.pinKeydownHandler);
         },
 
@@ -31,7 +31,7 @@ var React = require('react'),
             chrome.runtime.sendMessage({type: msgType, content: msgContent});
         },
 
-        chromePinMsgHandler(request, sender, sendResponse) {
+        chromePinDialogMsgHandler(request, sender, sendResponse) {
             switch (request.type) {
                 case 'wrongPin':
                     this.setState({
@@ -40,6 +40,7 @@ var React = require('react'),
                     });
                     break;
             }
+            return true;
         },
 
         pinKeydownHandler(ev) {
@@ -51,10 +52,10 @@ var React = require('react'),
             if (keyCode > 48 && keyCode < 58) {
                 this.pinAdd(String.fromCharCode(keyCode));
             }
-            if (keyCode == 8) {
+            if (keyCode === 8) {
                 this.pinBackspace();
             }
-            if (keyCode == 13) {
+            if (keyCode === 13) {
                 this.submitPin();
             }
         },

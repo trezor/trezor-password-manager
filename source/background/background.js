@@ -8,6 +8,9 @@
 'use strict';
 
 window.tpmErroLog = [];
+window.AppRootFolder = 'Apps';
+window.AppFolder = 'TREZOR Password Manager';
+
 // Storage will be used for background internal messaging (extends EventEmitter) ...
 var Promise = require('es6-promise').Promise,
     setupReady = false,
@@ -205,8 +208,8 @@ var Promise = require('es6-promise').Promise,
     },
 
     windowClose = () => {
-        chrome.windows.getAll((windows) => {
-            if (windows.length == 0) {
+        chrome.windows.getAll((wins) => {
+            if (wins.length === 0) {
                 bgStore.disconnect();
                 chromeManager.updateBadgeStatus('OFF');
                 chromeManager.clearContextMenuItem();
@@ -250,6 +253,7 @@ var Promise = require('es6-promise').Promise,
             case 'trezorPin':
                 trezorManager.pinEnter(request.content);
                 chromeManager.tryRefocusToAccessTab();
+                chromeManager.sendMessage('hidePinModal');
                 break;
 
             case 'disconnect':

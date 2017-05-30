@@ -37,7 +37,7 @@ var React = require('react'),
                     });
                     break;
 
-                case 'trezorPin':
+                case 'hidePinModal':
                     this.closePinModal();
                     break;
             }

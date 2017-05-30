@@ -79,7 +79,7 @@ var React = require('react'),
                     });
                     break;
 
-                case 'trezorPin':
+                case 'hidePinModal':
                     this.setState({
                         dialog: 'loading_dialog'
                     });

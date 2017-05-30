@@ -151,24 +151,24 @@ class DriveMgmt {
 
     getAppFolderName() {
         return new Promise((resolve, reject) => {
-            this.getFileIdByName('Apps').then((id) => {
+            this.getFileIdByName(window.AppRootFolder).then((id) => {
                 let appsFolderId = id;
                 if (!!appsFolderId) {
-                    this.getFileIdByName('TREZOR Password Manager', appsFolderId).then((tpmFolderId) => {
+                    this.getFileIdByName(window.AppFolder, appsFolderId).then((tpmFolderId) => {
                         if (!!tpmFolderId) {
                             this.bgStore.tpmFolderId = tpmFolderId;
                             resolve(tpmFolderId);
                         } else {
-                            this.createFolder('TREZOR Password Manager', appsFolderId).then((tpmFolderId) => {
+                            this.createFolder(window.AppFolder, appsFolderId).then((tpmFolderId) => {
                                 this.bgStore.tpmFolderId = tpmFolderId;
                                 resolve(tpmFolderId);
                             });
                         }
                     });
                 } else {
-                    this.createFolder('Apps').then((id) => {
+                    this.createFolder(window.AppRootFolder).then((id) => {
                         appsFolderId = id;
-                        this.createFolder('TREZOR Password Manager', appsFolderId).then((tpmFolderId) => {
+                        this.createFolder(window.AppFolder, appsFolderId).then((tpmFolderId) => {
                             this.bgStore.tpmFolderId = tpmFolderId;
                             resolve(tpmFolderId);
                         });
