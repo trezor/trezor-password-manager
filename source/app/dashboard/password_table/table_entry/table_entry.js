@@ -10,8 +10,6 @@
 var React = require('react'),
     tld = require('tldjs'),
     validator = require('validator'),
-    DropdownButton = require('react-bootstrap').DropdownButton,
-    MenuItem = require('react-bootstrap').MenuItem,
     Tooltip = require('react-bootstrap').Tooltip,
     OverlayTrigger = require('react-bootstrap').OverlayTrigger,
     Overlay = require('react-bootstrap').Overlay,
@@ -62,6 +60,13 @@ var React = require('react'),
                 this.setState({
                     image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title) + '?size=100'
                 });
+            }
+            if (this.state.mode === 'edit-mode') {
+                if (this.state.title.length === 0) {
+                    React.findDOMNode(this.state.key_value ? this.refs.title : this.refs.newTitle).focus();
+                } else {
+                    React.findDOMNode(this.refs.username).focus();
+                }
             }
         },
 
@@ -430,6 +435,7 @@ var React = require('react'),
                            autoComplete='off'
                            value={this.state.username}
                            name='username'
+                           ref='username'
                            onChange={this.handleChange}
                            onKeyUp={this.keyPressed}
                         />),

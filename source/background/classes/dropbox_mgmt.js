@@ -8,7 +8,7 @@
 'use strict';
 
 const fullReceiverPath = 'chrome-extension://imloifkgjagghnncjkhggdhalmcnfklk/html/chrome_oauth_receiver.html',
-    APIKEY = 'k1qq2saf035rn7c',
+    APIKEY = 's340kh3l0vla1nv',
     logoutUrl = 'https://www.dropbox.com/logout',
     Dropbox = require('dropbox');
 
@@ -25,71 +25,6 @@ class DropboxMgmt {
         return this.authToken !== '';
     }
 
-    handleDropboxError(error) {
-        console.warn('Dropbox error: ', error);
-        switch (error.status) {
-            case Dropbox.ApiError.INVALID_TOKEN:
-                console.warn('User token expired ', error.status);
-                this.client.reset();
-                this.connect();
-                //this.bgStore.emit('sendMessage', 'errorMsg', {code: 'INVALID_TOKEN', msg: error.status, storage:'Dropbox'});
-                break;
-
-            case Dropbox.ApiError.NOT_FOUND:
-                console.warn('File or dir not found ', error.status);
-                this.bgStore.emit('initStorageFile');
-                break;
-
-            case Dropbox.ApiError.OVER_QUOTA:
-                console.warn('Dropbox quota overreached ', error.status);
-                this.bgStore.emit('sendMessage', 'errorMsg', {
-                    code: 'OVER_QUOTA',
-                    msg: error.status,
-                    storage: 'Dropbox'
-                });
-                break;
-
-            case Dropbox.ApiError.RATE_LIMITED:
-                console.warn('Too many API calls ', error.status);
-                this.bgStore.emit('sendMessage', 'errorMsg', {
-                    code: 'RATE_LIMITED',
-                    msg: error.status,
-                    storage: 'Dropbox'
-                });
-                break;
-
-            case Dropbox.ApiError.NETWORK_ERROR:
-                console.warn('Network error, check connection ', error.status);
-                this.bgStore.emit('sendMessage', 'errorMsg', {
-                    code: 'NETWORK_ERROR',
-                    msg: error.status,
-                    storage: 'Dropbox'
-                });
-                break;
-
-            case Dropbox.ApiError.INVALID_PARAM:
-            case Dropbox.ApiError.OAUTH_ERROR:
-            case Dropbox.ApiError.INVALID_METHOD:
-                console.warn('Network error, check connection ', error.status);
-                this.bgStore.emit('sendMessage', 'errorMsg', {
-                    code: 'NETWORK_ERROR',
-                    msg: error.status,
-                    storage: 'Dropbox'
-                });
-                break;
-        }
-
-        if (error.code === 'access_denied') {
-            this.bgStore.emit('disconnectDropbox');
-            this.bgStore.emit('sendMessage', 'errorMsg', {
-                code: 'ACCESS_DENIED',
-                msg: error.description,
-                storage: 'Dropbox'
-            });
-            this.client.reset();
-        }
-    }
-
     connect() {
         if (!this.isAuth()) {
             window.open(this.authUrl);
@@ -97,19 +32,6 @@ class DropboxMgmt {
             this.dbc = new Dropbox({accessToken: this.authToken});
             this.getDropboxUsername();
         }
-        /*
-         this.client.authDriver(new Dropbox.AuthDriver.ChromeExtension({receiverPath: receiverPath}));
-         this.client.authenticate((error, data) => {
-         if (!error) {
-         if (this.isAuth()) {
-         this.getDropboxUsername();
-         }
-         } else {
-         this.client.reset();
-         this.bgStore.emit('sendMessage', 'disconnected');
-         }
-         });
-         */
     }
 
     saveToken(token) {
@@ -145,28 +67,43 @@ class DropboxMgmt {
                 //TODO soon please
             }
         }
-        this.dbc.filesDownload({path: '/' + this.bgStore.fileName})
-            .then((response) => {
-                let myReader = new FileReader();
-                myReader.addEventListener('loadend', (e) => {
-                    this.bgStore.setData(e.srcElement.result);
-                });
-                myReader.readAsArrayBuffer(response.fileBlob);
 
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+        //
+        // this metadata overengineering is here due to issue
+        // https://github.com/dropbox/dropbox-sdk-js/issues/84
+        //
+        this.dbc.filesGetMetadata({path: '/' + this.bgStore.fileName})
+            .then(() => {
+                this.dbc.filesDownload({path: '/' + this.bgStore.fileName})
+                    .then((res) => {
+                        let myReader = new FileReader();
+                        myReader.addEventListener('loadend', (e) => {
+                            this.bgStore.setData(e.srcElement.result);
+                        });
+                        myReader.readAsArrayBuffer(res.fileBlob);
+                    })
+                    .catch((error) => {
+                        console.error('err ', error);
+                    });
+            }).catch((error) => {
+            console.error('err ', error);
+            this.bgStore.emit('initStorageFile');
+        });
     }
 
     saveFile(data) {
         let blob = new Blob([data.buffer], {type: 'text/plain;charset=UTF-8'});
         this.dbc.filesUpload({path: '/' + this.bgStore.fileName, contents: blob, mode: 'overwrite'})
-            .then((response) => {
-                console.log('saved! ', response);
+            .then(() => {
+                this.loadFile();
             })
             .catch((error) => {
                 console.error(error);
+                this.bgStore.emit('sendMessage', 'errorMsg', {
+                    code: 'NETWORK_ERROR',
+                    msg: error.status,
+                    storage: 'Dropbox'
+                });
             });
     }
 

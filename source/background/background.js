@@ -31,7 +31,7 @@ var Promise = require('es6-promise').Promise,
 // GENERAL STUFF
     preSetup = () => {
         chromeManager.exists().then(() => {
-            return new trezor.DeviceList({clearSession: true /*clearSessionTime: 100 (by default, 15 minutes)*/});
+            return new trezor.DeviceList();
         }).then((list) => {
             try {
                 bgStore.on('decryptContent', contentDecrypted);
@@ -108,7 +108,7 @@ var Promise = require('es6-promise').Promise,
     initNewFile = () => {
         let basicObjectBlob = {
             'version': '0.0.1',
-            'extVersion':'0.5.12',
+            'extVersion':'0.5.14',
             'config': {
                 'orderType': 'date'
             },

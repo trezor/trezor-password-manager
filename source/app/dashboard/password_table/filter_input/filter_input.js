@@ -8,7 +8,6 @@
 'use strict';
 
 var React = require('react'),
-    NavDropdown = require('react-bootstrap').NavDropdown,
     time = 0,
     FilterInput = React.createClass({
 
