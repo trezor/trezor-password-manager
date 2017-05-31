@@ -7,7 +7,7 @@
 
 'use strict';
 
-const fullReceiverPath = 'chrome-extension://imloifkgjagghnncjkhggdhalmcnfklk/html/chrome_oauth_receiver.html',
+const fullReceiverPath = 'chrome-extension://' + chrome.runtime.id + '/html/chrome_oauth_receiver.html',
     APIKEY = 's340kh3l0vla1nv',
     logoutUrl = 'https://www.dropbox.com/logout',
     Dropbox = require('dropbox');
