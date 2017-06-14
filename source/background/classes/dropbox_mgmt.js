@@ -9,6 +9,7 @@
 
 const fullReceiverPath = 'chrome-extension://' + chrome.runtime.id + '/html/chrome_oauth_receiver.html',
     APIKEY = 's340kh3l0vla1nv',
+    STORAGE = 'tpmDropboxToken',
     logoutUrl = 'https://www.dropbox.com/logout',
     Dropbox = require('dropbox');
 
@@ -17,7 +18,7 @@ class DropboxMgmt {
     constructor(bgStore) {
         this.bgStore = bgStore;
         this.dbc = new Dropbox({clientId: APIKEY});
-        this.authToken = '';
+        this.authToken = this.loadMetadataToken();
         this.authUrl = this.dbc.getAuthenticationUrl(fullReceiverPath);
     }
 
@@ -29,13 +30,18 @@ class DropboxMgmt {
         if (!this.isAuth()) {
             window.open(this.authUrl);
         } else {
-            this.dbc = new Dropbox({accessToken: this.authToken});
+            this.dbc.setAccessToken(this.authToken);
             this.getDropboxUsername();
         }
     }
 
+    loadMetadataToken() {
+        return window.localStorage[STORAGE] ? window.localStorage[STORAGE] : '';
+    }
+
     saveToken(token) {
         this.authToken = this.parseQuery(token).access_token;
+        window.localStorage[STORAGE] = this.authToken;
         this.connect();
     }
 
