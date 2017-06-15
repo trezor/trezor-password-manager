@@ -16,7 +16,7 @@ var React = require('react'),
 
         render(){
             return (<div className={'footer ' + this.props.footerStyle}>
-                TREZOR Password Manager © 2017 | <a href='mailto:support@satoshilabs.com'>support@satoshilabs.com</a>
+                TREZOR Password Manager © 2017 | <a href='https://trezor.io/support/' target='_blank'>Support Center</a>
             </div>)
         }
     });
