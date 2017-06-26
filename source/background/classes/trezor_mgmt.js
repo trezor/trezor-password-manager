@@ -36,6 +36,7 @@ class TrezorMgmt {
         this.transportLoading = true;
         this.current_ext_version = '';
         this.retriesOpening = retriesOpening;
+        this.retryWrongPin = false;
         this.cryptoData = {
             'keyPhrase': DEFAULT_KEYPHRASE,
             'nonce': DEFAULT_NONCE,
@@ -70,7 +71,8 @@ class TrezorMgmt {
         // remove after long time period - for example around Christmas .) as well in bg_store
         if (error instanceof SyntaxError && operation === 'decEntry') {
             this.cryptoData.keyPhrase = this.displayOldKey(this.cryptoData.title, this.cryptoData.username);
-            return this.trezorDevice.runAggressive((session) => this.sendDecryptCallback(session));
+            this.retryWrongPin.op = 'decEntry';
+            return;
         }
 
         switch (error.message) {
@@ -112,17 +114,12 @@ class TrezorMgmt {
             case WRONG_PIN:
                 this.bgStore.emit('sendMessage', 'wrongPin');
                 //TODO it smart asshole!
-                switch (operation) {
-                    case 'encKey':
-                        this.trezorDevice.runAggressive((session) => this.getEncryptionKey(session));
-                        break;
-                    case 'encEntry':
-                        this.trezorDevice.runAggressive((session) => this.sendEncryptCallback(session));
-                        break;
-                    case 'decEntry':
-                        this.trezorDevice.runAggressive((session) => this.sendDecryptCallback(session));
-                        break;
-                }
+                this.retryWrongPin = {op: operation};
+                return;
+                break;
+
+            default:
+                return;
                 break;
         }
     }
@@ -185,7 +182,9 @@ class TrezorMgmt {
 
     stealTrezor() {
         if (this.unacquiredDevice != null) {
-            this.unacquiredDevice.steal(); // no need to run connectTrezor again, will run automatically
+            this.unacquiredDevice.steal().then(device => {
+                this.trezorDevice = device;
+            }); // no need to run connectTrezor again, will run automatically
         }
     }
 
@@ -200,7 +199,7 @@ class TrezorMgmt {
 
     connect() {
         if (this.bgStore.phase === 'TREZOR') {
-            var doSteal = this.trezorDevice == null;
+            var doSteal = this.trezorDevice === null;
             if (doSteal) {
                 this.stealTrezor();
                 return;
@@ -210,30 +209,38 @@ class TrezorMgmt {
                 this.trezorDevice.on('pin', (type, callback) => this.pinCallback(type, callback));
                 this.trezorDevice.on('passphrase', (callback) => this.passphraseCallback(callback));
                 this.trezorDevice.on('button', (type, callback) => this.buttonCallback(type, callback));
+                this.trezorDevice.on('changedSessions', () => this.changedSessions());
                 this.trezorDevice.once('disconnect', () => this.disconnectCallback());
-
-                var onChangedSessions = () => {
-                    if (this.trezorDevice.isStolen()) {
-                        // if device is stolen before we read encryption key...
-                        if (this.bgStore.masterKey === '') {
-                            // a quick hack - pretend that the device is disconnected if it's stolen
-                            this.bgStore.emit('disconnectedTrezor');
-                        }
-                        this.trezorDevice.removeListener('changedSessions', onChangedSessions);
-                    }
-                };
-                this.trezorDevice.on('changedSessions', onChangedSessions);
 
                 if (this.trezorDevice.isBootloader()) {
                     this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_BOOTLOADER'});
                     throw new Error('Device is in bootloader mode, re-connected it');
                 }
+
                 this.trezorDevice.runAggressive((session) => this.getEncryptionKey(session));
 
             } catch (error) {
                 this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_DEVICE', msg: error});
                 console.error('Device error:', error);
                 //TODO
+            }
+        }
+    }
+
+    changedSessions() {
+        if (!this.trezorDevice.isStolen() && this.retryWrongPin) {
+            let op = this.retryWrongPin.op;
+            this.retryWrongPin = false;
+            switch (op) {
+                case 'encKey':
+                    this.trezorDevice.runAggressive((session) => this.getEncryptionKey(session));
+                    break;
+                case 'encEntry':
+                    this.trezorDevice.runAggressive((session) => this.sendEncryptCallback(session));
+                    break;
+                case 'decEntry':
+                    this.trezorDevice.runAggressive((session) => this.sendDecryptCallback(session));
+                    break;
             }
         }
     }
