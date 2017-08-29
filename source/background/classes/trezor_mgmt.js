@@ -20,8 +20,7 @@ const HD_HARDENED = 0x80000000,
     NOT_INITIALIZED = 'Device not initialized',
     FIRMWARE_IS_OLD = 'Firmware of connected device is too old',
     CIPHER_CANCEL = 'CipherKeyValue cancelled',
-    WRONG_PIN = 'Invalid PIN',
-    PIN_WRONG = 'PIN invalid',
+    WRONG_PIN = 'Failure_PinInvalid',
 
     DEFAULT_KEYPHRASE = 'Activate TREZOR Password Manager?',
     DEFAULT_NONCE = '2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee';
@@ -75,6 +74,14 @@ class TrezorMgmt {
             this.retryWrongPin.op = 'decEntry';
             return;
         }
+        switch (error.code) { // 'Failure' messages
+            case WRONG_PIN:
+              this.bgStore.emit('sendMessage', 'wrongPin');
+              //TODO it smart asshole!
+              this.retryWrongPin = {op: operation};
+              return;
+              break;
+        }
         switch (error.message) {
             case NO_TRANSPORT:
                 return never;
@@ -109,14 +116,6 @@ class TrezorMgmt {
             case NOT_INITIALIZED:
                 this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NOT_INIT'});
                 return never;
-                break;
-
-            case PIN_WRONG:
-            case WRONG_PIN:
-                this.bgStore.emit('sendMessage', 'wrongPin');
-                //TODO it smart asshole!
-                this.retryWrongPin = {op: operation};
-                return;
                 break;
 
             default:
