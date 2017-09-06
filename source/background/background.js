@@ -35,7 +35,7 @@ var Promise = require('es6-promise').Promise,
         }).then((list) => {
             try {
                 bgStore.on('decryptContent', contentDecrypted);
-                bgStore.on('initStorageFile', initNewFile);
+                bgStore.on('initStorageFile', askToInitStorage);
                 bgStore.on('disconnect', init);
                 bgStore.on('showPinDialog', showPinDialog);
                 bgStore.on('retrySetup', setupRetry);
@@ -103,6 +103,10 @@ var Promise = require('es6-promise').Promise,
                 init();
             }, 1500);
         }
+    },
+
+    askToInitStorage = () => {
+        chromeManager.sendMessage('initMsg');
     },
 
     initNewFile = () => {
@@ -230,6 +234,13 @@ var Promise = require('es6-promise').Promise,
         switch (request.type) {
             case 'initPlease':
                 init();
+                break;
+            case 'initNewFile':
+                initNewFile();
+                break;
+
+            case 'retryInitFile':
+                loadFile();
                 break;
 
             case 'connectDropbox':

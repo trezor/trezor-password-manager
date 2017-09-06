@@ -10,6 +10,7 @@
 var React = require('react'),
     Router = require('react-router'),
     ErrorModal = require('./modal_dialogs/error_modal'),
+    InitModal = require('./modal_dialogs/init_modal'),
     { RouteHandler } = Router,
     Layout = React.createClass({
 
@@ -37,6 +38,7 @@ var React = require('react'),
                 <div>
                     <RouteHandler />
                     <ErrorModal />
+                    <InitModal />
                 </div>
             )
         }

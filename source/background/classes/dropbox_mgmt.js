@@ -13,6 +13,8 @@ const fullReceiverPath = 'chrome-extension://' + chrome.runtime.id + '/html/chro
     logoutUrl = 'https://www.dropbox.com/logout',
     Dropbox = require('dropbox');
 
+let dbRetryFileLoad = 3;
+
 class DropboxMgmt {
 
     constructor(bgStore) {
@@ -93,7 +95,17 @@ class DropboxMgmt {
                     });
             }).catch((error) => {
             console.error('err ', error);
-            this.bgStore.emit('initStorageFile');
+            // we try to check if file is accessible
+            if (dbRetryFileLoad) {
+              setTimeout(() => {
+                dbRetryFileLoad--;
+                this.loadFile();
+              }, 1000);
+            } else {
+              dbRetryFileLoad = 3;
+              this.bgStore.emit('initStorageFile');
+            }
+
         });
     }
 

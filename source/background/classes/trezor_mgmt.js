@@ -154,9 +154,6 @@ class TrezorMgmt {
                         code: 'T_OLD_VERSION',
                         msg: this.current_ext_version
                     });
-                } else {
-                    // good version
-                    // this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_OLD_VERSION', msg: this.current_ext_version});
                 }
             } else {
                 // no extension
@@ -181,7 +178,7 @@ class TrezorMgmt {
     }
 
     stealTrezor() {
-        if (this.unacquiredDevice != null) {
+        if (this.unacquiredDevice !== null) {
             this.unacquiredDevice.steal().then(device => {
                 this.trezorDevice = device;
             }); // no need to run connectTrezor again, will run automatically

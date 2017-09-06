@@ -18,6 +18,10 @@
     height: auto;
     padding: 0 10px 20px 20px;
 
+    p {
+      line-height: 130%;
+    }
+
     b {
       color: $c_grey_font;
       font-size: .9em;
