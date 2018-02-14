@@ -95,6 +95,9 @@ class DropboxMgmt {
                     });
             }).catch((error) => {
             console.error('err ', error);
+            if (error.status === 400) {
+                this.connect();
+            }
             // we try to check if file is accessible
             if (dbRetryFileLoad) {
               setTimeout(() => {
