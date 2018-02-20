@@ -399,7 +399,7 @@ class TrezorMgmt {
             let enckey = new Buffer(result.message.value, 'hex'),
                 password = new Buffer(this.cryptoData.password),
                 safenote = new Buffer(this.cryptoData.safe_note);
-            // clear clipboard after 25 seconds
+            // clear clipboard after 20 seconds
             if (this.clearClipboard) {
                 setTimeout(()=> {
                     Clipboard.copy("");

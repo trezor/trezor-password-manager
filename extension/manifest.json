@@ -4,6 +4,7 @@
   "version": "0.5.17",
   "author": "SatoshiLabs",
   "short_name": "TREZOR Password Manager",
+  "minimum_chrome_version": "49.0.0",
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {
