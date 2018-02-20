@@ -2,15 +2,6 @@
 
 let visibleDialog = false,
     retry = 0,
-    countVisibleInputs = (inputs) => {
-        let visibleInputs = 0;
-        for (let j = 0; j < inputs.length; j++) {
-            if (inputs[j].type.toLowerCase() === 'email' || inputs[j].type.toLowerCase() === 'text') {
-                visibleInputs++;
-            }
-        }
-        return visibleInputs < 2;
-    },
 
     hasOnePasswordInput = (inputs) => {
         let passwordInputsNo = 0;
@@ -20,32 +11,6 @@ let visibleDialog = false,
             }
         }
         return passwordInputsNo == 1;
-    },
-
-    hasSubmitElement = (form) => {
-        let allChildElements = form.getElementsByTagName('*'),
-            submitElement = 0;
-        for (let j = 0; j < allChildElements.length; j++) {
-            if (typeof(allChildElements[j].type) !== 'undefined') {
-                if (allChildElements[j].type.toLowerCase() === 'submit') {
-                    submitElement++;
-                }
-            }
-        }
-        return submitElement > 0;
-    },
-
-    getSubmitElement = (form) => {
-        let allChildElements = form.getElementsByTagName('*'),
-            submitElement = 0;
-        for (let j = 0; j < allChildElements.length; j++) {
-            if (typeof(allChildElements[j].type) !== 'undefined') {
-                if (allChildElements[j].type.toLowerCase() === 'submit') {
-                    submitElement++;
-                }
-            }
-        }
-        return submitElement;
     },
 
     getLoginForms = () => {
@@ -241,7 +206,7 @@ let visibleDialog = false,
                     } else {
                         // document.addEventListener('DOMContentLoaded', setInputValues(request.content), false);
                         // window.addEventListener('load', setInputValues(request.content), false);
-                        // really ugly shit - handle all "edge" cases
+                        // not nice - handle all "edge" cases
                         if(retry++ < 30) {
                             fillData(request);
                         }
@@ -250,7 +215,7 @@ let visibleDialog = false,
                     removeTrezorDialog();
                 }
             } else {
-                // really ugly shit - handle all "edge" cases
+                // not nice - handle all "edge" cases
                 if(retry++ < 30) {
                     fillData(request);
                 }
