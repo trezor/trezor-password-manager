@@ -3,33 +3,14 @@
 let visibleDialog = false,
     retry = 0,
 
-    hasOnePasswordInput = (inputs) => {
-        let passwordInputsNo = 0;
-        for (let j = 0; j < inputs.length; j++) {
-            if (inputs[j].type.toLowerCase() === 'password') {
-                passwordInputsNo++;
-            }
-        }
-        return passwordInputsNo == 1;
+    getInputs = () => {
+        return document.getElementsByTagName('input');
     },
-
-    getLoginForms = () => {
-        let tempFormArr = document.getElementsByTagName('FORM'),
-            loginFormsArrs = [];
-        for (let i = 0; i < tempFormArr.length; i++) {
-            let inputs = tempFormArr[i].getElementsByTagName('input'),
-                hasPwdInput = hasOnePasswordInput(inputs);
-            if (hasPwdInput) {
-                loginFormsArrs.push(tempFormArr[i]);
-            }
-        }
-        return loginFormsArrs;
-    },
-
 
     setInputValues = (content) => {
-        let loginForms = getLoginForms();
-        if (loginForms.length === 0) {
+        let inputs = getInputs();
+        console.warn(inputs);
+        if (inputs.length === 0) {
             if (visibleDialog) {
                 morphToNoResult();
             } else {
@@ -41,24 +22,21 @@ let visibleDialog = false,
             } else {
                 appendSuccessDialog();
             }
-            for (let i = 0; i < loginForms.length; i++) {
-                let inputs = loginForms[i].getElementsByTagName('input');
-                for (let j = 0; j < inputs.length; j++) {
-                    switch (inputs[j].type.toLowerCase()) {
-                        case 'email':
-                            inputs[j].defaultValue = content.username;
-                            inputs[j].value = content.username;
-                            break;
-                        case 'text':
-                            inputs[j].defaultValue = content.username;
-                            inputs[j].value = content.username;
-                            break;
-                        case 'password':
-                            inputs[j].defaultValue = content.password;
-                            inputs[j].value = content.password;
-                            break;
+            for (let i = 0; i < inputs.length; i++) {
+                switch (inputs[i].type.toLowerCase()) {
+                    case 'email':
+                        inputs[i].defaultValue = content.username;
+                        inputs[i].value = content.username;
+                        break;
+                    case 'text':
+                        inputs[i].defaultValue = content.username;
+                        inputs[i].value = content.username;
+                        break;
+                    case 'password':
+                        inputs[i].defaultValue = content.password;
+                        inputs[i].value = content.password;
+                        break;
                     }
-                }
             }
         }
     },
