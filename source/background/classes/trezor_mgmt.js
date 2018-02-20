@@ -25,7 +25,8 @@ const HD_HARDENED = 0x80000000,
     DEFAULT_KEYPHRASE = 'Activate TREZOR Password Manager?',
     DEFAULT_NONCE = '2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee';
 
-var crypto = require('crypto');
+var crypto = require('crypto'),
+    Clipboard = require('clipboard-js');
 
 class TrezorMgmt {
 
@@ -37,6 +38,7 @@ class TrezorMgmt {
         this.current_ext_version = '';
         this.retriesOpening = retriesOpening;
         this.retryWrongPin = false;
+        this.clearClipboard = false;
         this.cryptoData = {
             'keyPhrase': DEFAULT_KEYPHRASE,
             'nonce': DEFAULT_NONCE,
@@ -376,7 +378,8 @@ class TrezorMgmt {
         }).catch((error) => this.handleTrezorError(error, 'encEntry', this.cryptoData.callback));
     }
 
-    decryptFullEntry(data, responseCallback) {
+    decryptFullEntry(data, responseCallback, clipboardClear) {
+        this.clearClipboard = clipboardClear;
         this.cryptoData = {
             'title': data.title,
             'username': data.username,
@@ -396,6 +399,12 @@ class TrezorMgmt {
             let enckey = new Buffer(result.message.value, 'hex'),
                 password = new Buffer(this.cryptoData.password),
                 safenote = new Buffer(this.cryptoData.safe_note);
+            // clear clipboard after 25 seconds
+            if (this.clearClipboard) {
+                setTimeout(()=> {
+                    Clipboard.copy("");
+                }, 20 * 1000);
+            }
             this.cryptoData.callback({
                 content: {
                     title: this.cryptoData.title,

@@ -118,7 +118,7 @@ var React = require('react'),
                 safe_note: this.state.safe_note,
                 nonce: this.state.nonce
             };
-            chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
+            chrome.runtime.sendMessage({type: 'decryptPassword', content: data, clipboardClear: false}, (response) => {
                 if (response != null) {
                     chrome.runtime.sendMessage({type: 'openTabAndLogin', content: response.content});
                 }
@@ -148,7 +148,7 @@ var React = require('react'),
                 safe_note: this.state.safe_note,
                 nonce: this.state.nonce
             };
-            chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
+            chrome.runtime.sendMessage({type: 'decryptPassword', content: data, clipboardClear: true}, (response) => {
                 if (response != null) {
                     Clipboard.copy(response.content.password);
                     this.setState({

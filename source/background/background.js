@@ -171,7 +171,7 @@ var Promise = require('es6-promise').Promise,
     },
 
     decryptAndInject = (entry) => {
-        trezorManager.decryptFullEntry(entry, (data) => chromeManager.fillLoginForm(data));
+        trezorManager.decryptFullEntry(entry, (data) => chromeManager.fillLoginForm(data), false);
     },
 
     saveErroLog = (errorMsg, url, lineNumber, column, errorObj) => {
@@ -282,11 +282,11 @@ var Promise = require('es6-promise').Promise,
                 break;
 
             case 'decryptPassword':
-                trezorManager.decryptFullEntry(request.content, sendResponse);
+                trezorManager.decryptFullEntry(request.content, sendResponse, request.clipboardClear);
                 break;
 
             case 'decryptFullEntry':
-                trezorManager.decryptFullEntry(request.content, sendResponse);
+                trezorManager.decryptFullEntry(request.content, sendResponse, false);
                 break;
 
             case 'openTabAndLogin':
