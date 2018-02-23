@@ -7,6 +7,8 @@
 
 'use strict';
 
+require('babel-polyfill');
+
 window.tpmErroLog = [];
 window.AppRootFolder = 'Apps';
 window.AppFolder = 'TREZOR Password Manager';
