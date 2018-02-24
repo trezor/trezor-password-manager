@@ -152,14 +152,12 @@ var React = require('react'),
         render() {
             return (
                 <div>
-                    <div className='overlay-hill'></div>
-                    <div className='overlay-color'></div>
+                    <div className='background'></div>
                     <div className='home'>
                         <div className={this.state.dialog === 'connect_storage' ? 'connect_storage' : 'hidden_dialog'}>
-                            <img src='dist/app-images/trezor.svg' className='no-circle'/>
+                            <img src='dist/app-images/t-logo.svg' className='no-circle'/>
 
                             <div className='dialog-content'>
-                                <h1><b></b>Password Manager</h1>
                                 <button className='dropbox-login' onClick={this.connectDropbox}>Sign in with Dropbox
                                 </button>
                                 <br />
@@ -169,10 +167,9 @@ var React = require('react'),
                         </div>
 
                         <div className={this.state.dialog === 'preloading' ? 'preloading' : 'hidden_dialog'}>
-                            <img src='dist/app-images/trezor.svg' className='no-circle'/>
+                            <img src='dist/app-images/t-logo.svg' className='no-circle'/>
 
                             <div className='dialog-content'>
-                                <h1><b></b>Password Manager</h1>
                                 <span className='spinner'></span>
                             </div>
                         </div>

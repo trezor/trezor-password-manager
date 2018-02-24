@@ -69,7 +69,7 @@ let visibleDialog = false,
         let topTextBlock = document.createElement('span');
         topTextBlock.setAttribute('id', 'tWaitingTrezorResponse');
         topTextBlock.className = 'tTopTextBlock';
-        topTextBlock.innerHTML = 'Couldn\'t find login form, sorry!';
+        topTextBlock.innerHTML = 'Couldn\'t find any form, sorry!';
         dialogDiv.appendChild(topTextBlock);
 
         // logo image
@@ -132,7 +132,7 @@ let visibleDialog = false,
         let topTextBlock = document.createElement('span');
         topTextBlock.setAttribute('id', 'tWaitingTrezorResponse');
         topTextBlock.className = 'tTopTextBlock';
-        topTextBlock.innerHTML = 'Couldn\'t find login form, sorry!';
+        topTextBlock.innerHTML = 'Couldn\'t find any form, sorry!';
         dialogDiv.appendChild(topTextBlock);
 
         document.body.appendChild(wrapperDiv);

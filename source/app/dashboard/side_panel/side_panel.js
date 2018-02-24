@@ -105,11 +105,7 @@ var React = require('react'),
                 <aside className="left-panel">
                     <div className="logo">
                         <span className="logo-expanded">
-                            <img src="dist/app-images/logo-mini.png" alt="logo"/>
-                            <span className="nav-label">
-                                <b>PASSWORD</b>
-                                <span>Manager</span>
-                            </span>
+                            <img src="dist/app-images/t-logo.svg" alt="logo"/>
                         </span>
                     </div>
 

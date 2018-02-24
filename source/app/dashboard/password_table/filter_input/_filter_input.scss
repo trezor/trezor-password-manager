@@ -1,5 +1,5 @@
 form.filter {
-  display: block;
+  display: inline-block;
   position: relative;
 
   input {
@@ -7,8 +7,11 @@ form.filter {
     background-color: $c_white;
     border: 1px solid $c_grey_border;
     padding-left: 35px;
+    height: 40px;
+    margin-right: 30px;
+    line-height: 40px;
     @include box-shadow(none);
-    @include border-radius(34px);
+    @include border-radius(4px);
 
     &:focus {
       outline: none;
@@ -31,7 +34,7 @@ form.filter {
   &:before {
     display: block;
     position: absolute;
-    top: 8px;
+    top: 10px;
     left: 15px;
     content: "\f2f5";
     font-size: 1.3em;

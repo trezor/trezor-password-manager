@@ -13,6 +13,14 @@
   background: linear-gradient($deg, $val1, $val2);
 }
 
+@mixin cover-background($img-uri) {
+  background: url($img-uri) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
 @mixin unselectable() {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -34,6 +42,13 @@
   -moz-appearance: none;
   -o-appearance: none;
   appearance: none;
+}
+
+@mixin antialiasing( $type:antialiased ) {
+  /* antialiased, none, subpixel-antialiased*/
+  -webkit-font-smoothing: $type;
+  font-smoothing: $type;
+  font-smooth: always;
 }
 
 @mixin animation($val) {
