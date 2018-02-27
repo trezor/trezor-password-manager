@@ -176,11 +176,6 @@ var Promise = require('es6-promise').Promise,
         trezorManager.decryptFullEntry(entry, (data) => chromeManager.fillLoginForm(data), false);
     },
 
-    saveErroLog = (errorMsg, url, lineNumber, column, errorObj) => {
-        console.log(errorMsg, url, lineNumber, column, errorObj);
-        window.tpmErroLog.push('%0D%0A Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber + ' Column: ' + column + ' StackTrace: ' + errorObj);
-    },
-
     saveContent = (data) => {
         if (bgStore.storageType === 'DROPBOX') {
             dropboxManager.saveFile(data);

@@ -372,9 +372,9 @@ var React = require('react'),
                             </ul>
                         </Modal.Body>
                         <div className='btn-controls'>
-                            {this.state.redirectAction ? <a href={this.state.redirectTo} target='_blank'
+                            {this.state.redirectAction ? <a href={this.state.redirectTo} rel='noopener noreferrer' target='_blank'
                                                             className='button shadow blue-btn'>{this.state.redirectText}</a> : ''}
-                            {this.state.supportAction ? <a className='button shadow green-btn' target='_blank'
+                            {this.state.supportAction ? <a className='button shadow green-btn' rel='noopener noreferrer' target='_blank'
                                                            href={'mailto:support@satoshilabs.com?subject=TREZOR Password Manager bug report&body=' + this.state.supportDefaultMailText}>Contact
                                 support</a> : ''}
                             {this.state.restartAction ?

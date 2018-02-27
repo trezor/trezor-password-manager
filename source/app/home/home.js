@@ -185,7 +185,7 @@ var React = require('react'),
                                 <button className='no-style' onClick={this.disconnect}>
                                     {this.state.storageType === 'DROPBOX' ? <p>Logout and use different account.</p> : <p>Switch to different service.</p>}
                                 </button>
-                                {this.state.storageType === 'DROPBOX' ? <i>(Manage your accounts via Dropbox.com)</i> : <div><b>For logout or switch user follow instructions:</b><ol><li>In the upper right corner of the browser window, click the button for the current person.</li><li>Click Switch person.</li><li>Choose the person you want to switch to.</li><a href='https://support.google.com/chrome/answer/2364824?hl=en' target='_blank'>More info</a></ol></div>}
+                                {this.state.storageType === 'DROPBOX' ? <i>(Manage your accounts via Dropbox.com)</i> : <div><b>For logout or switch user follow instructions:</b><ol><li>In the upper right corner of the browser window, click the button for the current person.</li><li>Click Switch person.</li><li>Choose the person you want to switch to.</li><a href='https://support.google.com/chrome/answer/2364824?hl=en' rel='noopener noreferrer' target='_blank'>More info</a></ol></div>}
                             </div>
                         </div>
 
@@ -194,7 +194,7 @@ var React = require('react'),
 
                             <h1>Connect your <br/> <b className='smallcaps'>TREZOR</b> device.</h1>
                             <br />
-                            <button className='no-style'><a href='https://shop.trezor.io?a=tpm' target='_blank'>I don't
+                            <button className='no-style'><a href='https://shop.trezor.io?a=tpm' rel='noopener noreferrer' target='_blank'>I don't
                                 have a TREZOR device.</a></button>
                         </div>
 
