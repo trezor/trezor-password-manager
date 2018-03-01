@@ -14,8 +14,8 @@ const HD_HARDENED = 0x80000000,
     PATH = [(10016 | HD_HARDENED) >>> 0, 0],
     WRONG_PIN = 'Failure_PinInvalid',
 
-    URL_IFRAME = 'https://dev.trezor.io/experiments/iframe.html',
-    URL_POPUP = 'https://dev.trezor.io/experiments/popup.html',
+    URL_IFRAME = 'https://sisyfos.trezor.io/iframe.html',
+    URL_POPUP = 'https://sisyfos.trezor.io/popup.html',
 
     DEFAULT_KEYPHRASE = 'Activate TREZOR Password Manager?',
     DEFAULT_NONCE = '2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee';
@@ -67,8 +67,9 @@ class TrezorMgmt {
         console.warn('PATH: ', PATH);
         this.trezorConnect.on('DEVICE_EVENT', msg => this.deviceEvent(msg));
         this.trezorConnect.on('UI_EVENT', msg => this.uiEvent(msg));
+        let ts = new Date().getTime();
         this.trezorConnect.init({
-            iframe_src: URL_IFRAME,
+            iframe_src: URL_IFRAME + '?r=' + ts,
             popup_src: URL_POPUP,
         }).then(() => {
             this.bgStore.emit('sendMessage', 'trezorConnected');
@@ -430,10 +431,10 @@ class TrezorMgmt {
     }
 
     getEncryptionKey(session) {
-        return session.cipherKeyValue(PATH, this._cryptoData.keyPhrase, this._cryptoData.nonce, this._cryptoData.enc, this._cryptoData.askOnEnc, true).then((result) => {
+        return session.cipherKeyValue({device: this._activeTrezorDevice, path: PATH, key: this._cryptoData.keyPhrase, value: this._cryptoData.nonce, encrypt: this._cryptoData.enc, askOnEncrypt: this._cryptoData.askOnEnc, askOnDencrypt: true}).then((result) => {
             this.bgStore.emit('sendMessage', 'loading', 'We\'re getting there ...');
-            console.warn('RESULT : ', result);
-            this.bgStore.masterKey = result.message.value;
+            console.warn('RESULT : ', result, result.data.resp.message.value);
+            this.bgStore.masterKey = result.data.resp.message.value;
             let temp = this.bgStore.masterKey;
             this.bgStore.encryptionKey = new Buffer(temp.substring(temp.length / 2, temp.length), 'hex');
             this.bgStore.emit('loadFile');

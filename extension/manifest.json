@@ -47,7 +47,7 @@
       "js/trezor_connect.js"
     ]
   },
-  "content_security_policy": "script-src 'self' https://apis.google.com/ https://dev.trezor.io/; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://apis.google.com/ https://sisyfos.trezor.io/; object-src 'self'",
   "oauth2": {
     "client_id": "296429812941-co5alkvv0tan1ptun23ilefh96gb1heb.apps.googleusercontent.com",
     "scopes": [
