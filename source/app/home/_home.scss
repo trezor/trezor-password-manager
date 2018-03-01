@@ -59,6 +59,43 @@
       }
     }
 
+    h3 {
+      font-weight: 400;
+
+      b {
+        display: inline-block;
+        position: relative;
+        font-weight: 900;
+        cursor: pointer;
+        @include unselectable();
+
+        &:hover {
+          text-decoration: underline;
+        }
+
+        &:after {
+          // TO DO - better asap!
+          position: absolute;
+          right: -30px;
+          top: 0;
+          font-family: 'icomoon' !important;
+          speak: none;
+          font-style: normal;
+          font-weight: normal;
+          font-variant: normal;
+          text-transform: none;
+          line-height: 1;
+          /* Better Font Rendering =========== */
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          content: "\e934";
+          color: white;
+          border: 1px solid white;
+          @include border-radius(50%);
+        }
+      }
+    }
+
     span {
       max-width: 290px;
       color: rgba($c_white, .9);
@@ -71,11 +108,14 @@
       text-align: center;
       vertical-align: top;
       padding: 3px;
-      margin-bottom: 30px;
       @include transition(rotate(360deg));
 
       &.no-circle {
         border: none;
+      }
+
+      &.spaced {
+        margin-bottom: 30px;
       }
     }
 

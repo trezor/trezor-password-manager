@@ -22,7 +22,6 @@ var Promise = require('es6-promise').Promise,
 // Chrome manager will maintain most of injection and other (tab <-> background <-> app) context manipulation
     ChromeMgmt = require('./classes/chrome_mgmt'),
     chromeManager = new ChromeMgmt(bgStore),
-    trezor = require('trezor.js'),
     TrezorMgmt = require('./classes/trezor_mgmt'),
     trezorManager = {},
     DropboxMgmt = require('./classes/dropbox_mgmt'),
@@ -33,8 +32,6 @@ var Promise = require('es6-promise').Promise,
 // GENERAL STUFF
     preSetup = () => {
         chromeManager.exists().then(() => {
-            return new trezor.DeviceList();
-        }).then((list) => {
             try {
                 bgStore.on('decryptContent', contentDecrypted);
                 bgStore.on('initStorageFile', askToInitStorage);
@@ -43,7 +40,7 @@ var Promise = require('es6-promise').Promise,
                 bgStore.on('retrySetup', setupRetry);
                 bgStore.on('loadFile', loadFile);
                 bgStore.on('disconnectedTrezor', userSwitch);
-                trezorManager = new TrezorMgmt(bgStore, list, retriesOpening);
+                trezorManager = new TrezorMgmt(bgStore, window.TrezorConnect);
                 dropboxManager = new DropboxMgmt(bgStore);
                 driveManager = new DriveMgmt(bgStore);
                 bgStore.on('clearSession', () => trezorManager.clearSession());
@@ -64,7 +61,6 @@ var Promise = require('es6-promise').Promise,
         if (!setupReady) {
             preSetup();
         } else {
-            trezorManager.checkVersions();
             switch (bgStore.phase) {
                 case 'LOADED':
                     chromeManager.sendMessage('decryptedContent', {
@@ -114,7 +110,7 @@ var Promise = require('es6-promise').Promise,
     initNewFile = () => {
         let basicObjectBlob = {
             'version': '0.0.1',
-            'extVersion':'0.5.14',
+            'extVersion':'0.6.0',
             'config': {
                 'orderType': 'date'
             },
@@ -145,7 +141,7 @@ var Promise = require('es6-promise').Promise,
 
     userSwitch = () => {
         bgStore.userSwitch();
-        trezorManager.userSwitch();
+        // trezorManager.userSwitch();
         chromeManager.updateBadgeStatus('OFF');
         chromeManager.clearContextMenuItem();
         chromeManager.sendMessage('trezorDisconnected');
@@ -154,7 +150,7 @@ var Promise = require('es6-promise').Promise,
 
     userLoggedOut = () => {
         bgStore.disconnect();
-        trezorManager.userSwitch();
+        // trezorManager.userSwitch();
         chromeManager.updateBadgeStatus('OFF');
         chromeManager.clearContextMenuItem();
         chromeManager.sendMessage('trezorDisconnected');
@@ -254,14 +250,11 @@ var Promise = require('es6-promise').Promise,
 
             case 'initTrezorPhase':
                 bgStore.phase = 'TREZOR';
-                chromeManager.sendMessage('trezorDisconnected');
-                trezorManager.connect();
+                trezorManager.init();
                 break;
 
-            case 'trezorPin':
-                trezorManager.pinEnter(request.content);
-                chromeManager.tryRefocusToAccessTab();
-                chromeManager.sendMessage('hidePinModal');
+            case 'activateTrezor':
+                trezorManager.useDevice(request.content);
                 break;
 
             case 'disconnect':
@@ -291,7 +284,7 @@ var Promise = require('es6-promise').Promise,
                 break;
 
             case 'clearSession':
-                trezorManager.clearSession();
+                // trezorManager.clearSession();
                 break;
 
             case 'userSwitch':

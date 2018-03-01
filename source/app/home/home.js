@@ -21,7 +21,9 @@ var React = require('react'),
                 trezorReady: false,
                 storageReady: false,
                 username: '',
+                userDetails: false,
                 storageType: 'DROPBOX',
+                devices: [],
                 deviceStatus: 'disconnected',
                 dialog: 'preloading',
                 loadingText: 'Waking up ...'
@@ -56,7 +58,13 @@ var React = require('react'),
                         username: request.content.username,
                         storageType: request.content.storageType
                     });
-                    //this.initTrezorPhase();
+                    this.sendMessage('initTrezorPhase');
+                    break;
+
+                case 'updateDevices':
+                    this.setState({
+                        devices: request.content.devices
+                    });
                     break;
 
                 case 'disconnected':
@@ -113,6 +121,19 @@ var React = require('react'),
             return true;
         },
 
+        toggleDetails() {
+            this.setState({
+                userDetails: !this.state.userDetails
+            });
+        },
+
+        activateDevice(d) {
+            this.setState({
+                dialog: 'loading_dialog'
+            });
+            this.sendMessage('activateTrezor', this.state.devices[d].path);
+        },
+
         sendMessage(msgType, msgContent) {
             chrome.runtime.sendMessage({type: msgType, content: msgContent});
         },
@@ -135,27 +156,30 @@ var React = require('react'),
             this.sendMessage('disconnect');
         },
 
-        initTrezorPhase() {
-            this.sendMessage('initTrezorPhase');
-        },
-
         checkStates() {
             if (this.state.trezorReady && this.state.storageReady) {
                 this.transitionTo('dashboard');
             }
         },
 
-        restartBackground() {
-            chrome.runtime.reload();
-        },
-
         render() {
+            var device_list = Object.keys(this.state.devices).map((key, i = 0) => {
+                return (
+                    <li key={i++}>
+                        <a data-tag-key={this.state.devices[key].path}
+                           data-tag-name={this.state.devices[key].label}
+                           onClick={this.activateDevice.bind(null, key)}
+                           onTouchStart={this.activateDevice.bind(null, key)}>
+                            <span className="nav-label">{this.state.devices[key].label}</span>
+                        </a>
+                    </li>)
+            });
             return (
                 <div>
                     <div className='background'></div>
                     <div className='home'>
                         <div className={this.state.dialog === 'connect_storage' ? 'connect_storage' : 'hidden_dialog'}>
-                            <img src='dist/app-images/t-logo.svg' className='no-circle'/>
+                            <img src='dist/app-images/t-logo.svg' className='no-circle spaced'/>
 
                             <div className='dialog-content'>
                                 <button className='dropbox-login' onClick={this.connectDropbox}>Sign in with Dropbox
@@ -167,7 +191,7 @@ var React = require('react'),
                         </div>
 
                         <div className={this.state.dialog === 'preloading' ? 'preloading' : 'hidden_dialog'}>
-                            <img src='dist/app-images/t-logo.svg' className='no-circle'/>
+                            <img src='dist/app-images/t-logo.svg' className='no-circle spaced'/>
 
                             <div className='dialog-content'>
                                 <span className='spinner'></span>
@@ -176,16 +200,16 @@ var React = require('react'),
 
                         <div className={this.state.dialog === 'accept_user' ? 'accept_user' : 'hidden_dialog'}>
                             <img src={'dist/app-images/' + this.state.storageType.toLowerCase() + '.svg'} />
-
                             <div>
-                                <button onClick={this.initTrezorPhase} className='accept-btn'>Continue as
-                                    <b> {this.state.username}</b>
-                                </button>
+                                <h3>Signed as <b onClick={this.toggleDetails}>{this.state.username}</b></h3>
                                 <br />
-                                <button className='no-style' onClick={this.disconnect}>
-                                    {this.state.storageType === 'DROPBOX' ? <p>Logout and use different account.</p> : <p>Switch to different service.</p>}
-                                </button>
-                                {this.state.storageType === 'DROPBOX' ? <i>(Manage your accounts via Dropbox.com)</i> : <div><b>For logout or switch user follow instructions:</b><ol><li>In the upper right corner of the browser window, click the button for the current person.</li><li>Click Switch person.</li><li>Choose the person you want to switch to.</li><a href='https://support.google.com/chrome/answer/2364824?hl=en' rel='noopener noreferrer' target='_blank'>More info</a></ol></div>}
+                                <div className={this.state.userDetails ? '' : 'hidden'}>
+                                    <button className='no-style' onClick={this.disconnect}>
+                                        {this.state.storageType === 'DROPBOX' ? <p>Logout and use different account.</p> : <p>Switch to different service.</p>}
+                                    </button>
+                                    {this.state.storageType === 'DROPBOX' ? <i>(Manage your accounts via Dropbox.com)</i> : <div><b>For logout or switch user follow instructions:</b><ol><li>In the upper right corner of the browser window, click the button for the current person.</li><li>Click Switch person.</li><li>Choose the person you want to switch to.</li><a href='https://support.google.com/chrome/answer/2364824?hl=en' rel='noopener noreferrer' target='_blank'>More info</a></ol></div>}
+                                </div>
+                                <ul>{device_list}</ul>
                             </div>
                         </div>
 
