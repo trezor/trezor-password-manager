@@ -164,12 +164,14 @@ var React = require('react'),
 
         render() {
             var device_list = Object.keys(this.state.devices).map((key, i = 0) => {
+                console.warn(this.state.devices);
                 return (
                     <li key={i++}>
                         <a data-tag-key={this.state.devices[key].path}
                            data-tag-name={this.state.devices[key].label}
                            onClick={this.activateDevice.bind(null, key)}
                            onTouchStart={this.activateDevice.bind(null, key)}>
+                            <span className={this.state.devices[key].features.major_version === 2 ? 'icon t2' : 'icon t1'}></span>
                             <span className="nav-label">{this.state.devices[key].label}</span>
                         </a>
                     </li>)
@@ -201,25 +203,28 @@ var React = require('react'),
                         <div className={this.state.dialog === 'accept_user' ? 'accept_user' : 'hidden_dialog'}>
                             <img src={'dist/app-images/' + this.state.storageType.toLowerCase() + '.svg'} />
                             <div>
-                                <h3>Signed as <b onClick={this.toggleDetails}>{this.state.username}</b></h3>
+                                <span>Signed as</span>
+                                <h3 className={this.state.userDetails ? 'active' : ''}>
+                                    <b onClick={this.toggleDetails}>{this.state.username}</b>
+                                </h3>
                                 <br />
                                 <div className={this.state.userDetails ? '' : 'hidden'}>
+                                    <br/>
                                     <button className='no-style' onClick={this.disconnect}>
                                         {this.state.storageType === 'DROPBOX' ? <p>Logout and use different account.</p> : <p>Switch to different service.</p>}
                                     </button>
+                                    <div>
                                     {this.state.storageType === 'DROPBOX' ? <i>(Manage your accounts via Dropbox.com)</i> : <div><b>For logout or switch user follow instructions:</b><ol><li>In the upper right corner of the browser window, click the button for the current person.</li><li>Click Switch person.</li><li>Choose the person you want to switch to.</li><a href='https://support.google.com/chrome/answer/2364824?hl=en' rel='noopener noreferrer' target='_blank'>More info</a></ol></div>}
+                                    </div>
                                 </div>
-                                <ul>{device_list}</ul>
+                                <div className={this.state.devices.length ? '' : 'hidden'}>
+                                    <span>Choose from devices</span>
+                                    <ul className="dev-list">{device_list}</ul>
+                                </div>
+                                <div className={this.state.devices.length ? 'hidden' : ''}>
+                                    <span className="connect_trezor"><img src='dist/app-images/connect-trezor.svg'/> Connect TREZOR to continue</span>
+                                </div>
                             </div>
-                        </div>
-
-                        <div className={this.state.dialog === 'connect_trezor' ? 'connect_trezor' : 'hidden_dialog'}>
-                            <img src='dist/app-images/trezor_connect.png'/>
-
-                            <h1>Connect your <br/> <b className='smallcaps'>TREZOR</b> device.</h1>
-                            <br />
-                            <button className='no-style'><a href='https://shop.trezor.io?a=tpm' rel='noopener noreferrer' target='_blank'>I don't
-                                have a TREZOR device.</a></button>
                         </div>
 
                         <div className={this.state.dialog === 'pin_dialog' ? 'pin_dialog' : 'hidden_dialog'}>
@@ -228,7 +233,6 @@ var React = require('react'),
 
                         <div className={this.state.dialog === 'loading_dialog' ? 'loading_dialog' : 'hidden_dialog'}>
                             <span className='spinner'></span>
-
                             <h1>{this.state.loadingText}</h1>
                         </div>
 

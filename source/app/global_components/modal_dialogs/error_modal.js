@@ -27,7 +27,7 @@ var React = require('react'),
                 errorTitle: 'Error!',
                 errorSolutionSteps: [
                     'Check your Internet connection.',
-                    'Make sure you have the latest version of TREZOR Chrome Extension.',
+                    'Make sure you have the latest version of TREZOR Bridge.',
                     'Try to restart TREZOR Password Manager.',
                     'In case of ongoing problems contact our support.'
                 ],
@@ -65,20 +65,20 @@ var React = require('react'),
                             errorTitle: 'Houston, we have a problem ...',
                             solution: [
                                 'Check your connection.',
-                                'Make sure you have TREZOR Chrome Extension installed.',
+                                'Make sure you have TREZOR Bridge installed.',
                                 'Try to restart TREZOR Password Manager.',
                                 'In case of ongoing problems contact our support.'
                             ],
                             restartAction: true,
                             supportAction: true,
                             redirectAction: true,
-                            redirectText: 'Chrome Extension',
-                            redirectTo: 'https://chrome.google.com/webstore/detail/trezor-chrome-extension/jcjjhjgimijdkoamemaghajlhegmoclj',
+                            redirectText: 'TREZOR Bridge',
+                            redirectTo: 'https://wallet.trezor.io/#/bridge/',
                             supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + this.state.userInfo + mailFooterTemplate
                         };
                     } else {
                         return {
-                            errorTitle: 'You are offline',
+                            errorTitle: 'You are offline.',
                             solution: [
                                 'Connect to the Internet.',
                                 'Try to restart TREZOR Password Manager.'
@@ -96,25 +96,25 @@ var React = require('react'),
 
                 case 'T_NOT_INIT':
                     return {
-                        errorTitle: 'TREZOR not initialized',
+                        errorTitle: 'TREZOR is not initialized.',
                         solution: [
-                            'Go to TREZOR Wallet.',
+                            'Go to wallet.trezor.io',
                             'Initialize TREZOR device.',
                             'Try again.'
                         ],
                         restartAction: false,
                         supportAction: false,
                         redirectAction: true,
-                        closeAction: false,
+                        closeAction: true,
                         redirectText: 'TREZOR Wallet',
-                        redirectTo: 'https://wallet.trezor.io',
+                        redirectTo: 'https://wallet.trezor.io/',
                         supportDefaultMailText: ''
                     };
                     break;
 
                 case 'T_OLD_VERSION':
                     return {
-                        errorTitle: 'Old firmware version',
+                        errorTitle: 'Old firmware version.',
                         solution: [
                             'Go to TREZOR Wallet.',
                             'Check and update your firmware.',
@@ -125,7 +125,7 @@ var React = require('react'),
                         redirectAction: true,
                         closeAction: true,
                         redirectText: 'TREZOR Wallet',
-                        redirectTo: 'https://wallet.trezor.io',
+                        redirectTo: 'https://wallet.trezor.io/',
                         supportDefaultMailText: ''
                     };
                     break;
@@ -133,23 +133,23 @@ var React = require('react'),
                 case 'T_NO_TRANSPORT':
                     if (this.isOnline()) {
                         return {
-                            errorTitle: 'TREZOR Chrome Extension not installed',
+                            errorTitle: 'TREZOR Bridge not installed.',
                             solution: [
-                                'Go to Chrome web store.',
-                                'Download and install TREZOR Chrome Extension.',
+                                'Go to wallet.trezor.io/#/bridge/',
+                                'Download and install TREZOR Bridge.',
                                 'Restart TREZOR Password Manager.'
                             ],
                             restartAction: true,
                             supportAction: false,
                             redirectAction: true,
                             closeAction: false,
-                            redirectText: 'Chrome Extension',
-                            redirectTo: 'https://chrome.google.com/webstore/detail/trezor-chrome-extension/jcjjhjgimijdkoamemaghajlhegmoclj',
+                            redirectText: 'TREZOR Bridge',
+                            redirectTo: 'https://wallet.trezor.io/#/bridge/',
                             supportDefaultMailText: ''
                         };
                     } else {
                         return {
-                            errorTitle: 'You are offline',
+                            errorTitle: 'You are offline.',
                             solution: [
                                 'Connect to the Internet.',
                                 'Try to restart TREZOR Password Manager.'
@@ -167,7 +167,7 @@ var React = require('react'),
 
                 case 'T_BOOTLOADER':
                     return {
-                        errorTitle: 'You are in bootloader mode',
+                        errorTitle: 'TREZOR in bootloader mode.',
                         solution: [
                             'If you really want to upgrade firmware go to TREZOR Wallet.'
                         ],
@@ -183,7 +183,7 @@ var React = require('react'),
 
                 case 'T_DEVICE':
                     return {
-                        errorTitle: 'Device problem detected',
+                        errorTitle: 'Device problem detected.',
                         solution: [
                             'Try using TREZOR Wallet to check whether your device works fine.',
                             'In case of ongoing problems contact our support.',
@@ -202,9 +202,9 @@ var React = require('react'),
                 // INVALID TOKEN error only for dropbox, cos Drive is handling it itself in CHROME.identity API
                 case 'INVALID_TOKEN':
                     return {
-                        errorTitle: 'There is a problem with storage',
+                        errorTitle: 'There is a problem with storage.',
                         solution: [
-                            'Clear browser cache and restart Chrome.',
+                            'Clear cache and restart browser.',
                             'Try to re-login to your Dropbox account.',
                             'Restart TREZOR Password Manager.',
                             'In case of ongoing problems contact our support.'
@@ -221,7 +221,7 @@ var React = require('react'),
 
                 case 'OVER_QUOTA':
                     return {
-                        errorTitle: 'Not enough storage space',
+                        errorTitle: 'Not enough storage space.',
                         solution: [
                             'Clean up your ' + content.storage + ' storage folder or buy more space.',
                             'Sign in with a different account.',
@@ -309,7 +309,7 @@ var React = require('react'),
                 errorTitle: 'Error',
                 errorSolutionSteps: [
                     'Check your connection.',
-                    'Make sure you have TREZOR Chrome Extension installed.',
+                    'Make sure you have TREZOR Bridge installed.',
                     'Try to restart TREZOR Password Manager.',
                     'In case of ongoing problems contact our support.'
                 ],
@@ -361,9 +361,8 @@ var React = require('react'),
                 <div>
                     <Modal show={this.state.showErrorModal} onHide={this.closeErrorModal}
                            dialogClassName='error-modal-dialog'>
-                        <Modal.Header>
-                            <Modal.Title id='contained-modal-title-sm'><i
-                                className='ion-bug'></i> {this.state.errorTitle}</Modal.Title>
+                        <Modal.Header closeButton={this.state.closeAction}>
+                            <Modal.Title id='contained-modal-title-sm'>{this.state.errorTitle}</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                             <b>Try this:</b>
@@ -380,8 +379,6 @@ var React = require('react'),
                             {this.state.restartAction ?
                                 <Button className='button shadow red-btn' onClick={this.restartApp}>Restart
                                     App</Button> : ''}
-                            {this.state.closeAction ? <Button className='button shadow white-btn'
-                                                              onClick={this.closeErrorModal}>Close</Button> : ''}
                         </div>
                     </Modal>
                 </div>

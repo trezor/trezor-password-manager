@@ -23,7 +23,6 @@
 
   .preloading,
   .accept_user,
-  .connect_trezor,
   .connect_storage,
   .loading_dialog,
   .button_dialog {
@@ -61,6 +60,7 @@
 
     h3 {
       font-weight: 400;
+      margin-top: 10px;
 
       b {
         display: inline-block;
@@ -84,22 +84,91 @@
           font-weight: normal;
           font-variant: normal;
           text-transform: none;
+          font-size: 1.3em;
           line-height: 1;
           /* Better Font Rendering =========== */
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
-          content: "\e934";
+          content: "\e93a";
           color: white;
-          border: 1px solid white;
-          @include border-radius(50%);
+          border: none;
         }
       }
     }
 
     span {
       max-width: 290px;
-      color: rgba($c_white, .9);
-      font-size: 1.2em;
+      color: rgba($c_white, .8);
+      font-size: 1.1em;
+      font-weight: 400;
+    }
+
+    .dev-list {
+      border: 1px solid white;
+      display: block;
+      width: 320px;
+      margin: 0 auto;
+      margin-top: 20px;
+      text-align: left;
+      @include border-radius(4px);
+
+      li:last-child a {
+        border: 0;
+      }
+
+      li a {
+        display: block;
+        position: relative;
+        padding: 20px 0 20px 50px;
+        width: 100%;
+        border-bottom: 1px solid white;
+
+        &:hover {
+          text-decoration: none;
+          background-color: rgba($c_white, .25);
+          cursor: pointer;
+        }
+
+        .icon {
+          &.t1:after {
+            content: '';
+            position: absolute;
+            display: block;
+            width: 24px;
+            height: 40px;
+            z-index: 2;
+            left: 15px;
+            top: 8px;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: auto 30px;
+            background-image: url(app-images/t1.png);
+          }
+          &.t2:after {
+            content: '';
+            position: absolute;
+            display: block;
+            width: 24px;
+            height: 40px;
+            z-index: 2;
+            left: 15px;
+            top: 8px;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: auto 30px;
+            background-image: url(app-images/t2.png);
+          }
+        }
+      }
+    }
+
+    span.connect_trezor {
+      @include animation(1.5s pulsate infinite ease-in-out);
+      img {
+        margin-top: -7px;
+        width: 18px;
+        color: white;
+      }
     }
 
     img {
@@ -161,13 +230,19 @@
       }
 
       &.no-style {
-        background-color: transparent;
+        background-color: rgba($c_white, .25);
+        margin: 10px 0 20px 0;
         border: none;
         color: $c_white;
 
         &:hover {
           @include box-shadow(none);
           text-decoration: underline;
+          background-color: rgba($c_white, .45);
+        }
+
+        p {
+          margin: 0;
         }
       }
 

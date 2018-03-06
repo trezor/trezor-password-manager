@@ -253,6 +253,12 @@ var Promise = require('es6-promise').Promise,
                 trezorManager.init();
                 break;
 
+            case 'trezorPin':
+                trezorManager.pinEnter(request.content);
+                chromeManager.tryRefocusToAccessTab();
+                chromeManager.sendMessage('hidePinModal');
+                break;
+
             case 'activateTrezor':
                 trezorManager.useDevice(request.content);
                 break;

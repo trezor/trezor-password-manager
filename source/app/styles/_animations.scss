@@ -16,6 +16,15 @@
   }
 }
 
+@keyframes pulsate {
+  from, to {
+    opacity: 1.0;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 @keyframes rotateplane {
   0% {
     -webkit-transform: rotateY(0deg)

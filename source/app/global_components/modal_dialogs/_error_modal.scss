@@ -1,10 +1,12 @@
 .error-modal-dialog {
   width: 380px;
   text-align: left;
-  color: $c_white;
+  color: $c_grey_content_bg;
 
   .modal-content {
-    background-color: $c_blue_dark_very;
+    background-color: $c_white;
+    @include border-radius(4px);
+    padding: 15px 25px 25px 25px;
   }
 
   .modal-header {
@@ -13,17 +15,23 @@
     padding-left: 20px;
   }
 
+  .modal-title {
+    color: $c_black;
+    text-align: center;
+    padding-bottom: 10px;
+  }
+
   .modal-body {
-    background-color: $c_blue_dark_very;
+    background-color: $c_white;
     height: auto;
-    padding: 0 10px 20px 20px;
+    padding: 0 20px 20px 20px;
 
     p {
       line-height: 130%;
     }
 
     b {
-      color: $c_grey_font;
+      color: $c_black;
       font-size: .9em;
       text-transform: uppercase;
       font-weight: bold;
@@ -51,17 +59,10 @@
   }
 
   .btn-controls {
-    position: absolute;
-    overflow: hidden;
-    bottom: -55px;
-    right: 0;
-    height: 45px;
-    @include transition(all 0.3s ease-in-out);
-
-
     button, a.button {
-      display: inline-block;
-      margin-left: 10px;
+      text-align: center;
+      display: block;
+      width: 100%;
       position: relative;
       @include transition(all 0.3s ease-in-out);
     }

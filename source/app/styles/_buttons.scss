@@ -3,11 +3,11 @@ button, .button {
   border: 1px solid $c_black;
   color: $c_white;
   outline: none !important;
-  padding: 6px 12px;
+  padding: 10px 12px;
   margin-bottom: 5px;
   cursor: pointer;
   line-height: 20px;
-  @include border-radius(2px);
+  @include border-radius(3px);
   @include transition(all 0.2s ease-in-out);
 
   &.icon {
@@ -22,7 +22,7 @@ button, .button {
 
   &.shadow {
     &:hover {
-      @include box-shadow(0px 0px 10px -1px rgba(0, 0, 0, 0.65));
+      @include box-shadow(0px 4px 6px 0 hsla(0, 0%, 0%, 0.2));
     }
   }
 
@@ -32,7 +32,7 @@ button, .button {
     color: $c_white;
 
     &:hover {
-      color: $c_black;
+      color: $c_white;
     }
   }
 
@@ -42,7 +42,7 @@ button, .button {
     color: $c_white;
 
     &:hover {
-      color: $c_black;
+      color: $c_white;
     }
   }
 
@@ -52,7 +52,7 @@ button, .button {
     color: $c_white;
 
     &:hover {
-      color: $c_black;
+      color: $c_white;
     }
   }
 
