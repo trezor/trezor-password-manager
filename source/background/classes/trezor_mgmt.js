@@ -43,6 +43,7 @@ class TrezorMgmt {
         this.trezorConnect.on('UI_EVENT', msg => this.uiEvent(msg));
         let ts = new Date().getTime();
         this.trezorConnect.init({
+            webusb: false,
             iframe_src: URL_IFRAME + '?r=' + ts,
             popup_src: URL_POPUP,
         });
@@ -91,7 +92,7 @@ class TrezorMgmt {
 
     uiEvent(msg) {
         console.warn('UI EVENT : ', msg);
-        switch(msg) {
+        switch(msg.type) {
             case 'ui-request_pin':
                 this.bgStore.emit('showPinDialog');
                 break;
