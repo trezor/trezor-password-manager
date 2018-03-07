@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="112px" height="101px" viewBox="0 0 112 101" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49 (51002) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 8</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="36" height="36" rx="3.6"></rect>
+        <rect id="path-3" x="0" y="0" width="33.28" height="33.28" rx="3.328"></rect>
+        <rect id="path-4" x="0" y="0" width="32" height="32" rx="3.2"></rect>
+        <rect id="path-6" x="0" y="0" width="24" height="24" rx="2.4"></rect>
+        <rect id="path-7" x="0" y="0" width="24" height="24" rx="2.4"></rect>
+        <rect id="path-8" x="0" y="0" width="25.6" height="25.6" rx="2.56"></rect>
+        <rect id="path-9" x="-5.1159077e-13" y="0" width="9.98973641" height="25.0620853" rx="0.616005"></rect>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Application-nothing-found" transform="translate(-577.000000, -253.000000)">
+            <g id="Group-8" transform="translate(577.000000, 253.000000)">
+                <g id="Group-12">
+                    <g id="Group-10" transform="translate(76.000000, 44.000000)">
+                        <g id="Rectangle-13">
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <g id="Mask">
+                                <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+                                <rect stroke="#E9E9E9" stroke-width="1" x="0.5" y="0.5" width="35" height="35" rx="3.6"></rect>
+                            </g>
+                            <rect fill-opacity="0.300000012" fill="#E9E9E9" mask="url(#mask-2)" x="-5" y="-43" width="36" height="51" rx="7"></rect>
+                        </g>
+                        <text id="&amp;" font-family="Roboto-Black, Roboto" font-size="14.4" font-weight="700" fill="#666666">
+                            <tspan x="13.5984375" y="24">&amp;</tspan>
+                        </text>
+                    </g>
+                    <g id="Group-9-Copy" transform="translate(50.000000, 67.000000)">
+                        <g id="Rectangle-4-Copy">
+                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-3"></use>
+                            <rect stroke="#E9E9E9" stroke-width="1.3" x="0.65" y="0.65" width="31.98" height="31.98" rx="3.328"></rect>
+                        </g>
+                        <text id="@" font-family="Roboto-Black, Roboto" font-size="13.312" font-weight="700" fill="#666666">
+                            <tspan x="11.0955" y="22.32">@</tspan>
+                        </text>
+                    </g>
+                    <g id="Group-5" transform="translate(0.000000, 29.000000)">
+                        <g id="Rectangle-13">
+                            <mask id="mask-5" fill="white">
+                                <use xlink:href="#path-4"></use>
+                            </mask>
+                            <g id="Mask">
+                                <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-4"></use>
+                                <rect stroke="#E9E9E9" stroke-width="1" x="0.5" y="0.5" width="31" height="31" rx="3.2"></rect>
+                            </g>
+                            <rect fill-opacity="0.300000012" fill="#E9E9E9" mask="url(#mask-5)" x="26" y="10" width="21" height="39" rx="7"></rect>
+                        </g>
+                        <text id="#" font-family="Roboto-Black, Roboto" font-size="12.8" font-weight="700" fill="#666666">
+                            <tspan x="13.08125" y="21">#</tspan>
+                        </text>
+                    </g>
+                    <g id="Group-3" transform="translate(14.000000, 57.000000)">
+                        <g id="Rectangle-4-Copy-5">
+                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-6"></use>
+                            <rect stroke="#E9E9E9" stroke-width="1" x="0.5" y="0.5" width="23" height="23" rx="2.4"></rect>
+                        </g>
+                        <text id="M" font-family="Roboto-Black, Roboto" font-size="9.6" font-weight="700" fill="#666666">
+                            <tspan x="8.09296875" y="16.6">M</tspan>
+                        </text>
+                    </g>
+                    <g id="Group-3-Copy" transform="translate(43.000000, 0.000000)">
+                        <g id="Rectangle-4-Copy-5">
+                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-7"></use>
+                            <rect stroke="#E9E9E9" stroke-width="1" x="0.5" y="0.5" width="23" height="23" rx="2.4"></rect>
+                        </g>
+                        <text id="%" font-family="Roboto-Black, Roboto" font-size="9.6" font-weight="700" fill="#666666">
+                            <tspan x="8.7375" y="16.6">%</tspan>
+                        </text>
+                    </g>
+                    <g id="Group-9" transform="translate(77.000000, 23.000000)">
+                        <g id="Rectangle-4-Copy">
+                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-8"></use>
+                            <rect stroke="#E9E9E9" stroke-width="1" x="0.5" y="0.5" width="24.6" height="24.6" rx="2.56"></rect>
+                        </g>
+                        <text id="K" font-family="Roboto-Black, Roboto" font-size="10.24" font-weight="700" fill="#666666">
+                            <tspan x="9.845" y="17.4">K</tspan>
+                        </text>
+                    </g>
+                </g>
+                <g id="Group-5" transform="translate(29.000000, 19.000000)">
+                    <g id="Group-3">
+                        <g id="Group" transform="translate(55.637796, 58.302649) rotate(-42.000000) translate(-55.637796, -58.302649) translate(50.637796, 39.802649)">
+                            <rect id="Rectangle-2" fill="#EDEEEE" x="1.24871705" y="4.33171844" width="7.4923023" height="6.1881692"></rect>
+                            <rect id="Rectangle" fill="#E4E4E4" x="-2.55795385e-13" y="0" width="9.98973641" height="4.95053536" rx="0.616005"></rect>
+                            <g id="Group-2" transform="translate(0.000000, 10.210479)">
+                                <mask id="mask-10" fill="white">
+                                    <use xlink:href="#path-9"></use>
+                                </mask>
+                                <use id="Mask" fill="#E4E4E4" xlink:href="#path-9"></use>
+                                <g mask="url(#mask-10)" stroke="#D0D0D0" stroke-width="0.5">
+                                    <g transform="translate(4.179864, 11.032951) rotate(-330.000000) translate(-4.179864, -11.032951) translate(-7.820136, -1.967049)">
+                                        <path d="M0,14.3688072 C2.23394495,12.2313125 4.29611836,11.4273434 6.18652023,11.9568998 C9.02212302,12.7512345 11.926343,14.2110881 14.6555892,13.0839939 C16.4750867,12.3325978 18.1987489,10.2402619 19.8265759,6.80698612" id="Path-32"></path>
+                                        <path d="M0.936537788,18.0817087 C3.17048274,15.944214 5.23265615,15.1402449 7.12305801,15.6698013 C9.95866081,16.464136 12.8628807,17.9239896 15.592127,16.7968954 C17.4116245,16.0454994 19.1352867,13.9531634 20.7631137,10.5198876" id="Path-32-Copy-2"></path>
+                                        <path d="M2.80961336,21.4852018 C5.04355832,19.3477071 7.10573172,18.5437379 8.99613359,19.0732944 C11.8317364,19.867629 14.7359563,21.3274826 17.4652026,20.2003885 C19.2847001,19.4489924 21.0083623,17.3566565 22.6361893,13.9233807" id="Path-32-Copy-3"></path>
+                                        <path d="M3.43397189,25.1981033 C5.66791684,23.0606086 7.73009025,22.2566395 9.62049212,22.7861959 C12.4560949,23.5805305 15.3603148,25.0403842 18.0895611,23.91329 C19.9090586,23.1618939 21.6327208,21.069558 23.2605478,17.6362822" id="Path-32-Copy-4"></path>
+                                        <path d="M0,11.2747226 C2.23394495,9.1372279 4.29611836,8.33325876 6.18652023,8.8628152 C9.02212302,9.65714985 11.926343,11.1170035 14.6555892,9.98990933 C16.4750867,9.23851324 18.1987489,7.1461773 19.8265759,3.71290152" id="Path-32"></path>
+                                        <path d="M0,7.56182109 C2.23394495,5.42432638 4.29611836,4.62035724 6.18652023,5.14991368 C9.02212302,5.94424833 11.926343,7.40410194 14.6555892,6.27700781 C16.4750867,5.52561172 18.1987489,3.43327579 19.8265759,0" id="Path-32-Copy"></path>
+                                    </g>
+                                </g>
+                            </g>
+                        </g>
+                        <path d="M26.2230581,51.9806213 C11.740463,51.9806213 0,40.3443628 0,25.9903106 C0,11.6362584 11.740463,0 26.2230581,0 C40.7056531,0 52.4461161,11.6362584 52.4461161,25.9903106 C52.4461161,40.3443628 40.7056531,51.9806213 26.2230581,51.9806213 Z M26.3791477,47.0300859 C38.0169473,47.0300859 47.4512479,37.6795211 47.4512479,26.1450149 C47.4512479,14.6105086 38.0169473,5.25994382 26.3791477,5.25994382 C14.7413481,5.25994382 5.30704747,14.6105086 5.30704747,26.1450149 C5.30704747,37.6795211 14.7413481,47.0300859 26.3791477,47.0300859 Z" id="Combined-Shape" fill="#EDEEEE"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

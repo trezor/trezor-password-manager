@@ -380,7 +380,7 @@ class TrezorMgmt {
     }
 
     sendEncryptCallback() {
-        this.trezorConnect.cipherKeyValue({device: this._activeTrezorDevice, useEmptyPassphrase: true, path: PATH, key: this._cryptoData.keyPhrase, value: this._cryptoData.nonce, encrypt: this._cryptoData.enc, askOnEncrypt: this._cryptoData.askOnEnc, askOnDecrypt: true}).then((result) => {
+        this.trezorConnect.cipherKeyValue({device: this._activeTrezorDevice, override: true, useEmptyPassphrase: true, path: PATH, key: this._cryptoData.keyPhrase, value: this._cryptoData.nonce, encrypt: this._cryptoData.enc, askOnEncrypt: this._cryptoData.askOnEnc, askOnDecrypt: true}).then((result) => {
             let enckey = new Buffer(this._cryptoData.nonce, 'hex');
             this.encrypt(this._cryptoData.password, enckey).then((password)=> {
                 this.encrypt(this._cryptoData.safe_note, enckey).then((safenote)=> {
@@ -415,7 +415,7 @@ class TrezorMgmt {
     }
 
     sendDecryptCallback() {
-        this.trezorConnect.cipherKeyValue({device: this._activeTrezorDevice, useEmptyPassphrase: true, path: PATH, key: this._cryptoData.keyPhrase, value: this._cryptoData.nonce, encrypt: this._cryptoData.enc, askOnEncrypt: this._cryptoData.askOnEnc, askOnDecrypt: true}).then((result) => {
+        this.trezorConnect.cipherKeyValue({device: this._activeTrezorDevice, override: true, useEmptyPassphrase: true, path: PATH, key: this._cryptoData.keyPhrase, value: this._cryptoData.nonce, encrypt: this._cryptoData.enc, askOnEncrypt: this._cryptoData.askOnEnc, askOnDecrypt: true}).then((result) => {
             let enckey = new Buffer(result.data.resp.message.value, 'hex'),
                 password = new Buffer(this._cryptoData.password),
                 safenote = new Buffer(this._cryptoData.safe_note);
@@ -438,7 +438,7 @@ class TrezorMgmt {
     }
 
     getEncryptionKey() {
-        this.trezorConnect.cipherKeyValue({device: this._activeTrezorDevice, useEmptyPassphrase: true, path: PATH, key: this._cryptoData.keyPhrase, value: this._cryptoData.nonce, encrypt: this._cryptoData.enc, askOnEncrypt: this._cryptoData.askOnEnc, askOnDecrypt: true}).then((result) => {
+        this.trezorConnect.cipherKeyValue({device: this._activeTrezorDevice, override: true, useEmptyPassphrase: true, path: PATH, key: this._cryptoData.keyPhrase, value: this._cryptoData.nonce, encrypt: this._cryptoData.enc, askOnEncrypt: this._cryptoData.askOnEnc, askOnDecrypt: true}).then((result) => {
             this.bgStore.emit('sendMessage', 'loading', 'We\'re getting there ...');
             if (result.success) {
                 this.bgStore.masterKey = result.data.resp.message.value;

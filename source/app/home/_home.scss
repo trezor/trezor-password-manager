@@ -104,7 +104,7 @@
     }
 
     .dev-list {
-      border: 1px solid white;
+      border: 1px solid rgba($c_white, .45);
       display: block;
       width: 320px;
       margin: 0 auto;
@@ -121,11 +121,11 @@
         position: relative;
         padding: 20px 0 20px 50px;
         width: 100%;
-        border-bottom: 1px solid white;
+        border-bottom: 1px solid rgba($c_white, .45);
 
         &:hover {
           text-decoration: none;
-          background-color: rgba($c_white, .25);
+          background-color: rgba($c_white, .30);
           cursor: pointer;
         }
 

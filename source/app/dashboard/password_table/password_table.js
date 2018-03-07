@@ -35,7 +35,7 @@ var React = require('react'),
             window.myStore.on('filter', this.setupFilter);
             window.myStore.on('toggleNewEntry', this.toggleNewEntry);
             window.myStore.on('update', this.updateTableContent);
-            chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.chromeTableMsgHandler(request, sender, sendResponse));
+            chrome.runtime.onMessage.addListener(this.chromeTableMsgHandler);
 
         },
 
@@ -168,7 +168,7 @@ var React = require('react'),
 
         render(){
             var raw_table = this.getProperOrderArr(),
-                password_table = !!raw_table ? raw_table.map((key) => {
+                password_table = !!raw_table.length ? raw_table.map((key) => {
                     var obj = this.state.entries[key];
                     if (this.activeTag(obj)) {
                         if (this.filterIsSet()) {

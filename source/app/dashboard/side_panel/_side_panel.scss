@@ -26,7 +26,7 @@ aside.left-panel {
 }
 
 .logo {
-  padding: 20px 28px;
+  padding: 24px 28px;
   line-height: 51px;
   height: 81px;
   border-bottom: 1px solid rgba(255, 255, 255, .10);
@@ -45,7 +45,7 @@ aside.left-panel {
     display: inline-block;
     float: left;
     margin-right: 10px;
-    height: 40px;
+    height: 34px;
 
     @media screen and (max-width: $break-small) {
       margin: 0 auto;
@@ -66,6 +66,17 @@ aside.left-panel {
     margin: 0;
   }
 
+  ul.list-unstyled > li:first-child {
+
+    &:after {
+      content: 'TAGS';
+      display: block;
+      padding: 20px 0 10px 28px;
+      font-size: 12px;
+      color: rgba($c_white, .7);
+    }
+  }
+
   ul > li {
     position: relative;
     cursor: pointer;
@@ -81,7 +92,7 @@ aside.left-panel {
 
     & > a {
       display: block;
-      padding: 17px 28px;
+      padding: 14px 24px;
       color: $c_white;
       font-size: 15px;
       text-decoration: none;
@@ -108,7 +119,8 @@ aside.left-panel {
 
       i {
         margin-right: 6px;
-        font-size: 18px;
+        margin-top: 1px;
+        font-size: 24px;
         width: 25px;
         float: left;
 
@@ -123,6 +135,9 @@ aside.left-panel {
       }
 
       span {
+        display: inline-block;
+        line-height: 24px;
+
         @media screen and (max-width: $break-small) {
           display: none;
         }
@@ -137,9 +152,9 @@ aside.left-panel {
       display: none;
       position: relative;
       float: right;
-      margin-top: -45px;
+      margin-top: -52px;
       width: 45px;
-      height: 45px;
+      height: 52px;
       transition: all 300ms;
 
       &.open {
@@ -162,10 +177,10 @@ aside.left-panel {
 
           & > li > a {
             font-size: .9em;
-            padding-left: 16px !important;
+            padding-left: 30px !important;
 
             &:hover {
-              background: $c_white;
+              background: rgba(255,255,255,.10);
             }
 
             & > i {
@@ -180,9 +195,9 @@ aside.left-panel {
         display: block;
         width: 45px;
         text-align: right;
-        height: 45px;
+        height: 52px;
         margin-top: 0;
-        line-height: 45px;
+        line-height: 52px;
         font-size: 1.2em;
         padding: 0;
         color: $c_white;
@@ -200,8 +215,8 @@ aside.left-panel {
           display: block;
           color: $c_white;
           width: 45px;
-          height: 45px;
-          line-height: 45px;
+          height: 52px;
+          line-height: 52px;
           text-align: center;
           content: "\f20b";
           font-size: 1em;
@@ -211,11 +226,32 @@ aside.left-panel {
     }
 
     &.add-tag-btn {
-      background: rgba(255,255,255,.10);
-      width: 80%;
-      @include border-radius(30px);
-      i {
-        color: $c_white;
+      vertical-align: middle;
+      padding-left: 15px;
+      margin-top: 15px;
+      margin-bottom: 15px;
+
+      a {
+        padding: 0 0 0 40px;
+        background: rgba(255,255,255,.10);
+        width: 220px;
+        height: 40px;
+        line-height: 31px;
+        @include border-radius(20px);
+
+        span {
+          margin-top: 4px;
+          line-height: 31px;
+        }
+
+        i {
+          color: $c_white;
+          font-size: 40px;
+          position: absolute;
+          top: 0;
+          left: 16px;
+        }
+
       }
     }
   }

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="140px" height="62px" viewBox="0 0 140 62" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49 (51002) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 12</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="36" height="36" rx="3.6"></rect>
+        <rect id="path-3" x="0" y="0" width="32" height="32" rx="3.2"></rect>
+        <rect id="path-5" x="0" y="0" width="24" height="24" rx="2.4"></rect>
+        <rect id="path-6" x="0" y="0" width="25.6" height="25.6" rx="2.56"></rect>
+        <rect id="path-7" x="0" y="0" width="48" height="48" rx="6.4"></rect>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Application-add-password" transform="translate(-565.000000, -269.000000)">
+            <g id="Group-12" transform="translate(565.000000, 269.000000)">
+                <g id="Group-10" transform="translate(84.000000, 0.000000)">
+                    <g id="Rectangle-13">
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <g id="Mask">
+                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+                            <rect stroke="#E9E9E9" stroke-width="1" x="0.5" y="0.5" width="35" height="35" rx="3.6"></rect>
+                        </g>
+                        <rect fill-opacity="0.300000012" fill="#E9E9E9" mask="url(#mask-2)" x="28" y="28" width="21" height="39" rx="4"></rect>
+                        <rect fill-opacity="0.300000012" fill="#E9E9E9" mask="url(#mask-2)" x="-10" y="12" width="21" height="39" rx="7"></rect>
+                    </g>
+                    <text id="&amp;" font-family="Roboto-Black, Roboto" font-size="14.4" font-weight="700" fill="#666666">
+                        <tspan x="13.5984375" y="24">&amp;</tspan>
+                    </text>
+                </g>
+                <g id="Group-5" transform="translate(16.000000, 2.000000)">
+                    <g id="Rectangle-13">
+                        <mask id="mask-4" fill="white">
+                            <use xlink:href="#path-3"></use>
+                        </mask>
+                        <g id="Mask">
+                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-3"></use>
+                            <rect stroke="#E9E9E9" stroke-width="1" x="0.5" y="0.5" width="31" height="31" rx="3.2"></rect>
+                        </g>
+                        <rect fill-opacity="0.300000012" fill="#E9E9E9" mask="url(#mask-4)" x="26" y="10" width="21" height="39" rx="7"></rect>
+                        <rect fill-opacity="0.300000012" fill="#E9E9E9" mask="url(#mask-4)" x="-11" y="20" width="21" height="39" rx="4"></rect>
+                    </g>
+                    <text id="#" font-family="Roboto-Black, Roboto" font-size="12.8" font-weight="700" fill="#666666">
+                        <tspan x="13.08125" y="21">#</tspan>
+                    </text>
+                </g>
+                <g id="Group-3" transform="translate(0.000000, 24.000000)">
+                    <g id="Rectangle-4-Copy-5">
+                        <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-5"></use>
+                        <rect stroke="#E9E9E9" stroke-width="1" x="0.5" y="0.5" width="23" height="23" rx="2.4"></rect>
+                    </g>
+                    <text id="M" font-family="Roboto-Black, Roboto" font-size="9.6" font-weight="700" fill="#666666">
+                        <tspan x="8.09296875" y="16.6">M</tspan>
+                    </text>
+                </g>
+                <g id="Group-9" transform="translate(114.000000, 30.000000)">
+                    <g id="Rectangle-4-Copy">
+                        <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-6"></use>
+                        <rect stroke="#E9E9E9" stroke-width="1" x="0.5" y="0.5" width="24.6" height="24.6" rx="2.56"></rect>
+                    </g>
+                    <text id="K" font-family="Roboto-Black, Roboto" font-size="10.24" font-weight="700" fill="#666666">
+                        <tspan x="9.845" y="17.4">K</tspan>
+                    </text>
+                </g>
+                <g id="Group-7" transform="translate(45.000000, 14.000000)">
+                    <g id="Group-11">
+                        <g id="Rectangle-4-Copy-4">
+                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-7"></use>
+                            <rect stroke="#E9E9E9" stroke-width="1" x="0.5" y="0.5" width="47" height="47" rx="6.4"></rect>
+                        </g>
+                        <path d="M25.9515413,25.8910514 L21.538827,25.8910514 L20.1988073,27.0925407 L18.86158,25.9270752 L17.4092794,27.225 L14.4,24.4532279 L15.8345992,23.025 L26.0628597,23.025 C26.7353654,21.4857891 28.3641527,20.4 30.2666667,20.4 C32.7703575,20.4 34.8,22.2804041 34.8,24.6 C34.8,26.9195959 32.7703575,28.8 30.2666667,28.8 C28.2491531,28.8 26.5394576,27.5789802 25.9515413,25.8910514 Z M30.2666667,26.175 C31.2055507,26.175 31.9666667,25.4698485 31.9666667,24.6 C31.9666667,23.7301515 31.2055507,23.025 30.2666667,23.025 C29.3277826,23.025 28.5666667,23.7301515 28.5666667,24.6 C28.5666667,25.4698485 29.3277826,26.175 30.2666667,26.175 Z" id="Combined-Shape" fill="#666666"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
