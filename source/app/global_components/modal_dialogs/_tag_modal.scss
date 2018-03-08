@@ -21,6 +21,7 @@
         font-size: 3em;
         height: 100px;
         line-height: 100px;
+        vertical-align: top;
       }
 
       .btn-controls {
@@ -71,17 +72,16 @@
       }
 
       span {
-        background: $c_blue_dark_very;
         display: inline-block;
         position: relative;
         text-align: center;
 
         i {
           display: inline-block;
-          color: $c_white;
+          color: $c_blue_dark_very;
           position: relative;
           line-height: 100px;
-          font-size: 4em;
+          font-size: 5em;
           @include transition(all 50ms ease-in-out);
           width: 100px;
           height: 100px;

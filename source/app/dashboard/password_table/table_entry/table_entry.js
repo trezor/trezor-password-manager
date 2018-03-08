@@ -482,7 +482,7 @@ var React = require('react'),
                             <div className={this.state.image_visible && this.isUrl(this.state.title) ? 'avatar white-bg' : 'avatar'}>
                                 {this.state.image_visible &&
                                 <img src={this.state.image_src} onError={this.handleImageError}/>}
-                                <i className={'icon ion-' + window.myStore.getTagIconById(this.state.tags_id[this.state.tags_id.length-1])}></i>
+                                <i className={'icon icon-' + window.myStore.getTagIconById(this.state.tags_id[this.state.tags_id.length-1])}></i>
                                 {this.state.username.length === 0 ?
                                     <a href={this.isUrl(this.state.title) ? this.setProtocolPrefix(this.state.title) : null}
                                        className={this.isUrl(this.state.title) ? 'pointer' : null}></a> :

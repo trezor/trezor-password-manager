@@ -88,7 +88,6 @@ class TrezorMgmt {
     }
 
     _deviceEvent(msg) {
-        console.warn('device EVENT : ', msg);
         let device = msg.data;
         switch(msg.type) {
             case 'device__connect':
@@ -102,7 +101,6 @@ class TrezorMgmt {
     }
 
     _uiEvent(msg) {
-        console.warn('UI EVENT : ', msg);
         switch(msg.type) {
             case 'ui-request_pin':
                 this.bgStore.emit('showPinDialog');

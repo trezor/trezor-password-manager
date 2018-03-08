@@ -223,7 +223,7 @@ var React = require('react'),
                                 <div className={this.state.devices.length ? 'hidden' : 'desc'}>
                                     <span className='connect_trezor'><img src='dist/app-images/connect-trezor.svg'/> Connect TREZOR to continue</span>
                                     <div className='desc'>
-                                        <small>Don't have a TREZOR? <a href="https://shop.trezor.io/">Get one!</a></small>
+                                        <small>Don't have a TREZOR? <a href="https://shop.trezor.io/">Get one</a></small>
                                     </div>
                                 </div>
                             </div>

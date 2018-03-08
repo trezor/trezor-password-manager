@@ -98,7 +98,7 @@
 
     span {
       max-width: 290px;
-      color: rgba($c_white, .8);
+      color: rgba($c_white, .7);
       font-size: 1.1em;
       font-weight: 400;
     }
@@ -107,6 +107,12 @@
       position: relative;
       display: block;
       margin: 10px 0;
+      color: rgba($c_white, .7);
+
+      a {
+        color: rgba($c_white, .7);
+        text-decoration: underline;
+      }
     }
 
     .dev-list {
@@ -171,14 +177,14 @@
     span.connect_trezor {
       display: block;
       margin: 0 auto;
-      height: 40px;
-      line-height: 40px;
-      padding: 0 20px 0 20px;
+      height: 60px;
+      line-height: 60px;
       margin-bottom: 5px;
+      color: $c_white;
       @include animation(1.5s pulsate infinite ease-in-out);
       img {
-        margin-top: 4px;
-        width: 18px;
+        margin-top: 12px;
+        width: 20px;
         color: white;
       }
     }
@@ -329,6 +335,6 @@
   }
 
   img {
-    @include animation(.75s rotateplane infinite ease-in-out);
+    @include animation(.3s rotateplane infinite ease-in-out);
   }
 }

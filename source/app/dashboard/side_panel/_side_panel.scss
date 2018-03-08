@@ -99,6 +99,7 @@ aside.left-panel {
       font-weight: 400;
       outline: none !important;
       @include transition(all 0.3s);
+      // animation: blink .5s linear 0s 1 normal none;
 
       @media screen and (max-width: $break-small) {
         width: 80px;
@@ -111,6 +112,7 @@ aside.left-panel {
 
       &:hover {
         color: $c_white;
+        background: rgba($c_white,.1);
       }
 
       .nav-label {
@@ -180,7 +182,7 @@ aside.left-panel {
             padding-left: 30px !important;
 
             &:hover {
-              background: rgba(255,255,255,.10);
+              background: rgba($c_white,.1);
             }
 
             & > i {
@@ -238,6 +240,10 @@ aside.left-panel {
         height: 40px;
         line-height: 31px;
         @include border-radius(20px);
+
+        &:hover {
+          @include box-shadow(0px 4px 6px 0 hsla(0, 0%, 0%, 0.1));
+        }
 
         span {
           margin-top: 4px;

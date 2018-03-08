@@ -8,6 +8,7 @@
 'use strict';
 
 require('babel-polyfill');
+require('trezor-connect');
 
 window.tpmErroLog = [];
 window.AppRootFolder = 'Apps';

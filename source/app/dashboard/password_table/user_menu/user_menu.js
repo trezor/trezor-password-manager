@@ -49,6 +49,7 @@ var React = require('react'),
                 <span className='user-menu'>
                     <input id="myInput"
                            type="file"
+                           accept=".csv"
                            ref={'fileUploader'}
                            style={{display: 'none'}}
                            onChange={this.onChangeFile}

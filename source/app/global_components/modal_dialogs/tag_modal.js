@@ -184,7 +184,7 @@ var React = require('react'),
                                 <div className='avatar'>
                                     <a className='icon ion-chevron-left prev'
                                        onClick={this.prevIcon}></a>
-                                    <span><i className={'icon ion-'+this.state.newIcon}></i></span>
+                                    <span><i className={'icon icon-'+this.state.newIcon}></i></span>
                                     <a className='icon ion-chevron-right next'
                                        onClick={this.nextIcon}></a>
                                 </div>
