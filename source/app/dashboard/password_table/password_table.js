@@ -201,7 +201,7 @@ var React = require('react'),
                             )
                         }
                     }
-                }) : (<span className='no-entries'>No entries here yet</span>),
+                }) : (<div className='no-entries'><img src='dist/app-images/nopwd.svg' alt='no passwords'/><span>Add your first password.</span></div>),
                 newTagArr = this.state.active_id === 0 ? [] : [this.state.active_id];
 
             return (

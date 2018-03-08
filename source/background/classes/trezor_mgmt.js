@@ -39,14 +39,17 @@ class TrezorMgmt {
             'askOnEnc': true
         };
         this.trezorConnect = tc;
-        this.trezorConnect.on('DEVICE_EVENT', msg => this.deviceEvent(msg));
-        this.trezorConnect.on('UI_EVENT', msg => this.uiEvent(msg));
+        this.trezorConnect.on('TRANSPORT_EVENT', msg => this._transportEvent(msg));
+        this.trezorConnect.on('DEVICE_EVENT', msg => this._deviceEvent(msg));
+        this.trezorConnect.on('UI_EVENT', msg => this._uiEvent(msg));
         let ts = new Date().getTime();
         this.trezorConnect.init({
             webusb: false,
+            popup : false,
             iframe_src: URL_IFRAME + '?r=' + ts,
             popup_src: URL_POPUP,
         });
+
     }
 
     _handleTrezorError(error, operation, fallback) {
@@ -76,7 +79,15 @@ class TrezorMgmt {
         this.bgStore.emit('sendMessage', 'updateDevices', {devices: this._deviceList});
     }
 
-    deviceEvent(msg) {
+    _transportEvent(msg) {
+        switch(msg.type) {
+            case 'transport__error':
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
+                break;
+        }
+    }
+
+    _deviceEvent(msg) {
         console.warn('device EVENT : ', msg);
         let device = msg.data;
         switch(msg.type) {
@@ -90,7 +101,7 @@ class TrezorMgmt {
         }
     }
 
-    uiEvent(msg) {
+    _uiEvent(msg) {
         console.warn('UI EVENT : ', msg);
         switch(msg.type) {
             case 'ui-request_pin':
@@ -111,7 +122,12 @@ class TrezorMgmt {
                 this._deviceList.push(device);
                 this.bgStore.emit('sendMessage', 'updateDevices', {devices: this._deviceList});
             } else {
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NOT_INIT'});
+                if (!!device.features.bootloader_mode) {
+                    this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_BOOTLOADER'});
+                } else {
+                    this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NOT_INIT'});
+                }
+
             }
 
         }

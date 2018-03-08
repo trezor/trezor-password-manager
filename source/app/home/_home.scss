@@ -10,7 +10,7 @@
 }
 
 .home {
-  padding-top: 10%;
+  padding-top: 20vh;
   position: relative;
   width: 100%;
   text-align: center;
@@ -103,6 +103,12 @@
       font-weight: 400;
     }
 
+    .desc {
+      position: relative;
+      display: block;
+      margin: 10px 0;
+    }
+
     .dev-list {
       border: 1px solid rgba($c_white, .45);
       display: block;
@@ -163,9 +169,15 @@
     }
 
     span.connect_trezor {
+      display: block;
+      margin: 0 auto;
+      height: 40px;
+      line-height: 40px;
+      padding: 0 20px 0 20px;
+      margin-bottom: 5px;
       @include animation(1.5s pulsate infinite ease-in-out);
       img {
-        margin-top: -7px;
+        margin-top: 4px;
         width: 18px;
         color: white;
       }
@@ -287,6 +299,15 @@
         color: white;
         text-decoration: underline;
       }
+    }
+  }
+
+  .button_dialog {
+    .icon {
+      font-size: 5em;
+      display: block;
+      position: relative;
+      margin: 0 auto;
     }
   }
 

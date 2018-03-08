@@ -142,7 +142,7 @@ var React = require('react'),
                             restartAction: true,
                             supportAction: false,
                             redirectAction: true,
-                            closeAction: false,
+                            closeAction: true,
                             redirectText: 'TREZOR Bridge',
                             redirectTo: 'https://wallet.trezor.io/#/bridge/',
                             supportDefaultMailText: ''
@@ -169,7 +169,8 @@ var React = require('react'),
                     return {
                         errorTitle: 'TREZOR in bootloader mode.',
                         solution: [
-                            'If you really want to upgrade firmware go to TREZOR Wallet.'
+                            'To upgrade firmware go to TREZOR Wallet.',
+                            'Otherwise restart Password Manager.'
                         ],
                         restartAction: true,
                         supportAction: false,
@@ -365,7 +366,7 @@ var React = require('react'),
                             <Modal.Title id='contained-modal-title-sm'>{this.state.errorTitle}</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            <b>Try this:</b>
+                            <b>Solution:</b>
                             <ul>
                                 {solution}
                             </ul>
