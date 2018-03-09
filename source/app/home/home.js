@@ -170,7 +170,7 @@ var React = require('react'),
                            data-tag-name={this.state.devices[key].label}
                            onClick={this.activateDevice.bind(null, key)}
                            onTouchStart={this.activateDevice.bind(null, key)}>
-                            <span className={this.state.devices[key].features.major_version === 2 ? 'icon t2' : 'icon t1'}></span>
+                            <span className={'icon t' + this.state.devices[key].version}></span>
                             <span className='nav-label'>{this.state.devices[key].label}</span>
                         </a>
                     </li>)

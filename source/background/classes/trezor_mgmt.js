@@ -27,7 +27,7 @@ class TrezorMgmt {
 
     constructor(bgStore, tc) {
         this.bgStore = bgStore;
-        this._activeTrezorDevice = null;
+        this._activeDevice = null;
         this._deviceList = [];
         this._trezorConnected = false;
         this._retryWrongPin = false;
@@ -45,11 +45,13 @@ class TrezorMgmt {
         let ts = new Date().getTime();
         this.trezorConnect.init({
             webusb: false,
+            debug: true,
+            transportReconnect: false,
             popup : false,
-            iframe_src: URL_IFRAME + '?r=' + ts,
-            popup_src: URL_POPUP,
+            iframeSrc: URL_IFRAME + '?r=' + ts,
+            popupSrc: URL_POPUP,
         });
-
+        this.bgStore.emit('checkReopen');
     }
 
     _handleTrezorError(error, operation, fallback) {
@@ -88,10 +90,19 @@ class TrezorMgmt {
     }
 
     _deviceEvent(msg) {
-        let device = msg.data;
+        console.warn('DEVICE MSG: ', msg);
+        let device = this._getCleanDevice(msg.payload);
         switch(msg.type) {
             case 'device__connect':
                 this._addDevice(device);
+                break;
+
+            case 'device__connect_unacquired':
+                this._addDevice(device);
+                break;
+
+            case 'device__changed':
+                this._updateDevice(device);
                 break;
 
             case 'device__disconnect':
@@ -114,30 +125,32 @@ class TrezorMgmt {
 
     _addDevice(d) {
         let device = d;
-        if (!this._deviceList.includes(device)) {
-            device.active = device.features.initialized;
-            if (device.active) {
-                this._deviceList.push(device);
-                this.bgStore.emit('sendMessage', 'updateDevices', {devices: this._deviceList});
-            } else {
-                if (!!device.features.bootloader_mode) {
-                    this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_BOOTLOADER'});
+        if (device.accquired) {
+            if (!this._hasDevice(device)) {
+                if (device.initialized) {
+                    this._deviceList.push(device);
+                    this.bgStore.emit('sendMessage', 'updateDevices', {devices: this._deviceList});
                 } else {
-                    this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NOT_INIT'});
+                    if (!!device.bootloader_mode) {
+                        this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_BOOTLOADER'});
+                    } else {
+                        this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NOT_INIT'});
+                    }
                 }
-
             }
-
+        } else {
+            this._deviceList.push(device);
+            this.bgStore.emit('sendMessage', 'updateDevices', {devices: this._deviceList});
         }
     }
 
     _removeDevice(d) {
         let device = d;
-        let i = this._deviceList.findIndex(e => e.path === device.path);
-        if (i > -1) {
+        if (this._hasDevice(device)) {
+            let i = this._getIndexDevice(device);
             this._deviceList.splice(i, 1);
-            if (this._activeTrezorDevice !== null) {
-                if (this._activeTrezorDevice.path === device.path) {
+            if (this._activeDevice !== null) {
+                if (this._activeDevice.path === device.path) {
                     this._disconnect();
                 }
             }
@@ -145,10 +158,53 @@ class TrezorMgmt {
         }
     }
 
+    _updateDevice(d) {
+        let device = d;
+        // TBD
+        if (this._hasDevice(device)) {
+            this._deviceList[this._getIndexDevice(device)] = device;
+            this.bgStore.emit('sendMessage', 'updateDevices', {devices: this._deviceList});
+        }
+    }
+
+    _getCleanDevice(d) {
+        let newDev = {
+            label: d.label,
+            path: d.path
+        };
+        if (typeof d.features !== 'undefined') {
+            newDev.accquired = true;
+            newDev.version = d.features.major_version;
+            newDev.initialized = d.features.initialized;
+            newDev.bootloader_mode = d.features.bootloader_mode;
+        } else {
+            newDev.accquired = false;
+            newDev.version = 'unknown';
+            newDev.initialized = false;
+            newDev.bootloader_mode = false;
+        }
+        if (d.featuresNeedsReload && typeof d.featuresNeedsReload !== 'undefined') {
+            newDev.needReload = true;
+        } else {
+            newDev.needReload = false;
+        }
+        return newDev;
+    }
+
+    _hasDevice(d) {
+        let device = d;
+        return this._getIndexDevice(device) > -1;
+    }
+
+    _getIndexDevice(d) {
+        let device = d;
+        return this._deviceList.findIndex(e => e.path === device.path);
+    }
+
     useDevice(p) {
         let path = p;
         let i = this._deviceList.findIndex(e => e.path === path);
-        this._activeTrezorDevice = this._deviceList[i];
+        this._activeDevice = this._deviceList[i];
         this.getEncryptionKey();
     }
 
@@ -301,7 +357,7 @@ class TrezorMgmt {
     _disconnect() {
         this.bgStore.masterKey = '';
         this.bgStore.encryptionKey = '';
-        this._activeTrezorDevice = null;
+        this._activeDevice = null;
         this._cryptoData = {
             'keyPhrase': DEFAULT_KEYPHRASE,
             'nonce': DEFAULT_NONCE,
@@ -312,7 +368,7 @@ class TrezorMgmt {
     }
 
     pinEnter(pin) {
-        this.trezorConnect.uiResponse({ type: 'ui-receive_pin', data: pin });
+        this.trezorConnect.uiResponse({ type: 'ui-receive_pin', payload: pin });
     }
 
     _buttonCallback() {
@@ -394,7 +450,7 @@ class TrezorMgmt {
     }
 
     sendEncryptCallback() {
-        this.trezorConnect.cipherKeyValue({device: this._activeTrezorDevice, override: true, useEmptyPassphrase: true, path: PATH, key: this._cryptoData.keyPhrase, value: this._cryptoData.nonce, encrypt: this._cryptoData.enc, askOnEncrypt: this._cryptoData.askOnEnc, askOnDecrypt: true}).then((result) => {
+        this.trezorConnect.cipherKeyValue({device: {path: this._activeDevice.path}, override: true, useEmptyPassphrase: true, path: PATH, key: this._cryptoData.keyPhrase, value: this._cryptoData.nonce, encrypt: this._cryptoData.enc, askOnEncrypt: this._cryptoData.askOnEnc, askOnDecrypt: true}).then((result) => {
             let enckey = new Buffer(this._cryptoData.nonce, 'hex');
             this.encrypt(this._cryptoData.password, enckey).then((password)=> {
                 this.encrypt(this._cryptoData.safe_note, enckey).then((safenote)=> {
@@ -404,7 +460,7 @@ class TrezorMgmt {
                             username: this._cryptoData.username,
                             password: password,
                             safe_note: safenote,
-                            nonce: result.data.resp.message.value
+                            nonce: result.payload.value
                         }
                     });
                 });
@@ -429,8 +485,8 @@ class TrezorMgmt {
     }
 
     sendDecryptCallback() {
-        this.trezorConnect.cipherKeyValue({device: this._activeTrezorDevice, override: true, useEmptyPassphrase: true, path: PATH, key: this._cryptoData.keyPhrase, value: this._cryptoData.nonce, encrypt: this._cryptoData.enc, askOnEncrypt: this._cryptoData.askOnEnc, askOnDecrypt: true}).then((result) => {
-            let enckey = new Buffer(result.data.resp.message.value, 'hex'),
+        this.trezorConnect.cipherKeyValue({device: {path: this._activeDevice.path}, override: true, useEmptyPassphrase: true, path: PATH, key: this._cryptoData.keyPhrase, value: this._cryptoData.nonce, encrypt: this._cryptoData.enc, askOnEncrypt: this._cryptoData.askOnEnc, askOnDecrypt: true}).then((result) => {
+            let enckey = new Buffer(result.payload.value, 'hex'),
                 password = new Buffer(this._cryptoData.password),
                 safenote = new Buffer(this._cryptoData.safe_note);
             // clear clipboard after 20 seconds
@@ -452,10 +508,10 @@ class TrezorMgmt {
     }
 
     getEncryptionKey() {
-        this.trezorConnect.cipherKeyValue({device: this._activeTrezorDevice, override: true, useEmptyPassphrase: true, path: PATH, key: this._cryptoData.keyPhrase, value: this._cryptoData.nonce, encrypt: this._cryptoData.enc, askOnEncrypt: this._cryptoData.askOnEnc, askOnDecrypt: true}).then((result) => {
+        this.trezorConnect.cipherKeyValue({device: {path: this._activeDevice.path}, override: true, useEmptyPassphrase: true, path: PATH, key: this._cryptoData.keyPhrase, value: this._cryptoData.nonce, encrypt: this._cryptoData.enc, askOnEncrypt: this._cryptoData.askOnEnc, askOnDecrypt: true}).then((result) => {
             this.bgStore.emit('sendMessage', 'loading', 'We\'re getting there ...');
             if (result.success) {
-                this.bgStore.masterKey = result.data.resp.message.value;
+                this.bgStore.masterKey = result.payload.value;
                 let temp = this.bgStore.masterKey;
                 this.bgStore.encryptionKey = new Buffer(temp.substring(temp.length / 2, temp.length), 'hex');
                 this.bgStore.emit('loadFile');
