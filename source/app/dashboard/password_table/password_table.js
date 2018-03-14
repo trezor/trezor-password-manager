@@ -207,13 +207,15 @@ var React = require('react'),
             return (
                 <div className='wraper container-fluid'>
                     <div className='row page-title'>
-                        <div className='col-xs-12'>
+                        <div className='col-sm-8 col-xs-9'>
                             <button type='button'
                                     onClick={this.toggleNewEntry}
                                     disabled={this.state.newEntry}
                                     className='blue-btn add'>Add entry
                             </button>
                             <FilterInput eventEmitter={this.props.eventEmitter}/>
+                        </div>
+                        <div className="col-sm-4 col-xs-3 text-right">
                             <DropdownButton title='Sort' className='dropdown order' noCaret pullRight
                                             id='order-dropdown-no-caret'>
                                 <MenuItem active={this.state.orderType === 'note'}

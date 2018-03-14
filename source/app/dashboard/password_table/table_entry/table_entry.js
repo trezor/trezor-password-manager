@@ -56,7 +56,6 @@ var React = require('react'),
         },
 
         componentDidMount() {
-            window.myStore.on('decryptEntry', this.decryptingEntry);
             if (this.isUrl(this.removeProtocolPrefix(this.state.title))) {
                 this.setState({
                     image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title) + '?size=100'
@@ -71,10 +70,6 @@ var React = require('react'),
             }
         },
 
-        componentWillUnmount() {
-            window.myStore.removeListener('decryptEntry', this.decryptingEntry);
-        },
-
         handleChange(e) {
             if (this.state.content_changed === '') {
                 this.setState({
@@ -85,13 +80,6 @@ var React = require('react'),
                 this.setState({
                     [e.target.name]: e.target.value
                 });
-            }
-        },
-
-        decryptingEntry(e) {
-            let val = e;
-            if (this.state.waiting_trezor !== '' && val !== this.state.key_value) {
-                this.setTrezorWaitingBackface(false);
             }
         },
 
@@ -130,7 +118,6 @@ var React = require('react'),
                 safe_note: this.state.safe_note,
                 nonce: this.state.nonce
             };
-            window.myStore.emit('decryptEntry', this.state.key_value);
             chrome.runtime.sendMessage({type: 'decryptPassword', content: data, clipboardClear: false}, response => {
                 if (response !== null) {
                     chrome.runtime.sendMessage({type: 'openTabAndLogin', content: response.content});
@@ -160,7 +147,6 @@ var React = require('react'),
                 safe_note: this.state.safe_note,
                 nonce: this.state.nonce
             };
-            window.myStore.emit('decryptEntry', this.state.key_value);
             chrome.runtime.sendMessage({type: 'decryptPassword', content: data, clipboardClear: true}, response => {
                 if (response !== null) {
                     Clipboard.copy(response.content.password);
@@ -177,6 +163,10 @@ var React = require('react'),
             });
         },
 
+        responseTarget(resp) {
+            return resp.content.nonce === this.state.nonce;
+        },
+
         changeMode() {
             this.hidePassword();
             if (this.state.mode === 'list-mode') {
@@ -188,22 +178,22 @@ var React = require('react'),
                     safe_note: this.state.safe_note,
                     nonce: this.state.nonce
                 };
-                window.myStore.emit('decryptEntry', this.state.key_value);
-                chrome.runtime.sendMessage({type: 'decryptFullEntry', content: data}, response => {
-                    if (response !== null) {
-                        this.setState({
-                            password: response.content.password,
-                            safe_note: response.content.safe_note,
-                            mode: 'edit-mode',
-                            password_visible: false,
-                            safe_note_visible: false,
-                            tags_titles: window.myStore.getTagTitleArrayById(this.state.tags_id),
-                            tag_globa_title_array: window.myStore.getTagTitleArray(),
-                            tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value, this.state.tags_id)
-                        });
+                chrome.runtime.sendMessage({type: 'decryptFullEntry', content: data}, (response) => {
+                    if (this.responseTarget(response)) {
+                        if (response.content.success) {
+                            this.setState({
+                                password: response.content.password,
+                                safe_note: response.content.safe_note,
+                                mode: 'edit-mode',
+                                password_visible: false,
+                                safe_note_visible: false,
+                                tags_titles: window.myStore.getTagTitleArrayById(this.state.tags_id),
+                                tag_globa_title_array: window.myStore.getTagTitleArray(),
+                                tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value, this.state.tags_id)
+                            });
+                        }
+                        this.setTrezorWaitingBackface(false);
                     }
-                    this.setTrezorWaitingBackface(false);
-
                 });
             } else {
                 let oldValues = window.myStore.getEntryValuesById(this.state.key_value);
@@ -399,7 +389,7 @@ var React = require('react'),
         },
 
         keyPressed(event) {
-            if (event.keyCode == 27) {
+            if (event.keyCode === 27) {
                 if (this.state.content_changed === '') {
                     this.setState({
                         mode: 'list-mode'

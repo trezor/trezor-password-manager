@@ -59,7 +59,7 @@ var React = require('react'),
                                     pullRight
                                     noCaret
                                     id='user-dropdown'>
-                        <MenuItem onSelect={this.importClick}><i className='ion-document'></i>Import storage</MenuItem>
+                        {/* <MenuItem onSelect={this.importClick}><i className='ion-document'></i>Import storage</MenuItem> */}
                         <MenuItem onSelect={this.userSwitch}><i className='ion-log-out'></i>Switch user</MenuItem>
                     </DropdownButton>
                 </span>

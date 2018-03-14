@@ -1,6 +1,7 @@
 form.filter {
-  display: inline-block;
+  display: flex;
   position: relative;
+  flex-grow: 100;
 
   input {
     outline: none;

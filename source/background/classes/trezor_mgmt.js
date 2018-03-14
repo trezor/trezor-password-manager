@@ -29,7 +29,6 @@ class TrezorMgmt {
         this.bgStore = bgStore;
         this._activeDevice = null;
         this._deviceList = [];
-        this._trezorConnected = false;
         this._retryWrongPin = false;
         this._clearClipboard = false;
         this._cryptoData = {
@@ -38,6 +37,7 @@ class TrezorMgmt {
             'enc': true,
             'askOnEnc': true
         };
+        this._decryptProgress = false;
         this.trezorConnect = tc;
         this.trezorConnect.on('TRANSPORT_EVENT', msg => this._transportEvent(msg));
         this.trezorConnect.on('DEVICE_EVENT', msg => this._deviceEvent(msg));
@@ -45,9 +45,9 @@ class TrezorMgmt {
         let ts = new Date().getTime();
         this.trezorConnect.init({
             webusb: false,
-            debug: true,
+            debug: false,
             transportReconnect: false,
-            popup : false,
+            popup: false,
             iframeSrc: URL_IFRAME + '?r=' + ts,
             popupSrc: URL_POPUP,
         });
@@ -66,11 +66,11 @@ class TrezorMgmt {
         }
         switch (error.code) { // 'Failure' messages
             case WRONG_PIN:
-              this.bgStore.emit('sendMessage', 'wrongPin');
-              //TODO it smart asshole!
-              this._retryWrongPin = {op: operation};
-              return;
-              break;
+                this.bgStore.emit('sendMessage', 'wrongPin');
+                //TODO it smart asshole!
+                this._retryWrongPin = {op: operation};
+                return;
+                break;
         }
         console.error('tmgm err: ', error);
         return never;
@@ -83,7 +83,7 @@ class TrezorMgmt {
 
     _transportEvent(msg) {
         console.warn('TRANSPORT V: ', msg);
-        switch(msg.type) {
+        switch (msg.type) {
             case 'transport__error':
                 this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
                 break;
@@ -91,9 +91,8 @@ class TrezorMgmt {
     }
 
     _deviceEvent(msg) {
-        console.warn('DEVICE MSG: ', msg);
         let device = this._getCleanDevice(msg.payload);
-        switch(msg.type) {
+        switch (msg.type) {
             case 'device__connect':
                 this._addDevice(device);
                 break;
@@ -113,7 +112,7 @@ class TrezorMgmt {
     }
 
     _uiEvent(msg) {
-        switch(msg.type) {
+        switch (msg.type) {
             case 'ui-request_pin':
                 this.bgStore.emit('showPinDialog');
                 break;
@@ -209,152 +208,6 @@ class TrezorMgmt {
         this.getEncryptionKey();
     }
 
-
-    /*
-    checkTransport(transport) {
-        this.current_ext_version = transport.version;
-        this.transportLoading = false;
-        this.checkVersions();
-    }
-
-    versionCompare(a, b) {
-        let pa = a.split('.');
-        let pb = b.split('.');
-        for (let i = 0; i < 3; i++) {
-            let na = Number(pa[i]);
-            let nb = Number(pb[i]);
-            if (na > nb) return true;
-            if (nb > na) return false;
-            if (!isNaN(na) && isNaN(nb)) return true;
-            if (isNaN(na) && !isNaN(nb)) return false;
-        }
-        return false;
-    }
-
-    checkVersions() {
-        this.bgStore.emit('checkReopen');
-        if (!this.transportLoading) {
-            if (this.current_ext_version !== '') {
-                if (!this.versionCompare(this.current_ext_version, MINIMAL_EXTENSION_VERSION)) {
-                    // bad version
-                    this.bgStore.emit('sendMessage', 'errorMsg', {
-                        code: 'T_OLD_VERSION',
-                        msg: this.current_ext_version
-                    });
-                }
-            } else {
-                // no extension
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT', msg: this.current_ext_version});
-            }
-        }
-    }
-
-    connectedNew(device) {
-        this.trezorDevice = device;
-        this.connect();
-    }
-
-    connectedUnacquiredTrezor(unacquiredDevice) {
-        this.unacquiredDevice = unacquiredDevice;
-        this.unacquiredDevice.once('disconnect', () => this.disconnectedUnacquiredTrezor());
-        this.unacquiredDevice.once('connect', () => this.disconnectedUnacquiredTrezor());
-    }
-
-    disconnectedUnacquiredTrezor() {
-        this.unacquiredDevice = null;
-    }
-
-    stealTrezor() {
-        if (this.unacquiredDevice !== null) {
-            this.unacquiredDevice.steal().then(device => {
-                this.trezorDevice = device;
-            }); // no need to run connectTrezor again, will run automatically
-        }
-    }
-
-    userSwitch() {
-        this._cryptoData = {
-            'keyPhrase': DEFAULT_KEYPHRASE,
-            'nonce': DEFAULT_NONCE,
-            'enc': true,
-            'askOnEnc': true
-        };
-    }
-
-    connect() {
-        if (this.bgStore.phase === 'TREZOR') {
-            var doSteal = this.trezorDevice === null;
-            if (doSteal) {
-                this.stealTrezor();
-                return;
-            }
-            try {
-                this.bgStore.emit('sendMessage', 'trezorConnected');
-                this.trezorDevice.on('pin', (type, callback) => this.pinCallback(type, callback));
-                this.trezorDevice.on('passphrase', (callback) => this.passphraseCallback(callback));
-                this.trezorDevice.on('button', (type, callback) => this.buttonCallback(type, callback));
-                this.trezorDevice.on('changedSessions', () => this.changedSessions());
-                this.trezorDevice.once('disconnect', () => this.disconnectCallback());
-
-                if (this.trezorDevice.isBootloader()) {
-                    this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_BOOTLOADER'});
-                    throw new Error('Device is in bootloader mode, re-connected it');
-                }
-
-                this.trezorDevice.runAggressive((session) => this.getEncryptionKey(session));
-
-            } catch (error) {
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_DEVICE', msg: error});
-                console.error('Device error:', error);
-                //TODO
-            }
-        }
-    }
-
-    changedSessions() {
-        if (!this.trezorDevice.isStolen() && this._retryWrongPin) {
-            let op = this._retryWrongPin.op;
-            this._retryWrongPin = false;
-            switch (op) {
-                case 'encKey':
-                    this.trezorDevice.runAggressive((session) => this.getEncryptionKey(session));
-                    break;
-                case 'encEntry':
-                    this.trezorDevice.runAggressive((session) => this.sendEncryptCallback(session));
-                    break;
-                case 'decEntry':
-                    this.trezorDevice.runAggressive((session) => this.sendDecryptCallback(session));
-                    break;
-            }
-        }
-    }
-
-    clearSession() {
-        this.trezorDevice.waitForSessionAndRun((session) => {
-            return session.clearSession()
-        });
-    }
-
-    pinCallback(type, callback) {
-        this.trezorDevice.pinCallback = callback;
-        this.bgStore.emit('showPinDialog');
-    }
-
-
-
-    passphraseCallback(callback) {
-        callback(null, '');
-    }
-
-
-
-    buttonEnter(code) {
-        this.trezorDevice.buttonCallback(null, code);
-    }
-
-
-    */
-
     _disconnect() {
         this.bgStore.masterKey = '';
         this.bgStore.encryptionKey = '';
@@ -369,7 +222,7 @@ class TrezorMgmt {
     }
 
     pinEnter(pin) {
-        this.trezorConnect.uiResponse({ type: 'ui-receive_pin', payload: pin });
+        this.trezorConnect.uiResponse({type: 'ui-receive_pin', payload: pin});
     }
 
     _buttonCallback() {
@@ -446,31 +299,51 @@ class TrezorMgmt {
                 'enc': true,
                 'askOnEnc': false
             };
-            this.sendEncryptCallback();
+            this.sendEncryptCallback(responseCallback);
         });
     }
 
-    sendEncryptCallback() {
-        this.trezorConnect.cipherKeyValue({device: {path: this._activeDevice.path}, override: true, useEmptyPassphrase: true, path: PATH, key: this._cryptoData.keyPhrase, value: this._cryptoData.nonce, encrypt: this._cryptoData.enc, askOnEncrypt: this._cryptoData.askOnEnc, askOnDecrypt: true}).then((result) => {
+    sendEncryptCallback(responseCallback) {
+        this.trezorConnect.cipherKeyValue({
+            device: {path: this._activeDevice.path},
+            override: true,
+            useEmptyPassphrase: true,
+            path: PATH,
+            key: this._cryptoData.keyPhrase,
+            value: this._cryptoData.nonce,
+            encrypt: this._cryptoData.enc,
+            askOnEncrypt: this._cryptoData.askOnEnc,
+            askOnDecrypt: true
+        }).then((result) => {
             let enckey = new Buffer(this._cryptoData.nonce, 'hex');
-            this.encrypt(this._cryptoData.password, enckey).then((password)=> {
-                this.encrypt(this._cryptoData.safe_note, enckey).then((safenote)=> {
-                    this._cryptoData.callback({
+            this.encrypt(this._cryptoData.password, enckey).then((password) => {
+                this.encrypt(this._cryptoData.safe_note, enckey).then((safenote) => {
+                    responseCallback({
                         content: {
                             title: this._cryptoData.title,
                             username: this._cryptoData.username,
                             password: password,
                             safe_note: safenote,
-                            nonce: result.payload.value
+                            nonce: result.payload.value,
+                            success: true
                         }
                     });
                 });
             });
-        }).catch((error) => this._handleTrezorError(error, 'encEntry', this._cryptoData.callback));
+        }).catch((error) => this._handleTrezorError(error, 'encEntry', responseCallback));
     }
 
     decryptFullEntry(data, responseCallback, clipboardClear) {
         this._clearClipboard = clipboardClear;
+        if (this._decryptProgress && typeof this._cryptoData.callback === 'function') {
+            this._cryptoData.callback({
+                content: {
+                    nonce: this._cryptoData.nonce,
+                    success: false
+                }
+            });
+        }
+        this._decryptProgress = true;
         this._cryptoData = {
             'title': data.title,
             'username': data.username,
@@ -482,38 +355,64 @@ class TrezorMgmt {
             'enc': false,
             'askOnEnc': false
         };
-        this.sendDecryptCallback();
+        this.sendDecryptCallback(responseCallback);
     }
 
-    sendDecryptCallback() {
-        this.trezorConnect.cipherKeyValue({device: {path: this._activeDevice.path}, override: true, useEmptyPassphrase: true, path: PATH, key: this._cryptoData.keyPhrase, value: this._cryptoData.nonce, encrypt: this._cryptoData.enc, askOnEncrypt: this._cryptoData.askOnEnc, askOnDecrypt: true}).then((result) => {
+    sendDecryptCallback(responseCallback) {
+        this.trezorConnect.cipherKeyValue({
+            device: {path: this._activeDevice.path},
+            override: true,
+            useEmptyPassphrase: true,
+            path: PATH,
+            key: this._cryptoData.keyPhrase,
+            value: this._cryptoData.nonce,
+            encrypt: this._cryptoData.enc,
+            askOnEncrypt: this._cryptoData.askOnEnc,
+            askOnDecrypt: true
+        }).then((result) => {
             if (result.success) {
                 let enckey = new Buffer(result.payload.value, 'hex'),
                     password = new Buffer(this._cryptoData.password),
                     safenote = new Buffer(this._cryptoData.safe_note);
                 // clear clipboard after 20 seconds
                 if (this._clearClipboard) {
-                    setTimeout(()=> {
+                    setTimeout(() => {
                         Clipboard.copy("");
                     }, 20 * 1000);
                 }
-                this._cryptoData.callback({
+                responseCallback({
                     content: {
                         title: this._cryptoData.title,
                         username: this._cryptoData.username,
                         password: JSON.parse(this.decrypt(password, enckey)),
                         safe_note: JSON.parse(this.decrypt(safenote, enckey)),
-                        nonce: this._cryptoData.nonce
+                        nonce: this._cryptoData.nonce,
+                        success: true
                     }
                 });
             } else {
-                this._cryptoData.callback();
+                responseCallback({
+                    content: {
+                        nonce: this._cryptoData.nonce,
+                        success: false
+                    }
+                });
             }
-        }).catch((error) => this._handleTrezorError(error, 'decEntry', this._cryptoData.callback));
+        }).catch((error) => this._handleTrezorError(error, 'decEntry', responseCallback));
     }
 
     getEncryptionKey() {
-        this.trezorConnect.cipherKeyValue({device: {path: this._activeDevice.path}, override: true, useEmptyPassphrase: true, path: PATH, key: this._cryptoData.keyPhrase, value: this._cryptoData.nonce, encrypt: this._cryptoData.enc, askOnEncrypt: this._cryptoData.askOnEnc, askOnDecrypt: true}).then((result) => {
+        this.trezorConnect.cipherKeyValue({
+            device: {path: this._activeDevice.path},
+            override: true,
+            useEmptyPassphrase: true,
+            path: PATH,
+            key: this._cryptoData.keyPhrase,
+            value: this._cryptoData.nonce,
+            encrypt: this._cryptoData.enc,
+            askOnEncrypt: this._cryptoData.askOnEnc,
+            askOnDecrypt: true
+        }).then((result) => {
             this.bgStore.emit('sendMessage', 'loading', 'We\'re getting there ...');
             if (result.success) {
                 this.bgStore.masterKey = result.payload.value;
