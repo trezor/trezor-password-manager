@@ -145,7 +145,7 @@ var React = require('react'),
         },
 
         activeTag(obj) {
-            return obj.tags.indexOf(this.state.active_id) > -1 || this.state.active_id == 0;
+            return obj.tags.indexOf(this.state.active_id) > -1 || this.state.active_id === 0;
         },
 
         filterIsSet() {
@@ -167,10 +167,11 @@ var React = require('react'),
         },
 
         render(){
-            var raw_table = this.getProperOrderArr(),
+            let raw_table = this.getProperOrderArr(),
                 password_table = !!raw_table.length ? raw_table.map((key) => {
-                    var obj = this.state.entries[key];
-                    if (this.activeTag(obj)) {
+                    let obj = this.state.entries[key];
+                    let actTag = this.activeTag(obj);
+                    if (actTag) {
                         if (this.filterIsSet()) {
                             if (this.checkFilterMatching(obj)) {
                                 return (
@@ -203,7 +204,6 @@ var React = require('react'),
                     }
                 }) : (<div className='no-entries'><img src='dist/app-images/nopwd.svg' alt='no passwords'/><span>Add your first password.</span></div>),
                 newTagArr = this.state.active_id === 0 ? [] : [this.state.active_id];
-
             return (
                 <div className='wraper container-fluid'>
                     <div className='row page-title'>
@@ -241,7 +241,6 @@ var React = require('react'),
                                     content_changed={'edited'}
                             />}
                         {password_table}
-
                     </div>
                 </div>
             )

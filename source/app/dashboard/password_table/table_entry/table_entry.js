@@ -56,6 +56,7 @@ var React = require('react'),
         },
 
         componentDidMount() {
+            window.myStore.on('decryptEntry', this.decryptingEntry);
             if (this.isUrl(this.removeProtocolPrefix(this.state.title))) {
                 this.setState({
                     image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title) + '?size=100'
@@ -70,6 +71,10 @@ var React = require('react'),
             }
         },
 
+        componentWillUnmount() {
+            window.myStore.removeListener('decryptEntry', this.decryptingEntry);
+        },
+
         handleChange(e) {
             if (this.state.content_changed === '') {
                 this.setState({
@@ -80,6 +85,13 @@ var React = require('react'),
                 this.setState({
                     [e.target.name]: e.target.value
                 });
+            }
+        },
+
+        decryptingEntry(e) {
+            let val = e;
+            if (this.state.waiting_trezor !== '' && val !== this.state.key_value) {
+                this.setTrezorWaitingBackface(false);
             }
         },
 
@@ -105,7 +117,7 @@ var React = require('react'),
                     waiting_trezor_msg: msg
                 });
             } else {
-                this.setState({waiting_trezor: ' '});
+                this.setState({waiting_trezor: ''});
             }
         },
 
@@ -118,12 +130,12 @@ var React = require('react'),
                 safe_note: this.state.safe_note,
                 nonce: this.state.nonce
             };
-            chrome.runtime.sendMessage({type: 'decryptPassword', content: data, clipboardClear: false}, (response) => {
-                if (response != null) {
+            window.myStore.emit('decryptEntry', this.state.key_value);
+            chrome.runtime.sendMessage({type: 'decryptPassword', content: data, clipboardClear: false}, response => {
+                if (response !== null) {
                     chrome.runtime.sendMessage({type: 'openTabAndLogin', content: response.content});
                 }
                 this.setTrezorWaitingBackface(false);
-
             });
         },
 
@@ -148,8 +160,9 @@ var React = require('react'),
                 safe_note: this.state.safe_note,
                 nonce: this.state.nonce
             };
-            chrome.runtime.sendMessage({type: 'decryptPassword', content: data, clipboardClear: true}, (response) => {
-                if (response != null) {
+            window.myStore.emit('decryptEntry', this.state.key_value);
+            chrome.runtime.sendMessage({type: 'decryptPassword', content: data, clipboardClear: true}, response => {
+                if (response !== null) {
                     Clipboard.copy(response.content.password);
                     this.setState({
                         clipboard_pwd: true
@@ -168,15 +181,16 @@ var React = require('react'),
             this.hidePassword();
             if (this.state.mode === 'list-mode') {
                 this.setTrezorWaitingBackface('Editing entry');
-                var data = {
+                let data = {
                     title: this.state.title,
                     username: this.state.username,
                     password: this.state.password,
                     safe_note: this.state.safe_note,
                     nonce: this.state.nonce
                 };
-                chrome.runtime.sendMessage({type: 'decryptFullEntry', content: data}, (response) => {
-                    if (response != null) {
+                window.myStore.emit('decryptEntry', this.state.key_value);
+                chrome.runtime.sendMessage({type: 'decryptFullEntry', content: data}, response => {
+                    if (response !== null) {
                         this.setState({
                             password: response.content.password,
                             safe_note: response.content.safe_note,
@@ -192,7 +206,7 @@ var React = require('react'),
 
                 });
             } else {
-                var oldValues = window.myStore.getEntryValuesById(this.state.key_value);
+                let oldValues = window.myStore.getEntryValuesById(this.state.key_value);
                 if (this.isUrl(this.removeProtocolPrefix(this.state.title))) {
                     this.setState({
                         image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title) + '?size=100'

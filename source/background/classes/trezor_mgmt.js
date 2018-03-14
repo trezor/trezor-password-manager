@@ -82,6 +82,7 @@ class TrezorMgmt {
     }
 
     _transportEvent(msg) {
+        console.warn('TRANSPORT V: ', msg);
         switch(msg.type) {
             case 'transport__error':
                 this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
@@ -486,24 +487,28 @@ class TrezorMgmt {
 
     sendDecryptCallback() {
         this.trezorConnect.cipherKeyValue({device: {path: this._activeDevice.path}, override: true, useEmptyPassphrase: true, path: PATH, key: this._cryptoData.keyPhrase, value: this._cryptoData.nonce, encrypt: this._cryptoData.enc, askOnEncrypt: this._cryptoData.askOnEnc, askOnDecrypt: true}).then((result) => {
-            let enckey = new Buffer(result.payload.value, 'hex'),
-                password = new Buffer(this._cryptoData.password),
-                safenote = new Buffer(this._cryptoData.safe_note);
-            // clear clipboard after 20 seconds
-            if (this._clearClipboard) {
-                setTimeout(()=> {
-                    Clipboard.copy("");
-                }, 20 * 1000);
-            }
-            this._cryptoData.callback({
-                content: {
-                    title: this._cryptoData.title,
-                    username: this._cryptoData.username,
-                    password: JSON.parse(this.decrypt(password, enckey)),
-                    safe_note: JSON.parse(this.decrypt(safenote, enckey)),
-                    nonce: this._cryptoData.nonce
+            if (result.success) {
+                let enckey = new Buffer(result.payload.value, 'hex'),
+                    password = new Buffer(this._cryptoData.password),
+                    safenote = new Buffer(this._cryptoData.safe_note);
+                // clear clipboard after 20 seconds
+                if (this._clearClipboard) {
+                    setTimeout(()=> {
+                        Clipboard.copy("");
+                    }, 20 * 1000);
                 }
-            });
+                this._cryptoData.callback({
+                    content: {
+                        title: this._cryptoData.title,
+                        username: this._cryptoData.username,
+                        password: JSON.parse(this.decrypt(password, enckey)),
+                        safe_note: JSON.parse(this.decrypt(safenote, enckey)),
+                        nonce: this._cryptoData.nonce
+                    }
+                });
+            } else {
+                this._cryptoData.callback();
+            }
         }).catch((error) => this._handleTrezorError(error, 'decEntry', this._cryptoData.callback));
     }
 

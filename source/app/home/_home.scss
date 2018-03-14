@@ -170,6 +170,20 @@
             background-size: auto 30px;
             background-image: url(app-images/t2.png);
           }
+          &.tunknown:after {
+            content: '';
+            position: absolute;
+            display: block;
+            width: 24px;
+            height: 40px;
+            z-index: 2;
+            left: 15px;
+            top: 8px;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: auto 30px;
+            background-image: url(app-images/tunknown.png);
+          }
         }
       }
     }

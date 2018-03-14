@@ -23,6 +23,7 @@ var React = require('react'),
                 username: '',
                 userDetails: false,
                 storageType: 'DROPBOX',
+                activeDevice: {},
                 devices: [],
                 deviceStatus: 'disconnected',
                 dialog: 'preloading',
@@ -129,7 +130,8 @@ var React = require('react'),
 
         activateDevice(d) {
             this.setState({
-                dialog: 'loading_dialog'
+                dialog: 'loading_dialog',
+                activeDevice: this.state.devices[d]
             });
             this.sendMessage('activateTrezor', this.state.devices[d].path);
         },
@@ -241,7 +243,7 @@ var React = require('react'),
                         <div className={this.state.dialog === 'button_dialog' ? 'button_dialog' : 'hidden_dialog'}>
                             <h1>
                                 <span className='icon icon-device'></span>
-                                Follow instructions on your <br/> <b className='smallcaps'>TREZOR</b> device.
+                                Follow instructions on your <br/> <b className='smallcaps'>{this.state.activeDevice.label}</b> device.
                             </h1>
                         </div>
 
