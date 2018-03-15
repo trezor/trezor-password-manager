@@ -205,7 +205,7 @@ class TrezorMgmt {
         let path = p;
         let i = this._deviceList.findIndex(e => e.path === path);
         this._activeDevice = this._deviceList[i];
-        this.getEncryptionKey();
+        this._getEncryptionKey();
     }
 
     _disconnect() {
@@ -299,11 +299,11 @@ class TrezorMgmt {
                 'enc': true,
                 'askOnEnc': false
             };
-            this.sendEncryptCallback(responseCallback);
+            this._sendEncryptCallback(responseCallback);
         });
     }
 
-    sendEncryptCallback(responseCallback) {
+    _sendEncryptCallback(responseCallback) {
         this.trezorConnect.cipherKeyValue({
             device: {path: this._activeDevice.path},
             override: true,
@@ -355,10 +355,27 @@ class TrezorMgmt {
             'enc': false,
             'askOnEnc': false
         };
-        this.sendDecryptCallback(responseCallback);
+        this._sendDecryptCallback(responseCallback);
     }
 
-    sendDecryptCallback(responseCallback) {
+    _removedPwdClipboard(pwd) {
+        try {
+            let el = document.createElement('textarea');
+            document.body.appendChild(el);
+            el.focus();
+            document.execCommand('paste');
+            let value = el.value;
+            document.body.removeChild(el);
+            if (pwd === value) {
+                Clipboard.copy("");
+            }
+        } catch (err) {
+            throw err;
+        }
+
+    }
+
+    _sendDecryptCallback(responseCallback) {
         this.trezorConnect.cipherKeyValue({
             device: {path: this._activeDevice.path},
             override: true,
@@ -377,7 +394,8 @@ class TrezorMgmt {
                 // clear clipboard after 20 seconds
                 if (this._clearClipboard) {
                     setTimeout(() => {
-                        Clipboard.copy("");
+                        let pwd = JSON.parse(this.decrypt(password, enckey));
+                        this._removedPwdClipboard(pwd);
                     }, 20 * 1000);
                 }
                 responseCallback({
@@ -401,7 +419,7 @@ class TrezorMgmt {
         }).catch((error) => this._handleTrezorError(error, 'decEntry', responseCallback));
     }
 
-    getEncryptionKey() {
+    _getEncryptionKey() {
         this.trezorConnect.cipherKeyValue({
             device: {path: this._activeDevice.path},
             override: true,

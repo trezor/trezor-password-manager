@@ -24,6 +24,10 @@ var React = require('react'),
 
         chromeLayoutModalMsgHandler(request, sender, sendResponse) {
             switch (request.type) {
+                case 'focus':
+                    window.focus();
+                    break;
+
                 case 'isAppOpen':
                     chrome.tabs.getCurrent((tab) => {
                         sendResponse({type:'openApp', tab: tab});
