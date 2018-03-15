@@ -24,7 +24,8 @@
         .text {
 
           img {
-            background-color: $c_blue_dark;
+            background-color: $c_blue_dark_very_much;
+            background: radial-gradient($c_blue, $c_blue_dark_very_much);
             padding: 0 5px 10px 5px;
             margin-top: -20px;
             width: 50px;

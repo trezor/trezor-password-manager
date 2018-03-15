@@ -418,9 +418,10 @@ var React = require('react'),
                 entryTitleVal = this.state.note.length === 0 ? this.removeProtocolPrefix(this.state.title) : this.state.note,
                 title = this.state.mode === 'list-mode' ?
                     (this.state.username.length === 0 ?
-                        <a href={this.isUrl(this.state.title) ? this.setProtocolPrefix(this.state.title) : null}>{entryTitleVal}</a> :
+                        <a href={this.isUrl(this.state.title) ? this.setProtocolPrefix(this.state.title) : null}
+                           className={this.isUrl(this.state.title) ? 'open' : ''}>{entryTitleVal}</a> :
                         <a onClick={this.isUrl(this.state.title) ? this.openTabAndLogin : null}
-                           className={this.isUrl(this.state.title) ? 'pointer' : null}>{entryTitleVal}</a>) : (
+                           className={this.isUrl(this.state.title) ? 'pointer openlogin' : ''}>{entryTitleVal}</a>) : (
                     <input type='text'
                            autoComplete='off'
                            value={this.state.title}

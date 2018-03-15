@@ -168,12 +168,15 @@ var React = require('react'),
 
         render(){
             let raw_table = this.getProperOrderArr(),
+                count = !!raw_table.length ? 0 : 1,
+                newTagArr = this.state.active_id === 0 ? [] : [this.state.active_id],
                 password_table = !!raw_table.length ? raw_table.map((key) => {
                     let obj = this.state.entries[key];
                     let actTag = this.activeTag(obj);
                     if (actTag) {
                         if (this.filterIsSet()) {
                             if (this.checkFilterMatching(obj)) {
+                                count++;
                                 return (
                                     <TableEntry key={key}
                                                 key_value={key}
@@ -188,6 +191,7 @@ var React = require('react'),
                                 )
                             }
                         } else {
+                            count++;
                             return (
                                 <TableEntry key={key}
                                             key_value={key}
@@ -202,8 +206,7 @@ var React = require('react'),
                             )
                         }
                     }
-                }) : (<div className='no-entries'><img src='dist/app-images/nopwd.svg' alt='no passwords'/><span>Add your first password.</span></div>),
-                newTagArr = this.state.active_id === 0 ? [] : [this.state.active_id];
+                }) : (<div className='no-entries'><img src='dist/app-images/nopwd.svg' alt='no passwords'/><div className='headline'>Add your first password.</div><div>Click to “Add entry” or use “Import”</div></div>);
             return (
                 <div className='wraper container-fluid'>
                     <div className='row page-title'>
@@ -242,7 +245,7 @@ var React = require('react'),
                                     mode={'edit-mode'}
                                     content_changed={'edited'}
                             />}
-                        {password_table}
+                        {count !== 0 ? password_table : (<div className='no-entries'><img src='dist/app-images/nosearch.svg' alt='no passwords'/><div className='headline'>No results, yet.</div><div>Consider your criteria.</div></div>)}
                     </div>
                 </div>
             )
