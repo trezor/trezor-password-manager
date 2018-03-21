@@ -22,6 +22,7 @@ html, body {
   background-color: $c_white;
   color: $c_grey_content_font;
   overflow-x: hidden;
+  font-display: fallback;
 
   & > div:first-child {
     height: 100%;

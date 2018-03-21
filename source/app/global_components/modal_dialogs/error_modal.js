@@ -35,6 +35,7 @@ var React = require('react'),
                 supportAction: true,
                 redirectAction: false,
                 closeAction: true,
+                cleanupAction: false,
                 supportDefaultMailText: mailHeaderTemplate + window.tpmErroLog + mailFooterTemplate
             }
         },
@@ -72,6 +73,7 @@ var React = require('react'),
                             restartAction: true,
                             supportAction: true,
                             redirectAction: true,
+                            cleanupAction: false,
                             redirectText: 'TREZOR Bridge',
                             redirectTo: 'https://wallet.trezor.io/#/bridge/',
                             supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + this.state.userInfo + mailFooterTemplate
@@ -87,6 +89,7 @@ var React = require('react'),
                             supportAction: false,
                             redirectAction: false,
                             closeAction: false,
+                            cleanupAction: false,
                             redirectText: '',
                             redirectTo: '',
                             supportDefaultMailText: ''
@@ -106,6 +109,7 @@ var React = require('react'),
                         supportAction: false,
                         redirectAction: true,
                         closeAction: true,
+                        cleanupAction: false,
                         redirectText: 'TREZOR Wallet',
                         redirectTo: 'https://wallet.trezor.io/',
                         supportDefaultMailText: ''
@@ -124,6 +128,7 @@ var React = require('react'),
                         supportAction: false,
                         redirectAction: true,
                         closeAction: true,
+                        cleanupAction: false,
                         redirectText: 'TREZOR Wallet',
                         redirectTo: 'https://wallet.trezor.io/',
                         supportDefaultMailText: ''
@@ -143,6 +148,7 @@ var React = require('react'),
                             supportAction: false,
                             redirectAction: true,
                             closeAction: true,
+                            cleanupAction: false,
                             redirectText: 'TREZOR Bridge',
                             redirectTo: 'https://wallet.trezor.io/#/bridge/',
                             supportDefaultMailText: ''
@@ -158,6 +164,7 @@ var React = require('react'),
                             supportAction: false,
                             redirectAction: false,
                             closeAction: false,
+                            cleanupAction: false,
                             redirectText: '',
                             redirectTo: '',
                             supportDefaultMailText: ''
@@ -176,9 +183,43 @@ var React = require('react'),
                         supportAction: false,
                         redirectAction: true,
                         closeAction: true,
+                        cleanupAction: false,
                         redirectText: 'TREZOR Wallet',
                         redirectTo: 'https://wallet.trezor.io',
                         supportDefaultMailText: ''
+                    };
+                    break;
+
+                case 'T_CORRUPTED':
+                    return {
+                        errorTitle: 'Corrupted entries detected.',
+                        solution: [
+                            'TREZOR Password Manager will cleanup storage from corrupted entries: ' + content.cEntries
+                        ],
+                        cleanupAction: true,
+                        restartAction: false,
+                        supportAction: false,
+                        redirectAction: false,
+                        closeAction: false
+                    };
+                    break;
+
+                case 'T_ENCRYPTION':
+                    return {
+                        errorTitle: 'Device problem detected.',
+                        solution: [
+                            'Please, re-connect TREZOR device.',
+                            'Try restarting TREZOR Password Manager.',
+                            'In case of ongoing problems contact our support.'
+                        ],
+                        restartAction: true,
+                        supportAction: true,
+                        redirectAction: false,
+                        closeAction: true,
+                        cleanupAction: false,
+                        redirectText: 'TREZOR Wallet',
+                        redirectTo: 'https://wallet.trezor.io',
+                        supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + this.state.userInfo +  mailFooterTemplate
                     };
                     break;
 
@@ -194,6 +235,7 @@ var React = require('react'),
                         supportAction: true,
                         redirectAction: true,
                         closeAction: false,
+                        cleanupAction: false,
                         redirectText: 'TREZOR Wallet',
                         redirectTo: 'https://wallet.trezor.io',
                         supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + this.state.userInfo +  mailFooterTemplate
@@ -214,6 +256,7 @@ var React = require('react'),
                         supportAction: true,
                         redirectAction: true,
                         closeAction: false,
+                        cleanupAction: false,
                         redirectText: content.storage + '.com',
                         redirectTo: DB_homepage,
                         supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + this.state.userInfo +  mailFooterTemplate
@@ -232,6 +275,7 @@ var React = require('react'),
                         supportAction: false,
                         redirectAction: true,
                         closeAction: false,
+                        cleanupAction: false,
                         redirectText: content.storage === 'Dropbox' ? 'Dropbox.com' : 'Drive.google.com',
                         redirectTo: content.storage === 'Dropbox' ? DB_homepage : GD_homepage,
                         supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + this.state.userInfo +  mailFooterTemplate
@@ -250,6 +294,7 @@ var React = require('react'),
                         supportAction: true,
                         redirectAction: true,
                         closeAction: true,
+                        cleanupAction: false,
                         redirectText: content.storage + ' status',
                         redirectTo: content.storage === 'Dropbox' ? DB_status : GD_status,
                         supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + this.state.userInfo +  mailFooterTemplate
@@ -268,6 +313,7 @@ var React = require('react'),
                             supportAction: false,
                             redirectAction: true,
                             closeAction: true,
+                            cleanupAction: false,
                             redirectText: content.storage + ' status',
                             redirectTo: content.storage === 'Dropbox' ? DB_status : GD_status,
                             supportDefaultMailText: ''
@@ -283,6 +329,7 @@ var React = require('react'),
                             supportAction: false,
                             redirectAction: false,
                             closeAction: true,
+                            cleanupAction: false,
                             redirectText: '',
                             redirectTo: '',
                             supportDefaultMailText: ''
@@ -300,6 +347,7 @@ var React = require('react'),
                         supportAction: false,
                         redirectAction: false,
                         closeAction: true,
+                        cleanupAction: false,
                         redirectText: '',
                         redirectTo: '',
                         supportDefaultMailText: ''
@@ -316,6 +364,7 @@ var React = require('react'),
                 ],
                 restartAction: true,
                 supportAction: true,
+                cleanupAction: false,
                 supportDefaultMailText: mailHeaderTemplate + JSON.stringify(content) + window.tpmErroLog + this.state.userInfo +  mailFooterTemplate
             };
         },
@@ -333,24 +382,33 @@ var React = require('react'),
                     redirectAction: error.redirectAction,
                     redirectText: error.redirectText,
                     redirectTo: error.redirectTo,
+                    cleanupAction: error.cleanupAction,
                     supportDefaultMailText: error.supportDefaultMailText
                 });
             }
         },
 
-        closeErrorModal(e) {
+        closeErrorModal() {
             if (this.state.closeAction) {
                 this.setState({
                     showErrorModal: false
                 });
             } else {
-                e.preventDefault();
+                return false;
             }
         },
 
         restartApp() {
             localStorage.setItem('tpmRestart', 'reopen');
             chrome.runtime.reload();
+        },
+
+        cleanStorage() {
+            window.myStore.cleanStorage().then(() => {
+                this.setState({
+                    showErrorModal: false
+                });
+            });
         },
 
         render(){
@@ -372,6 +430,7 @@ var React = require('react'),
                             </ul>
                         </Modal.Body>
                         <div className='btn-controls'>
+                            {this.state.cleanupAction ? <Button className='button red-btn' onClick={this.cleanStorage}>Clean storage</Button> : ''}
                             {this.state.redirectAction ? <a href={this.state.redirectTo} rel='noopener noreferrer' target='_blank'
                                                             className='button shadow blue-btn'>{this.state.redirectText}</a> : ''}
                             {this.state.supportAction ? <a className='button shadow green-btn' rel='noopener noreferrer' target='_blank'

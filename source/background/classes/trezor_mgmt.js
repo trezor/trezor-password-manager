@@ -14,8 +14,7 @@ const HD_HARDENED = 0x80000000,
     PATH = [(10016 | HD_HARDENED) >>> 0, 0],
     WRONG_PIN = 'Failure_PinInvalid',
 
-    URL_IFRAME = 'https://sisyfos.trezor.io/iframe.html',
-    URL_POPUP = 'https://sisyfos.trezor.io/popup.html',
+    URL_CONNECT = 'https://sisyfos.trezor.io/',
 
     DEFAULT_KEYPHRASE = 'Activate TREZOR Password Manager?',
     DEFAULT_NONCE = '2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee';
@@ -42,14 +41,12 @@ class TrezorMgmt {
         this.trezorConnect.on('TRANSPORT_EVENT', msg => this._transportEvent(msg));
         this.trezorConnect.on('DEVICE_EVENT', msg => this._deviceEvent(msg));
         this.trezorConnect.on('UI_EVENT', msg => this._uiEvent(msg));
-        let ts = new Date().getTime();
         this.trezorConnect.init({
             webusb: false,
             debug: false,
             transportReconnect: false,
             popup: false,
-            iframeSrc: URL_IFRAME + '?r=' + ts,
-            popupSrc: URL_POPUP,
+            connectSrc: URL_CONNECT
         });
         this.bgStore.emit('checkReopen');
     }
@@ -315,21 +312,31 @@ class TrezorMgmt {
             askOnEncrypt: this._cryptoData.askOnEnc,
             askOnDecrypt: true
         }).then((result) => {
-            let enckey = new Buffer(this._cryptoData.nonce, 'hex');
-            this.encrypt(this._cryptoData.password, enckey).then((password) => {
-                this.encrypt(this._cryptoData.safe_note, enckey).then((safenote) => {
-                    responseCallback({
-                        content: {
-                            title: this._cryptoData.title,
-                            username: this._cryptoData.username,
-                            password: password,
-                            safe_note: safenote,
-                            nonce: result.payload.value,
-                            success: true
-                        }
+            if (result.success) {
+                let enckey = new Buffer(this._cryptoData.nonce, 'hex');
+                this.encrypt(this._cryptoData.password, enckey).then((password) => {
+                    this.encrypt(this._cryptoData.safe_note, enckey).then((safenote) => {
+                        responseCallback({
+                            content: {
+                                title: this._cryptoData.title,
+                                username: this._cryptoData.username,
+                                password: password,
+                                safe_note: safenote,
+                                nonce: result.payload.value,
+                                success: true
+                            }
+                        });
                     });
                 });
-            });
+            } else {
+                responseCallback({
+                    content: {
+                        title: this._cryptoData.title,
+                        success: false
+                    }
+                });
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_ENCRYPTION'});
+            }
         }).catch((error) => this._handleTrezorError(error, 'encEntry', responseCallback));
     }
 
@@ -415,6 +422,7 @@ class TrezorMgmt {
                         success: false
                     }
                 });
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_ENCRYPTION'});
             }
         }).catch((error) => this._handleTrezorError(error, 'decEntry', responseCallback));
     }
@@ -439,6 +447,7 @@ class TrezorMgmt {
                 this.bgStore.emit('loadFile');
             } else {
                 this._disconnect();
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_ENCRYPTION'});
             }
         }).catch((error) => this._handleTrezorError(error, 'encKey', null));
     }

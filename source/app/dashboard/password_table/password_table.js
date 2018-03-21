@@ -245,7 +245,7 @@ var React = require('react'),
                                     mode={'edit-mode'}
                                     content_changed={'edited'}
                             />}
-                        {count !== 0 ? password_table : (<div className='no-entries'><img src='dist/app-images/nosearch.svg' alt='no passwords'/><div className='headline'>No results, yet.</div><div>Consider your criteria.</div></div>)}
+                        {count !== 0 ? password_table : (<div className='no-entries'><img src='dist/app-images/nosearch.svg' alt='no passwords'/><div className='headline'>No results.</div><div>Consider your criteria.</div></div>)}
                     </div>
                 </div>
             )

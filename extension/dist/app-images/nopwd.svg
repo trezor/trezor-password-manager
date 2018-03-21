@@ -1,76 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="140px" height="62px" viewBox="0 0 140 62" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 49 (51002) - http://www.bohemiancoding.com/sketch -->
-    <title>Group 12</title>
+<svg width="116px" height="133px" viewBox="0 0 116 133" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.1 (51147) - http://www.bohemiancoding.com/sketch -->
+    <title>Keys</title>
     <desc>Created with Sketch.</desc>
     <defs>
-        <rect id="path-1" x="0" y="0" width="36" height="36" rx="3.6"></rect>
-        <rect id="path-3" x="0" y="0" width="32" height="32" rx="3.2"></rect>
-        <rect id="path-5" x="0" y="0" width="24" height="24" rx="2.4"></rect>
-        <rect id="path-6" x="0" y="0" width="25.6" height="25.6" rx="2.56"></rect>
-        <rect id="path-7" x="0" y="0" width="48" height="48" rx="6.4"></rect>
+        <path d="M34.5189273,48.3003746 L43.3762951,48.3003746 L49.549111,52.7294656 L56.2049704,48.3003746 L62.0048248,52.7294656 L67.5435866,48.3003746 L73.1447043,52.7294656 L79.0654724,48.3003746 L87.5321191,55.0194749 L82.5498944,61.5876474 L34.5189273,61.5876474 C31.6903281,71.4582698 22.7185888,78.6712837 12.0883356,78.6712837 C-0.812269398,78.6712837 -11.2702761,68.0482219 -11.2702761,54.944011 C-11.2702761,41.8398001 -0.812269398,31.2167383 12.0883356,31.2167383 C22.7185888,31.2167383 31.6903281,38.4297522 34.5189273,48.3003746 Z M3.49236651,60.6385565 C6.58851172,60.6385565 9.09843332,58.0890216 9.09843332,54.944011 C9.09843332,51.7990004 6.58851172,49.2494656 3.49236651,49.2494656 C0.39622131,49.2494656 -2.11370029,51.7990004 -2.11370029,54.944011 C-2.11370029,58.0890216 0.39622131,60.6385565 3.49236651,60.6385565 Z" id="path-1"></path>
+        <linearGradient x1="-23.707368%" y1="73.3863768%" x2="50%" y2="0%" id="linearGradient-3">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#DDDDDD" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="100%" x2="50%" y2="1.44508671%" id="linearGradient-4">
+            <stop stop-color="#2777CD" offset="0%"></stop>
+            <stop stop-color="#6BB2FF" offset="100%"></stop>
+        </linearGradient>
+        <path d="M49.0347124,45.707013 L57.8920801,45.707013 L64.064896,50.1361039 L70.7207555,45.707013 L76.5206099,50.1361039 L82.0593717,45.707013 L87.6604894,50.1361039 L93.5812575,45.707013 L102.047904,52.4261133 L97.0656795,58.9942857 L49.0347124,58.9942857 C46.2061132,68.8649081 37.2343739,76.0779221 26.6041207,76.0779221 C13.7035157,76.0779221 3.24550898,65.4548602 3.24550898,52.3506494 C3.24550898,39.2464385 13.7035157,28.6233766 26.6041207,28.6233766 C37.2343739,28.6233766 46.2061132,35.8363906 49.0347124,45.707013 Z M18.0081516,58.0451948 C21.1042968,58.0451948 23.6142184,55.49566 23.6142184,52.3506494 C23.6142184,49.2056387 21.1042968,46.6561039 18.0081516,46.6561039 C14.9120064,46.6561039 12.4020848,49.2056387 12.4020848,52.3506494 C12.4020848,55.49566 14.9120064,58.0451948 18.0081516,58.0451948 Z" id="path-5"></path>
+        <linearGradient x1="33.4483771%" y1="17.5846246%" x2="99.2774566%" y2="50.7225434%" id="linearGradient-7">
+            <stop stop-color="#2777CD" offset="0%"></stop>
+            <stop stop-color="#6BB2FF" offset="100%"></stop>
+        </linearGradient>
     </defs>
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Application-add-password" transform="translate(-565.000000, -269.000000)">
-            <g id="Group-12" transform="translate(565.000000, 269.000000)">
-                <g id="Group-10" transform="translate(84.000000, 0.000000)">
-                    <g id="Rectangle-13">
+        <g id="Application-add-password" transform="translate(-592.000000, -236.000000)">
+            <g id="Group-3" transform="translate(550.000000, 228.000000)">
+                <g id="Keys" transform="translate(24.000000, 0.000000)">
+                    <g id="whitekey" transform="translate(0.000000, 39.025974)">
                         <mask id="mask-2" fill="white">
                             <use xlink:href="#path-1"></use>
                         </mask>
-                        <g id="Mask">
-                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
-                            <rect stroke="#E9E9E9" stroke-width="1" x="0.5" y="0.5" width="35" height="35" rx="3.6"></rect>
-                        </g>
-                        <rect fill-opacity="0.300000012" fill="#E9E9E9" mask="url(#mask-2)" x="28" y="28" width="21" height="39" rx="4"></rect>
-                        <rect fill-opacity="0.300000012" fill="#E9E9E9" mask="url(#mask-2)" x="-10" y="12" width="21" height="39" rx="7"></rect>
+                        <use id="Mask" fill="#EDEEEE" transform="translate(38.130922, 54.944011) rotate(-252.000000) translate(-38.130922, -54.944011) " xlink:href="#path-1"></use>
+                        <polygon id="Path-39" fill="url(#linearGradient-3)" mask="url(#mask-2)" points="20.0914743 105.621252 38.2981464 49.4428235 64.5133726 61.6666187 37.1482204 112.749539"></polygon>
                     </g>
-                    <text id="&amp;" font-family="Roboto-Black, Roboto" font-size="14.4" font-weight="700" fill="#666666">
-                        <tspan x="13.5984375" y="24">&amp;</tspan>
-                    </text>
-                </g>
-                <g id="Group-5" transform="translate(16.000000, 2.000000)">
-                    <g id="Rectangle-13">
-                        <mask id="mask-4" fill="white">
-                            <use xlink:href="#path-3"></use>
+                    <g id="green-key" transform="translate(45.706587, 17.000000)">
+                        <mask id="mask-6" fill="white">
+                            <use xlink:href="#path-5"></use>
                         </mask>
-                        <g id="Mask">
-                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-3"></use>
-                            <rect stroke="#E9E9E9" stroke-width="1" x="0.5" y="0.5" width="31" height="31" rx="3.2"></rect>
-                        </g>
-                        <rect fill-opacity="0.300000012" fill="#E9E9E9" mask="url(#mask-4)" x="26" y="10" width="21" height="39" rx="7"></rect>
-                        <rect fill-opacity="0.300000012" fill="#E9E9E9" mask="url(#mask-4)" x="-11" y="20" width="21" height="39" rx="4"></rect>
+                        <use id="Mask" fill="url(#linearGradient-4)" transform="translate(52.646707, 52.350649) rotate(-315.000000) translate(-52.646707, -52.350649) " xlink:href="#path-5"></use>
+                        <polygon id="Path-38" fill="url(#linearGradient-7)" mask="url(#mask-6)" points="88.5060631 89.2613208 48.9110322 49.7103086 24.8428523 84.4646702 63.9377132 111.668755"></polygon>
                     </g>
-                    <text id="#" font-family="Roboto-Black, Roboto" font-size="12.8" font-weight="700" fill="#666666">
-                        <tspan x="13.08125" y="21">#</tspan>
-                    </text>
-                </g>
-                <g id="Group-3" transform="translate(0.000000, 24.000000)">
-                    <g id="Rectangle-4-Copy-5">
-                        <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-5"></use>
-                        <rect stroke="#E9E9E9" stroke-width="1" x="0.5" y="0.5" width="23" height="23" rx="2.4"></rect>
-                    </g>
-                    <text id="M" font-family="Roboto-Black, Roboto" font-size="9.6" font-weight="700" fill="#666666">
-                        <tspan x="8.09296875" y="16.6">M</tspan>
-                    </text>
-                </g>
-                <g id="Group-9" transform="translate(114.000000, 30.000000)">
-                    <g id="Rectangle-4-Copy">
-                        <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-6"></use>
-                        <rect stroke="#E9E9E9" stroke-width="1" x="0.5" y="0.5" width="24.6" height="24.6" rx="2.56"></rect>
-                    </g>
-                    <text id="K" font-family="Roboto-Black, Roboto" font-size="10.24" font-weight="700" fill="#666666">
-                        <tspan x="9.845" y="17.4">K</tspan>
-                    </text>
-                </g>
-                <g id="Group-7" transform="translate(45.000000, 14.000000)">
-                    <g id="Group-11">
-                        <g id="Rectangle-4-Copy-4">
-                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-7"></use>
-                            <rect stroke="#E9E9E9" stroke-width="1" x="0.5" y="0.5" width="47" height="47" rx="6.4"></rect>
-                        </g>
-                        <path d="M25.9515413,25.8910514 L21.538827,25.8910514 L20.1988073,27.0925407 L18.86158,25.9270752 L17.4092794,27.225 L14.4,24.4532279 L15.8345992,23.025 L26.0628597,23.025 C26.7353654,21.4857891 28.3641527,20.4 30.2666667,20.4 C32.7703575,20.4 34.8,22.2804041 34.8,24.6 C34.8,26.9195959 32.7703575,28.8 30.2666667,28.8 C28.2491531,28.8 26.5394576,27.5789802 25.9515413,25.8910514 Z M30.2666667,26.175 C31.2055507,26.175 31.9666667,25.4698485 31.9666667,24.6 C31.9666667,23.7301515 31.2055507,23.025 30.2666667,23.025 C29.3277826,23.025 28.5666667,23.7301515 28.5666667,24.6 C28.5666667,25.4698485 29.3277826,26.175 30.2666667,26.175 Z" id="Combined-Shape" fill="#666666"></path>
-                    </g>
+                    <path d="M34.4039055,55.4924531 C38.1833236,60.1696699 44.2730081,62.3577614 52.672959,62.0567275 C65.2728854,61.6051766 76.3136143,50.4729145 76.3136143,36.113511 C76.3136143,21.7541076 64.6730178,10.113511 50.3136143,10.113511 C35.9542108,10.113511 16.7283189,24.0852022 26.7482069,44.7276567" id="Oval-3" stroke="#EDEEEE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" transform="translate(50.141600, 36.098772) rotate(-150.000000) translate(-50.141600, -36.098772) "></path>
                 </g>
             </g>
         </g>

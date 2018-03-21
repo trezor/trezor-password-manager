@@ -238,21 +238,26 @@ var React = require('react'),
                         data.password = response.content.password;
                         data.safe_note = response.content.safe_note;
                         data.nonce = response.content.nonce;
-                        if (this.state.key_value) {
-                            this.setState({
-                                mode: 'list-mode',
-                                content_changed: '',
-                                password: response.content.password,
-                                password_visible: false,
-                                safe_note_visible: false,
-                                safe_note: response.content.safe_note,
-                                nonce: response.content.nonce,
-                                saving_entry: false
-                            });
-                            this.titleOnBlur();
-                            window.myStore.saveDataToEntryById(this.state.key_value, data);
+                        data.success = response.content.success;
+                        if (data.success) {
+                            if (this.state.key_value) {
+                                this.setState({
+                                    mode: 'list-mode',
+                                    content_changed: '',
+                                    password: response.content.password,
+                                    password_visible: false,
+                                    safe_note_visible: false,
+                                    safe_note: response.content.safe_note,
+                                    nonce: response.content.nonce,
+                                    saving_entry: false
+                                });
+                                this.titleOnBlur();
+                                window.myStore.saveDataToEntryById(this.state.key_value, data);
+                            } else {
+                                window.myStore.addNewEntry(data);
+                            }
                         } else {
-                            window.myStore.addNewEntry(data);
+                            console.warn('inconsistent entry');
                         }
                     });
                 } else {

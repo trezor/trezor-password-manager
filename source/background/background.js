@@ -249,6 +249,10 @@ var Promise = require('es6-promise').Promise,
                 driveManager.connect();
                 break;
 
+            case 'errorMsg':
+                chromeManager.sendMessage('errorMsg', request.content);
+                break;
+
             case 'initTrezorPhase':
                 bgStore.phase = 'TREZOR';
                 trezorManager.init();
