@@ -236,6 +236,7 @@ class Store extends EventEmitter {
                 }
             });
             Service.saveContext(this.data);
+            this.emit('update', this.data);
             resolve();
         });
     }

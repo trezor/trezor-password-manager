@@ -91,7 +91,7 @@ var React = require('react'),
         },
 
         isUrl(url){
-            return validator.isURL(url);
+            return validator.isURL(url.trim());
         },
 
         removeProtocolPrefix(url) {
@@ -119,7 +119,7 @@ var React = require('react'),
                 nonce: this.state.nonce
             };
             chrome.runtime.sendMessage({type: 'decryptPassword', content: data, clipboardClear: false}, response => {
-                if (response !== null) {
+                if (response.content.success) {
                     chrome.runtime.sendMessage({type: 'openTabAndLogin', content: response.content});
                 }
                 this.setTrezorWaitingBackface(false);
@@ -148,7 +148,7 @@ var React = require('react'),
                 nonce: this.state.nonce
             };
             chrome.runtime.sendMessage({type: 'decryptPassword', content: data, clipboardClear: true}, response => {
-                if (response !== null) {
+                if (response.content.success) {
                     Clipboard.copy(response.content.password);
                     this.setState({
                         clipboard_pwd: true
@@ -219,12 +219,12 @@ var React = require('react'),
                     this.setState({
                         saving_entry: true
                     });
-                    var tags_id = [];
+                    let tags_id = [];
                     this.state.tags_titles.map((key) => {
                         tags_id.push(window.myStore.getTagIdByTitle(key));
                     });
 
-                    var data = {
+                    let data = {
                         title: this.state.title,
                         username: this.state.username,
                         password: this.state.password,
@@ -277,7 +277,7 @@ var React = require('react'),
         },
 
         discardChanges() {
-            var oldValues = window.myStore.getEntryValuesById(this.state.key_value);
+            let oldValues = window.myStore.getEntryValuesById(this.state.key_value);
             if (oldValues) {
                 this.setState({
                     title: oldValues.title,

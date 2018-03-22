@@ -14,6 +14,7 @@
     width: 100%;
     background-color: $c_white;
     overflow: hidden;
+    z-index: 2;
 
     &.waiting {
 
@@ -22,7 +23,6 @@
         @include transform(rotateX(0deg));
 
         .text {
-
           img {
             background-color: $c_blue_dark_very_much;
             background: radial-gradient($c_blue, $c_blue_dark_very_much);

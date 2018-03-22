@@ -43,7 +43,7 @@ class TrezorMgmt {
         this.trezorConnect.on('UI_EVENT', msg => this._uiEvent(msg));
         this.trezorConnect.init({
             webusb: false,
-            debug: false,
+            debug: true,
             transportReconnect: false,
             popup: false,
             connectSrc: URL_CONNECT
@@ -57,7 +57,7 @@ class TrezorMgmt {
 
         // remove after long time period - for example around Christmas .) as well in bg_store
         if (error instanceof SyntaxError && operation === 'decEntry') {
-            this._cryptoData.keyPhrase = this.displayOldKey(this._cryptoData.title, this._cryptoData.username);
+            this._cryptoData.keyPhrase = this._displayOldKey(this._cryptoData.title, this._cryptoData.username);
             this._retryWrongPin.op = 'decEntry';
             return;
         }
@@ -79,7 +79,6 @@ class TrezorMgmt {
     }
 
     _transportEvent(msg) {
-        console.warn('TRANSPORT V: ', msg);
         switch (msg.type) {
             case 'transport__error':
                 this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
@@ -272,15 +271,19 @@ class TrezorMgmt {
         }
     }
 
-    displayKey(title, username) {
+    _displayKey(title, username) {
         title = this.bgStore.isUrl(title) ? this.bgStore.decomposeUrl(title).domain : title;
         return 'Unlock ' + title + ' for user ' + username + '?';
     }
 
     // remove after long time period - for example around Christmas .) as well in bg_store
-    displayOldKey(title, username) {
+    _displayOldKey(title, username) {
         title = this.bgStore.isUrlOldVal(title) ? this.bgStore.decomposeUrl(title).domain : title;
         return 'Unlock ' + title + ' for user ' + username + '?';
+    }
+
+    _isValidError(e) {
+        return e.code === 'Failure_ActionCancelled' || e.code ===  'Failure_ActionOverride';
     }
 
     encryptFullEntry(data, responseCallback) {
@@ -290,7 +293,7 @@ class TrezorMgmt {
                 'username': data.username,
                 'password': data.password,
                 'safe_note': data.safe_note,
-                'keyPhrase': this.displayKey(data.title, data.username),
+                'keyPhrase': this._displayKey(data.title, data.username),
                 'nonce': buf.toString('hex'),
                 'callback': responseCallback,
                 'enc': true,
@@ -335,7 +338,9 @@ class TrezorMgmt {
                         success: false
                     }
                 });
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_ENCRYPTION'});
+                if (!this._isValidError(result.payload)) {
+                    this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_ENCRYPTION'});
+                }
             }
         }).catch((error) => this._handleTrezorError(error, 'encEntry', responseCallback));
     }
@@ -356,7 +361,7 @@ class TrezorMgmt {
             'username': data.username,
             'password': data.password,
             'safe_note': data.safe_note,
-            'keyPhrase': this.displayKey(data.title, data.username),
+            'keyPhrase': this._displayKey(data.title, data.username),
             'nonce': data.nonce,
             'callback': responseCallback,
             'enc': false,
@@ -379,7 +384,6 @@ class TrezorMgmt {
         } catch (err) {
             throw err;
         }
-
     }
 
     _sendDecryptCallback(responseCallback) {
@@ -422,7 +426,9 @@ class TrezorMgmt {
                         success: false
                     }
                 });
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_ENCRYPTION'});
+                if (!this._isValidError(result.payload)) {
+                    this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_ENCRYPTION'});
+                }
             }
         }).catch((error) => this._handleTrezorError(error, 'decEntry', responseCallback));
     }
@@ -447,7 +453,9 @@ class TrezorMgmt {
                 this.bgStore.emit('loadFile');
             } else {
                 this._disconnect();
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_ENCRYPTION'});
+                if (!this._isValidError(result.payload)) {
+                    this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_ENCRYPTION'});
+                }
             }
         }).catch((error) => this._handleTrezorError(error, 'encKey', null));
     }

@@ -9,7 +9,6 @@ form.filter {
     border: 1px solid $c_grey_border;
     padding-left: 35px;
     height: 40px;
-    margin-right: 30px;
     line-height: 40px;
     @include box-shadow(none);
     @include border-radius(4px);
@@ -26,7 +25,7 @@ form.filter {
 
   .clear {
     position: absolute;
-    top: 5px;
+    top: 8px;
     right: 10px;
     padding: 5px;
     display: none;

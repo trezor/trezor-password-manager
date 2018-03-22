@@ -217,9 +217,6 @@ var React = require('react'),
                         redirectAction: false,
                         closeAction: true,
                         cleanupAction: false,
-                        redirectText: 'TREZOR Wallet',
-                        redirectTo: 'https://wallet.trezor.io',
-                        supportDefaultMailText: mailHeaderTemplate + content.code + ' : ' + content.msg.message + window.tpmErroLog + this.state.userInfo +  mailFooterTemplate
                     };
                     break;
 
