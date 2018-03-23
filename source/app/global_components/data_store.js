@@ -19,7 +19,7 @@ class Store extends EventEmitter {
         this.data = typeof data === 'object' ? data : JSON.parse(data);
         this.validateData(this.data).then((c) => {
             if (!!c.length) {
-                chrome.runtime.sendMessage({type: 'errorMsg', content: {code: 'T_CORRUPTED', cEntries: c.join(', ')}});
+                this.sendMsg('errorMsg', {code: 'T_CORRUPTED', cEntries: c.join(', ')});
             }
         } );
         chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.chromeStoreMsgHandler(request, sender, sendResponse));
@@ -249,8 +249,12 @@ class Store extends EventEmitter {
         return this.emit('toggleNewEntry');
     }
 
+    sendMsg(type, content=null) {
+        chrome.runtime.sendMessage({type: type, content: content});
+    }
+
     userSwitch() {
-        chrome.runtime.sendMessage({type: 'userSwitch'});
+        this.sendMsg('userSwitch')
     }
 }
 
