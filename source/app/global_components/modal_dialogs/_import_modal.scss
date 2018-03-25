@@ -1,0 +1,46 @@
+.import-modal-dialog {
+  width: 760px;
+  max-width: 100%;
+  text-align: left;
+  color: $c_grey_content_bg;
+
+  .modal-content {
+    background-color: $c_white;
+    @include border-radius(4px);
+    padding: 15px 25px 25px 25px;
+  }
+
+  .modal-header {
+    font-size: 1.4em;
+    border-bottom: 0;
+    padding-left: 20px;
+  }
+
+  .modal-title {
+    color: $c_black;
+    text-align: center;
+    padding-bottom: 10px;
+  }
+
+  .modal-body {
+    background-color: $c_white;
+    height: auto;
+    padding: 0 20px 20px 20px;
+
+    .loading {
+      text-align: center;
+    }
+
+    .spinner {
+      content: '';
+      height: 50px;
+      width: 50px;
+      animation: rotate 0.8s infinite linear;
+      border: 5px solid $c_blue;
+      border-right-color: transparent;
+      border-radius: 50%;
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+}

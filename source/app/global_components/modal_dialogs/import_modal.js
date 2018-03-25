@@ -8,57 +8,67 @@
 'use strict';
 
 var React = require('react'),
+    Table = require('react-bootstrap').Table,
     Modal = require('react-bootstrap').Modal,
     ImportModal = React.createClass({
 
         getInitialState() {
             return {
-                showImportModal: false
+                showImportModal: false,
+                uploading: true,
+                storage: false
             }
         },
 
         componentDidMount() {
-            chrome.runtime.onMessage.addListener(this.chromeImportModalMsgHandler);
+            window.myStore.on('storageImport', this.importModalMsgHandler);
         },
 
         componentWillUnmount() {
-            chrome.runtime.onMessage.removeListener(this.chromeImportModalMsgHandler);
+            window.myStore.removeListener('storageImport', this.importModalMsgHandler);
         },
 
-        chromeImportModalMsgHandler(request, sender, sendResponse) {
-            switch (request.type) {
-                case 'showImportDialog':
-                    this.setState({
-                        showImportModal: true
-                    });
-                    chrome.tabs.getCurrent((tab) => {
-                        sendResponse({type:'importVisible', tab: tab});
-                    });
-                    break;
-
-                case 'hideImportModal':
-                    this.closeImportModal();
-                    break;
-            }
-            return true;
+        importModalMsgHandler(data) {
+            this.setState({
+                showImportModal: true,
+                storage: data
+            });
         },
 
         closeImportModal() {
             this.setState({
-                showImportModal: false
+                showImportModal: false,
+                storage: false
             });
         },
 
-        hiding(e) {
-            e.preventDefault();
-        },
-
         render(){
+            if (this.state.storage) {
+                var columns = this.state.storage.data[0];
+                console.warn('columns ', columns.length);
+                var data_list = Object.keys(this.state.storage.data).map((key, i = 0) => {
+                    let entry = this.state.storage.data[key].forEach((e) => {
+                       return (<td>{e}</td>)
+                    });
+                    return (
+                        <tr key={i++}>
+                            {entry}
+                        </tr>)
+                });
+            }
             return (
                 <div>
-                    <Modal show={this.state.showPinModal} backdrop={'static'} dialogClassName={'pin-modal-dialog'} autoFocus={true} enforceFocus={true} onHide={this.hiding}>
+                    <Modal show={this.state.showImportModal} backdrop={'static'} dialogClassName={'import-modal-dialog'} autoFocus={true} enforceFocus={true} onHide={this.closeImportModal}>
+                        <Modal.Header closeButton={true}>
+                            <Modal.Title id='contained-modal-title-sm'>Import storage</Modal.Title>
+                        </Modal.Header>
                         <Modal.Body>
-                            Import
+                            <div className={!this.state.storage ? 'loading' : 'hidden'}>
+                                <span className='spinner'></span>
+                            </div>
+                            <div className={this.state.storage ? 'storage_content' : 'hidden'}>
+                                <Table>{data_list}</Table>
+                            </div>
                         </Modal.Body>
                     </Modal>
                 </div>
@@ -66,4 +76,4 @@ var React = require('react'),
         }
     });
 
-module.exports = PinModal;
+module.exports = ImportModal;

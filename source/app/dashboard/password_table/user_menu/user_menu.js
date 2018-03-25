@@ -21,7 +21,7 @@ var React = require('react'),
         },
 
         importClick() {
-            var fileUploadDom = React.findDOMNode(this.refs.fileUploader);
+            let fileUploadDom = React.findDOMNode(this.refs.fileUploader);
             fileUploadDom.click();
         },
 
@@ -30,12 +30,13 @@ var React = require('react'),
         },
 
         onChangeFile(event) {
-            event.stopPropagation();
-            event.preventDefault();
-            var file = event.target.files[0];
+            let file = event.target.files[0];
+            window.myStore.emit('storageImport', false);
             Papa.parse(file, {
-                complete: function(results) {
+                worker: false,
+                complete: (results) => {
                     console.warn(results);
+                    window.myStore.emit('storageImport', results);
                 }
             });
         },
@@ -47,19 +48,22 @@ var React = require('react'),
         render(){
             return (
                 <span className='user-menu'>
-                    {/* <input id="myInput"
+                    <input id="myInput"
                            type="file"
                            accept=".csv"
                            ref={'fileUploader'}
                            style={{display: 'none'}}
-                           onChange={this.onChangeFile}
-                    />*/}
+                           onChange={(event)=> {
+                               this.onChangeFile(event);
+                               event.target.value=null
+                           }}
+                    />
                     <DropdownButton title={this.state.username.split(' ')[0]}
                                     className={'dropdown user ' + this.state.storageType.toLowerCase()}
                                     pullRight
                                     noCaret
                                     id='user-dropdown'>
-                        {/*<MenuItem onSelect={this.importClick}><i className='ion-document'></i>Import storage</MenuItem>*/}
+                        <MenuItem onSelect={this.importClick}><i className='ion-document'></i>Import storage</MenuItem>
                         <MenuItem onSelect={this.userSwitch}><i className='ion-log-out'></i>Switch user</MenuItem>
                     </DropdownButton>
                 </span>
