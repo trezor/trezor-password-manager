@@ -27,7 +27,8 @@ var React = require('react'),
                 devices: [],
                 deviceStatus: 'disconnected',
                 dialog: 'preloading',
-                loadingText: 'Waking up ...'
+                loadingText: 'Waking up ...',
+                passphrase: false
             }
         },
 
@@ -112,6 +113,14 @@ var React = require('react'),
                         trezorReady: false,
                         dialog: 'connect_trezor'
                     });
+                    break;
+
+                case 'trezorPassphrase':
+                    if (this.state.activeDevice.version === 2) {
+                        this.setState({
+                            passphrase: true,
+                        });
+                    }
                     break;
 
                 case 'decryptedContent':
@@ -243,7 +252,8 @@ var React = require('react'),
                         <div className={this.state.dialog === 'button_dialog' ? 'button_dialog' : 'hidden_dialog'}>
                             <h1>
                                 <span className='icon icon-device'></span>
-                                Follow instructions on your <br/> <b className='smallcaps'>{this.state.activeDevice.label}</b> device.
+                                <div className={!this.state.passphrase ? 'desc' : 'hidden'}>Follow instructions on your <br/> <b className='smallcaps'>{this.state.activeDevice.label}</b> device.</div>
+                                <div className={this.state.passphrase ? 'desc' : 'hidden'}>Select <span className='badge'>Host</span> on the device to continue.<br /> <small>TREZOR Password Manager does not support passphrase yet.</small></div>
                             </h1>
                         </div>
 

@@ -206,14 +206,13 @@ var React = require('react'),
 
                 case 'T_ENCRYPTION':
                     return {
-                        errorTitle: 'Device problem detected.',
+                        errorTitle: 'TREZOR device is busy.',
                         solution: [
-                            'Please, re-connect TREZOR device.',
-                            'Try restarting TREZOR Password Manager.',
-                            'In case of ongoing problems contact our support.'
+                            'Please, confirm the action on the device or reconnect TREZOR device.',
+                            'If the issue persists, restart TREZOR Password Manager and try again.'
                         ],
                         restartAction: true,
-                        supportAction: true,
+                        supportAction: false,
                         redirectAction: false,
                         closeAction: true,
                         cleanupAction: false,
@@ -225,8 +224,9 @@ var React = require('react'),
                         errorTitle: 'Device problem detected.',
                         solution: [
                             'Try using TREZOR Wallet to check whether your device works fine.',
-                            'In case of ongoing problems contact our support.',
-                            'Try restarting TREZOR Password Manager.'
+                            'Try restarting TREZOR Password Manager.',
+                            'In case of ongoing problems contact our support.'
+
                         ],
                         restartAction: true,
                         supportAction: true,

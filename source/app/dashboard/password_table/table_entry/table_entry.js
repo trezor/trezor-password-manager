@@ -571,7 +571,7 @@ var React = require('react'),
                                        onClick={this.toggleNote}></i>
                                 </OverlayTrigger>
                             </div>
-                            {this.state.key_value != null &&
+                            {this.state.key_value !== null &&
                             <div className='actions'>
                                 <span>Actions </span>
 
@@ -581,12 +581,12 @@ var React = require('react'),
                             }
                             <div className='form-buttons'>
 
-                                {this.state.key_value != null &&
-                                <span className='button edit-btn transparent-btn icon ion-edit'
-                                      onClick={this.changeMode}><span>Edit</span></span>
+                                {this.state.key_value !== null && <div className="edit-btns">
+                                <span className='button transparent-btn'
+                                      onClick={this.changeMode}>Edit</span><span className='button transblue-btn'>Login</span></div>
                                 }
 
-                                {this.state.key_value != null &&
+                                {this.state.key_value !== null &&
                                 <span className='button close-btn transparent-btn icon ion-close-round'
                                       onClick={this.changeMode}><span>Close</span></span>
                                 }

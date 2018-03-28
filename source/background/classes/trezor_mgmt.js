@@ -115,6 +115,9 @@ class TrezorMgmt {
 
             case 'ui-button':
                 this._buttonCallback();
+                if (msg.payload.code === 'ButtonRequest_PassphraseType') {
+                    this.bgStore.emit('sendMessage', 'trezorPassphrase');
+                }
                 break;
         }
     }
@@ -283,7 +286,7 @@ class TrezorMgmt {
     }
 
     _isValidError(e) {
-        return e.code === 'Failure_ActionCancelled' || e.code ===  'Failure_ActionOverride';
+        return e.error === 'device not found';
     }
 
     encryptFullEntry(data, responseCallback) {
@@ -338,7 +341,7 @@ class TrezorMgmt {
                         success: false
                     }
                 });
-                if (!this._isValidError(result.payload)) {
+                if (this._isValidError(result.payload)) {
                     this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_ENCRYPTION'});
                 }
             }
@@ -426,7 +429,7 @@ class TrezorMgmt {
                         success: false
                     }
                 });
-                if (!this._isValidError(result.payload)) {
+                if (this._isValidError(result.payload)) {
                     this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_ENCRYPTION'});
                 }
             }
@@ -453,7 +456,7 @@ class TrezorMgmt {
                 this.bgStore.emit('loadFile');
             } else {
                 this._disconnect();
-                if (!this._isValidError(result.payload)) {
+                if (this._isValidError(result.payload)) {
                     this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_ENCRYPTION'});
                 }
             }

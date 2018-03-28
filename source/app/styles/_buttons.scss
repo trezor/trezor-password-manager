@@ -78,6 +78,18 @@ button, .button {
     }
   }
 
+  &.transblue-btn {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    color: $c_blue;
+
+    &:hover {
+      background-color: $c_white !important;
+      border-color: $c_white !important;
+      color: $c_blue;
+    }
+  }
+
   &.white-btn {
     background-color: $c_white !important;
     border-color: rgba($c_grey_content_font, .6) !important;

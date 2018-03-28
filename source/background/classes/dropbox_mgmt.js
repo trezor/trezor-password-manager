@@ -11,6 +11,7 @@ const fullReceiverPath = 'chrome-extension://' + chrome.runtime.id + '/html/chro
     APIKEY = 's340kh3l0vla1nv',
     STORAGE = 'tpmDropboxToken',
     logoutUrl = 'https://www.dropbox.com/logout',
+    ADDRS_PATH = '/',
     Dropbox = require('dropbox');
 
 let dbRetryFileLoad = 3;
@@ -76,13 +77,9 @@ class DropboxMgmt {
             }
         }
 
-        //
-        // this metadata overengineering is here due to issue
-        // https://github.com/dropbox/dropbox-sdk-js/issues/84
-        //
-        this.dbc.filesGetMetadata({path: '/' + this.bgStore.fileName})
+        this.dbc.filesGetMetadata({path: ADDRS_PATH + this.bgStore.fileName})
             .then(() => {
-                this.dbc.filesDownload({path: '/' + this.bgStore.fileName})
+                this.dbc.filesDownload({path: ADDRS_PATH + this.bgStore.fileName})
                     .then((res) => {
                         let myReader = new FileReader();
                         myReader.addEventListener('loadend', (e) => {
@@ -103,18 +100,17 @@ class DropboxMgmt {
               setTimeout(() => {
                 dbRetryFileLoad--;
                 this.loadFile();
-              }, 1000);
+              }, 3500);
             } else {
               dbRetryFileLoad = 3;
               this.bgStore.emit('initStorageFile');
             }
-
         });
     }
 
     saveFile(data) {
         let blob = new Blob([data.buffer], {type: 'text/plain;charset=UTF-8'});
-        this.dbc.filesUpload({path: '/' + this.bgStore.fileName, contents: blob, mode: 'overwrite'})
+        this.dbc.filesUpload({path: ADDRS_PATH + this.bgStore.fileName, contents: blob, mode: 'overwrite'})
             .then(() => {
                 this.loadFile();
             })

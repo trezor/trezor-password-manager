@@ -206,7 +206,7 @@ var React = require('react'),
                             )
                         }
                     }
-                }) : (<div className='no-entries'><img src='dist/app-images/nopwd.png' alt='no passwords'/><div className='headline'>Add your first password.</div><div>Click to “Add entry” or use “Import”</div></div>);
+                }) : (<div className='no-entries'><img src='dist/app-images/nopwd.svg' alt='no passwords'/><div className='headline'>Add your first password.</div><div>Click to “Add entry” or use “Import”</div></div>);
             return (
                 <div className='wraper container-fluid'>
                     <div className='row page-title'>

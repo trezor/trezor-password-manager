@@ -259,10 +259,10 @@
         visibility: hidden;
         top: 20px;
         right: 20px;
-        width: 90px;
+        width: auto;
         height: 150px;
 
-        .edit-btn {
+        .edit-btns {
           display: block;
         }
 
@@ -454,7 +454,7 @@
           visibility: visible;
           z-index: 10;
 
-          .edit-btn {
+          .edit-btns {
             display: none;
           }
 
