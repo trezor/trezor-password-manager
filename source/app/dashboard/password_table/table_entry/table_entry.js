@@ -583,7 +583,9 @@ var React = require('react'),
 
                                 {this.state.key_value !== null && <div className="edit-btns">
                                 <span className='button transparent-btn'
-                                      onClick={this.changeMode}>Edit</span><span className='button transblue-btn'>Login</span></div>
+                                      onClick={this.changeMode}>Edit</span>
+                                    <span onClick={this.isUrl(this.state.title) ? this.openTabAndLogin : null}
+                                          className={this.isUrl(this.state.title) ? 'button transblue-btn' : 'hidden'}>Login</span></div>
                                 }
 
                                 {this.state.key_value !== null &&

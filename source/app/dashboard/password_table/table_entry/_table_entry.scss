@@ -25,7 +25,7 @@
         .text {
           img {
             background-color: $c_blue_dark_very_much;
-            background: radial-gradient($c_blue, $c_blue_dark_very_much);
+            background: linear-gradient($c_blue_dark_very_much, $c_blue);
             padding: 0 5px 10px 5px;
             margin-top: -20px;
             width: 50px;
@@ -257,17 +257,22 @@
       .form-buttons {
         position: absolute;
         visibility: hidden;
-        top: 20px;
+        top: 30px;
         right: 20px;
         width: auto;
-        height: 150px;
+        height: auto;
 
         .edit-btns {
           display: block;
+
+          .transblue-btn {
+            margin-left: 10px;
+          }
         }
 
         .close-btn {
           display: none;
+          margin-top: -10px;
         }
 
         .content-btns {

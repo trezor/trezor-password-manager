@@ -93,7 +93,7 @@ var React = require('react'),
                 tag_array = Object.keys(this.state.tags).map((key, i = 0) => {
                     var obj = this.state.tags[key];
                     return (
-                        <li key={i++} className={this.state.active_id == key ? 'active' : ''}>
+                        <li key={i++} className={this.state.active_id == key ? 'active fadeIn' : 'fadeIn'}>
                             <a data-tag-key={key}
                                data-tag-name={obj.title}
                                onClick={this.changeTagAndEmitt.bind(null, key)}
@@ -115,7 +115,7 @@ var React = require('react'),
                         <ul className="list-unstyled">
                             {tag_array}
 
-                            <li className="add-tag-btn">
+                            <li className="add-tag-btn fadeIn">
                                 <a onClick={this.addTag} onTouchStart={this.addTag}>
                                     <i className="icon icon-add"></i>
                                     <span className="nav-label">Add tag</span>

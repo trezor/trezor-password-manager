@@ -66,6 +66,17 @@ aside.left-panel {
     margin: 0;
   }
 
+  ul li.fadeIn {
+    opacity: 0;
+  }
+
+  @for $i from 1 through 30 {
+    ul li.fadeIn:nth-child(#{$i}) {
+      animation: fadeIn .2s ease (#{$i*0.1s});
+      animation-fill-mode: forwards;
+    }
+  }
+
   ul.list-unstyled > li:first-child {
 
     &:after {
@@ -99,7 +110,6 @@ aside.left-panel {
       font-weight: 400;
       outline: none !important;
       @include transition(all 0.3s);
-      // animation: blink .5s linear 0s 1 normal none;
 
       @media screen and (max-width: $break-small) {
         width: 80px;

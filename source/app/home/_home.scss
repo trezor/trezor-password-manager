@@ -332,6 +332,11 @@
     small {
       color: rgba($c_white, .7);
     }
+    .badge {
+      color: $c_white;
+      padding: 5px 15px;
+      background: rgba($c_black_font, .7);
+    }
   }
 
   .preloading,
