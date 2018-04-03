@@ -94,7 +94,7 @@ var React = require('react'),
         hideText(text) {
             var stars = '';
             for (var i = 0; i < text.length; i++) {
-                stars = stars + '*';
+                stars = stars + '•';
             }
             return stars;
         },

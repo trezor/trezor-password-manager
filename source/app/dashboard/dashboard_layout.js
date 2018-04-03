@@ -13,6 +13,7 @@ var React = require('react'),
     SidePanel = require('./side_panel/side_panel'),
     Footer = require('../global_components/footer/footer'),
     TagModal = require('../global_components/modal_dialogs/tag_modal'),
+    ImportModal = require('../global_components/modal_dialogs/import_modal'),
     EntryModal = require('../global_components/modal_dialogs/entry_modal'),
     PinModal = require('../global_components/modal_dialogs/pin_modal'),
 
@@ -66,6 +67,7 @@ var React = require('react'),
                     {this.state.ready ?
                         <div>
                             <TagModal />
+                            <ImportModal />
                             <EntryModal />
                             <PinModal />
                             <SidePanel />

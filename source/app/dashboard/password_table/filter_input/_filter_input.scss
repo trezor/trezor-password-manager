@@ -1,14 +1,17 @@
 form.filter {
-  display: block;
+  display: flex;
   position: relative;
+  flex-grow: 100;
 
   input {
     outline: none;
     background-color: $c_white;
     border: 1px solid $c_grey_border;
     padding-left: 35px;
+    height: 40px;
+    line-height: 40px;
     @include box-shadow(none);
-    @include border-radius(34px);
+    @include border-radius(4px);
 
     &:focus {
       outline: none;
@@ -22,7 +25,7 @@ form.filter {
 
   .clear {
     position: absolute;
-    top: 5px;
+    top: 8px;
     right: 10px;
     padding: 5px;
     display: none;
@@ -31,7 +34,7 @@ form.filter {
   &:before {
     display: block;
     position: absolute;
-    top: 8px;
+    top: 10px;
     left: 15px;
     content: "\f2f5";
     font-size: 1.3em;

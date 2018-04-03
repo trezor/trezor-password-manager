@@ -35,7 +35,7 @@ var React = require('react'),
             window.myStore.on('filter', this.setupFilter);
             window.myStore.on('toggleNewEntry', this.toggleNewEntry);
             window.myStore.on('update', this.updateTableContent);
-            chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.chromeTableMsgHandler(request, sender, sendResponse));
+            chrome.runtime.onMessage.addListener(this.chromeTableMsgHandler);
 
         },
 
@@ -145,7 +145,7 @@ var React = require('react'),
         },
 
         activeTag(obj) {
-            return obj.tags.indexOf(this.state.active_id) > -1 || this.state.active_id == 0;
+            return obj.tags.indexOf(this.state.active_id) > -1 || this.state.active_id === 0;
         },
 
         filterIsSet() {
@@ -167,12 +167,16 @@ var React = require('react'),
         },
 
         render(){
-            var raw_table = this.getProperOrderArr(),
-                password_table = !!raw_table ? raw_table.map((key) => {
-                    var obj = this.state.entries[key];
-                    if (this.activeTag(obj)) {
+            let raw_table = this.getProperOrderArr(),
+                count = !!raw_table.length ? 0 : 1,
+                newTagArr = this.state.active_id === 0 ? [] : [this.state.active_id],
+                password_table = !!raw_table.length ? raw_table.map((key) => {
+                    let obj = this.state.entries[key];
+                    let actTag = this.activeTag(obj);
+                    if (actTag) {
                         if (this.filterIsSet()) {
                             if (this.checkFilterMatching(obj)) {
+                                count++;
                                 return (
                                     <TableEntry key={key}
                                                 key_value={key}
@@ -187,6 +191,7 @@ var React = require('react'),
                                 )
                             }
                         } else {
+                            count++;
                             return (
                                 <TableEntry key={key}
                                             key_value={key}
@@ -201,23 +206,19 @@ var React = require('react'),
                             )
                         }
                     }
-                }) : (<span className='no-entries'>No entries here yet</span>),
-                newTagArr = this.state.active_id === 0 ? [] : [this.state.active_id];
-
+                }) : (<div className='no-entries'><img src='dist/app-images/nopwd.svg' alt='no passwords'/><div className='headline'>Add your first password.</div><div>Click to “Add entry” or use “Import”</div></div>);
             return (
                 <div className='wraper container-fluid'>
                     <div className='row page-title'>
-                        <div className='col-md-3 col-sm-3 col-xs-2'>
+                        <div className='col-sm-8 col-xs-9'>
                             <button type='button'
                                     onClick={this.toggleNewEntry}
                                     disabled={this.state.newEntry}
                                     className='blue-btn add'>Add entry
                             </button>
-                        </div>
-                        <div className='col-md-6 col-sm-8 col-xs-6'>
                             <FilterInput eventEmitter={this.props.eventEmitter}/>
                         </div>
-                        <div className='col-md-3 col-sm-1 col-xs-2 text-right'>
+                        <div className="col-sm-4 col-xs-3 text-right">
                             <DropdownButton title='Sort' className='dropdown order' noCaret pullRight
                                             id='order-dropdown-no-caret'>
                                 <MenuItem active={this.state.orderType === 'note'}
@@ -244,8 +245,7 @@ var React = require('react'),
                                     mode={'edit-mode'}
                                     content_changed={'edited'}
                             />}
-                        {password_table}
-
+                        {count !== 0 ? password_table : (<div className='no-entries'><img src='dist/app-images/nosearch.svg' alt='no passwords'/><div className='headline'>No results.</div><div>Consider your criteria.</div></div>)}
                     </div>
                 </div>
             )

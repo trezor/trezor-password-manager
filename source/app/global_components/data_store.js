@@ -17,6 +17,11 @@ class Store extends EventEmitter {
         this.username = username;
         this.storageType = storageType;
         this.data = typeof data === 'object' ? data : JSON.parse(data);
+        this.validateData(this.data).then((c) => {
+            if (!!c.length) {
+                this.sendMsg('errorMsg', {code: 'T_CORRUPTED', cEntries: c.join(', ')});
+            }
+        } );
         chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.chromeStoreMsgHandler(request, sender, sendResponse));
         this.emit('update', this.data);
     }
@@ -25,6 +30,24 @@ class Store extends EventEmitter {
         data = typeof data === 'object' ? data : JSON.parse(data);
         this.emit('update', data);
         this.data = data;
+    }
+
+    validateData(data) {
+        return new Promise((resolve) => {
+            let corruptedEntries = [];
+            Object.keys(data.entries).map((key) => {
+                let o = data.entries[key];
+                if (o.hasOwnProperty('nonce') &&
+                    o.hasOwnProperty('title') &&
+                    o.hasOwnProperty('password') &&
+                    o.hasOwnProperty('username')) {
+                    return true;
+                } else {
+                    corruptedEntries.push(o.title);
+                }
+            });
+            resolve(corruptedEntries)
+        });
     }
 
     chromeStoreMsgHandler(request, sender, sendResponse) {
@@ -199,6 +222,25 @@ class Store extends EventEmitter {
         });
     }
 
+    cleanStorage() {
+        return new Promise((resolve) => {
+            Object.keys(this.data.entries).map((key) => {
+                let o = this.data.entries[key];
+                if (o.hasOwnProperty('nonce') &&
+                    o.hasOwnProperty('title') &&
+                    o.hasOwnProperty('password') &&
+                    o.hasOwnProperty('username')) {
+                    return true;
+                } else {
+                    delete this.data.entries[key];
+                }
+            });
+            Service.saveContext(this.data);
+            this.emit('update', this.data);
+            resolve();
+        });
+    }
+
     toObject() {
         return this.data;
     }
@@ -207,8 +249,12 @@ class Store extends EventEmitter {
         return this.emit('toggleNewEntry');
     }
 
+    sendMsg(type, content=null) {
+        chrome.runtime.sendMessage({type: type, content: content});
+    }
+
     userSwitch() {
-        chrome.runtime.sendMessage({type: 'userSwitch'});
+        this.sendMsg('userSwitch')
     }
 }
 

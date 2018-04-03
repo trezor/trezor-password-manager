@@ -2,69 +2,15 @@
 
 let visibleDialog = false,
     retry = 0,
-    countVisibleInputs = (inputs) => {
-        let visibleInputs = 0;
-        for (let j = 0; j < inputs.length; j++) {
-            if (inputs[j].type.toLowerCase() === 'email' || inputs[j].type.toLowerCase() === 'text') {
-                visibleInputs++;
-            }
-        }
-        return visibleInputs < 2;
-    },
 
-    hasOnePasswordInput = (inputs) => {
-        let passwordInputsNo = 0;
-        for (let j = 0; j < inputs.length; j++) {
-            if (inputs[j].type.toLowerCase() === 'password') {
-                passwordInputsNo++;
-            }
-        }
-        return passwordInputsNo == 1;
+    getInputs = () => {
+        return document.getElementsByTagName('input');
     },
-
-    hasSubmitElement = (form) => {
-        let allChildElements = form.getElementsByTagName('*'),
-            submitElement = 0;
-        for (let j = 0; j < allChildElements.length; j++) {
-            if (typeof(allChildElements[j].type) !== 'undefined') {
-                if (allChildElements[j].type.toLowerCase() === 'submit') {
-                    submitElement++;
-                }
-            }
-        }
-        return submitElement > 0;
-    },
-
-    getSubmitElement = (form) => {
-        let allChildElements = form.getElementsByTagName('*'),
-            submitElement = 0;
-        for (let j = 0; j < allChildElements.length; j++) {
-            if (typeof(allChildElements[j].type) !== 'undefined') {
-                if (allChildElements[j].type.toLowerCase() === 'submit') {
-                    submitElement++;
-                }
-            }
-        }
-        return submitElement;
-    },
-
-    getLoginForms = () => {
-        let tempFormArr = document.getElementsByTagName('FORM'),
-            loginFormsArrs = [];
-        for (let i = 0; i < tempFormArr.length; i++) {
-            let inputs = tempFormArr[i].getElementsByTagName('input'),
-                hasPwdInput = hasOnePasswordInput(inputs);
-            if (hasPwdInput) {
-                loginFormsArrs.push(tempFormArr[i]);
-            }
-        }
-        return loginFormsArrs;
-    },
-
 
     setInputValues = (content) => {
-        let loginForms = getLoginForms();
-        if (loginForms.length === 0) {
+        let inputs = getInputs();
+        console.warn(inputs);
+        if (inputs.length === 0) {
             if (visibleDialog) {
                 morphToNoResult();
             } else {
@@ -76,24 +22,21 @@ let visibleDialog = false,
             } else {
                 appendSuccessDialog();
             }
-            for (let i = 0; i < loginForms.length; i++) {
-                let inputs = loginForms[i].getElementsByTagName('input');
-                for (let j = 0; j < inputs.length; j++) {
-                    switch (inputs[j].type.toLowerCase()) {
-                        case 'email':
-                            inputs[j].defaultValue = content.username;
-                            inputs[j].value = content.username;
-                            break;
-                        case 'text':
-                            inputs[j].defaultValue = content.username;
-                            inputs[j].value = content.username;
-                            break;
-                        case 'password':
-                            inputs[j].defaultValue = content.password;
-                            inputs[j].value = content.password;
-                            break;
+            for (let i = 0; i < inputs.length; i++) {
+                switch (inputs[i].type.toLowerCase()) {
+                    case 'email':
+                        inputs[i].defaultValue = content.username;
+                        inputs[i].value = content.username;
+                        break;
+                    case 'text':
+                        inputs[i].defaultValue = content.username;
+                        inputs[i].value = content.username;
+                        break;
+                    case 'password':
+                        inputs[i].defaultValue = content.password;
+                        inputs[i].value = content.password;
+                        break;
                     }
-                }
             }
         }
     },
@@ -126,7 +69,7 @@ let visibleDialog = false,
         let topTextBlock = document.createElement('span');
         topTextBlock.setAttribute('id', 'tWaitingTrezorResponse');
         topTextBlock.className = 'tTopTextBlock';
-        topTextBlock.innerHTML = 'Couldn\'t find login form, sorry!';
+        topTextBlock.innerHTML = 'Couldn\'t find any form, sorry!';
         dialogDiv.appendChild(topTextBlock);
 
         // logo image
@@ -189,7 +132,7 @@ let visibleDialog = false,
         let topTextBlock = document.createElement('span');
         topTextBlock.setAttribute('id', 'tWaitingTrezorResponse');
         topTextBlock.className = 'tTopTextBlock';
-        topTextBlock.innerHTML = 'Couldn\'t find login form, sorry!';
+        topTextBlock.innerHTML = 'Couldn\'t find any form, sorry!';
         dialogDiv.appendChild(topTextBlock);
 
         document.body.appendChild(wrapperDiv);
@@ -241,7 +184,7 @@ let visibleDialog = false,
                     } else {
                         // document.addEventListener('DOMContentLoaded', setInputValues(request.content), false);
                         // window.addEventListener('load', setInputValues(request.content), false);
-                        // really ugly shit - handle all "edge" cases
+                        // not nice - handle all "edge" cases
                         if(retry++ < 30) {
                             fillData(request);
                         }
@@ -250,7 +193,7 @@ let visibleDialog = false,
                     removeTrezorDialog();
                 }
             } else {
-                // really ugly shit - handle all "edge" cases
+                // not nice - handle all "edge" cases
                 if(retry++ < 30) {
                     fillData(request);
                 }

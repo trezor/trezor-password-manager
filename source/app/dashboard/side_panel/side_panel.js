@@ -83,20 +83,22 @@ var React = require('react'),
         render(){
             var editDropdown = (
                 <DropdownButton title='' className='dropdown edit' noCaret pullRight id='edit-dropdown-no-caret'>
-                    <MenuItem eventKey='1' onSelect={this.openTagEditor}><i className='ion-edit'></i> Edit
-                        tag</MenuItem>
-                    <MenuItem eventKey='2' onSelect={this.openDeleteTagModal}><i className='ion-close'></i> Remove
-                        tag</MenuItem>
+                    <MenuItem eventKey='1' onSelect={this.openTagEditor}>
+                        Edit
+                    </MenuItem>
+                    <MenuItem eventKey='2' onSelect={this.openDeleteTagModal}>
+                        Delete
+                    </MenuItem>
                 </DropdownButton>),
                 tag_array = Object.keys(this.state.tags).map((key, i = 0) => {
                     var obj = this.state.tags[key];
                     return (
-                        <li key={i++} className={this.state.active_id == key ? 'active' : ''}>
+                        <li key={i++} className={this.state.active_id == key ? 'active fadeIn' : 'fadeIn'}>
                             <a data-tag-key={key}
                                data-tag-name={obj.title}
                                onClick={this.changeTagAndEmitt.bind(null, key)}
                                onTouchStart={this.changeTagAndEmitt.bind(null, key)}>
-                                <i className={"icon ion-" + obj.icon}></i>
+                                <i className={"icon icon-" + obj.icon}></i>
                                 <span className="nav-label">{obj.title}</span>
                             </a>{this.state.active_id !== 0 && editDropdown}</li>)
                 });
@@ -105,11 +107,7 @@ var React = require('react'),
                 <aside className="left-panel">
                     <div className="logo">
                         <span className="logo-expanded">
-                            <img src="dist/app-images/logo-mini.png" alt="logo"/>
-                            <span className="nav-label">
-                                <b>PASSWORD</b>
-                                <span>Manager</span>
-                            </span>
+                            <img src="dist/app-images/t-logo.svg" alt="logo"/>
                         </span>
                     </div>
 
@@ -117,9 +115,9 @@ var React = require('react'),
                         <ul className="list-unstyled">
                             {tag_array}
 
-                            <li className="add-tag-btn">
+                            <li className="add-tag-btn fadeIn">
                                 <a onClick={this.addTag} onTouchStart={this.addTag}>
-                                    <i className="icon ion-plus-circled"></i>
+                                    <i className="icon icon-add"></i>
                                     <span className="nav-label">Add tag</span>
                                 </a>
                             </li>

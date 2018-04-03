@@ -91,7 +91,7 @@ var React = require('react'),
         },
 
         isUrl(url){
-            return validator.isURL(url);
+            return validator.isURL(url.trim());
         },
 
         removeProtocolPrefix(url) {
@@ -105,7 +105,7 @@ var React = require('react'),
                     waiting_trezor_msg: msg
                 });
             } else {
-                this.setState({waiting_trezor: ' '});
+                this.setState({waiting_trezor: ''});
             }
         },
 
@@ -118,12 +118,11 @@ var React = require('react'),
                 safe_note: this.state.safe_note,
                 nonce: this.state.nonce
             };
-            chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
-                if (response != null) {
+            chrome.runtime.sendMessage({type: 'decryptPassword', content: data, clipboardClear: false}, response => {
+                if (response.content.success) {
                     chrome.runtime.sendMessage({type: 'openTabAndLogin', content: response.content});
                 }
                 this.setTrezorWaitingBackface(false);
-
             });
         },
 
@@ -148,8 +147,8 @@ var React = require('react'),
                 safe_note: this.state.safe_note,
                 nonce: this.state.nonce
             };
-            chrome.runtime.sendMessage({type: 'decryptPassword', content: data}, (response) => {
-                if (response != null) {
+            chrome.runtime.sendMessage({type: 'decryptPassword', content: data, clipboardClear: true}, response => {
+                if (response.content.success) {
                     Clipboard.copy(response.content.password);
                     this.setState({
                         clipboard_pwd: true
@@ -164,11 +163,15 @@ var React = require('react'),
             });
         },
 
+        responseTarget(resp) {
+            return resp.content.nonce === this.state.nonce;
+        },
+
         changeMode() {
             this.hidePassword();
             if (this.state.mode === 'list-mode') {
                 this.setTrezorWaitingBackface('Editing entry');
-                var data = {
+                let data = {
                     title: this.state.title,
                     username: this.state.username,
                     password: this.state.password,
@@ -176,23 +179,24 @@ var React = require('react'),
                     nonce: this.state.nonce
                 };
                 chrome.runtime.sendMessage({type: 'decryptFullEntry', content: data}, (response) => {
-                    if (response != null) {
-                        this.setState({
-                            password: response.content.password,
-                            safe_note: response.content.safe_note,
-                            mode: 'edit-mode',
-                            password_visible: false,
-                            safe_note_visible: false,
-                            tags_titles: window.myStore.getTagTitleArrayById(this.state.tags_id),
-                            tag_globa_title_array: window.myStore.getTagTitleArray(),
-                            tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value, this.state.tags_id)
-                        });
+                    if (this.responseTarget(response)) {
+                        if (response.content.success) {
+                            this.setState({
+                                password: response.content.password,
+                                safe_note: response.content.safe_note,
+                                mode: 'edit-mode',
+                                password_visible: false,
+                                safe_note_visible: false,
+                                tags_titles: window.myStore.getTagTitleArrayById(this.state.tags_id),
+                                tag_globa_title_array: window.myStore.getTagTitleArray(),
+                                tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value, this.state.tags_id)
+                            });
+                        }
+                        this.setTrezorWaitingBackface(false);
                     }
-                    this.setTrezorWaitingBackface(false);
-
                 });
             } else {
-                var oldValues = window.myStore.getEntryValuesById(this.state.key_value);
+                let oldValues = window.myStore.getEntryValuesById(this.state.key_value);
                 if (this.isUrl(this.removeProtocolPrefix(this.state.title))) {
                     this.setState({
                         image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title) + '?size=100'
@@ -215,12 +219,12 @@ var React = require('react'),
                     this.setState({
                         saving_entry: true
                     });
-                    var tags_id = [];
+                    let tags_id = [];
                     this.state.tags_titles.map((key) => {
                         tags_id.push(window.myStore.getTagIdByTitle(key));
                     });
 
-                    var data = {
+                    let data = {
                         title: this.state.title,
                         username: this.state.username,
                         password: this.state.password,
@@ -234,21 +238,26 @@ var React = require('react'),
                         data.password = response.content.password;
                         data.safe_note = response.content.safe_note;
                         data.nonce = response.content.nonce;
-                        if (this.state.key_value) {
-                            this.setState({
-                                mode: 'list-mode',
-                                content_changed: '',
-                                password: response.content.password,
-                                password_visible: false,
-                                safe_note_visible: false,
-                                safe_note: response.content.safe_note,
-                                nonce: response.content.nonce,
-                                saving_entry: false
-                            });
-                            this.titleOnBlur();
-                            window.myStore.saveDataToEntryById(this.state.key_value, data);
+                        data.success = response.content.success;
+                        if (data.success) {
+                            if (this.state.key_value) {
+                                this.setState({
+                                    mode: 'list-mode',
+                                    content_changed: '',
+                                    password: response.content.password,
+                                    password_visible: false,
+                                    safe_note_visible: false,
+                                    safe_note: response.content.safe_note,
+                                    nonce: response.content.nonce,
+                                    saving_entry: false
+                                });
+                                this.titleOnBlur();
+                                window.myStore.saveDataToEntryById(this.state.key_value, data);
+                            } else {
+                                window.myStore.addNewEntry(data);
+                            }
                         } else {
-                            window.myStore.addNewEntry(data);
+                            console.warn('inconsistent entry');
                         }
                     });
                 } else {
@@ -268,7 +277,7 @@ var React = require('react'),
         },
 
         discardChanges() {
-            var oldValues = window.myStore.getEntryValuesById(this.state.key_value);
+            let oldValues = window.myStore.getEntryValuesById(this.state.key_value);
             if (oldValues) {
                 this.setState({
                     title: oldValues.title,
@@ -385,7 +394,7 @@ var React = require('react'),
         },
 
         keyPressed(event) {
-            if (event.keyCode == 27) {
+            if (event.keyCode === 27) {
                 if (this.state.content_changed === '') {
                     this.setState({
                         mode: 'list-mode'
@@ -414,9 +423,10 @@ var React = require('react'),
                 entryTitleVal = this.state.note.length === 0 ? this.removeProtocolPrefix(this.state.title) : this.state.note,
                 title = this.state.mode === 'list-mode' ?
                     (this.state.username.length === 0 ?
-                        <a href={this.isUrl(this.state.title) ? this.setProtocolPrefix(this.state.title) : null}>{entryTitleVal}</a> :
+                        <a href={this.isUrl(this.state.title) ? this.setProtocolPrefix(this.state.title) : null}
+                           className={this.isUrl(this.state.title) ? 'open' : ''}>{entryTitleVal}</a> :
                         <a onClick={this.isUrl(this.state.title) ? this.openTabAndLogin : null}
-                           className={this.isUrl(this.state.title) ? 'pointer' : null}>{entryTitleVal}</a>) : (
+                           className={this.isUrl(this.state.title) ? 'pointer openlogin' : ''}>{entryTitleVal}</a>) : (
                     <input type='text'
                            autoComplete='off'
                            value={this.state.title}
@@ -482,7 +492,7 @@ var React = require('react'),
                             <div className={this.state.image_visible && this.isUrl(this.state.title) ? 'avatar white-bg' : 'avatar'}>
                                 {this.state.image_visible &&
                                 <img src={this.state.image_src} onError={this.handleImageError}/>}
-                                <i className={'icon ion-' + window.myStore.getTagIconById(this.state.tags_id[this.state.tags_id.length-1])}></i>
+                                <i className={'icon icon-' + window.myStore.getTagIconById(this.state.tags_id[this.state.tags_id.length-1])}></i>
                                 {this.state.username.length === 0 ?
                                     <a href={this.isUrl(this.state.title) ? this.setProtocolPrefix(this.state.title) : null}
                                        className={this.isUrl(this.state.title) ? 'pointer' : null}></a> :
@@ -561,7 +571,7 @@ var React = require('react'),
                                        onClick={this.toggleNote}></i>
                                 </OverlayTrigger>
                             </div>
-                            {this.state.key_value != null &&
+                            {this.state.key_value !== null &&
                             <div className='actions'>
                                 <span>Actions </span>
 
@@ -571,12 +581,14 @@ var React = require('react'),
                             }
                             <div className='form-buttons'>
 
-                                {this.state.key_value != null &&
-                                <span className='button edit-btn transparent-btn icon ion-edit'
-                                      onClick={this.changeMode}><span>Edit</span></span>
+                                {this.state.key_value !== null && <div className="edit-btns">
+                                <span className='button transparent-btn'
+                                      onClick={this.changeMode}>Edit</span>
+                                    <span onClick={this.isUrl(this.state.title) ? this.openTabAndLogin : null}
+                                          className={this.isUrl(this.state.title) ? 'button transblue-btn' : 'hidden'}>Login</span></div>
                                 }
 
-                                {this.state.key_value != null &&
+                                {this.state.key_value !== null &&
                                 <span className='button close-btn transparent-btn icon ion-close-round'
                                       onClick={this.changeMode}><span>Close</span></span>
                                 }

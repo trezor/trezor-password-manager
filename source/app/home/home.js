@@ -21,10 +21,14 @@ var React = require('react'),
                 trezorReady: false,
                 storageReady: false,
                 username: '',
+                userDetails: false,
                 storageType: 'DROPBOX',
+                activeDevice: {},
+                devices: [],
                 deviceStatus: 'disconnected',
                 dialog: 'preloading',
-                loadingText: 'Waking up ...'
+                loadingText: 'Waking up ...',
+                passphrase: false
             }
         },
 
@@ -56,7 +60,13 @@ var React = require('react'),
                         username: request.content.username,
                         storageType: request.content.storageType
                     });
-                    //this.initTrezorPhase();
+                    this.sendMessage('initTrezorPhase');
+                    break;
+
+                case 'updateDevices':
+                    this.setState({
+                        devices: request.content.devices
+                    });
                     break;
 
                 case 'disconnected':
@@ -105,12 +115,34 @@ var React = require('react'),
                     });
                     break;
 
+                case 'trezorPassphrase':
+                    if (this.state.activeDevice.version === 2) {
+                        this.setState({
+                            passphrase: true,
+                        });
+                    }
+                    break;
+
                 case 'decryptedContent':
                     window.myStore = new Store(request.content.data, request.content.username, request.content.storageType);
                     this.transitionTo('dashboard');
                     break;
             }
             return true;
+        },
+
+        toggleDetails() {
+            this.setState({
+                userDetails: !this.state.userDetails
+            });
+        },
+
+        activateDevice(d) {
+            this.setState({
+                dialog: 'loading_dialog',
+                activeDevice: this.state.devices[d]
+            });
+            this.sendMessage('activateTrezor', this.state.devices[d].path);
         },
 
         sendMessage(msgType, msgContent) {
@@ -135,31 +167,33 @@ var React = require('react'),
             this.sendMessage('disconnect');
         },
 
-        initTrezorPhase() {
-            this.sendMessage('initTrezorPhase');
-        },
-
         checkStates() {
             if (this.state.trezorReady && this.state.storageReady) {
                 this.transitionTo('dashboard');
             }
         },
 
-        restartBackground() {
-            chrome.runtime.reload();
-        },
-
         render() {
+            var device_list = Object.keys(this.state.devices).map((key, i = 0) => {
+                return (
+                    <li key={i++}>
+                        <a data-tag-key={this.state.devices[key].path}
+                           data-tag-name={this.state.devices[key].label}
+                           onClick={this.activateDevice.bind(null, key)}
+                           onTouchStart={this.activateDevice.bind(null, key)}>
+                            <span className={'icon t' + this.state.devices[key].version}></span>
+                            <span className='nav-label'>{this.state.devices[key].label}</span>
+                        </a>
+                    </li>)
+            });
             return (
                 <div>
-                    <div className='overlay-hill'></div>
-                    <div className='overlay-color'></div>
+                    <div className='background'></div>
                     <div className='home'>
                         <div className={this.state.dialog === 'connect_storage' ? 'connect_storage' : 'hidden_dialog'}>
-                            <img src='dist/app-images/trezor.svg' className='no-circle'/>
+                            <img src='dist/app-images/t-logo.svg' className='no-circle spaced'/>
 
                             <div className='dialog-content'>
-                                <h1><b></b>Password Manager</h1>
                                 <button className='dropbox-login' onClick={this.connectDropbox}>Sign in with Dropbox
                                 </button>
                                 <br />
@@ -169,36 +203,41 @@ var React = require('react'),
                         </div>
 
                         <div className={this.state.dialog === 'preloading' ? 'preloading' : 'hidden_dialog'}>
-                            <img src='dist/app-images/trezor.svg' className='no-circle'/>
+                            <img src='dist/app-images/t-logo.svg' className='no-circle spaced'/>
 
                             <div className='dialog-content'>
-                                <h1><b></b>Password Manager</h1>
                                 <span className='spinner'></span>
                             </div>
                         </div>
 
                         <div className={this.state.dialog === 'accept_user' ? 'accept_user' : 'hidden_dialog'}>
                             <img src={'dist/app-images/' + this.state.storageType.toLowerCase() + '.svg'} />
-
                             <div>
-                                <button onClick={this.initTrezorPhase} className='accept-btn'>Continue as
-                                    <b> {this.state.username}</b>
-                                </button>
+                                <span>Signed as</span>
+                                <h3 className={this.state.userDetails ? 'active' : ''}>
+                                    <b onClick={this.toggleDetails}>{this.state.username}</b>
+                                </h3>
                                 <br />
-                                <button className='no-style' onClick={this.disconnect}>
-                                    {this.state.storageType === 'DROPBOX' ? <p>Logout and use different account.</p> : <p>Switch to different service.</p>}
-                                </button>
-                                {this.state.storageType === 'DROPBOX' ? <i>(Manage your accounts via Dropbox.com)</i> : <div><b>For logout or switch user follow instructions:</b><ol><li>In the upper right corner of the browser window, click the button for the current person.</li><li>Click Switch person.</li><li>Choose the person you want to switch to.</li><a href='https://support.google.com/chrome/answer/2364824?hl=en' target='_blank'>More info</a></ol></div>}
+                                <div className={this.state.userDetails ? 'desc' : 'hidden'}>
+                                    <button className='no-style' onClick={this.disconnect}>
+                                        {this.state.storageType === 'DROPBOX' ? <p>Logout and use different account.</p> : <p>Switch to different service.</p>}
+                                    </button>
+                                    <br/>
+                                    <div>
+                                    {this.state.storageType === 'DROPBOX' ? <i className='desc'>(Manage your accounts via Dropbox.com)</i> : <div className='desc'><b>For logout or switch user follow instructions:</b><ol><li>In the upper right corner of the browser window, click the button for the current person.</li><li>Click Switch person.</li><li>Choose the person you want to switch to.</li><a href='https://support.google.com/chrome/answer/2364824?hl=en' rel='noopener noreferrer' target='_blank'>More info</a></ol></div>}
+                                    </div>
+                                </div>
+                                <div className={this.state.devices.length ? '' : 'hidden'}>
+                                    <span>Choose from devices</span>
+                                    <ul className='dev-list'>{device_list}</ul>
+                                </div>
+                                <div className={this.state.devices.length ? 'hidden' : 'desc'}>
+                                    <span className='connect_trezor'><img src='dist/app-images/connect-trezor.svg'/> Connect TREZOR to continue</span>
+                                    <div className='desc'>
+                                        <small>Don't have a TREZOR? <a href="https://shop.trezor.io/">Get one</a></small>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-
-                        <div className={this.state.dialog === 'connect_trezor' ? 'connect_trezor' : 'hidden_dialog'}>
-                            <img src='dist/app-images/trezor_connect.png'/>
-
-                            <h1>Connect your <br/> <b className='smallcaps'>TREZOR</b> device.</h1>
-                            <br />
-                            <button className='no-style'><a href='https://shop.trezor.io?a=tpm' target='_blank'>I don't
-                                have a TREZOR device.</a></button>
                         </div>
 
                         <div className={this.state.dialog === 'pin_dialog' ? 'pin_dialog' : 'hidden_dialog'}>
@@ -207,14 +246,15 @@ var React = require('react'),
 
                         <div className={this.state.dialog === 'loading_dialog' ? 'loading_dialog' : 'hidden_dialog'}>
                             <span className='spinner'></span>
-
                             <h1>{this.state.loadingText}</h1>
                         </div>
 
                         <div className={this.state.dialog === 'button_dialog' ? 'button_dialog' : 'hidden_dialog'}>
-                            <img src='dist/app-images/trezor_button.png'/>
-
-                            <h1>Follow instructions on your <br/> <b className='smallcaps'>TREZOR</b> device.</h1>
+                            <h1>
+                                <span className='icon icon-device'></span>
+                                <div className={!this.state.passphrase ? 'desc' : 'hidden'}>Follow instructions on your <br/> <b className='smallcaps'>{this.state.activeDevice.label}</b> device.</div>
+                                <div className={this.state.passphrase ? 'desc' : 'hidden'}>Select <span className='badge'>Host</span> on the device to continue.<br /> <small>TREZOR Password Manager does not support passphrase yet.</small></div>
+                            </h1>
                         </div>
 
                         <Footer footerStyle='white'/>

@@ -1,9 +1,10 @@
 {
   "name": "TREZOR Password Manager",
   "description": "Really secure password manager using TREZOR.",
-  "version": "0.5.17",
+  "version": "0.5.19.7",
   "author": "SatoshiLabs",
   "short_name": "TREZOR Password Manager",
+  "minimum_chrome_version": "59.0.0",
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {
@@ -21,13 +22,15 @@
       "suggested_key": {
         "default": "Alt+Shift+U"
       },
-      "description": "Hard restart of app."
+      "description": "App restart."
     }
   },
   "icons": {
     "16": "images/icon16.png",
     "48": "images/icon48.png",
-    "128": "images/icon128.png"
+    "128": "images/icon128.png",
+    "256": "images/icon256.png",
+    "512": "images/icon512.png"
   },
   "browser_action": {
     "default_icon": {
@@ -43,7 +46,8 @@
       "js/background.js"
     ]
   },
-  "content_security_policy": "script-src 'self' 'unsafe-eval' https://apis.google.com/; object-src 'self'",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgRzyy+IKeaKZA6SIHgrDSinXRNcNq1tT/WeyX1K6gTnVc8KFRVHu5CLf0xN0eCfuz7JKy7U+XfNBzO2i0pkamma6kFMEpvX73WU3Lvmc+g6jg/VSZc9OOgCocT6I8FX92ad1Mj6qcDjVyCkpE2FPotUkuH0PwqQNzSQjPor+KhNPnOQIf5IqLvFEr7P4hUTgyiTUsOX6ROxk61EvP1Fi+Qllscgkm961q+/puw+9Z0Gr4eNIgfAK7DpYj0UJQsdlBP59PQqbW91mwPrKTr3FHmaHGOk+odLCOgchN8MmXgLpqoar1Rxo/AXs5BdnyCprlVHvtXRYbLlthQVzxYylNwIDAQAB",
+  "content_security_policy": "script-src 'self' https://apis.google.com/ https://sisyfos.trezor.io/; object-src 'self'",
   "oauth2": {
     "client_id": "296429812941-co5alkvv0tan1ptun23ilefh96gb1heb.apps.googleusercontent.com",
     "scopes": [
@@ -58,11 +62,6 @@
     "images/success.svg",
     "css/content_style.css"
   ],
-  "externally_connectable": {
-    "ids": [
-      "jcjjhjgimijdkoamemaghajlhegmoclj"
-    ]
-  },
   "manifest_version": 2,
   "permissions": [
     "<all_urls>",
@@ -72,6 +71,8 @@
     "contextMenus",
     "background",
     "tabs",
+    "clipboardRead",
+    "clipboardWrite",
     "activeTab",
     "http://*/",
     "https://*/",

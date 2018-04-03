@@ -1,8 +1,7 @@
 aside.left-panel {
-  background-color: $c_blue_dark_very;
   color: $c_grey_content_font;
   outline: none;
-  width: 240px;
+  width: 250px;
   position: fixed;
   min-height: 100%;
   height: 100%;
@@ -10,6 +9,8 @@ aside.left-panel {
   top: 0;
   left: 0;
   z-index: 100;
+  background: url("app-images/nav-bg.png") no-repeat center top fixed;
+  background-size: 100% 100%;
 
   @include box-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
 
@@ -25,10 +26,10 @@ aside.left-panel {
 }
 
 .logo {
-  padding: 20px 25px;
+  padding: 24px 28px;
   line-height: 51px;
-  height: 51px;
-  text-transform: uppercase;
+  height: 81px;
+  border-bottom: 1px solid rgba(255, 255, 255, .10);
 
   @media screen and (max-width: $break-small) {
     padding: 0;
@@ -44,44 +45,47 @@ aside.left-panel {
     display: inline-block;
     float: left;
     margin-right: 10px;
+    height: 34px;
 
     @media screen and (max-width: $break-small) {
       margin: 0 auto;
 
     }
   }
-
-  & > span {
-
-    display: inline-block;
-    float: left;
-    color: $c_grey_font;
-    font-weight: 300;
-    font-size: 1em;
-    line-height: 1.1em;
-    letter-spacing: .74em;
-
-    b {
-      display: inline-block;
-      clear: right;
-      font-weight: 700;
-      color: $c_white;
-      font-size: 1.7em;
-      letter-spacing: .02em;
-    }
-
-    @media screen and (max-width: $break-small) {
-      display: none;
-    }
-  }
 }
 
 .navigation {
-  margin: 24px 0 20px;
+  margin: 0;
 
   @media screen and (max-width: $break-small) {
     margin-top: 0;
 
+  }
+
+  ul {
+    margin: 0;
+  }
+
+  ul li.fadeIn {
+    opacity: 0;
+  }
+
+  @for $i from 1 through 30 {
+    ul li.fadeIn:nth-child(#{$i}) {
+      animation: fadeIn .2s ease (#{$i*0.1s});
+      animation-fill-mode: forwards;
+    }
+  }
+
+  ul.list-unstyled > li:first-child {
+
+    &:after {
+      content: 'TAGS';
+      display: block;
+      padding: 20px 0 10px 28px;
+      font-size: 12px;
+      color: rgba($c_white, .7);
+    }
   }
 
   ul > li {
@@ -94,14 +98,13 @@ aside.left-panel {
 
     &.active:hover > a, &.active > a {
       color: $c_white;
-      border-left: 4px solid $c_blue;
-      background: $c_blue_dark_very_much;
+      background: rgba(0,0,0,.20);
     }
 
     & > a {
       display: block;
-      padding: 14px 20px;
-      color: $c_grey_font;
+      padding: 14px 24px;
+      color: $c_white;
       font-size: 15px;
       text-decoration: none;
       font-weight: 400;
@@ -119,6 +122,7 @@ aside.left-panel {
 
       &:hover {
         color: $c_white;
+        background: rgba($c_white,.1);
       }
 
       .nav-label {
@@ -127,7 +131,8 @@ aside.left-panel {
 
       i {
         margin-right: 6px;
-        font-size: 18px;
+        margin-top: 1px;
+        font-size: 24px;
         width: 25px;
         float: left;
 
@@ -142,6 +147,9 @@ aside.left-panel {
       }
 
       span {
+        display: inline-block;
+        line-height: 24px;
+
         @media screen and (max-width: $break-small) {
           display: none;
         }
@@ -156,9 +164,9 @@ aside.left-panel {
       display: none;
       position: relative;
       float: right;
-      margin-top: -45px;
+      margin-top: -52px;
       width: 45px;
-      height: 45px;
+      height: 52px;
       transition: all 300ms;
 
       &.open {
@@ -169,23 +177,22 @@ aside.left-panel {
           background: transparent;
 
           &:after {
-            color: $c_blue !important;
+            color: $c_white !important;
           }
         }
 
         & > .dropdown-menu {
-          width: 240px;
-          border-left: 4px solid $c_blue;
-          background: $c_blue_dark_very_much;
+          width: 250px;
+          background: rgba(0,0,0,.20);
           padding: 0;
           @include border-radius(0);
 
           & > li > a {
             font-size: .9em;
-            padding-left: 16px !important;
+            padding-left: 30px !important;
 
             &:hover {
-              background: $c_blue;
+              background: rgba($c_white,.1);
             }
 
             & > i {
@@ -200,12 +207,12 @@ aside.left-panel {
         display: block;
         width: 45px;
         text-align: right;
-        height: 45px;
+        height: 52px;
         margin-top: 0;
-        line-height: 45px;
+        line-height: 52px;
         font-size: 1.2em;
         padding: 0;
-        color: $c_grey_content_font;
+        color: $c_white;
         background-color: transparent;
         border: 0;
         outline: 0;
@@ -218,10 +225,10 @@ aside.left-panel {
 
         &.edit:after {
           display: block;
-          color: $c_grey_content_font;
+          color: $c_white;
           width: 45px;
-          height: 45px;
-          line-height: 45px;
+          height: 52px;
+          line-height: 52px;
           text-align: center;
           content: "\f20b";
           font-size: 1em;
@@ -231,12 +238,36 @@ aside.left-panel {
     }
 
     &.add-tag-btn {
-      border-top: 1px solid $c_blue_dark_very_much;
-      border-bottom: 1px solid $c_blue_dark_very_much;
-      width: 100%;
+      vertical-align: middle;
+      padding-left: 15px;
+      margin-top: 15px;
+      margin-bottom: 15px;
 
-      i {
-        color: $c_blue;
+      a {
+        padding: 0 0 0 40px;
+        background: rgba(255,255,255,.10);
+        width: 220px;
+        height: 40px;
+        line-height: 31px;
+        @include border-radius(20px);
+
+        &:hover {
+          background: rgba(255,255,255,.20);
+        }
+
+        span {
+          margin-top: 4px;
+          line-height: 31px;
+        }
+
+        i {
+          color: $c_white;
+          font-size: 40px;
+          position: absolute;
+          top: 0;
+          left: 16px;
+        }
+
       }
     }
   }

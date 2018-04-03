@@ -8,6 +8,7 @@
 'use strict';
 
 require('babel-polyfill');
+require('trezor-connect');
 
 window.tpmErroLog = [];
 window.AppRootFolder = 'Apps';
@@ -22,7 +23,6 @@ var Promise = require('es6-promise').Promise,
 // Chrome manager will maintain most of injection and other (tab <-> background <-> app) context manipulation
     ChromeMgmt = require('./classes/chrome_mgmt'),
     chromeManager = new ChromeMgmt(bgStore),
-    trezor = require('trezor.js'),
     TrezorMgmt = require('./classes/trezor_mgmt'),
     trezorManager = {},
     DropboxMgmt = require('./classes/dropbox_mgmt'),
@@ -33,8 +33,6 @@ var Promise = require('es6-promise').Promise,
 // GENERAL STUFF
     preSetup = () => {
         chromeManager.exists().then(() => {
-            return new trezor.DeviceList();
-        }).then((list) => {
             try {
                 bgStore.on('decryptContent', contentDecrypted);
                 bgStore.on('initStorageFile', askToInitStorage);
@@ -43,7 +41,7 @@ var Promise = require('es6-promise').Promise,
                 bgStore.on('retrySetup', setupRetry);
                 bgStore.on('loadFile', loadFile);
                 bgStore.on('disconnectedTrezor', userSwitch);
-                trezorManager = new TrezorMgmt(bgStore, list, retriesOpening);
+                trezorManager = new TrezorMgmt(bgStore, window.TrezorConnect);
                 dropboxManager = new DropboxMgmt(bgStore);
                 driveManager = new DriveMgmt(bgStore);
                 bgStore.on('clearSession', () => trezorManager.clearSession());
@@ -64,7 +62,6 @@ var Promise = require('es6-promise').Promise,
         if (!setupReady) {
             preSetup();
         } else {
-            trezorManager.checkVersions();
             switch (bgStore.phase) {
                 case 'LOADED':
                     chromeManager.sendMessage('decryptedContent', {
@@ -114,7 +111,7 @@ var Promise = require('es6-promise').Promise,
     initNewFile = () => {
         let basicObjectBlob = {
             'version': '0.0.1',
-            'extVersion':'0.5.14',
+            'extVersion':'0.6.0',
             'config': {
                 'orderType': 'date'
             },
@@ -145,7 +142,7 @@ var Promise = require('es6-promise').Promise,
 
     userSwitch = () => {
         bgStore.userSwitch();
-        trezorManager.userSwitch();
+        // trezorManager.userSwitch();
         chromeManager.updateBadgeStatus('OFF');
         chromeManager.clearContextMenuItem();
         chromeManager.sendMessage('trezorDisconnected');
@@ -154,7 +151,7 @@ var Promise = require('es6-promise').Promise,
 
     userLoggedOut = () => {
         bgStore.disconnect();
-        trezorManager.userSwitch();
+        // trezorManager.userSwitch();
         chromeManager.updateBadgeStatus('OFF');
         chromeManager.clearContextMenuItem();
         chromeManager.sendMessage('trezorDisconnected');
@@ -173,12 +170,7 @@ var Promise = require('es6-promise').Promise,
     },
 
     decryptAndInject = (entry) => {
-        trezorManager.decryptFullEntry(entry, (data) => chromeManager.fillLoginForm(data));
-    },
-
-    saveErroLog = (errorMsg, url, lineNumber, column, errorObj) => {
-        console.log(errorMsg, url, lineNumber, column, errorObj);
-        window.tpmErroLog.push('%0D%0A Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber + ' Column: ' + column + ' StackTrace: ' + errorObj);
+        trezorManager.decryptFullEntry(entry, (data) => chromeManager.fillLoginForm(data), false);
     },
 
     saveContent = (data) => {
@@ -257,16 +249,23 @@ var Promise = require('es6-promise').Promise,
                 driveManager.connect();
                 break;
 
+            case 'errorMsg':
+                chromeManager.sendMessage('errorMsg', request.content);
+                break;
+
             case 'initTrezorPhase':
                 bgStore.phase = 'TREZOR';
-                chromeManager.sendMessage('trezorDisconnected');
-                trezorManager.connect();
+                trezorManager.init();
                 break;
 
             case 'trezorPin':
                 trezorManager.pinEnter(request.content);
                 chromeManager.tryRefocusToAccessTab();
                 chromeManager.sendMessage('hidePinModal');
+                break;
+
+            case 'activateTrezor':
+                trezorManager.useDevice(request.content);
                 break;
 
             case 'disconnect':
@@ -284,11 +283,11 @@ var Promise = require('es6-promise').Promise,
                 break;
 
             case 'decryptPassword':
-                trezorManager.decryptFullEntry(request.content, sendResponse);
+                trezorManager.decryptFullEntry(request.content, sendResponse, request.clipboardClear);
                 break;
 
             case 'decryptFullEntry':
-                trezorManager.decryptFullEntry(request.content, sendResponse);
+                trezorManager.decryptFullEntry(request.content, sendResponse, false);
                 break;
 
             case 'openTabAndLogin':
@@ -296,7 +295,7 @@ var Promise = require('es6-promise').Promise,
                 break;
 
             case 'clearSession':
-                trezorManager.clearSession();
+                // trezorManager.clearSession();
                 break;
 
             case 'userSwitch':

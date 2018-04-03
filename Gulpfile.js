@@ -1,7 +1,7 @@
 var gulp = require('gulp'),
     sass = require('gulp-sass'),
     connect = require('gulp-connect'),
-    uglify = require('gulp-uglify'),
+    uglify = require('gulp-uglifyes'),
     cleanCSS = require('gulp-clean-css'),
     sourcemaps = require('gulp-sourcemaps'),
     babelify = require('babelify'),
@@ -33,7 +33,10 @@ gulp.task('production-app', () => {
         .bundle()
         .pipe(source('app.js'))
         .pipe(buffer())
-        .pipe(uglify())
+        .pipe(uglify({
+            mangle: false,
+            ecma: 5
+        }))
         .pipe(gulp.dest('./extension/dist/'))
 });
 
@@ -46,7 +49,10 @@ gulp.task('production-bg', () => {
         .bundle()
         .pipe(source('background.js'))
         .pipe(buffer())
-        .pipe(uglify())
+        .pipe(uglify({
+            mangle: false,
+            ecma: 5
+        }))
         .pipe(gulp.dest('./extension/js'))
 });
 

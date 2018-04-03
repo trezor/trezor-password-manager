@@ -14,6 +14,7 @@
     width: 100%;
     background-color: $c_white;
     overflow: hidden;
+    z-index: 2;
 
     &.waiting {
 
@@ -22,9 +23,9 @@
         @include transform(rotateX(0deg));
 
         .text {
-
           img {
-            background-color: $c_blue_dark;
+            background-color: $c_blue_dark_very_much;
+            background: linear-gradient($c_blue_dark_very_much, $c_blue);
             padding: 0 5px 10px 5px;
             margin-top: -20px;
             width: 50px;
@@ -67,7 +68,7 @@
       .text {
         position: relative;
         top: -50px;
-        left: 25px;
+        left: 40px;
         color: $c_grey_content_font;
 
         img {
@@ -88,7 +89,7 @@
       .avatar {
         display: inline-block;
         position: relative;
-        margin: 10px;
+        margin: 15px 15px 10px 20px;
         width: 50px;
         height: 50px;
         float: left;
@@ -115,7 +116,7 @@
         }
 
         i {
-          font-size: 1.5em;
+          font-size: 2.5em;
           color: $c_white;
           text-align: center;
           width: 100%;
@@ -156,11 +157,11 @@
           background: rgba($c_grey_bg, .5);
 
           .title {
-            color: $c_grey_content_font;
+            color: $c_black_font;
           }
 
           .username {
-            color: rgba($c_grey_content_font, .9);
+            color: $c_grey_content_font;
           }
         }
 
@@ -206,14 +207,13 @@
         }
 
         .title {
-          padding-top: 12px;
-          font-size: 1.4em;
+          padding-top: 17px;
+          font-size: 1.3em;
           @include transition(all 50ms ease-in-out);
           color: $c_grey_content_font;
 
           a {
-            color: $c_grey_content_font;
-            font-size: 1.1em;
+            color: $c_black_font;
           }
 
           span {
@@ -224,15 +224,15 @@
         }
 
         .username {
-          padding-top: 2px;
+          padding-top: 7px;
 
           a {
             display: inline-block;
             max-width: 150px;
             width: auto;
             padding-bottom: 3px;
-            font-size: 1.1em;
-            color: rgba($c_grey_content_font, .8);
+            font-size: 1em;
+            color: $c_grey_content_font;
             cursor: pointer;
             margin-right: 10px;
           }
@@ -257,17 +257,22 @@
       .form-buttons {
         position: absolute;
         visibility: hidden;
-        top: 20px;
+        top: 30px;
         right: 20px;
-        width: 80px;
-        height: 150px;
+        width: auto;
+        height: auto;
 
-        .edit-btn {
+        .edit-btns {
           display: block;
+
+          .transblue-btn {
+            margin-left: 10px;
+          }
         }
 
         .close-btn {
           display: none;
+          margin-top: -10px;
         }
 
         .content-btns {
@@ -413,7 +418,7 @@
 
           i {
             line-height: 100px;
-            font-size: 3em;
+            font-size: 6em;
             @include transition(all 50ms ease-in-out);
           }
 
@@ -423,15 +428,15 @@
         }
 
         .tags {
-          padding-left: 130px;
+          padding-left: 140px;
         }
 
         .available-tags {
-          padding-left: 205px;
+          padding-left: 215px;
         }
 
         .safe-note, .actions {
-          padding-left: 130px;
+          padding-left: 140px;
 
           span {
             vertical-align: top;
@@ -454,7 +459,7 @@
           visibility: visible;
           z-index: 10;
 
-          .edit-btn {
+          .edit-btns {
             display: none;
           }
 
