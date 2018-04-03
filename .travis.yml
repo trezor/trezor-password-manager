@@ -9,7 +9,7 @@ before_script:
   - yarn
 
 script:
-  - yarn build
+  - gulp
 
 notifications:
   webhooks:
