@@ -22,7 +22,7 @@
       "suggested_key": {
         "default": "Alt+Shift+U"
       },
-      "description": "Hard restart of app."
+      "description": "App restart."
     }
   },
   "icons": {
