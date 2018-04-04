@@ -92,6 +92,10 @@ var Promise = require('es6-promise').Promise,
         }
     },
 
+    isOnline = () => {
+        return navigator.onLine;
+    },
+
     setupRetry = () => {
         setupReady = false;
         if (retriesOpening-- === 0) {
@@ -238,7 +242,11 @@ var Promise = require('es6-promise').Promise,
                 break;
 
             case 'connectDropbox':
-                dropboxManager.connect();
+                if (isOnline()) {
+                    dropboxManager.connect();
+                } else {
+                    chromeManager.sendMessage('errorMsg', {code: 'T_NO_TRANSPORT'});
+                }
                 break;
 
             case 'dropboxConnectToken':
@@ -246,7 +254,11 @@ var Promise = require('es6-promise').Promise,
                 break;
 
             case 'connectDrive':
-                driveManager.connect();
+                if (isOnline()) {
+                    driveManager.connect();
+                } else {
+                    chromeManager.sendMessage('errorMsg', {code: 'T_NO_TRANSPORT'});
+                }
                 break;
 
             case 'errorMsg':
