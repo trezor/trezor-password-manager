@@ -135,6 +135,25 @@ var React = require('react'),
                     };
                     break;
 
+                case 'T_OLD_TRANSPORT':
+                    return {
+                        errorTitle: 'Old version of TREZOR Bridge.',
+                        solution: [
+                            'Go to wallet.trezor.io/#/bridge/',
+                            'Download and install latest TREZOR Bridge.',
+                            'Restart TREZOR Password Manager.'
+                        ],
+                        restartAction: true,
+                        supportAction: false,
+                        redirectAction: true,
+                        closeAction: false,
+                        cleanupAction: false,
+                        redirectText: 'TREZOR Bridge',
+                        redirectTo: 'https://wallet.trezor.io/#/bridge/',
+                        supportDefaultMailText: ''
+                    };
+                    break;
+
                 case 'T_NO_TRANSPORT':
                     if (this.isOnline()) {
                         return {

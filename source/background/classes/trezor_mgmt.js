@@ -14,8 +14,8 @@ const HD_HARDENED = 0x80000000,
     PATH = [(10016 | HD_HARDENED) >>> 0, 0],
     WRONG_PIN = 'Failure_PinInvalid',
 
+    MINIMAL_VERSION = '2.0.11',
     URL_CONNECT = 'https://sisyfos.trezor.io/',
-
     DEFAULT_KEYPHRASE = 'Activate TREZOR Password Manager?',
     DEFAULT_NONCE = '2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee';
 
@@ -80,6 +80,10 @@ class TrezorMgmt {
 
     _transportEvent(msg) {
         switch (msg.type) {
+            case 'transport__start':
+                this._validateTransport(msg.payload);
+                break;
+
             case 'transport__error':
                 this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
                 break;
@@ -218,6 +222,29 @@ class TrezorMgmt {
             'askOnEnc': true
         };
         this.bgStore.emit('disconnectedTrezor');
+    }
+
+    _validateTransport(payload) {
+        console.warn('sa', payload, );
+        if (payload.type !== 'bridge') {
+            this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
+        } else if (!this._versionCompare(payload.version, MINIMAL_VERSION)) {
+            this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_OLD_TRANSPORT'});
+        }
+    }
+
+    _versionCompare(a, b) {
+        let pa = a.split('.');
+        let pb = b.split('.');
+        for (let i = 0; i < 3; i++) {
+            let na = Number(pa[i]);
+            let nb = Number(pb[i]);
+            if (na > nb) return true;
+            if (nb > na) return false;
+            if (!isNaN(na) && isNaN(nb)) return true;
+            if (isNaN(na) && !isNaN(nb)) return false;
+        }
+        return false;
     }
 
     pinEnter(pin) {
