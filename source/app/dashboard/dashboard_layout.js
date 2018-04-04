@@ -51,12 +51,6 @@ var React = require('react'),
             }
         },
 
-        contextReady() {
-            this.setState({
-                ready: true
-            });
-        },
-
         storeExists() {
             return typeof window.myStore !== 'undefined';
         },
@@ -77,7 +71,12 @@ var React = require('react'),
                             </section>
                         </div>
                         :
-                        <div>Loading</div>
+                        <div>
+                            <div className='background'></div>
+                            <div className='loading_dialog'>
+                                <span className='spinner'></span>
+                            </div>
+                        </div>
                     }
                 </div>
             )
