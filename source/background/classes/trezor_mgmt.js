@@ -20,6 +20,7 @@ const HD_HARDENED = 0x80000000,
     DEFAULT_NONCE = '2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee';
 
 var crypto = require('crypto'),
+    trezorReconnect = false,
     Clipboard = require('clipboard-js');
 
 class TrezorMgmt {
@@ -78,13 +79,22 @@ class TrezorMgmt {
         this.bgStore.emit('sendMessage', 'updateDevices', {devices: this._deviceList});
     }
 
+    checkReconnect() {
+        if (trezorReconnect) {
+            this.trezorConnect.transportConnect();
+            trezorReconnect = false;
+        }
+    }
+
     _transportEvent(msg) {
         switch (msg.type) {
             case 'transport__start':
+                trezorReconnect = false;
                 this._validateTransport(msg.payload);
                 break;
 
             case 'transport__error':
+                trezorReconnect = !trezorReconnect;
                 this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
                 break;
         }
@@ -122,6 +132,11 @@ class TrezorMgmt {
                 if (msg.payload.code === 'ButtonRequest_PassphraseType') {
                     this.bgStore.emit('sendMessage', 'trezorPassphrase');
                 }
+                break;
+
+            case 'ui-no_transport':
+                this._disconnect();
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
                 break;
         }
     }

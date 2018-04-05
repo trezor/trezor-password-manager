@@ -137,9 +137,9 @@ var React = require('react'),
 
                 case 'T_OLD_TRANSPORT':
                     return {
-                        errorTitle: 'Old version of TREZOR Bridge.',
+                        errorTitle: 'New TREZOR Bridge is available.',
                         solution: [
-                            'Go to wallet.trezor.io/#/bridge/',
+                            'Please, go to wallet.trezor.io/#/bridge/',
                             'Download and install latest TREZOR Bridge.',
                             'Restart TREZOR Password Manager.'
                         ],
@@ -148,7 +148,7 @@ var React = require('react'),
                         redirectAction: true,
                         closeAction: false,
                         cleanupAction: false,
-                        redirectText: 'TREZOR Bridge',
+                        redirectText: 'Update TREZOR Bridge',
                         redirectTo: 'https://wallet.trezor.io/#/bridge/',
                         supportDefaultMailText: ''
                     };
@@ -166,9 +166,9 @@ var React = require('react'),
                             restartAction: true,
                             supportAction: false,
                             redirectAction: true,
-                            closeAction: true,
+                            closeAction: false,
                             cleanupAction: false,
-                            redirectText: 'TREZOR Bridge',
+                            redirectText: 'Install TREZOR Bridge',
                             redirectTo: 'https://wallet.trezor.io/#/bridge/',
                             supportDefaultMailText: ''
                         };

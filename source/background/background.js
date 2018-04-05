@@ -62,6 +62,7 @@ var Promise = require('es6-promise').Promise,
         if (!setupReady) {
             preSetup();
         } else {
+            trezorManager.checkReconnect();
             switch (bgStore.phase) {
                 case 'LOADED':
                     chromeManager.sendMessage('decryptedContent', {
