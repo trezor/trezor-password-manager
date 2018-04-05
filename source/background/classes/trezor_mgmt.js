@@ -227,7 +227,6 @@ class TrezorMgmt {
     }
 
     _validateTransport(payload) {
-        console.warn('sa', payload, );
         if (payload.type !== 'bridge') {
             this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
         } else if (!this._versionCompare(payload.version, MINIMAL_VERSION)) {
@@ -471,10 +470,10 @@ class TrezorMgmt {
             override: true,
             useEmptyPassphrase: true,
             path: PATH,
-            key: this._cryptoData.keyPhrase,
-            value: this._cryptoData.nonce,
-            encrypt: this._cryptoData.enc,
-            askOnEncrypt: this._cryptoData.askOnEnc,
+            key: DEFAULT_KEYPHRASE,
+            value: DEFAULT_NONCE,
+            encrypt: true,
+            askOnEncrypt: true,
             askOnDecrypt: true
         }).then((result) => {
             this.bgStore.emit('sendMessage', 'loading', 'We\'re getting there ...');
