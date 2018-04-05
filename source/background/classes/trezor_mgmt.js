@@ -15,7 +15,7 @@ const HD_HARDENED = 0x80000000,
     WRONG_PIN = 'Failure_PinInvalid',
 
     MINIMAL_VERSION = '2.0.11',
-    URL_CONNECT = 'https://sisyfos.trezor.io/',
+    URL_CONNECT = 'https://connect.trezor.io/tpm/',
     DEFAULT_KEYPHRASE = 'Activate TREZOR Password Manager?',
     DEFAULT_NONCE = '2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee';
 
@@ -203,11 +203,7 @@ class TrezorMgmt {
             newDev.initialized = false;
             newDev.bootloader_mode = false;
         }
-        if (d.featuresNeedsReload && typeof d.featuresNeedsReload !== 'undefined') {
-            newDev.needReload = true;
-        } else {
-            newDev.needReload = false;
-        }
+        newDev.needReload = !!(d.featuresNeedsReload && typeof d.featuresNeedsReload !== 'undefined');
         return newDev;
     }
 
@@ -242,10 +238,12 @@ class TrezorMgmt {
     }
 
     _validateTransport(payload) {
-        if (payload.type !== 'bridge') {
-            this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
-        } else if (!this._versionCompare(payload.version, MINIMAL_VERSION)) {
-            this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_OLD_TRANSPORT'});
+        if (typeof payload.type !== 'undefined' && typeof payload.version !== 'undefined') {
+            if (payload.type !== 'bridge') {
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
+            } else if (!this._versionCompare(payload.version, MINIMAL_VERSION)) {
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_OLD_TRANSPORT'});
+            }
         }
     }
 
