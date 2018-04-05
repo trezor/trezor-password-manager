@@ -229,16 +229,20 @@ class ChromeMgmt {
     }
 
     fillLoginForm(data) {
-        if (typeof data === 'undefined') {
-            data = {content: null};
+        let sendObj = {};
+        if (typeof data === 'undefined' || data.content.success === false) {
+            sendObj = {content: null};
+        } else {
+            sendObj = {username: data.content.username, password: data.content.password};
         }
-        this._injectContentScript(parseInt(this.accessTabId), 'fillData', data.content);
+        this._injectContentScript(parseInt(this.accessTabId), 'fillData', sendObj);
         this.accessTabId = 0;
     }
 
     openTabAndLogin(data) {
         chrome.tabs.create({url: this._setProtocolPrefix(data.title)}, (tab) => {
-            this._injectContentScript(tab.id, 'fillData', data);
+            let sendObj = {username: data.username, password: data.password};
+            this._injectContentScript(tab.id, 'fillData', sendObj);
         });
     }
 

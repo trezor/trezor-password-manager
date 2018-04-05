@@ -9,7 +9,6 @@ let visibleDialog = false,
 
     setInputValues = (content) => {
         let inputs = getInputs();
-        console.warn(inputs);
         if (inputs.length === 0) {
             if (visibleDialog) {
                 morphToNoResult();
@@ -177,7 +176,7 @@ let visibleDialog = false,
     fillData = (request) => {
         setTimeout(() => {
             if (document.addEventListener) {
-                if (request.content != null) {
+                if (request.content !== null) {
                     if (document.readyState === 'complete') {
                         retry = 0;
                         setInputValues(request.content);

@@ -59,10 +59,10 @@ var React = require('react'),
 
         errorHandler(content) {
             switch (content.code) {
-
                 case 'T_LIST':
                     if (this.isOnline()) {
                         return {
+                            showModal: true,
                             errorTitle: 'Houston, we have a problem ...',
                             solution: [
                                 'Check your connection.',
@@ -80,6 +80,7 @@ var React = require('react'),
                         };
                     } else {
                         return {
+                            showModal: true,
                             errorTitle: 'You are offline.',
                             solution: [
                                 'Connect to the Internet.',
@@ -99,6 +100,7 @@ var React = require('react'),
 
                 case 'T_NOT_INIT':
                     return {
+                        showModal: true,
                         errorTitle: 'TREZOR is not initialized.',
                         solution: [
                             'Go to wallet.trezor.io',
@@ -118,6 +120,7 @@ var React = require('react'),
 
                 case 'T_OLD_VERSION':
                     return {
+                        showModal: true,
                         errorTitle: 'Old firmware version.',
                         solution: [
                             'Go to TREZOR Wallet.',
@@ -137,6 +140,7 @@ var React = require('react'),
 
                 case 'T_OLD_TRANSPORT':
                     return {
+                        showModal: true,
                         errorTitle: 'New TREZOR Bridge is available.',
                         solution: [
                             'Please, go to wallet.trezor.io/#/bridge/',
@@ -154,9 +158,28 @@ var React = require('react'),
                     };
                     break;
 
+                case 'T_OK_TRANSPORT':
+                    return {
+                        showModal: false,
+                        errorTitle: 'TREZOR Bridge is ready!',
+                        solution: [
+                            ''
+                        ],
+                        restartAction: false,
+                        supportAction: false,
+                        redirectAction: false,
+                        closeAction: true,
+                        cleanupAction: false,
+                        redirectText: '',
+                        redirectTo: '',
+                        supportDefaultMailText: ''
+                    };
+                    break;
+
                 case 'T_NO_TRANSPORT':
                     if (this.isOnline()) {
                         return {
+                            showModal: true,
                             errorTitle: 'TREZOR Bridge not installed.',
                             solution: [
                                 'Go to wallet.trezor.io/#/bridge/',
@@ -174,6 +197,7 @@ var React = require('react'),
                         };
                     } else {
                         return {
+                            showModal: true,
                             errorTitle: 'You are offline.',
                             solution: [
                                 'Connect to the Internet.',
@@ -193,6 +217,7 @@ var React = require('react'),
 
                 case 'T_BOOTLOADER':
                     return {
+                        showModal: true,
                         errorTitle: 'TREZOR in bootloader mode.',
                         solution: [
                             'To upgrade firmware go to TREZOR Wallet.',
@@ -211,6 +236,7 @@ var React = require('react'),
 
                 case 'T_CORRUPTED':
                     return {
+                        showModal: true,
                         errorTitle: 'Corrupted entries detected.',
                         solution: [
                             'TREZOR Password Manager will cleanup storage from corrupted entries: ' + content.cEntries
@@ -225,6 +251,7 @@ var React = require('react'),
 
                 case 'T_ENCRYPTION':
                     return {
+                        showModal: true,
                         errorTitle: 'TREZOR device is busy.',
                         solution: [
                             'Please, confirm the action on the device or reconnect TREZOR device.',
@@ -240,6 +267,7 @@ var React = require('react'),
 
                 case 'T_DEVICE':
                     return {
+                        showModal: true,
                         errorTitle: 'Device problem detected.',
                         solution: [
                             'Try using TREZOR Wallet to check whether your device works fine.',
@@ -261,6 +289,7 @@ var React = require('react'),
                 // INVALID TOKEN error only for dropbox, cos Drive is handling it itself in CHROME.identity API
                 case 'INVALID_TOKEN':
                     return {
+                        showModal: true,
                         errorTitle: 'There is a problem with storage.',
                         solution: [
                             'Clear cache and restart browser.',
@@ -281,6 +310,7 @@ var React = require('react'),
 
                 case 'OVER_QUOTA':
                     return {
+                        showModal: true,
                         errorTitle: 'Not enough storage space.',
                         solution: [
                             'Clean up your ' + content.storage + ' storage folder or buy more space.',
@@ -300,6 +330,7 @@ var React = require('react'),
 
                 case 'RATE_LIMITED':
                     return {
+                        showModal: true,
                         errorTitle: 'Storage limit reached',
                         solution: [
                             'You have reached ' + content.storage + ' limits.',
@@ -320,6 +351,7 @@ var React = require('react'),
                 case 'NETWORK_ERROR':
                     if (this.isOnline()) {
                         return {
+                            showModal: true,
                             errorTitle: content.storage + ' is down (or very slow)',
                             solution: [
                                 'Check your internet connection.',
@@ -336,6 +368,7 @@ var React = require('react'),
                         };
                     } else {
                         return {
+                            showModal: true,
                             errorTitle: 'You are offline',
                             solution: [
                                 'Connect to the Internet.',
@@ -355,6 +388,7 @@ var React = require('react'),
 
                 case 'ACCESS_DENIED':
                     return {
+                        showModal: true,
                         errorTitle: 'Missing permissions',
                         solution: [
                             'Sign to ' + content.storage + ' and allow access permissions'
@@ -371,6 +405,7 @@ var React = require('react'),
                     break;
             }
             return {
+                showModal: true,
                 errorTitle: 'Error',
                 errorSolutionSteps: [
                     'Check your connection.',
@@ -389,7 +424,7 @@ var React = require('react'),
             if (request.type === 'errorMsg') {
                 let error = this.errorHandler(request.content);
                 this.setState({
-                    showErrorModal: true,
+                    showErrorModal: error.showModal,
                     errorTitle: error.errorTitle,
                     errorSolutionSteps: error.solution,
                     restartAction: error.restartAction,

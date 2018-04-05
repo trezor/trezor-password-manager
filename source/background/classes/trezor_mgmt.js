@@ -20,7 +20,7 @@ const HD_HARDENED = 0x80000000,
     DEFAULT_NONCE = '2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee';
 
 var crypto = require('crypto'),
-    trezorReconnect = false,
+    tcMissing = false,
     Clipboard = require('clipboard-js');
 
 class TrezorMgmt {
@@ -45,7 +45,7 @@ class TrezorMgmt {
         this.trezorConnect.init({
             webusb: false,
             debug: true,
-            transportReconnect: false,
+            transportReconnect: true,
             popup: false,
             connectSrc: URL_CONNECT
         });
@@ -80,22 +80,24 @@ class TrezorMgmt {
     }
 
     checkReconnect() {
-        if (trezorReconnect) {
-            this.trezorConnect.transportConnect();
-            trezorReconnect = false;
+        if (tcMissing) {
+            this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
         }
     }
 
     _transportEvent(msg) {
         switch (msg.type) {
             case 'transport__start':
-                trezorReconnect = false;
+                tcMissing = false;
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_OK_TRANSPORT'});
                 this._validateTransport(msg.payload);
                 break;
 
             case 'transport__error':
-                trezorReconnect = !trezorReconnect;
-                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
+                if (!tcMissing) {
+                    tcMissing = true;
+                    this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
+                }
                 break;
         }
     }
