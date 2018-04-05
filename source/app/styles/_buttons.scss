@@ -30,6 +30,7 @@ button, .button {
     background-color: $c_blue !important;
     border-color: $c_blue !important;
     color: $c_white;
+    @include transition(none);
 
     &:hover {
       color: $c_white;
@@ -70,6 +71,7 @@ button, .button {
     background-color: transparent !important;
     border-color: transparent !important;
     color: $c_grey_content_font;
+    @include transition(none);
 
     &:hover {
       background-color: $c_white !important;
@@ -82,10 +84,11 @@ button, .button {
     background-color: transparent !important;
     border-color: transparent !important;
     color: $c_blue;
+    @include transition(none);
 
     &:hover {
       background-color: $c_white !important;
-      border-color: $c_white !important;
+      border-color: transparent !important;
       color: $c_blue;
     }
   }
@@ -94,6 +97,7 @@ button, .button {
     background-color: $c_white !important;
     border-color: rgba($c_grey_content_font, .6) !important;
     color: $c_grey_content_font !important;
+    @include transition(none);
 
     &:hover {
       color: $c_black !important;
