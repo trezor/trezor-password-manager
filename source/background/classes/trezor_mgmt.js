@@ -142,8 +142,10 @@ class TrezorMgmt {
                 }
             }
         } else {
-            this._deviceList.push(device);
-            this.bgStore.emit('sendMessage', 'updateDevices', {devices: this._deviceList});
+            if (!this._hasDevice(device)) {
+                this._deviceList.push(device);
+                this.bgStore.emit('sendMessage', 'updateDevices', {devices: this._deviceList});
+            }
         }
     }
 
