@@ -42,6 +42,25 @@ var React = require('react'),
             chrome.runtime.onMessage.removeListener(this.chromeMsgHandler);
         },
 
+        componentDidUpdate() {
+            var button = this.webusbButton.getDOMNode();
+            if (button && button.getElementsByTagName('iframe').length < 1) {
+                var iframe = document.createElement('iframe');
+                iframe.frameBorder = '0';
+                iframe.width = '100%';
+                iframe.height = '100%';
+                iframe.setAttribute('allow', 'usb');
+                iframe.onload = function () {
+                    iframe.contentWindow.postMessage({
+                    }, 'https://connect.trezor.io/tpm/');
+                };
+                iframe.src = 'https://connect.trezor.io/tpm/webusb.html';
+
+                // inject iframe into button
+                button.append(iframe);
+            }
+        },
+
         chromeMsgHandler(request, sender, sendResponse) {
             switch (request.type) {
 
@@ -186,6 +205,7 @@ var React = require('react'),
                         </a>
                     </li>)
             });
+
             return (
                 <div>
                     <div className='background'></div>
@@ -231,6 +251,8 @@ var React = require('react'),
                                     <span>Choose from devices</span>
                                     <ul className='dev-list'>{device_list}</ul>
                                 </div>
+                                <button className="webusb" ref={(f) => { this.webusbButton = f; }}>Check for devices</button>
+
                                 <div className={this.state.devices.length ? 'hidden' : 'desc'}>
                                     <span className='connect_trezor'><img src='dist/app-images/connect-trezor.svg'/> Connect TREZOR to continue</span>
                                     <div className='desc'>

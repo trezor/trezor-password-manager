@@ -43,7 +43,6 @@ class TrezorMgmt {
         this.trezorConnect.on('DEVICE_EVENT', msg => this._deviceEvent(msg));
         this.trezorConnect.on('UI_EVENT', msg => this._uiEvent(msg));
         this.trezorConnect.init({
-            webusb: false,
             debug: true,
             transportReconnect: true,
             popup: false,
@@ -241,9 +240,9 @@ class TrezorMgmt {
 
     _validateTransport(payload) {
         if (typeof payload.type !== 'undefined' && typeof payload.version !== 'undefined') {
-            if (payload.type !== 'bridge') {
+            if (payload.type !== 'bridge' && payload.type !== 'ParallelTransport') {
                 this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
-            } else if (!this._versionCompare(payload.version, MINIMAL_VERSION)) {
+            } else if (payload.type === 'bridge' && !this._versionCompare(payload.version, MINIMAL_VERSION)) {
                 this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_OLD_TRANSPORT'});
             }
         }
@@ -504,6 +503,11 @@ class TrezorMgmt {
                 }
             }
         }).catch((error) => this._handleTrezorError(error, 'encKey', null));
+    }
+
+    renderWebUSBButton() {
+        console.log("RENDERRRRs")
+        TrezorConnect.renderWebUSBButton();
     }
 }
 module.exports = TrezorMgmt;

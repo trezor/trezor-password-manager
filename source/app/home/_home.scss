@@ -296,6 +296,20 @@
         font-weight: 400;
         font-size: 1em;
       }
+
+      &.webusb {
+        position: relative;
+        overflow: hidden;
+        iframe {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          z-index: 1;
+          overflow: hidden;
+        }
+      }
     }
 
     ol {
