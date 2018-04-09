@@ -52,6 +52,7 @@ var React = require('react'),
                     iframe.width = '100%';
                     iframe.height = '100%';
                     iframe.setAttribute('allow', 'usb');
+                    iframe.setAttribute('scrolling', 'no');
                     iframe.onload = function () {
                         iframe.contentWindow.postMessage({}, 'https://connect.trezor.io/tpm/');
                     };
