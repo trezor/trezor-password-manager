@@ -267,20 +267,7 @@
       }
 
       &.no-style {
-        background-color: rgba($c_white, .25);
         margin: 10px 0 20px 0;
-        border: none;
-        color: $c_white;
-
-        &:hover {
-          @include box-shadow(none);
-          text-decoration: underline;
-          background-color: rgba($c_white, .45);
-        }
-
-        p {
-          margin: 0;
-        }
       }
 
       &.dropbox-login {

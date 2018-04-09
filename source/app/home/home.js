@@ -246,7 +246,7 @@ var React = require('react'),
                                 </h3>
                                 <br />
                                 <div className={this.state.userDetails ? 'desc' : 'hidden'}>
-                                    <button className='no-style' onClick={this.disconnect}>
+                                    <button className='half-transparent no-style' onClick={this.disconnect}>
                                         {this.state.storageType === 'DROPBOX' ? <p>Logout and use different account.</p> : <p>Switch to different service.</p>}
                                     </button>
                                     <br/>
@@ -255,7 +255,7 @@ var React = require('react'),
                                     </div>
                                 </div>
                                 {!this.state.devices.length && this.state.transportType === 'bridge' && <span className='connect_trezor'><img src='dist/app-images/connect-trezor.svg'/> Connect TREZOR to continue</span>}
-                                {this.state.transportType === 'ParallelTransport' && <div><span className='connect_trezor inline'><img src='dist/app-images/connect-trezor.svg'/> Connect TREZOR</span> and <button className='webusb no-style' ref={(f) => { this.webusbButton = f; }}>Check for devices</button></div>}
+                                {this.state.transportType === 'ParallelTransport' && <div><span className='connect_trezor inline'><img src='dist/app-images/connect-trezor.svg'/> Connect TREZOR</span> and <button className='webusb no-style half-transparent' ref={(f) => { this.webusbButton = f; }}>Check for devices</button></div>}
                                 <div className={this.state.devices.length ? '' : 'hidden'}>
                                     <span>Choose from device</span>
                                     <ul className='dev-list'>{device_list}</ul>

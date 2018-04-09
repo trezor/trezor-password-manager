@@ -80,6 +80,18 @@ button, .button {
     }
   }
 
+  &.half-transparent {
+    background-color: rgba($c_white, .25) !important;
+    color: $c_white !important;
+    border: none !important;
+
+    &:hover {
+      @include box-shadow(none !important);
+      text-decoration: underline !important;
+      background-color: rgba($c_white, .45) !important;
+    }
+  }
+
   &.transblue-btn {
     background-color: transparent !important;
     border-color: transparent !important;
