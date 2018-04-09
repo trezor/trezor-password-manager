@@ -201,6 +201,11 @@
         width: 20px;
         color: $c_white;
       }
+      
+      &.inline {
+        display: inline-block;
+        margin-right: 10px;
+      }
     }
 
     img {
@@ -300,6 +305,8 @@
       &.webusb {
         position: relative;
         overflow: hidden;
+        margin-left: 10px;
+
         iframe {
           position: absolute;
           width: 100%;

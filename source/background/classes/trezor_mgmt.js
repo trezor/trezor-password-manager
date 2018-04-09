@@ -21,6 +21,7 @@ const HD_HARDENED = 0x80000000,
 
 var crypto = require('crypto'),
     tcMissing = false,
+    transportType = false,
     Clipboard = require('clipboard-js');
 
 class TrezorMgmt {
@@ -44,6 +45,7 @@ class TrezorMgmt {
         this.trezorConnect.on('UI_EVENT', msg => this._uiEvent(msg));
         this.trezorConnect.init({
             debug: true,
+            webusb: true,
             transportReconnect: true,
             popup: false,
             connectSrc: URL_CONNECT
@@ -75,6 +77,7 @@ class TrezorMgmt {
 
     init() {
         this.bgStore.emit('sendMessage', 'trezorConnected');
+        this.bgStore.emit('sendMessage', 'trezorTransport', {transport: transportType});
         this.bgStore.emit('sendMessage', 'updateDevices', {devices: this._deviceList});
     }
 
@@ -244,6 +247,8 @@ class TrezorMgmt {
                 this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
             } else if (payload.type === 'bridge' && !this._versionCompare(payload.version, MINIMAL_VERSION)) {
                 this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_OLD_TRANSPORT'});
+            } else if (!!payload.type) {
+                transportType = payload.type;
             }
         }
     }
@@ -503,11 +508,6 @@ class TrezorMgmt {
                 }
             }
         }).catch((error) => this._handleTrezorError(error, 'encKey', null));
-    }
-
-    renderWebUSBButton() {
-        console.log("RENDERRRRs")
-        TrezorConnect.renderWebUSBButton();
     }
 }
 module.exports = TrezorMgmt;

@@ -28,7 +28,8 @@ var React = require('react'),
                 deviceStatus: 'disconnected',
                 dialog: 'preloading',
                 loadingText: 'Waking up ...',
-                passphrase: false
+                passphrase: false,
+                transportType: false
             }
         },
 
@@ -43,21 +44,21 @@ var React = require('react'),
         },
 
         componentDidUpdate() {
-            var button = this.webusbButton.getDOMNode();
-            if (button && button.getElementsByTagName('iframe').length < 1) {
-                var iframe = document.createElement('iframe');
-                iframe.frameBorder = '0';
-                iframe.width = '100%';
-                iframe.height = '100%';
-                iframe.setAttribute('allow', 'usb');
-                iframe.onload = function () {
-                    iframe.contentWindow.postMessage({
-                    }, 'https://connect.trezor.io/tpm/');
-                };
-                iframe.src = 'https://connect.trezor.io/tpm/webusb.html';
-
-                // inject iframe into button
-                button.append(iframe);
+            if (this.state.transportType === 'ParallelTransport') {
+                var button = this.webusbButton.getDOMNode();
+                if (button && button.getElementsByTagName('iframe').length < 1) {
+                    var iframe = document.createElement('iframe');
+                    iframe.frameBorder = '0';
+                    iframe.width = '100%';
+                    iframe.height = '100%';
+                    iframe.setAttribute('allow', 'usb');
+                    iframe.onload = function () {
+                        iframe.contentWindow.postMessage({}, 'https://connect.trezor.io/tpm/');
+                    };
+                    iframe.src = 'https://connect.trezor.io/tpm/webusb.html';
+                    // inject iframe into button
+                    button.append(iframe);
+                }
             }
         },
 
@@ -85,6 +86,12 @@ var React = require('react'),
                 case 'updateDevices':
                     this.setState({
                         devices: request.content.devices
+                    });
+                    break;
+
+                case 'trezorTransport':
+                    this.setState({
+                       transportType: request.content.transport
                     });
                     break;
 
@@ -247,14 +254,13 @@ var React = require('react'),
                                     {this.state.storageType === 'DROPBOX' ? <i className='desc'>(Manage your accounts via Dropbox.com)</i> : <div className='desc'><b>For logout or switch user follow instructions:</b><ol><li>In the upper right corner of the browser window, click the button for the current person.</li><li>Click Switch person.</li><li>Choose the person you want to switch to.</li><a href='https://support.google.com/chrome/answer/2364824?hl=en' rel='noopener noreferrer' target='_blank'>More info</a></ol></div>}
                                     </div>
                                 </div>
+                                {!this.state.devices.length && this.state.transportType === 'bridge' && <span className='connect_trezor'><img src='dist/app-images/connect-trezor.svg'/> Connect TREZOR to continue</span>}
+                                {this.state.transportType === 'ParallelTransport' && <div><span className='connect_trezor inline'><img src='dist/app-images/connect-trezor.svg'/> Connect TREZOR</span> and <button className='webusb no-style' ref={(f) => { this.webusbButton = f; }}>Check for devices</button></div>}
                                 <div className={this.state.devices.length ? '' : 'hidden'}>
-                                    <span>Choose from devices</span>
+                                    <span>Choose from device</span>
                                     <ul className='dev-list'>{device_list}</ul>
                                 </div>
-                                <button className="webusb" ref={(f) => { this.webusbButton = f; }}>Check for devices</button>
-
                                 <div className={this.state.devices.length ? 'hidden' : 'desc'}>
-                                    <span className='connect_trezor'><img src='dist/app-images/connect-trezor.svg'/> Connect TREZOR to continue</span>
                                     <div className='desc'>
                                         <small>Don't have a TREZOR? <a href="https://shop.trezor.io/">Get one</a></small>
                                     </div>
