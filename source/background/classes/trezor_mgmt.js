@@ -101,6 +101,10 @@ class TrezorMgmt {
                     this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
                 }
                 break;
+
+            case 'transport__unreadable_hid_device':
+                this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
+                break;
         }
     }
 

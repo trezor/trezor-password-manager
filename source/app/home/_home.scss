@@ -293,6 +293,9 @@
         position: relative;
         overflow: hidden;
         margin-left: 10px;
+        &::-webkit-scrollbar {
+          display: none;  // Safari and Chrome
+        }
 
         iframe {
           position: absolute;
@@ -300,8 +303,12 @@
           height: 100%;
           top: 0;
           left: 0;
+          right: 0;
           z-index: 1;
-          overflow: hidden;
+
+          &::-webkit-scrollbar {
+            display: none;  // Safari and Chrome
+          }
         }
       }
     }

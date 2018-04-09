@@ -254,7 +254,7 @@ var React = require('react'),
                                     {this.state.storageType === 'DROPBOX' ? <i className='desc'>(Manage your accounts via Dropbox.com)</i> : <div className='desc'><b>For logout or switch user follow instructions:</b><ol><li>In the upper right corner of the browser window, click the button for the current person.</li><li>Click Switch person.</li><li>Choose the person you want to switch to.</li><a href='https://support.google.com/chrome/answer/2364824?hl=en' rel='noopener noreferrer' target='_blank'>More info</a></ol></div>}
                                     </div>
                                 </div>
-                                {!this.state.devices.length && this.state.transportType === 'bridge' && <span className='connect_trezor'><img src='dist/app-images/connect-trezor.svg'/> Connect TREZOR to continue</span>}
+                                {this.state.transportType === 'bridge' && !this.state.devices.length && <span className='connect_trezor'><img src='dist/app-images/connect-trezor.svg'/> Connect TREZOR to continue</span>}
                                 {this.state.transportType === 'ParallelTransport' && <div><span className='connect_trezor inline'><img src='dist/app-images/connect-trezor.svg'/> Connect TREZOR</span> and <button className='webusb no-style half-transparent' ref={(f) => { this.webusbButton = f; }}>Check for devices</button></div>}
                                 <div className={this.state.devices.length ? '' : 'hidden'}>
                                     <span>Choose from device</span>
