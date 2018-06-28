@@ -1,5 +1,5 @@
 .import-modal-dialog {
-  width: 760px;
+  width: 960px;
   max-width: 100%;
   text-align: left;
   color: $c_grey_content_bg;
@@ -7,7 +7,47 @@
   .modal-content {
     background-color: $c_white;
     @include border-radius(4px);
-    padding: 15px 25px 25px 25px;
+
+    .table {
+      th {
+        text-align: center;
+        vertical-align: middle;
+
+        span {
+          font-weight: bold;
+        }
+      }
+
+      td {
+        .spinner {
+          width: 15px;
+          height: 15px;
+        }
+      }
+    }
+
+    .file-form {
+      #drop-area {
+        padding: 60px 30px;
+        background: $c_grey_bg;
+        border: 4px dashed $c_grey_border;
+        @include border-radius(5px);
+        text-align: center;
+        font-size: 1.5em;
+        line-height: 2em;
+
+        &.active {
+          border-color: $c_grey_content_bg;
+        }
+
+        input[type="file"] {
+          display: inline-block;
+          width: 200px;
+          font-size: 15px;
+          line-height: 15px;
+        }
+      }
+    }
   }
 
   .modal-header {
@@ -19,7 +59,6 @@
   .modal-title {
     color: $c_black;
     text-align: center;
-    padding-bottom: 10px;
   }
 
   .modal-body {
@@ -29,6 +68,21 @@
 
     .loading {
       text-align: center;
+    }
+
+    td {
+      .icon {
+        float: left;
+      }
+
+      .success {
+        font-size: 1em;
+        color: $c_green;
+
+        .icon {
+          font-size: 1.4em;
+        }
+      }
     }
 
     .spinner {

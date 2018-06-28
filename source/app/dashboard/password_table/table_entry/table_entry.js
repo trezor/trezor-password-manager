@@ -254,7 +254,7 @@ var React = require('react'),
                                 this.titleOnBlur();
                                 window.myStore.saveDataToEntryById(this.state.key_value, data);
                             } else {
-                                window.myStore.addNewEntry(data);
+                                window.myStore.addNewEntry(data, true);
                             }
                         } else {
                             console.warn('inconsistent entry');

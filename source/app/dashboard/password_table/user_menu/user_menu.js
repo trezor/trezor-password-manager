@@ -21,24 +21,11 @@ var React = require('react'),
         },
 
         importClick() {
-            let fileUploadDom = React.findDOMNode(this.refs.fileUploader);
-            fileUploadDom.click();
+            window.myStore.emit('storageImport', {});
         },
 
         userSwitch() {
             window.myStore.userSwitch();
-        },
-
-        onChangeFile(event) {
-            let file = event.target.files[0];
-            window.myStore.emit('storageImport', false);
-            Papa.parse(file, {
-                worker: false,
-                complete: (results) => {
-                    console.warn(results);
-                    window.myStore.emit('storageImport', results);
-                }
-            });
         },
 
         componentDidMount() {
@@ -48,22 +35,12 @@ var React = require('react'),
         render(){
             return (
                 <span className='user-menu'>
-                    <input id="myInput"
-                           type="file"
-                           accept=".csv"
-                           ref={'fileUploader'}
-                           style={{display: 'none'}}
-                           onChange={(event)=> {
-                               this.onChangeFile(event);
-                               event.target.value=null
-                           }}
-                    />
                     <DropdownButton title={this.state.username.split(' ')[0]}
                                     className={'dropdown user ' + this.state.storageType.toLowerCase()}
                                     pullRight
                                     noCaret
                                     id='user-dropdown'>
-                        {/*<MenuItem onSelect={this.importClick}><i className='ion-document'></i>Import storage</MenuItem>*/}
+                        <MenuItem onSelect={this.importClick}><i className='ion-document'></i>Import storage</MenuItem>
                         <MenuItem onSelect={this.userSwitch}><i className='ion-log-out'></i>Switch user</MenuItem>
                     </DropdownButton>
                 </span>

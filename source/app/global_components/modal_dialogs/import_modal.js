@@ -8,20 +8,61 @@
 'use strict';
 
 var React = require('react'),
+    Papa = require('papaparse'),
     Table = require('react-bootstrap').Table,
     Modal = require('react-bootstrap').Modal,
+    Button = require('react-bootstrap').Button,
+    ImportSelect = require('../import-select'),
     ImportModal = React.createClass({
 
         getInitialState() {
             return {
                 showImportModal: false,
                 uploading: true,
-                storage: false
+                dropdownOptions: [
+                    {
+                        name: 'ITEM/URL*', 
+                        value: 'title', 
+                        selectedCol: 0
+                    },
+                    {
+                        name: 'Title', 
+                        value: 'note', 
+                        selectedCol: 1
+                    },
+                    {
+                        name: 'Username', 
+                        value: 'username', 
+                        selectedCol: 2
+                    },
+                    {
+                        name: 'Password', 
+                        value: 'password', 
+                        selectedCol: 3
+                    },
+                    {
+                        name: 'Tags', 
+                        value: 'tags', 
+                        selectedCol: 4
+                    },
+                    {
+                        name: 'Secret note', 
+                        value: 'secret_note', 
+                        selectedCol: 5
+                    }
+                ],
+                storage: false,
+                importStatus: [],
+                dropZoneActive: false
             }
         },
 
         componentDidMount() {
             window.myStore.on('storageImport', this.importModalMsgHandler);
+            window.addEventListener('mouseup', this.fileOnDragLeave);
+            window.addEventListener('dragleave', this.fileOnDragLeave);
+            window.addEventListener('dragenter', this.fileOnDragOver);
+            window.addEventListener('drop', this.fileOnDrop);
         },
 
         componentWillUnmount() {
@@ -29,33 +70,244 @@ var React = require('react'),
         },
 
         importModalMsgHandler(data) {
+            var importStatus = [];
+            if (data && data.data) {
+                importStatus = data.data.map(function(value, key) {
+                    return 'pending';
+                });
+
+                this.setState({
+                    showImportModal: true,
+                    storage: data,
+                    importStatus: importStatus
+                });
+            } else {
+                this.showImportModal();
+            }
+        },
+
+        showImportModal() {
             this.setState({
-                showImportModal: true,
-                storage: data
+                showImportModal: true
             });
         },
 
         closeImportModal() {
             this.setState({
                 showImportModal: false,
-                storage: false
+                storage: false,
+                importStatus: []
             });
         },
 
-        render(){
-            if (this.state.storage) {
-                var columns = this.state.storage.data[0];
-                console.warn('columns ', columns.length);
-                var data_list = Object.keys(this.state.storage.data).map((key, i = 0) => {
-                    let entry = this.state.storage.data[key].forEach((e) => {
-                       return (<td>{e}</td>)
-                    });
-                    return (
-                        <tr key={i++}>
-                            {entry}
-                        </tr>)
+        importStorage(n) {
+            if (typeof n !== "number") n = 0;
+            let entry = this.state.storage.data[n];
+
+            if (entry) {
+                entry = this.sortEntryData(entry);
+                this.saveEntry(entry, n);
+            }
+        },
+
+        sortEntryData(entry) {
+            let r = {};
+            this.state.dropdownOptions.forEach(function(option) {
+                r[option.value] = Object.values(entry)[option.selectedCol];
+            });
+            return r;
+        },
+
+        saveEntry(entry, n) {
+            let tags = [];
+            if (entry.tags) {
+                let tags_titles = entry.tags.split('|');
+                tags_titles.map((key) => {
+                    let tag = window.myStore.getTagIdByTitle(key);
+                    if (tag) tags.push(tag);
                 });
             }
+
+            this.setImportEntryStatus(n, 'importing');
+
+            if (entry.title.length > 0) {
+                let data = {
+                    title: String(entry.title ? entry.title : ""),
+                    username: String(entry.username ? entry.username : ""),
+                    password: String(entry.password ? entry.password : ""),
+                    nonce: String(""),
+                    tags: tags,
+                    safe_note: String(entry.safe_note ? safe_note : ""),
+                    note: String(entry.note ? entry.note : "")
+                };
+                chrome.runtime.sendMessage({type: 'encryptFullEntry', content: data}, (response) => {
+                    data.password = response.content.password;
+                    data.safe_note = response.content.safe_note;
+                    data.nonce = response.content.nonce;
+                    data.success = response.content.success;
+                    if (data.success) {
+                        // window.myStore.addNewEntry(data);
+                        this.setImportEntryStatus(n, 'success');
+                        console.log('success');
+                    } else {
+                        this.setImportEntryStatus(n, 'error');
+                        console.warn('inconsistent entry');
+                    }
+                    this.importStorage(n + 1);
+                });
+            } else {
+                this.setImportEntryStatus(n, 'warning');
+                this.importStorage(n + 1);
+                console.warn('missing title');
+            }
+        },
+
+        setImportEntryStatus(entryKey, status) {
+            let importStatus = this.state.importStatus;
+                importStatus[entryKey] = status;
+            this.setState({
+                importStatus: importStatus
+            });
+        },
+
+        showImportButtons() {
+            let importStatus = this.state.importStatus;
+            var showImportButtons = false;
+            importStatus.forEach(function(status) {
+                if (status !== "pending") showImportButtons = true;
+            });
+            return showImportButtons;
+        },
+
+        handleChange(value, selectedCol) {
+            let dropdownOptions = Object.assign(this.state.dropdownOptions);
+
+            dropdownOptions.forEach(function(option, key) {
+                if (option.selectedCol == selectedCol) {
+                    dropdownOptions[key].selectedCol = -1;
+                }
+                if (option.value == value) {
+                    dropdownOptions[key].selectedCol = selectedCol;
+                }
+            });
+
+            this.setState({
+                dropdownOptions: dropdownOptions
+            });
+        },
+
+        fileChange(event) {
+            let file = event.target.files[0];
+            window.myStore.emit('storageImport', false);
+            Papa.parse(file, {
+                worker: false,
+                header: true,
+                skipEmptyLines: true,
+                complete: (results) => {
+                    window.myStore.emit('storageImport', results);
+                }
+            });
+        },
+
+        fileOnDrop(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            this.setState({
+                dropZoneActive: false
+            });
+            this.fileChange({
+                target: {
+                    files: event.dataTransfer.files
+                }
+            });
+        },
+
+        fileOnDragOver(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            this.setState({
+                dropZoneActive: true
+            });
+        },
+
+        fileOnDragLeave(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            this.setState({
+                dropZoneActive: false
+            });
+        },
+
+        render() {
+            if (this.state.storage) {
+                var table_body, 
+                    table_head,
+                    storageData = this.state.storage.data,
+                    fields = this.state.storage.meta.fields,
+                    dropdownOptions = this.state.dropdownOptions,
+                    importStatus = this.state.importStatus;
+
+                // table header
+                table_head = fields.map((col, n) => {
+                    let selectKey = 'select' + n;
+                    let selected = dropdownOptions.find(function(option) {
+                        return option.selectedCol == n;
+                    });
+
+                    return (
+                        <th key={n}>
+                            <ImportSelect
+                                name={selectKey}
+                                value={selected ? selected.value : ''}
+                                col={n}
+                                onChange={this.handleChange}
+                                options={dropdownOptions}
+                            />
+                        </th>
+                    )
+                });
+                table_head.push(<th key={'status'} className={'status-col'}><span>Import status</span></th>)
+
+                // table body
+                let n = 0;
+                table_body = storageData.map(item => {
+                    let i = 0;
+                    let cols = Object.values(item).map(col => {
+                        let key = n.toString() + i.toString();
+                        i++;
+                        return (<td key={key}>{col}</td>);
+                    });
+                    let statusKey = 'status' + i;
+                    cols.push(
+                        <td key={statusKey}>
+                            {importStatus[n] == 'importing' && 
+                            <div className={'loading'}>
+                                <span className='spinner'></span> importing...
+                            </div>}
+                            {importStatus[n] == 'success' && 
+                            <div className={'success'}>
+                                <i className={'icon icon-add'}></i> imported
+                            </div>}
+                            {importStatus[n] == 'warning' && 
+                            <div className={'warning'}>
+                                *No URL found
+                            </div>}
+                            {importStatus[n] == 'error' && 
+                            <div className={'warning'}>
+                                inconsistent entry
+                            </div>}
+                        </td>
+                    );
+
+                    n++;
+                    return (
+                        <tr key={n.toString()} className={importStatus[(n - 1)]}>
+                          {cols}
+                        </tr>
+                    );
+                });
+            }
+            
             return (
                 <div>
                     <Modal show={this.state.showImportModal} backdrop={'static'} dialogClassName={'import-modal-dialog'} autoFocus={true} enforceFocus={true} onHide={this.closeImportModal}>
@@ -63,13 +315,40 @@ var React = require('react'),
                             <Modal.Title id='contained-modal-title-sm'>Import storage</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            <div className={!this.state.storage ? 'loading' : 'hidden'}>
-                                <span className='spinner'></span>
-                            </div>
-                            <div className={this.state.storage ? 'storage_content' : 'hidden'}>
-                                <Table>{data_list}</Table>
-                            </div>
+                            {!this.state.storage &&
+                                <form className={'file-form'}>
+                                    <div className={this.state.dropZoneActive ? 'active' : ''} id={'drop-area'} onDrop={this.fileOnDrop} onDragOver={this.fileOnDragOver}>
+                                        <label for="importInput">Drag & Drop .CSV file here or browse</label><br/>
+                                        <input id="importInput"
+                                           type="file"
+                                           accept=".csv"
+                                           ref={'fileUploader'}
+                                           onChange={(event)=> {
+                                               this.fileChange(event);
+                                               event.target.value=null
+                                           }}
+                                        />
+                                    </div>
+                                </form>}
+                            {this.state.storage &&
+                            <p>Sort your CSV columns by type.</p>}
+                            {this.state.storage &&
+                            <div className={'storage_content'}>
+                                <label><input type="checkbox" /> First row is header</label>
+                                <Table condensed bordered hover>
+                                    <thead>
+                                        <tr>{table_head}</tr>
+                                    </thead>
+                                    <tbody>
+                                        {table_body}
+                                    </tbody>
+                                </Table>
+                            </div>}
                         </Modal.Body>
+                        {this.state.showImportButtons && <Modal.Footer>
+                            <Button onClick={this.closeImportModal}>Close</Button>
+                            <Button bsStyle="primary" onClick={this.importStorage}>Import storage</Button>
+                        </Modal.Footer>}
                     </Modal>
                 </div>
             )

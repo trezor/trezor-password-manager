@@ -185,24 +185,26 @@ class Store extends EventEmitter {
                 }
             });
         } else {
-            var entryData = Object.getOwnPropertyDescriptor(this.data.entries, entryId).value;
-            allTags.splice(0, 1);
-            allTags.map((key) => {
-                if (entryData.tags.indexOf(key) === -1) {
-                    resultTagArray.push(this.getTagTitleById(key));
-                }
-            });
+            var entryData = Object.getOwnPropertyDescriptor(this.data.entries, entryId);
+            if (entryData && entryData.value) {
+                allTags.splice(0, 1);
+                allTags.map((key) => {
+                    if (entryData.value.tags.indexOf(key) === -1) {
+                        resultTagArray.push(this.getTagTitleById(key));
+                    }
+                });
+            }
         }
         return resultTagArray;
     }
 
-    addNewEntry(data) {
+    addNewEntry(data, toggleNewEntry) {
         var newId = parseInt(Object.keys(this.data.entries)[parseInt(Object.keys(this.data.entries).length) - 1]) + 1;
         newId = isNaN(newId) ? 0 : newId;
         this.data.entries[newId] = data;
         this.emit('update', this.data);
         Service.saveContext(this.data);
-        this.emit('toggleNewEntry');
+        if (toggleNewEntry) this.emit('toggleNewEntry');
     }
 
     removeEntry(entryId) {
