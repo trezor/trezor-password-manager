@@ -20,8 +20,9 @@
 
       td {
         .spinner {
-          width: 15px;
-          height: 15px;
+          width: 10px;
+          height: 10px;
+          border-width: 2px;
         }
       }
     }
@@ -35,6 +36,7 @@
         text-align: center;
         font-size: 1.5em;
         line-height: 2em;
+        color: $c_blue;
 
         &.active {
           border-color: $c_grey_content_bg;
@@ -42,23 +44,39 @@
 
         input[type="file"] {
           display: inline-block;
-          width: 200px;
+          width: 180px;
           font-size: 15px;
           line-height: 15px;
+          color: $c_black;
         }
       }
+    }
+
+    .help {
+      margin-bottom: 20px;
+      color: $c_blue;
+      font-size: 1.4em;
+      text-align: center;
     }
   }
 
   .modal-header {
-    font-size: 1.4em;
     border-bottom: 0;
     padding-left: 20px;
+    padding-right: 20px;
+
+    .close {
+      margin: 0;
+      padding: 2px 10px;
+      position: absolute;
+      right: 10px;
+    }
   }
 
   .modal-title {
     color: $c_black;
     text-align: center;
+    font-size: 1.5em;
   }
 
   .modal-body {
@@ -66,24 +84,82 @@
     height: auto;
     padding: 0 20px 20px 20px;
 
+    .storage_content {
+      + .well {
+        margin-top: 20px;
+      }
+    }
+
+    .well {
+      margin-bottom: 0;
+    }
+
+    .well-success {
+      background-color: #2876cd;
+      border-color: #2876cd;
+      color: #fff;
+    }
+
     .loading {
       text-align: center;
     }
 
-    td {
-      .icon {
-        float: left;
+    tr {
+      &.importing {
+        td {
+          background: none;
+
+          &:last-child {
+            color: $c_blue;
+          }
+        }
       }
 
-      .success {
-        font-size: 1em;
-        color: $c_green;
+      &.success {
+        td {
+          background: none;
 
+          .success {
+            color: $c_blue;
+          }
+        }
+      }
+
+      &.warning {
+        td {
+          background: none;
+
+          .warning {
+            font-size: 0.9em;
+            color: $c_red;
+          }
+        }
+      }
+
+      th {
+        border-width: 1px;
+
+        &.status-col {
+          width: 120px;
+        }
+      }
+
+      td {
         .icon {
-          font-size: 1.4em;
+          float: left;
+        }
+
+        .success {
+          font-size: 1em;
+          color: $c_green;
+
+          .icon {
+            font-size: 1.4em;
+          }
         }
       }
     }
+
 
     .spinner {
       content: '';

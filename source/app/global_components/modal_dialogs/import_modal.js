@@ -52,6 +52,8 @@ var React = require('react'),
                     }
                 ],
                 storage: false,
+                storageFile: false,
+                firstRowHeader: false,
                 importStatus: [],
                 dropZoneActive: false
             }
@@ -140,13 +142,14 @@ var React = require('react'),
                     safe_note: String(entry.safe_note ? safe_note : ""),
                     note: String(entry.note ? entry.note : "")
                 };
+
                 chrome.runtime.sendMessage({type: 'encryptFullEntry', content: data}, (response) => {
                     data.password = response.content.password;
                     data.safe_note = response.content.safe_note;
                     data.nonce = response.content.nonce;
                     data.success = response.content.success;
                     if (data.success) {
-                        // window.myStore.addNewEntry(data);
+                        window.myStore.addNewEntry(data);
                         this.setImportEntryStatus(n, 'success');
                         console.log('success');
                     } else {
@@ -170,15 +173,6 @@ var React = require('react'),
             });
         },
 
-        showImportButtons() {
-            let importStatus = this.state.importStatus;
-            var showImportButtons = false;
-            importStatus.forEach(function(status) {
-                if (status !== "pending") showImportButtons = true;
-            });
-            return showImportButtons;
-        },
-
         handleChange(value, selectedCol) {
             let dropdownOptions = Object.assign(this.state.dropdownOptions);
 
@@ -197,11 +191,22 @@ var React = require('react'),
         },
 
         fileChange(event) {
-            let file = event.target.files[0];
+            var file = null,
+                firstRowHeader = this.state.firstRowHeader;
+
+            if (event) {
+                file = event.target.files[0];
+                this.setState({
+                    storageFile: file
+                });
+            } else {
+                file = this.state.storageFile;
+            }
+
             window.myStore.emit('storageImport', false);
             Papa.parse(file, {
                 worker: false,
-                header: true,
+                header: firstRowHeader,
                 skipEmptyLines: true,
                 complete: (results) => {
                     window.myStore.emit('storageImport', results);
@@ -238,35 +243,44 @@ var React = require('react'),
             });
         },
 
+        setFirstRow(event) {
+            this.setState({
+                firstRowHeader: event.target.checked
+            }, function() {
+                this.fileChange();
+            });
+        },
+
         render() {
             if (this.state.storage) {
                 var table_body, 
-                    table_head,
+                    table_head = [],
                     storageData = this.state.storage.data,
                     fields = this.state.storage.meta.fields,
                     dropdownOptions = this.state.dropdownOptions,
-                    importStatus = this.state.importStatus;
+                    importStatus = this.state.importStatus,
+                    showImportButtons = true,
+                    importIsDone = true,
+                    importedCound = 0,
+                    notImportedCound = 0;
 
-                // table header
-                table_head = fields.map((col, n) => {
-                    let selectKey = 'select' + n;
-                    let selected = dropdownOptions.find(function(option) {
-                        return option.selectedCol == n;
-                    });
-
-                    return (
-                        <th key={n}>
-                            <ImportSelect
-                                name={selectKey}
-                                value={selected ? selected.value : ''}
-                                col={n}
-                                onChange={this.handleChange}
-                                options={dropdownOptions}
-                            />
-                        </th>
-                    )
+                importStatus.forEach(status => {
+                    if (status == "pending" || status == "importing") {
+                        importIsDone = false;
+                    }
+                    if (status !== "pending") {
+                        showImportButtons = false;
+                    }
                 });
-                table_head.push(<th key={'status'} className={'status-col'}><span>Import status</span></th>)
+
+                if (importIsDone) {
+                    importedCound = importStatus.filter(item => {
+                        return item == 'success';
+                    }).length;
+                    notImportedCound = importStatus.filter(item => {
+                        return item !== 'success';
+                    }).length;
+                }
 
                 // table body
                 let n = 0;
@@ -274,6 +288,27 @@ var React = require('react'),
                     let i = 0;
                     let cols = Object.values(item).map(col => {
                         let key = n.toString() + i.toString();
+
+                        if (n == 0) {
+                            // table header
+                            let selectKey = 'select' + i;
+                            let selected = dropdownOptions.find(option => {
+                                return option.selectedCol == i;
+                            });
+
+                            table_head.push(
+                                <th key={i}>
+                                    <ImportSelect
+                                        name={selectKey}
+                                        value={selected ? selected.value : ''}
+                                        col={i}
+                                        onChange={this.handleChange}
+                                        options={dropdownOptions}
+                                    />
+                                </th>
+                            )
+                        }
+
                         i++;
                         return (<td key={key}>{col}</td>);
                     });
@@ -290,7 +325,7 @@ var React = require('react'),
                             </div>}
                             {importStatus[n] == 'warning' && 
                             <div className={'warning'}>
-                                *No URL found
+                                No ITEM/URL*
                             </div>}
                             {importStatus[n] == 'error' && 
                             <div className={'warning'}>
@@ -306,8 +341,11 @@ var React = require('react'),
                         </tr>
                     );
                 });
+                if (table_head) {
+                    table_head.push(<th key={'status'} className={'status-col'}><span>Import status</span></th>)
+                }
             }
-            
+
             return (
                 <div>
                     <Modal show={this.state.showImportModal} backdrop={'static'} dialogClassName={'import-modal-dialog'} autoFocus={true} enforceFocus={true} onHide={this.closeImportModal}>
@@ -318,7 +356,7 @@ var React = require('react'),
                             {!this.state.storage &&
                                 <form className={'file-form'}>
                                     <div className={this.state.dropZoneActive ? 'active' : ''} id={'drop-area'} onDrop={this.fileOnDrop} onDragOver={this.fileOnDragOver}>
-                                        <label for="importInput">Drag & Drop .CSV file here or browse</label><br/>
+                                        <label htmlFor={'importInput'}>Drag & Drop .CSV file here or browse</label><br/>
                                         <input id="importInput"
                                            type="file"
                                            accept=".csv"
@@ -331,23 +369,31 @@ var React = require('react'),
                                     </div>
                                 </form>}
                             {this.state.storage &&
-                            <p>Sort your CSV columns by type.</p>}
+                            <p className={'help'}>Sort your CSV columns by type.</p>}
                             {this.state.storage &&
                             <div className={'storage_content'}>
-                                <label><input type="checkbox" /> First row is header</label>
-                                <Table condensed bordered hover>
-                                    <thead>
-                                        <tr>{table_head}</tr>
-                                    </thead>
-                                    <tbody>
-                                        {table_body}
-                                    </tbody>
-                                </Table>
+                                {showImportButtons && 
+                                <p className={'text-center'}><label><input type="checkbox" onChange={this.setFirstRow} /> First row is header</label></p>}
+                                <div className={'well'}>
+                                    <Table>
+                                        <thead>
+                                            <tr>{table_head}</tr>
+                                        </thead>
+                                        <tbody>
+                                            {table_body}
+                                        </tbody>
+                                    </Table>
+                                </div>
                             </div>}
+                            {importIsDone && 
+                            <div className={'well well-success text-center'}><b>Imported {importedCound}</b> entries, skipped {notImportedCound}.</div>}
                         </Modal.Body>
-                        {this.state.showImportButtons && <Modal.Footer>
+                        {showImportButtons && <Modal.Footer>
                             <Button onClick={this.closeImportModal}>Close</Button>
                             <Button bsStyle="primary" onClick={this.importStorage}>Import storage</Button>
+                        </Modal.Footer>}
+                        {importIsDone && <Modal.Footer>
+                            <Button onClick={this.closeImportModal}>Close</Button>
                         </Modal.Footer>}
                     </Modal>
                 </div>
