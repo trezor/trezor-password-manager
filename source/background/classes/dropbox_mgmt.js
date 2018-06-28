@@ -6,10 +6,11 @@
  */
 
 'use strict';
-
+var crypto = require('crypto');
 const fullReceiverPath = 'chrome-extension://' + chrome.runtime.id + '/html/chrome_oauth_receiver.html',
     APIKEY = 's340kh3l0vla1nv',
     STORAGE = 'tpmDropboxToken',
+    state = crypto.randomBytes(20).toString('hex'),
     logoutUrl = 'https://www.dropbox.com/logout',
     ADDRS_PATH = '/',
     Dropbox = require('dropbox');
@@ -22,7 +23,7 @@ class DropboxMgmt {
         this.bgStore = bgStore;
         this.dbc = new Dropbox({clientId: APIKEY});
         this.authToken = this.loadMetadataToken();
-        this.authUrl = this.dbc.getAuthenticationUrl(fullReceiverPath);
+        this.authUrl = this.dbc.getAuthenticationUrl(fullReceiverPath, state);
     }
 
     isAuth() {
@@ -42,10 +43,16 @@ class DropboxMgmt {
         return window.localStorage[STORAGE] ? window.localStorage[STORAGE] : '';
     }
 
-    saveToken(token) {
-        this.authToken = this.parseQuery(token).access_token;
-        window.localStorage[STORAGE] = this.authToken;
-        this.connect();
+    saveToken(val) {
+        let retState = this.parseQuery(val).state;
+        if (retState === state) {
+            this.authToken = this.parseQuery(val).access_token;
+            window.localStorage[STORAGE] = this.authToken;
+            this.connect();
+        } else {
+            this.disconnect();
+        }
+        
     }
 
     getDropboxUsername() {

@@ -1,6 +1,6 @@
 window.addEventListener('load', function() {
-    var token = window.location.hash;
-    chrome.runtime.sendMessage({type: 'dropboxConnectToken', content: token});
+    var val = window.location.hash;
+    chrome.runtime.sendMessage({type: 'dropboxConnectToken', content: val});
     window.location.hash = '';
     if (window.close) {
         return window.close();
