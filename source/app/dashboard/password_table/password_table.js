@@ -13,6 +13,7 @@ var React = require('react'),
     FilterInput = require('./filter_input/filter_input'),
     UserMenu = require('./user_menu/user_menu'),
     DropdownButton = require('react-bootstrap').DropdownButton,
+    Button = require('react-bootstrap').Button,
     MenuItem = require('react-bootstrap').MenuItem,
 
     PasswordTable = React.createClass({
@@ -26,6 +27,7 @@ var React = require('react'),
                 filter: '',
                 newEntry: false,
                 newEntryUrl: '',
+                storageExport: false,
                 orderType: window.myStore.data.config.orderType || 'note'
             }
         },
@@ -35,8 +37,8 @@ var React = require('react'),
             window.myStore.on('filter', this.setupFilter);
             window.myStore.on('toggleNewEntry', this.toggleNewEntry);
             window.myStore.on('update', this.updateTableContent);
+            window.myStore.on('storageExport', this.storageExport);
             chrome.runtime.onMessage.addListener(this.chromeTableMsgHandler);
-
         },
 
         componentWillUnmount() {
@@ -55,6 +57,20 @@ var React = require('react'),
                     break;
             }
             return true;
+        },
+
+        storageExport(val) {
+            this.setState({
+                storageExport: val
+            });
+        },
+
+        startExport() {
+            console.log('startExport');
+        },
+
+        cancelExport() {
+            window.myStore.emit('storageExport', false);
         },
 
         updateTableContent(data) {
@@ -210,6 +226,15 @@ var React = require('react'),
             return (
                 <div className='wraper container-fluid'>
                     <div className='row page-title'>
+                        {this.state.storageExport &&
+                        <div className='col-sm-12'>
+                            <div className={'export'}>
+                                <Button onClick={this.startExport} bsStyle={'primary'} className={'btn-export pull-right ml-1'}>Export selected</Button>
+                                <Button onClick={this.cancelExport} className={'pull-right'}>Cancel export</Button>
+                                Select entries to export
+                            </div>
+                        </div>}
+                        {!this.state.storageExport &&
                         <div className='col-sm-8 col-xs-9'>
                             <button type='button'
                                     onClick={this.toggleNewEntry}
@@ -217,7 +242,8 @@ var React = require('react'),
                                     className='blue-btn add'>Add entry
                             </button>
                             <FilterInput eventEmitter={this.props.eventEmitter}/>
-                        </div>
+                        </div>}
+                        {!this.state.storageExport &&
                         <div className="col-sm-4 col-xs-3 text-right">
                             <DropdownButton title='Sort' className='dropdown order' noCaret pullRight
                                             id='order-dropdown-no-caret'>
@@ -229,7 +255,7 @@ var React = require('react'),
                                     className='ion-calendar'></i>Date</MenuItem>
                             </DropdownButton>
                             <UserMenu />
-                        </div>
+                        </div>}
                     </div>
                     <div className='row dashboard'>
                         {this.state.newEntry &&

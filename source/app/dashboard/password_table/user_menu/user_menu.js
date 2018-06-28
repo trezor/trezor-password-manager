@@ -24,6 +24,10 @@ var React = require('react'),
             window.myStore.emit('storageImport', {});
         },
 
+        exportClick() {
+            window.myStore.emit('storageExport', true);
+        },
+
         userSwitch() {
             window.myStore.userSwitch();
         },
@@ -41,6 +45,7 @@ var React = require('react'),
                                     noCaret
                                     id='user-dropdown'>
                         <MenuItem onSelect={this.importClick}><i className='ion-document'></i>Import storage</MenuItem>
+                        <MenuItem onSelect={this.exportClick}><i className='ion-document'></i>Export storage</MenuItem>
                         <MenuItem onSelect={this.userSwitch}><i className='ion-log-out'></i>Switch user</MenuItem>
                     </DropdownButton>
                 </span>

@@ -42,7 +42,8 @@ var React = require('react'),
                 clipboard_pwd: false,
                 clipboard_usr: false,
                 saving_entry: false,
-                showMandatoryField: false
+                showMandatoryField: false,
+                exportEntry: true
             };
         },
 
@@ -56,6 +57,7 @@ var React = require('react'),
         },
 
         componentDidMount() {
+            window.myStore.on('storageExport', this.setExportMode);
             if (this.isUrl(this.removeProtocolPrefix(this.state.title))) {
                 this.setState({
                     image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title) + '?size=100'
@@ -67,6 +69,27 @@ var React = require('react'),
                 } else {
                     React.findDOMNode(this.refs.username).focus();
                 }
+            }
+        },
+
+        setExportMode(storageExport) {
+            if (storageExport) {
+                this.setState({
+                    mode: 'export'
+                });
+            } else {
+                this.setState({
+                    mode: 'list-mode'
+                });
+            }
+        },
+
+        toggleExport(event) {
+            if (this.state.mode === 'export') {
+                event.preventDefault();
+                this.setState({
+                    exportEntry: !this.state.exportEntry
+                });
             }
         },
 
@@ -110,6 +133,8 @@ var React = require('react'),
         },
 
         openTabAndLogin() {
+            if (this.state.mode === 'export') return;
+
             this.setTrezorWaitingBackface('Opening Tab');
             let data = {
                 title: this.state.title,
@@ -195,6 +220,8 @@ var React = require('react'),
                         this.setTrezorWaitingBackface(false);
                     }
                 });
+            } else if (this.state.mode === 'export') {
+                console.log('export mode')
             } else {
                 let oldValues = window.myStore.getEntryValuesById(this.state.key_value);
                 if (this.isUrl(this.removeProtocolPrefix(this.state.title))) {
@@ -421,7 +448,7 @@ var React = require('react'),
                     <Tooltip id='clipboard-usr'>{this.state.clipboard_usr ? 'Copied!' : 'Copy username'}</Tooltip>),
                 entryTitle = 'Item/URL *',
                 entryTitleVal = this.state.note.length === 0 ? this.removeProtocolPrefix(this.state.title) : this.state.note,
-                title = this.state.mode === 'list-mode' ?
+                title = (this.state.mode === 'list-mode' || this.state.mode === 'export') ?
                     (this.state.username.length === 0 ?
                         <a href={this.isUrl(this.state.title) ? this.setProtocolPrefix(this.state.title) : null}
                            className={this.isUrl(this.state.title) ? 'open' : ''}>{entryTitleVal}</a> :
@@ -437,7 +464,7 @@ var React = require('react'),
                            onBlur={this.titleOnBlur}/>
                 ),
 
-                username = this.state.mode === 'list-mode' ?
+                username = (this.state.mode === 'list-mode' || this.state.mode === 'export') ?
                     (this.state.username.length !== 0 ? <OverlayTrigger placement='bottom' overlay={copyClipboardUsr}>
                         <a onClick={this.copyUsernameToClipboard}>{this.state.username}</a>
                     </OverlayTrigger> : null) : (
@@ -450,7 +477,7 @@ var React = require('react'),
                            onKeyUp={this.keyPressed}
                         />),
 
-                passwordShadow = this.state.mode === 'list-mode' ? (
+                passwordShadow = (this.state.mode === 'list-mode' || this.state.mode === 'export') ? (
                     <OverlayTrigger placement='bottom' overlay={copyClipboardPwd}>
                         <a onClick={this.copyPasswordToClipboard} className='password-shadow'>
                             <i className='icon ion-asterisk'></i>
@@ -486,9 +513,13 @@ var React = require('react'),
             }
 
             return (
-                <div className={'card ' + this.state.waiting_trezor}>
+                <div className={(this.state.mode === 'export' && this.state.exportEntry ? 'active' : '') + ' card ' + this.state.waiting_trezor} onClick={this.toggleExport}>
                     <div className={ this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}>
                         <form onSubmit={this.state.saving_entry ? false : this.saveEntry}>
+                            {this.state.mode === 'export' && 
+                            <label className={'export'}>
+                                <i className={'ion ' + (this.state.exportEntry ? 'ion-android-checkbox' : 'ion-android-checkbox-blank')}></i>
+                            </label>}
                             <div className={this.state.image_visible && this.isUrl(this.state.title) ? 'avatar white-bg' : 'avatar'}>
                                 {this.state.image_visible &&
                                 <img src={this.state.image_src} onError={this.handleImageError}/>}
@@ -581,7 +612,7 @@ var React = require('react'),
                             }
                             <div className='form-buttons'>
 
-                                {this.state.key_value !== null && <div className="edit-btns">
+                                {this.state.key_value !== null && this.state.mode !== 'export' && <div className="edit-btns">
                                 <span className='button transparent-btn'
                                       onClick={this.changeMode}>Edit</span>
                                     <span onClick={this.isUrl(this.state.title) ? this.openTabAndLogin : null}

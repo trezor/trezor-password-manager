@@ -16,6 +16,10 @@
     overflow: hidden;
     z-index: 2;
 
+    &.active {
+      background: $c_grey_bg_header_hover;
+    }
+
     &.waiting {
 
       .backface {
@@ -86,6 +90,22 @@
       @include transition(all 150ms ease-in-out);
       @include transform-style(preserve-3d);
 
+      .export {
+        display: inline-block;
+        float: right;
+        padding: 25px 20px;
+        font-size: 24px;
+        line-height: 24px;
+
+        .ion-android-checkbox {
+          color: $c_blue;
+        }
+
+        .ion-android-checkbox-blank {
+          color: $c_grey_border;
+        }
+      }
+
       .avatar {
         display: inline-block;
         position: relative;
@@ -150,7 +170,8 @@
         }
       }
 
-      &.list-mode {
+      &.list-mode,
+      &.export {
         min-height: 80px;
 
         &:hover {
