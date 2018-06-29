@@ -1,12 +1,12 @@
 TREZOR Password Manager
 =======================
-## Overview 
+## Overview
 TREZOR Password Mananger is secure, zero-knowledge,
 password manager using TREZOR running as
 Chrome extension. All data is securely
 encrypted using the device and synchronized
 via cloud services (Dropbox or Google Drive).
- 
+
 * [What is TREZOR?](https://trezor.io/)
 * [What is TREZOR Password Manager?](https://trezor.io/passwords/)
 * [Download TREZOR Password Manager for Chrome](https://chrome.google.com/webstore/detail/trezor-password-manager/imloifkgjagghnncjkhggdhalmcnfklk)
@@ -17,7 +17,8 @@ via cloud services (Dropbox or Google Drive).
    ```
    git clone git@github.com:satoshilabs/password-manager.git
    cd password-manager
-   npm install
+   npm install yarn -g
+   yarn install
    ```
 
 2. Set Chrome/Chromium to [Developer Mode](https://developer.chrome.com/extensions/getstarted#unpacked)
@@ -28,7 +29,7 @@ you need to register and obtain own API keys.
    * Dropbox API key is located in file `/source/background/classes/dropbox_mgmt.js`
 [view on github](https://github.com/satoshilabs/password-manager/blob/master/source/background/classes/dropbox_mgmt.js#L11)
    * Google Drive needs to set OAuth.client_id in `/extension/manifest.json` [view on github](https://github.com/satoshilabs/password-manager/blob/master/extension/manifest.json#L49)
-     
+
 4. To make your dev version of extension accessible for TREZOR Chrome Extension and TREZOR Bridge
 you need to append key value into your extension manifest file. It will override dev extension id to same id as original TREZOR Password manager.
 **Remove this key before releasing to production and inform our support to add your new extension key into whitelist!**
