@@ -6,11 +6,11 @@
  */
 
 'use strict';
-var crypto = require('crypto');
+var crypto = require('crypto'),
+    state = crypto.randomBytes(40).toString('hex');
 const fullReceiverPath = 'chrome-extension://' + chrome.runtime.id + '/html/chrome_oauth_receiver.html',
     APIKEY = 's340kh3l0vla1nv',
     STORAGE = 'tpmDropboxToken',
-    state = crypto.randomBytes(40).toString('hex'),
     logoutUrl = 'https://www.dropbox.com/logout',
     ADDRS_PATH = '/',
     Dropbox = require('dropbox');
@@ -32,6 +32,8 @@ class DropboxMgmt {
 
     connect() {
         if (!this.isAuth()) {
+            state = crypto.randomBytes(40).toString('hex');
+            this.authUrl = this.dbc.getAuthenticationUrl(fullReceiverPath, state);
             window.open(this.authUrl);
         } else {
             this.dbc.setAccessToken(this.authToken);
