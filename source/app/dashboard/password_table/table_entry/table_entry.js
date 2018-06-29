@@ -42,8 +42,9 @@ var React = require('react'),
                 clipboard_pwd: false,
                 clipboard_usr: false,
                 saving_entry: false,
+                onExported: false,
                 showMandatoryField: false,
-                exportEntry: true
+                exportEntry: false
             };
         },
 
@@ -77,6 +78,37 @@ var React = require('react'),
                 this.setState({
                     mode: 'export'
                 });
+
+                if (typeof storageExport === 'object' && storageExport.entryId == this.state.key_value) {
+                    if (this.state.exportEntry) {
+                        if (storageExport.status === 'pending') {
+                            this.setTrezorWaitingBackface('Confirm export on your TREZOR');
+                            let data = {
+                                title: this.state.title,
+                                username: this.state.username,
+                                password: this.state.password,
+                                safe_note: this.state.safe_note,
+                                nonce: this.state.nonce
+                            };
+                            chrome.runtime.sendMessage({type: 'decryptPassword', content: data, clipboardClear: false}, response => {
+                                if (response && response.content && response.content.success) {
+                                    storageExport.status = 'exported';
+                                    if (typeof this.props.onExported === 'function') {
+                                        this.props.onExported(response.content);
+                                    }
+                                } else {
+                                    storageExport.status = 'error';
+                                }
+
+                                this.setTrezorWaitingBackface(false);
+                                window.myStore.emit('storageExport', storageExport);
+                            });
+                        }
+                    } else if (storageExport.status === 'pending') {
+                        storageExport.status = 'skip';
+                        window.myStore.emit('storageExport', storageExport);
+                    }
+                }
             } else {
                 this.setState({
                     mode: 'list-mode'
@@ -84,7 +116,7 @@ var React = require('react'),
             }
         },
 
-        toggleExport(event) {
+        toggleEntryExport(event) {
             if (this.state.mode === 'export') {
                 event.preventDefault();
                 this.setState({
@@ -513,7 +545,7 @@ var React = require('react'),
             }
 
             return (
-                <div className={(this.state.mode === 'export' && this.state.exportEntry ? 'active' : '') + ' card ' + this.state.waiting_trezor} onClick={this.toggleExport}>
+                <div className={(this.state.mode === 'export' && this.state.exportEntry ? 'active' : '') + ' card ' + this.state.waiting_trezor} onClick={this.toggleEntryExport}>
                     <div className={ this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}>
                         <form onSubmit={this.state.saving_entry ? false : this.saveEntry}>
                             {this.state.mode === 'export' && 
