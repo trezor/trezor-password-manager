@@ -29,7 +29,8 @@ var React = require('react'),
                 newEntryUrl: '',
                 exportStorage: false,
                 orderType: window.myStore.data.config.orderType || 'note',
-                exportedEntries: []
+                exportedEntries: [],
+                exportToggleAll: false
             }
         },
 
@@ -169,57 +170,18 @@ var React = require('react'),
             });
         },
 
+        handleExportToggleAll() {
+            this.setState({
+                exportToggleAll: !this.state.exportToggleAll
+            });
+        },
+
         onExportedEntry(decryptedEntry) {
             let exportedEntries = this.state.exportedEntries;
                 exportedEntries.push(decryptedEntry);
             this.setState({
                 exportedEntries: exportedEntries
             });
-        },
-
-        exportDownload() {
-            var fields = ['title', 'note', 'username', 'password', 'tags', 'secret_note'];
-            var text = String();
-            this.state.exportedEntries.forEach(entry => {
-                var values = [];
-                fields.forEach((field, key) => {
-                    values[key] = entry[field] ? entry[field] : '';
-                });
-                text = text + values.join(',') + ',\n';
-            });
-
-            var blob = new Blob([text], {type: "octet/stream"}),
-                url = window.URL.createObjectURL(blob),
-                a = document.createElement("a");
-                
-            document.body.appendChild(a);
-            a.style = "display: none";
-            a.href = url;
-            a.download = 'trezor-export.csv';
-            a.click();
-                // window.URL.revokeObjectURL(url);
-
-            this.exportEnd();
-        },
-
-        exportEntry(n) {
-            if (typeof n !== 'number') {
-                this.setState({
-                    exportedEntries: []
-                });
-                n = 0;
-            }
-
-            let entries = this.getProperOrderArr();
-            if (entries[n]) {
-                window.myStore.emit('storageExport', {
-                    entryId: entries[n],
-                    key: n,
-                    status: 'pending'
-                });
-            } else {
-                this.exportDownload();
-            }
         },
 
         exportStateChange(storageExport) {
@@ -233,11 +195,62 @@ var React = require('react'),
             }
         },
 
+        exportEntry(n) {
+            if (typeof n !== 'number') {
+                this.setState({
+                    exportedEntries: []
+                });
+                n = 0;
+            }
+
+            let entries = this.getProperOrderArr();
+            
+            if (entries[n]) {
+                window.myStore.emit('storageExport', {
+                    entryId: entries[n],
+                    key: n,
+                    status: 'pending'
+                });
+            } else {
+                window.myStore.emit('storageExport', false);
+                this.exportDownload();
+                this.exportEnd();
+            }
+        },
+
+        exportDownload() {
+            if (this.state.exportedEntries.length == 0) return;
+            
+            var fields = ['title', 'note', 'username', 'password', 'tags', 'secret_note'];
+            var text = String();
+
+            this.state.exportedEntries.forEach(entry => {
+                var values = [];
+                fields.forEach((field, key) => {
+                    values[key] = entry[field] ? entry[field] : '';
+                });
+                text = text + values.join(',') + ',\n';
+            });
+
+            var blob = new Blob([text], {type: "octet/stream"}),
+                url = window.URL.createObjectURL(blob),
+                a = document.createElement("a");
+
+            document.body.appendChild(a);
+            a.style = "display: none";
+            a.href = url;
+            a.download = 'trezor-export.csv';
+            a.click();
+            a.remove();
+        },
+
         exportEnd() {
             this.setState({
                 exportedEntries: []
             });
-            window.myStore.emit('storageExport', false);
+            setTimeout(function() {
+                window.myStore.emit('storageExport', false);
+            });
         },
 
         render(){
@@ -261,6 +274,7 @@ var React = require('react'),
                                                 tags={obj.tags}
                                                 safe_note={obj.safe_note}
                                                 note={obj.note}
+                                                entryExport={this.state.exportToggleAll}
                                                 onExported={this.onExportedEntry}
                                         />
                                 )
@@ -277,6 +291,7 @@ var React = require('react'),
                                             tags={obj.tags}
                                             safe_note={obj.safe_note}
                                             note={obj.note}
+                                            entryExport={this.state.exportToggleAll}
                                             onExported={this.onExportedEntry}
                                     />
                             )
@@ -290,7 +305,7 @@ var React = require('react'),
                         {this.state.exportStorage &&
                         <div className='col-sm-12'>
                             <div className={'export'}>
-                                <Button onClick={this.exportEntry} bsStyle={'primary'} className={'btn-export pull-right ml-1'}>Export selected</Button>
+                                <Button onClick={this.exportEntry} bsStyle={'primary'} className={'btn-export pull-right'}>Export selected</Button>
                                 <Button onClick={this.exportEnd} className={'pull-right'}>Cancel export</Button>
                                 Select entries to export
                             </div>
@@ -319,6 +334,11 @@ var React = require('react'),
                         </div>}
                     </div>
                     <div className='row dashboard'>
+                        <div className={'col-sm-12 export-all ' + (this.state.exportStorage ? 'active' : '')}>
+                            <label onClick={this.handleExportToggleAll}>
+                                Select all <i className={'ion ' + (this.state.exportToggleAll ? 'ion-android-checkbox active' : 'ion-android-checkbox')}></i>
+                            </label>
+                        </div>
                         {this.state.newEntry &&
                         <TableEntry key={undefined}
                                     key_value={undefined}

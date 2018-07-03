@@ -44,16 +44,18 @@ var React = require('react'),
                 saving_entry: false,
                 onExported: false,
                 showMandatoryField: false,
-                exportEntry: false
+                entryExport: false,
+                _isMounted: false
             };
         },
 
-        componentWillReceiveProps(nextProps){
+        componentWillReceiveProps(nextProps) {
             this.setState({
                 tags_id: nextProps.tags,
                 tags_titles: window.myStore.getTagTitleArrayById(nextProps.tags),
                 tag_globa_title_array: window.myStore.getTagTitleArray(),
-                tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value, nextProps.tags)
+                tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value, nextProps.tags),
+                entryExport: nextProps.entryExport
             });
         },
 
@@ -71,16 +73,21 @@ var React = require('react'),
                     React.findDOMNode(this.refs.username).focus();
                 }
             }
+            this.setState({
+                _isMounted: true
+            });
         },
 
         setExportMode(storageExport) {
+            if (!this.state._isMounted) return;
+
             if (storageExport) {
                 this.setState({
                     mode: 'export'
                 });
 
                 if (typeof storageExport === 'object' && storageExport.entryId == this.state.key_value) {
-                    if (this.state.exportEntry) {
+                    if (this.state.entryExport) {
                         if (storageExport.status === 'pending') {
                             this.setTrezorWaitingBackface('Confirm export on your TREZOR');
                             let data = {
@@ -111,7 +118,8 @@ var React = require('react'),
                 }
             } else {
                 this.setState({
-                    mode: 'list-mode'
+                    mode: 'list-mode',
+                    entryExport: false
                 });
             }
         },
@@ -120,7 +128,7 @@ var React = require('react'),
             if (this.state.mode === 'export') {
                 event.preventDefault();
                 this.setState({
-                    exportEntry: !this.state.exportEntry
+                    entryExport: !this.state.entryExport
                 });
             }
         },
@@ -252,8 +260,6 @@ var React = require('react'),
                         this.setTrezorWaitingBackface(false);
                     }
                 });
-            } else if (this.state.mode === 'export') {
-                console.log('export mode')
             } else {
                 let oldValues = window.myStore.getEntryValuesById(this.state.key_value);
                 if (this.isUrl(this.removeProtocolPrefix(this.state.title))) {
@@ -545,13 +551,12 @@ var React = require('react'),
             }
 
             return (
-                <div className={(this.state.mode === 'export' && this.state.exportEntry ? 'active' : '') + ' card ' + this.state.waiting_trezor} onClick={this.toggleEntryExport}>
+                <div className={(this.state.mode === 'export' && this.state.entryExport ? 'active' : '') + ' card ' + this.state.waiting_trezor} onClick={this.toggleEntryExport}>
                     <div className={ this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}>
                         <form onSubmit={this.state.saving_entry ? false : this.saveEntry}>
-                            {this.state.mode === 'export' && 
-                            <label className={'export'}>
-                                <i className={'ion ' + (this.state.exportEntry ? 'ion-android-checkbox' : 'ion-android-checkbox-blank')}></i>
-                            </label>}
+                            <label className={'export ' + (this.state.mode === 'export' ? 'active' : '')}>
+                                <i className={'ion ' + (this.state.entryExport ? 'ion-android-checkbox active' : 'ion-android-checkbox')}></i>
+                            </label>
                             <div className={this.state.image_visible && this.isUrl(this.state.title) ? 'avatar white-bg' : 'avatar'}>
                                 {this.state.image_visible &&
                                 <img src={this.state.image_src} onError={this.handleImageError}/>}

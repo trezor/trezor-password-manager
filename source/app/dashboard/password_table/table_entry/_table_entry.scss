@@ -89,20 +89,30 @@
       @include transform(rotateX(0deg));
       @include transition(all 150ms ease-in-out);
       @include transform-style(preserve-3d);
+      border-bottom: 1px solid #fff;
 
       .export {
         display: inline-block;
         float: right;
-        padding: 25px 20px;
         font-size: 24px;
         line-height: 24px;
+        margin: 0;
+        padding: 27px 0;
+        overflow: hidden;
+        width: 0;
+        @include transition(all 200ms ease-in-out);
 
-        .ion-android-checkbox {
-          color: $c_blue;
+        &.active {
+          width: auto;
+          padding: 27px 20px;
         }
 
-        .ion-android-checkbox-blank {
-          color: $c_grey_border;
+        .ion-android-checkbox {
+          color: $c_grey_font;
+
+          &.active {
+            color: $c_blue;
+          }
         }
       }
 
