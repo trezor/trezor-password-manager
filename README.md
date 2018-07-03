@@ -43,5 +43,18 @@ you need to append key value into your extension manifest file. It will override
 
 6. Have fun!
 
+
+## Build & release
+
+Always check version number and manifest keys in manifest.json file before build!
+
+   ```
+   make modules
+   make build
+   make release
+   ```
+
+
+
 ## License
 TREZOR LICENSE [view on github](https://github.com/satoshilabs/password-manager/blob/master/LICENSE.md)
