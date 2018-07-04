@@ -93,7 +93,7 @@
 
       .export {
         display: inline-block;
-        float: right;
+        float: left;
         font-size: 24px;
         line-height: 24px;
         margin: 0;
@@ -104,11 +104,11 @@
 
         &.active {
           width: auto;
-          padding: 27px 20px;
+          padding: 27px 0 27px 10px;
         }
 
         .ion-android-checkbox {
-          color: $c_grey_font;
+          color: $c_grey_border;
 
           &.active {
             color: $c_blue;
@@ -183,16 +183,17 @@
       &.list-mode,
       &.export {
         min-height: 80px;
+        cursor: pointer;
 
         &:hover {
           background: rgba($c_grey_bg, .5);
 
-          .title {
-            color: $c_black_font;
-          }
+          .ion-android-checkbox {
+            color: $c_grey_font;
 
-          .username {
-            color: $c_grey_content_font;
+            &.active {
+              color: $c_blue;
+            }
           }
         }
 

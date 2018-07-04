@@ -184,6 +184,10 @@ var React = require('react'),
             });
         },
 
+        onToggleEntry(state, entryId) {
+            console.log(state, entryId);
+        },
+
         exportStateChange(storageExport) {
             this.setState({
                 exportStorage: (storageExport ? true : false)
@@ -212,7 +216,6 @@ var React = require('react'),
                     status: 'pending'
                 });
             } else {
-                window.myStore.emit('storageExport', false);
                 this.exportDownload();
                 this.exportEnd();
             }
@@ -274,8 +277,9 @@ var React = require('react'),
                                                 tags={obj.tags}
                                                 safe_note={obj.safe_note}
                                                 note={obj.note}
-                                                entryExport={this.state.exportToggleAll}
+                                                toggleAll={this.state.exportToggleAll}
                                                 onExported={this.onExportedEntry}
+                                                onToggle={this.onToggleEntry}
                                         />
                                 )
                             }
@@ -291,8 +295,9 @@ var React = require('react'),
                                             tags={obj.tags}
                                             safe_note={obj.safe_note}
                                             note={obj.note}
-                                            entryExport={this.state.exportToggleAll}
+                                            toggleAll={this.state.exportToggleAll}
                                             onExported={this.onExportedEntry}
+                                            onToggle={this.onToggleEntry}
                                     />
                             )
                         }
@@ -336,7 +341,7 @@ var React = require('react'),
                     <div className='row dashboard'>
                         <div className={'col-sm-12 export-all ' + (this.state.exportStorage ? 'active' : '')}>
                             <label onClick={this.handleExportToggleAll}>
-                                Select all <i className={'ion ' + (this.state.exportToggleAll ? 'ion-android-checkbox active' : 'ion-android-checkbox')}></i>
+                                <i className={'ion ' + (this.state.exportToggleAll ? 'ion-android-checkbox active' : 'ion-android-checkbox')}></i> Select all
                             </label>
                         </div>
                         {this.state.newEntry &&

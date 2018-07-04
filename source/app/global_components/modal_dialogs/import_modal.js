@@ -12,7 +12,7 @@ var React = require('react'),
     Table = require('react-bootstrap').Table,
     Modal = require('react-bootstrap').Modal,
     Button = require('react-bootstrap').Button,
-    ImportSelect = require('../import-select'),
+    ImportSelect = require('../import_select'),
     ImportModal = React.createClass({
 
         getInitialState() {
@@ -132,7 +132,7 @@ var React = require('react'),
 
             this.setImportEntryStatus(n, 'importing');
 
-            if (entry.title.length > 0) {
+            if (entry.title && entry.title.length > 0) {
                 let data = {
                     title: String(entry.title ? entry.title : ""),
                     username: String(entry.username ? entry.username : ""),
@@ -295,7 +295,9 @@ var React = require('react'),
                             let selected = dropdownOptions.find(option => {
                                 return option.selectedCol == i;
                             });
-
+                            let pendingItems = this.state.importStatus.filter(function(val) { return val === 'pending' });
+                            let selectDisabled = this.state.importStatus.length !== pendingItems.length;
+                            
                             table_head.push(
                                 <th key={i}>
                                     <ImportSelect
@@ -304,6 +306,7 @@ var React = require('react'),
                                         col={i}
                                         onChange={this.handleChange}
                                         options={dropdownOptions}
+                                        disabled={selectDisabled}
                                     />
                                 </th>
                             )

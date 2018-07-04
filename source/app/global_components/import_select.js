@@ -16,7 +16,15 @@ var React = require('react'),
 			onChange: React.PropTypes.func,
 			name: React.PropTypes.string,
 			value: React.PropTypes.string,
-			options: React.PropTypes.array
+			options: React.PropTypes.array,
+			disabled: React.PropTypes.bool
+		},
+
+		componentWillReceiveProps(nextProps) {
+			console.log(nextProps.disabled)
+			this.setState({
+				disabled: nextProps.disabled
+			});
 		},
 
 		getInitialState() {
@@ -40,7 +48,7 @@ var React = require('react'),
 				return <option key={key} value={option.value}>{option.name}</option>
 			});
 			return (
-				<select className="form-control" value={this.props.value} onChange={this.onChange}>
+				<select className="form-control" value={this.props.value} onChange={this.onChange} disabled={this.state.disabled}>
 					{!this.props.obligatory ? <option value="">- select -</option> : null}
 					{options}	
 				</select>

@@ -43,8 +43,10 @@ var React = require('react'),
                 clipboard_usr: false,
                 saving_entry: false,
                 onExported: false,
+                onToggle: false,
                 showMandatoryField: false,
                 entryExport: false,
+                toggleAll: false,
                 _isMounted: false
             };
         },
@@ -54,9 +56,18 @@ var React = require('react'),
                 tags_id: nextProps.tags,
                 tags_titles: window.myStore.getTagTitleArrayById(nextProps.tags),
                 tag_globa_title_array: window.myStore.getTagTitleArray(),
-                tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value, nextProps.tags),
-                entryExport: nextProps.entryExport
+                tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value, nextProps.tags)
             });
+
+            if (
+                this.state.toggleAll != nextProps.toggleAll && 
+                this.state.entryExport != nextProps.toggleAll
+            ) {
+                this.setState({
+                    toggleAll: nextProps.toggleAll,
+                    entryExport: !this.state.entryExport
+                });
+            }
         },
 
         componentDidMount() {
@@ -127,8 +138,13 @@ var React = require('react'),
         toggleEntryExport(event) {
             if (this.state.mode === 'export') {
                 event.preventDefault();
+
                 this.setState({
                     entryExport: !this.state.entryExport
+                }, function() {
+                    if (typeof this.props.onToggle === 'function') {
+                        this.props.onToggle(this.state.entryExport, this.state.key_value);
+                    }
                 });
             }
         },
@@ -502,7 +518,7 @@ var React = require('react'),
                            onBlur={this.titleOnBlur}/>
                 ),
 
-                username = (this.state.mode === 'list-mode' || this.state.mode === 'export') ?
+                username = (this.state.mode === 'list-mode') ?
                     (this.state.username.length !== 0 ? <OverlayTrigger placement='bottom' overlay={copyClipboardUsr}>
                         <a onClick={this.copyUsernameToClipboard}>{this.state.username}</a>
                     </OverlayTrigger> : null) : (
@@ -515,7 +531,7 @@ var React = require('react'),
                            onKeyUp={this.keyPressed}
                         />),
 
-                passwordShadow = (this.state.mode === 'list-mode' || this.state.mode === 'export') ? (
+                passwordShadow = (this.state.mode === 'list-mode') ? (
                     <OverlayTrigger placement='bottom' overlay={copyClipboardPwd}>
                         <a onClick={this.copyPasswordToClipboard} className='password-shadow'>
                             <i className='icon ion-asterisk'></i>

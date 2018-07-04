@@ -24,6 +24,10 @@
           height: 10px;
           border-width: 2px;
         }
+
+        &:last-child {
+          text-align: center;
+        }
       }
     }
 
@@ -146,7 +150,8 @@
 
       td {
         .icon {
-          float: left;
+          display: inline-block;
+          vertical-align: bottom;
         }
 
         .success {
