@@ -23,14 +23,13 @@ var React = require('react'),
                 active_id: 0,
                 active_title: '',
                 tags: window.myStore.data.tags,
-                entries: window.myStore.data.entries,
+                entries: this.addExportTag(window.myStore.data.entries),
                 filter: '',
                 newEntry: false,
                 newEntryUrl: '',
                 exportStorage: false,
                 orderType: window.myStore.data.config.orderType || 'note',
-                exportedEntries: [],
-                exportToggleAll: false
+                exportedEntries: []
             }
         },
 
@@ -51,6 +50,13 @@ var React = require('react'),
             chrome.runtime.onMessage.removeListener(this.chromeTableMsgHandler);
         },
 
+        addExportTag(entries) {
+            Object.keys(entries).forEach((entryId) => {
+                entries[entryId].export = false;
+            });
+            return entries;
+        },
+
         chromeTableMsgHandler(request, sender, sendResponse) {
             switch (request.type) {
                 case 'saveEntry':
@@ -64,7 +70,7 @@ var React = require('react'),
         updateTableContent(data) {
             this.setState({
                 tags: data.tags,
-                entries: data.entries
+                entries: this.addExportTag(data.entries)
             });
         },
 
@@ -171,8 +177,22 @@ var React = require('react'),
         },
 
         handleExportToggleAll() {
+            var exportAll = true,
+                allSelected = true,
+                entries = this.state.entries;
+
+            Object.keys(entries).forEach(entryId => {
+                if (!entries[entryId].export) allSelected = false;
+            });
+
+            if (allSelected) exportAll = false;
+
+            Object.keys(entries).forEach(entryId => {
+                entries[entryId].export = exportAll;
+            });
+
             this.setState({
-                exportToggleAll: !this.state.exportToggleAll
+                entries: entries
             });
         },
 
@@ -184,8 +204,13 @@ var React = require('react'),
             });
         },
 
-        onToggleEntry(state, entryId) {
-            console.log(state, entryId);
+        onToggleEntry(entryId) {
+            var entries = this.state.entries;
+                entries[entryId].export = !entries[entryId].export;
+
+            this.setState({
+                entries: entries
+            });
         },
 
         exportStateChange(storageExport) {
@@ -259,10 +284,12 @@ var React = require('react'),
         render(){
             let raw_table = this.getProperOrderArr(),
                 count = !!raw_table.length ? 0 : 1,
+                allSelected = true,
                 newTagArr = this.state.active_id === 0 ? [] : [this.state.active_id],
                 password_table = !!raw_table.length ? raw_table.map((key) => {
                     let obj = this.state.entries[key];
                     let actTag = this.activeTag(obj);
+                    if (!obj.export) allSelected = false;
                     if (actTag) {
                         if (this.filterIsSet()) {
                             if (this.checkFilterMatching(obj)) {
@@ -277,7 +304,7 @@ var React = require('react'),
                                                 tags={obj.tags}
                                                 safe_note={obj.safe_note}
                                                 note={obj.note}
-                                                toggleAll={this.state.exportToggleAll}
+                                                exportEntry={obj.export}
                                                 onExported={this.onExportedEntry}
                                                 onToggle={this.onToggleEntry}
                                         />
@@ -295,7 +322,7 @@ var React = require('react'),
                                             tags={obj.tags}
                                             safe_note={obj.safe_note}
                                             note={obj.note}
-                                            toggleAll={this.state.exportToggleAll}
+                                            exportEntry={obj.export}
                                             onExported={this.onExportedEntry}
                                             onToggle={this.onToggleEntry}
                                     />
@@ -310,9 +337,8 @@ var React = require('react'),
                         {this.state.exportStorage &&
                         <div className='col-sm-12'>
                             <div className={'export'}>
-                                <Button onClick={this.exportEntry} bsStyle={'primary'} className={'btn-export pull-right'}>Export selected</Button>
-                                <Button onClick={this.exportEnd} className={'pull-right'}>Cancel export</Button>
-                                Select entries to export
+                                <Button onClick={this.exportEntry} bsStyle={'primary'} className={'btn-export'}>Export selected</Button>
+                                <Button onClick={this.exportEnd}>Cancel export</Button>
                             </div>
                         </div>}
                         {!this.state.exportStorage &&
@@ -341,7 +367,7 @@ var React = require('react'),
                     <div className='row dashboard'>
                         <div className={'col-sm-12 export-all ' + (this.state.exportStorage ? 'active' : '')}>
                             <label onClick={this.handleExportToggleAll}>
-                                <i className={'ion ' + (this.state.exportToggleAll ? 'ion-android-checkbox active' : 'ion-android-checkbox')}></i> Select all
+                                <i className={'ion ' + (allSelected ? 'ion-android-checkbox active' : 'ion-android-checkbox')}></i> Select all
                             </label>
                         </div>
                         {this.state.newEntry &&

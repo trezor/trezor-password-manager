@@ -180,10 +180,13 @@
         }
       }
 
+      &.export {
+        cursor: pointer;
+      }
+
       &.list-mode,
       &.export {
         min-height: 80px;
-        cursor: pointer;
 
         &:hover {
           background: rgba($c_grey_bg, .5);

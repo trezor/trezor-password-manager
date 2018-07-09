@@ -45,8 +45,7 @@ var React = require('react'),
                 onExported: false,
                 onToggle: false,
                 showMandatoryField: false,
-                entryExport: false,
-                toggleAll: false,
+                exportEntry: false,
                 _isMounted: false
             };
         },
@@ -56,18 +55,9 @@ var React = require('react'),
                 tags_id: nextProps.tags,
                 tags_titles: window.myStore.getTagTitleArrayById(nextProps.tags),
                 tag_globa_title_array: window.myStore.getTagTitleArray(),
-                tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value, nextProps.tags)
+                tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value, nextProps.tags),
+                exportEntry: nextProps.exportEntry
             });
-
-            if (
-                this.state.toggleAll != nextProps.toggleAll && 
-                this.state.entryExport != nextProps.toggleAll
-            ) {
-                this.setState({
-                    toggleAll: nextProps.toggleAll,
-                    entryExport: !this.state.entryExport
-                });
-            }
         },
 
         componentDidMount() {
@@ -98,7 +88,7 @@ var React = require('react'),
                 });
 
                 if (typeof storageExport === 'object' && storageExport.entryId == this.state.key_value) {
-                    if (this.state.entryExport) {
+                    if (this.state.exportEntry) {
                         if (storageExport.status === 'pending') {
                             this.setTrezorWaitingBackface('Confirm export on your TREZOR');
                             let data = {
@@ -129,23 +119,18 @@ var React = require('react'),
                 }
             } else {
                 this.setState({
-                    mode: 'list-mode',
-                    entryExport: false
+                    mode: 'list-mode'
                 });
             }
         },
 
-        toggleEntryExport(event) {
+        toggleExportEntry(event) {
             if (this.state.mode === 'export') {
                 event.preventDefault();
 
-                this.setState({
-                    entryExport: !this.state.entryExport
-                }, function() {
-                    if (typeof this.props.onToggle === 'function') {
-                        this.props.onToggle(this.state.entryExport, this.state.key_value);
-                    }
-                });
+                if (typeof this.props.onToggle === 'function') {
+                    this.props.onToggle(this.state.key_value);
+                }
             }
         },
 
@@ -521,8 +506,8 @@ var React = require('react'),
                 username = (this.state.mode === 'list-mode') ?
                     (this.state.username.length !== 0 ? <OverlayTrigger placement='bottom' overlay={copyClipboardUsr}>
                         <a onClick={this.copyUsernameToClipboard}>{this.state.username}</a>
-                    </OverlayTrigger> : null) : (
-                    <input type='text'
+                    </OverlayTrigger> : null) : (this.state.mode === 'export') ? (<a onClick={this.copyUsernameToClipboard}>{this.state.username}</a>) : 
+                    (<input type='text'
                            autoComplete='off'
                            value={this.state.username}
                            name='username'
@@ -567,11 +552,11 @@ var React = require('react'),
             }
 
             return (
-                <div className={(this.state.mode === 'export' && this.state.entryExport ? 'active' : '') + ' card ' + this.state.waiting_trezor} onClick={this.toggleEntryExport}>
+                <div className={(this.state.mode === 'export' && this.state.exportEntry ? 'active' : '') + ' card ' + this.state.waiting_trezor} onClick={this.toggleExportEntry}>
                     <div className={ this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}>
                         <form onSubmit={this.state.saving_entry ? false : this.saveEntry}>
                             <label className={'export ' + (this.state.mode === 'export' ? 'active' : '')}>
-                                <i className={'ion ' + (this.state.entryExport ? 'ion-android-checkbox active' : 'ion-android-checkbox')}></i>
+                                <i className={'ion ' + (this.state.exportEntry ? 'ion-android-checkbox active' : 'ion-android-checkbox')}></i>
                             </label>
                             <div className={this.state.image_visible && this.isUrl(this.state.title) ? 'avatar white-bg' : 'avatar'}>
                                 {this.state.image_visible &&
