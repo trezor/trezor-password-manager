@@ -102,7 +102,7 @@ var React = require('react'),
                                 if (response && response.content && response.content.success) {
                                     storageExport.status = 'exported';
                                     if (typeof this.props.onExported === 'function') {
-                                        this.props.onExported(response.content);
+                                        this.props.onExported(response.content, storageExport.entryId);
                                     }
                                 } else {
                                     storageExport.status = 'error';

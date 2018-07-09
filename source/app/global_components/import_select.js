@@ -21,7 +21,6 @@ var React = require('react'),
 		},
 
 		componentWillReceiveProps(nextProps) {
-			console.log(nextProps.disabled)
 			this.setState({
 				disabled: nextProps.disabled
 			});

@@ -29,7 +29,8 @@ var React = require('react'),
                 newEntryUrl: '',
                 exportStorage: false,
                 orderType: window.myStore.data.config.orderType || 'note',
-                exportedEntries: []
+                exportedEntries: [],
+                _isMounted: false
             }
         },
 
@@ -40,6 +41,12 @@ var React = require('react'),
             window.myStore.on('update', this.updateTableContent);
             window.myStore.on('storageExport', this.exportStateChange);
             chrome.runtime.onMessage.addListener(this.chromeTableMsgHandler);
+        },
+
+        componentDidMount() {
+            this.setState({
+                _isMounted: true
+            });
         },
 
         componentWillUnmount() {
@@ -196,8 +203,9 @@ var React = require('react'),
             });
         },
 
-        onExportedEntry(decryptedEntry) {
+        onExportedEntry(decryptedEntry, entryId) {
             let exportedEntries = this.state.exportedEntries;
+                decryptedEntry.tags = window.myStore.getTagTitleArrayById(this.state.entries[entryId].tags).join('|');
                 exportedEntries.push(decryptedEntry);
             this.setState({
                 exportedEntries: exportedEntries
@@ -214,6 +222,8 @@ var React = require('react'),
         },
 
         exportStateChange(storageExport) {
+            if (!this.state._isMounted) return;
+
             this.setState({
                 exportStorage: (storageExport ? true : false)
             });
@@ -225,6 +235,8 @@ var React = require('react'),
         },
 
         exportEntry(n) {
+            if (!this.state._isMounted) return;
+
             if (typeof n !== 'number') {
                 this.setState({
                     exportedEntries: []
@@ -251,7 +263,7 @@ var React = require('react'),
             
             var fields = ['title', 'note', 'username', 'password', 'tags', 'secret_note'];
             var text = String();
-
+            
             this.state.exportedEntries.forEach(entry => {
                 var values = [];
                 fields.forEach((field, key) => {
