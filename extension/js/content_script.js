@@ -15,7 +15,7 @@ let visibleDialog = false,
             } else {
                 appendNoResultDialog();
             }
-        } else {
+        } else if (content.username && content.password) {
             if (visibleDialog) {
                 morphToSuccess();
             } else {
@@ -143,6 +143,28 @@ let visibleDialog = false,
         }, 2700);
     },
 
+    morphToCancelDialog = () => {
+        let wrapperDiv = document.getElementById('tWaitingTrezor');
+        wrapperDiv.className = '';
+
+        let dialogDiv = document.getElementById('tWaitingTrezorDialog');
+        dialogDiv.className = 'tCancel';
+
+        let imageElement = document.getElementById('tWaitingTrezorImage');
+        imageElement.src = chrome.extension.getURL('images/trezor.svg');
+
+        // bottom text
+        let bottomTextBlock = document.getElementById('tWaitingTrezorText');
+        bottomTextBlock.className = 'tBottomTextBlock';
+        bottomTextBlock.innerHTML = 'Action Cancelled!';
+        dialogDiv.appendChild(bottomTextBlock);
+
+        setTimeout(() => {
+            // remove dialog nice way
+            removeTrezorDialog();
+        }, 2500);
+    },
+
     morphToNoResult = () => {
         let wrapperDiv = document.getElementById('tWaitingTrezor');
         console.log('div ', wrapperDiv);
@@ -205,6 +227,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
         case 'fillData':
             fillData(request);
+            break;
+
+        case 'cancelData':
+            if (visibleDialog) {
+                morphToCancelDialog();
+            }
             break;
 
         case 'showTrezorMsg':

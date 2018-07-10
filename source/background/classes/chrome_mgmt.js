@@ -229,14 +229,15 @@ class ChromeMgmt {
     }
 
     fillLoginForm(data) {
-        let sendObj = {};
         if (typeof data === 'undefined' || data.content.success === false) {
-            sendObj = {content: null};
+            this.sendTabMessage(this.accessTabId, 'cancelData');
         } else {
-            sendObj = {username: data.content.username, password: data.content.password};
+            this._injectContentScript(parseInt(this.accessTabId), 'fillData', {
+                username: data.content.username, 
+                password: data.content.password
+            });
+            this.accessTabId = 0;
         }
-        this._injectContentScript(parseInt(this.accessTabId), 'fillData', sendObj);
-        this.accessTabId = 0;
     }
 
     openTabAndLogin(data) {
