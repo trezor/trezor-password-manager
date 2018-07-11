@@ -102,26 +102,6 @@
           width: auto;
           padding: 27px 0 27px 10px;
         }
-
-        .checkbox {
-          color: $c_grey_border;
-          width: 20px;
-          height: 20px;
-          border: 1px solid #c1c1c1;
-          @include border-radius(2px);
-          margin: 0;
-
-          &.active {
-            background: $c_blue;
-            border-color: $c_blue;
-
-            img {
-              position: absolute;
-              left: 4px;
-              top: 5px;
-            }
-          }
-        }
       }
 
       .avatar {
@@ -198,14 +178,6 @@
 
         &:hover {
           background: rgba($c_grey_bg, .5);
-
-          .ion-android-checkbox {
-            color: $c_grey_font;
-
-            &.active {
-              color: $c_blue;
-            }
-          }
         }
 
         .title-label, .password, .tags, .safe-note, .available-tags, .actions {
@@ -294,10 +266,6 @@
 
         .form-buttons {
           visibility: visible;
-        }
-
-        .checkbox {
-          border-color: $c_blue;
         }
       }
 

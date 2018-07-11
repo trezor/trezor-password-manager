@@ -21,7 +21,7 @@ var React = require('react'),
                 uploading: true,
                 dropdownOptions: [
                     {
-                        name: 'ITEM/URL*', 
+                        name: 'URL (required)', 
                         value: 'title', 
                         selectedCol: 0
                     },
@@ -243,9 +243,15 @@ var React = require('react'),
             });
         },
 
+        browseFile(event) {
+            event.preventDefault();
+            document.getElementById('importInput').click();
+        },
+
         setFirstRow(event) {
+            event.preventDefault();
             this.setState({
-                firstRowHeader: event.target.checked
+                firstRowHeader: !this.state.firstRowHeader
             }, function() {
                 this.fileChange();
             });
@@ -320,19 +326,15 @@ var React = require('react'),
                         <td key={statusKey}>
                             {importStatus[n] == 'importing' && 
                             <div className={'loading'}>
-                                <span className='spinner'></span> importing...
+                                <span className='spinner'></span>
                             </div>}
                             {importStatus[n] == 'success' && 
                             <div className={'success'}>
-                                <i className={'icon icon-add'}></i> imported
+                                <img src='./images/success_blue.svg' />
                             </div>}
-                            {importStatus[n] == 'warning' && 
+                            {(importStatus[n] == 'warning' || importStatus[n] == 'error') &&  
                             <div className={'warning'}>
-                                No ITEM/URL*
-                            </div>}
-                            {importStatus[n] == 'error' && 
-                            <div className={'warning'}>
-                                inconsistent entry
+                                <img src='./images/cancel_red.svg' />
                             </div>}
                         </td>
                     );
@@ -345,26 +347,29 @@ var React = require('react'),
                     );
                 });
                 if (table_head) {
-                    table_head.push(<th key={'status'} className={'status-col'}><span>Import status</span></th>)
+                    table_head.push(<th key={'status'} className={'status-col'}><span>Status</span></th>)
                 }
             }
 
             return (
                 <div>
                     <Modal show={this.state.showImportModal} backdrop={'static'} dialogClassName={'import-modal-dialog'} autoFocus={true} enforceFocus={true} onHide={this.closeImportModal}>
-                        <Modal.Header closeButton={true}>
-                            <Modal.Title id='contained-modal-title-sm'>Import storage</Modal.Title>
+                        <Modal.Header>
+                            <button className='close' onClick={this.closeImportModal}><img src='./images/cancel.svg' /></button>
+                            <Modal.Title id='contained-modal-title-sm'>Import keys</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                             {!this.state.storage &&
                                 <form className={'file-form'}>
                                     <div className={this.state.dropZoneActive ? 'active' : ''} id={'drop-area'} onDrop={this.fileOnDrop} onDragOver={this.fileOnDragOver}>
-                                        <label htmlFor={'importInput'}>Drag & Drop .CSV file here or browse</label><br/>
-                                        <input id="importInput"
-                                           type="file"
-                                           accept=".csv"
-                                           ref={'fileUploader'}
-                                           onChange={(event)=> {
+                                        <img src='./images/csv_file.svg' /><br />
+                                        <label htmlFor={'importInput'}>Drop file here or <a href="#" onClick={this.browseFile}>browse</a> to upload.</label>
+                                        <input id='importInput'
+                                            className='hide'
+                                            type='file'
+                                            accept='.csv'
+                                            ref={'fileUploader'}
+                                            onChange={(event)=> {
                                                this.fileChange(event);
                                                event.target.value=null
                                            }}
@@ -372,28 +377,31 @@ var React = require('react'),
                                     </div>
                                 </form>}
                             {this.state.storage &&
-                            <p className={'help'}>Sort your CSV columns by type.</p>}
+                            <p className={'help'}>Sort your .CSV columns by type.</p>}
                             {this.state.storage &&
                             <div className={'storage_content'}>
-                                {showImportButtons && 
-                                <p className={'text-center'}><label><input type="checkbox" onChange={this.setFirstRow} /> First row is header</label></p>}
-                                <div className={'well'}>
-                                    <Table>
-                                        <thead>
-                                            <tr>{table_head}</tr>
-                                        </thead>
-                                        <tbody>
-                                            {table_body}
-                                        </tbody>
-                                    </Table>
-                                </div>
+                                <Table responsive={true}>
+                                    <thead>
+                                        <tr>{table_head}</tr>
+                                    </thead>
+                                    <tbody>
+                                        {table_body}
+                                    </tbody>
+                                </Table>
                             </div>}
                             {importIsDone && 
                             <div className={'well well-success text-center'}><b>Imported {importedCound}</b> entries, skipped {notImportedCound}.</div>}
                         </Modal.Body>
                         {showImportButtons && <Modal.Footer>
-                            <Button onClick={this.closeImportModal}>Close</Button>
-                            <Button bsStyle="primary" onClick={this.importStorage}>Import storage</Button>
+                            <label className={'checkbox' + (this.state.firstRowHeader ? ' active' : '')} onClick={this.setFirstRow}>
+                                <i>
+                                    {this.state.firstRowHeader && 
+                                    <img src='./images/checkbox_checked.svg' />}
+                                </i>
+                                Clear first row in the table.
+                            </label>
+                            <button type="button" className={'btn btn-link'} onClick={this.closeImportModal}>Cancel</button>
+                            <button type="button" className={'blue-btn add'} onClick={this.importStorage}>Import keys</button>
                         </Modal.Footer>}
                         {importIsDone && <Modal.Footer>
                             <Button onClick={this.closeImportModal}>Close</Button>

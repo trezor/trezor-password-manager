@@ -354,10 +354,10 @@ var React = require('react'),
                         {this.state.exportStorage &&
                         <div className='col-sm-12'>
                             <div className={'export'}>
-                                <label onClick={this.handleExportToggleAll}>
-                                    <span className={'checkbox ' + (allSelected ? ' active' : '')}>
+                                <label className={'checkbox ' + (allSelected ? ' active' : '')} onClick={this.handleExportToggleAll}>
+                                    <i>
                                         {allSelected && (<img src='./images/checkbox_checked.svg' />)}
-                                    </span> Select all
+                                    </i> Select all
                                 </label>
                                 <span className='info'>({selectedCount}) entries selected</span>
                                 <Button onClick={this.exportEnd} className='btn-link'>Cancel</Button>
