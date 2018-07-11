@@ -555,8 +555,10 @@ var React = require('react'),
                 <div className={(this.state.mode === 'export' && this.state.exportEntry ? 'active' : '') + ' card ' + this.state.waiting_trezor} onClick={this.toggleExportEntry}>
                     <div className={ this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}>
                         <form onSubmit={this.state.saving_entry ? false : this.saveEntry}>
-                            <label className={'export ' + (this.state.mode === 'export' ? 'active' : '')}>
-                                <i className={'ion ' + (this.state.exportEntry ? 'ion-android-checkbox active' : 'ion-android-checkbox')}></i>
+                            <label className={'export' + (this.state.mode === 'export' ? ' active' : '')}>
+                                <span className={'checkbox' + (this.state.exportEntry ? ' active' : '')}>
+                                    {this.state.exportEntry && (<img src='./images/checkbox_checked.svg' />)}
+                                </span>
                             </label>
                             <div className={this.state.image_visible && this.isUrl(this.state.title) ? 'avatar white-bg' : 'avatar'}>
                                 {this.state.image_visible &&

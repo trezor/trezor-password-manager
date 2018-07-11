@@ -16,10 +16,6 @@
     overflow: hidden;
     z-index: 2;
 
-    &.active {
-      background: $c_grey_bg_header_hover;
-    }
-
     &.waiting {
 
       .backface {
@@ -107,11 +103,23 @@
           padding: 27px 0 27px 10px;
         }
 
-        .ion-android-checkbox {
+        .checkbox {
           color: $c_grey_border;
+          width: 20px;
+          height: 20px;
+          border: 1px solid #c1c1c1;
+          @include border-radius(2px);
+          margin: 0;
 
           &.active {
-            color: $c_blue;
+            background: $c_blue;
+            border-color: $c_blue;
+
+            img {
+              position: absolute;
+              left: 4px;
+              top: 5px;
+            }
           }
         }
       }
@@ -286,6 +294,10 @@
 
         .form-buttons {
           visibility: visible;
+        }
+
+        .checkbox {
+          border-color: $c_blue;
         }
       }
 

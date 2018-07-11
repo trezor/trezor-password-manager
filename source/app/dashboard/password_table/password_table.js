@@ -297,11 +297,16 @@ var React = require('react'),
             let raw_table = this.getProperOrderArr(),
                 count = !!raw_table.length ? 0 : 1,
                 allSelected = true,
+                selectedCount = 0,
                 newTagArr = this.state.active_id === 0 ? [] : [this.state.active_id],
                 password_table = !!raw_table.length ? raw_table.map((key) => {
                     let obj = this.state.entries[key];
                     let actTag = this.activeTag(obj);
-                    if (!obj.export) allSelected = false;
+                    if (obj.export) {
+                        selectedCount++;
+                    } else {
+                        allSelected = false;
+                    }
                     if (actTag) {
                         if (this.filterIsSet()) {
                             if (this.checkFilterMatching(obj)) {
@@ -349,8 +354,14 @@ var React = require('react'),
                         {this.state.exportStorage &&
                         <div className='col-sm-12'>
                             <div className={'export'}>
-                                <Button onClick={this.exportEntry} bsStyle={'primary'} className={'btn-export'}>Export selected</Button>
-                                <Button onClick={this.exportEnd}>Cancel export</Button>
+                                <label onClick={this.handleExportToggleAll}>
+                                    <span className={'checkbox ' + (allSelected ? ' active' : '')}>
+                                        {allSelected && (<img src='./images/checkbox_checked.svg' />)}
+                                    </span> Select all
+                                </label>
+                                <span className='info'>({selectedCount}) entries selected</span>
+                                <Button onClick={this.exportEnd} className='btn-link'>Cancel</Button>
+                                <Button onClick={this.exportEntry} bsStyle={'primary'} className={'btn-export'} disabled={selectedCount > 0 ? false : true}>Export selected</Button>
                             </div>
                         </div>}
                         {!this.state.exportStorage &&
@@ -377,11 +388,6 @@ var React = require('react'),
                         </div>}
                     </div>
                     <div className='row dashboard'>
-                        <div className={'col-sm-12 export-all ' + (this.state.exportStorage ? 'active' : '')}>
-                            <label onClick={this.handleExportToggleAll}>
-                                <i className={'ion ' + (allSelected ? 'ion-android-checkbox active' : 'ion-android-checkbox')}></i> Select all
-                            </label>
-                        </div>
                         {this.state.newEntry &&
                         <TableEntry key={undefined}
                                     key_value={undefined}
