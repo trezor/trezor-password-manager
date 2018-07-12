@@ -328,6 +328,10 @@ var React = require('react'),
                             </span>;
                         }
 
+                        if (selected && selected.value === 'tags') {
+                            col = col.split('|').join(', ');
+                        }
+
                         i++;
                         return (<td key={key}>{col}</td>);
                     });
