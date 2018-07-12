@@ -129,5 +129,10 @@ button, .button {
   &.btn-link {
     color: $c_grey_content_font;
   }
+
+  &.btn-wide {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
 }
 

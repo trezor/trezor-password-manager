@@ -8,11 +8,12 @@
 'use strict';
 
 var React = require('react'),
+	DropdownButton = require('react-bootstrap').DropdownButton,
+	MenuItem = require('react-bootstrap').MenuItem,
 	ImportSelect = React.createClass({
 		displayName: 'ImportSelect',
 
 		propTypes: {
-			obligatory: React.PropTypes.bool,
 			onChange: React.PropTypes.func,
 			name: React.PropTypes.string,
 			value: React.PropTypes.string,
@@ -28,30 +29,46 @@ var React = require('react'),
 
 		getInitialState() {
 			return {
-				obligatory: false,
 				name: 'dropdown',
 				value: '',
 				options: []
 			};
 		},
 
-		onChange(event) {
+		onChange(event, key) {
 			if (typeof this.props.onChange == "function") {
-				this.props.onChange(event.target.value, this.props.col);
+				this.props.onChange(key, this.props.col);
 			}
 		},
 
 		render() {
-			let options = this.props.options.map(function(option) {
-				let key = option.name + option.value;
-				return <option key={key} value={option.value}>{option.name}</option>
-			});
-			return (
-				<select className="form-control" value={this.props.value} onChange={this.onChange} disabled={this.state.disabled}>
-					{!this.props.obligatory ? <option value="">- select -</option> : null}
-					{options}	
-				</select>
-			);
+			let title,
+				selected = this.props.value,
+				options = this.props.options.map(function(option) {
+					let key = option.name + option.value;
+					if (option.value === selected) {
+						title = option.name;
+					}
+					return <MenuItem 
+						key={key} 
+						eventKey={option.value}>
+							{option.name}
+					</MenuItem>;
+				});
+
+			if (!title) {
+				title = '- select -';
+			}
+
+			return (<DropdownButton 
+					className={'btn-block'} 
+					onSelect={this.onChange}
+					bsStyle={'default'} 
+					title={title} 
+					disabled={this.state.disabled} 
+					id={'dropdown-' + selected}>
+				{options}
+			</DropdownButton>);
 		}
 	}
 );

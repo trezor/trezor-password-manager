@@ -1,5 +1,5 @@
 .import-modal-dialog {
-  width: 960px;
+  width: 860px;
   max-width: 100%;
   text-align: left;
   color: $c_grey_content_bg;
@@ -23,7 +23,7 @@
 
       td {
         border: none;
-        padding: 4px 8px;
+        padding: 6px 10px;
         font-size: 12px;
 
         .spinner {
@@ -38,6 +38,13 @@
           img {
             width: 10px;
             height: 10px;
+          }
+        }
+
+        span {
+          .icon {
+            font-size: 0.65em;
+            padding: 0 3px 2px 0;
           }
         }
       }
@@ -63,7 +70,7 @@
         }
 
         &.active {
-          border-color: $c_grey_content_bg;
+          border-color: $c_black;
         }
 
         img {
@@ -115,7 +122,7 @@
   .modal-body {
     background-color: $c_white;
     height: auto;
-    padding: 0 25px 25px 20px;
+    padding: 0 25px 15px 20px;
 
     .storage_content {
       + .well {
@@ -165,6 +172,28 @@
 
         &.status-col {
           width: 50px;
+
+          span {
+            font-weight: normal;
+            font-size: 12px;
+          }
+        }
+
+        .dropdown-toggle {
+          text-align: left;
+          padding-right: 25px;
+          background: #f5f5f5;
+          border: none;
+
+          span {
+            font-weight: normal;
+          }
+
+          span:last-child {
+            position: absolute;
+            right: 5px;
+            top: 6px;
+          }
         }
       }
 
@@ -208,7 +237,17 @@
     }
 
     .blue-btn {
-      margin: 0;
+      margin: 0 0 0 10px;
+    }
+
+    .info {
+      color: $c_blue;
+      font-size: 12px;
+      margin-right: 20px;
+
+      .icon {
+        font-size: 16px;
+      }
     }
   }
 }

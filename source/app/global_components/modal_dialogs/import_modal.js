@@ -294,13 +294,13 @@ var React = require('react'),
                     let i = 0;
                     let cols = Object.values(item).map(col => {
                         let key = n.toString() + i.toString();
+                        var selected = dropdownOptions.find(option => {
+                            return option.selectedCol == i;
+                        });
 
                         if (n == 0) {
                             // table header
                             let selectKey = 'select' + i;
-                            let selected = dropdownOptions.find(option => {
-                                return option.selectedCol == i;
-                            });
                             let pendingItems = this.state.importStatus.filter(function(val) { return val === 'pending' });
                             let selectDisabled = this.state.importStatus.length !== pendingItems.length;
                             
@@ -316,6 +316,16 @@ var React = require('react'),
                                     />
                                 </th>
                             )
+                        }
+
+                        if (selected && selected.value === 'password') {
+                            col = <span>
+                                <i className="icon ion-asterisk"></i>
+                                <i className="icon ion-asterisk"></i>
+                                <i className="icon ion-asterisk"></i>
+                                <i className="icon ion-asterisk"></i>
+                                <i className="icon ion-asterisk"></i>
+                            </span>;
                         }
 
                         i++;
@@ -380,7 +390,7 @@ var React = require('react'),
                             <p className={'help'}>Sort your .CSV columns by type.</p>}
                             {this.state.storage &&
                             <div className={'storage_content'}>
-                                <Table responsive={true}>
+                                <Table>
                                     <thead>
                                         <tr>{table_head}</tr>
                                     </thead>
@@ -389,8 +399,6 @@ var React = require('react'),
                                     </tbody>
                                 </Table>
                             </div>}
-                            {importIsDone && 
-                            <div className={'well well-success text-center'}><b>Imported {importedCound}</b> entries, skipped {notImportedCound}.</div>}
                         </Modal.Body>
                         {showImportButtons && <Modal.Footer>
                             <label className={'checkbox' + (this.state.firstRowHeader ? ' active' : '')} onClick={this.setFirstRow}>
@@ -401,10 +409,11 @@ var React = require('react'),
                                 Clear first row in the table.
                             </label>
                             <button type="button" className={'btn btn-link'} onClick={this.closeImportModal}>Cancel</button>
-                            <button type="button" className={'blue-btn add'} onClick={this.importStorage}>Import keys</button>
+                            <button type="button" className={'blue-btn add btn-wide'} onClick={this.importStorage}>Import keys</button>
                         </Modal.Footer>}
                         {importIsDone && <Modal.Footer>
-                            <Button onClick={this.closeImportModal}>Close</Button>
+                            <span className='info'><i className='icon ion-information-circled'></i> Imported {importedCound} entries, skipped {notImportedCound}.</span>
+                            <button type="button" className={'blue-btn add btn-wide'} onClick={this.closeImportModal}>Continue</button>
                         </Modal.Footer>}
                     </Modal>
                 </div>
