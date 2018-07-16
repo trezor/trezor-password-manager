@@ -99,17 +99,22 @@ var React = require('react'),
                                 nonce: this.state.nonce
                             };
                             chrome.runtime.sendMessage({type: 'decryptPassword', content: data, clipboardClear: false}, response => {
+                                this.setTrezorWaitingBackface(false);
                                 if (response && response.content && response.content.success) {
                                     storageExport.status = 'exported';
                                     if (typeof this.props.onExported === 'function') {
                                         this.props.onExported(response.content, storageExport.entryId);
                                     }
+                                    window.myStore.emit('storageExport', storageExport);
                                 } else {
                                     storageExport.status = 'error';
+                                    
+                                    // @todo: not nice, needs to fire on response event
+                                    setTimeout(() => {
+                                        window.myStore.emit('storageExport', storageExport);
+                                    }, 1000);
                                 }
 
-                                this.setTrezorWaitingBackface(false);
-                                window.myStore.emit('storageExport', storageExport);
                             });
                         }
                     } else if (storageExport.status === 'pending') {

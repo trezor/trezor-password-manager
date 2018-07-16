@@ -183,7 +183,7 @@ var React = require('react'),
             });
         },
 
-        handleExportToggleAll() {
+        exportToggleAll() {
             var exportAll = true,
                 allSelected = true,
                 entries = this.state.entries;
@@ -205,11 +205,15 @@ var React = require('react'),
 
         onExportedEntry(decryptedEntry, entryId) {
             let exportedEntries = this.state.exportedEntries;
+
+            if (decryptedEntry) {
                 decryptedEntry.tags = window.myStore.getTagTitleArrayById(this.state.entries[entryId].tags).join('|');
                 exportedEntries.push(decryptedEntry);
-            this.setState({
-                exportedEntries: exportedEntries
-            });
+                
+                this.setState({
+                    exportedEntries: exportedEntries
+                });
+            }
         },
 
         onToggleEntry(entryId) {
@@ -354,7 +358,7 @@ var React = require('react'),
                         {this.state.exportStorage &&
                         <div className='col-sm-12'>
                             <div className={'export'}>
-                                <label className={'checkbox ' + (allSelected ? ' active' : '')} onClick={this.handleExportToggleAll}>
+                                <label className={'checkbox ' + (allSelected ? ' active' : '')} onClick={this.exportToggleAll}>
                                     <i>
                                         {allSelected && (<img src='./images/checkbox_checked.svg' />)}
                                     </i> Select all
