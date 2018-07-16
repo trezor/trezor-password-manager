@@ -265,7 +265,7 @@ var React = require('react'),
         exportDownload() {
             if (this.state.exportedEntries.length == 0) return;
             
-            var fields = ['title', 'note', 'username', 'password', 'tags', 'secret_note'];
+            var fields = ['title', 'note', 'username', 'password', 'tags', 'safe_note'];
             var text = String();
             
             this.state.exportedEntries.forEach(entry => {
@@ -273,7 +273,7 @@ var React = require('react'),
                 fields.forEach((field, key) => {
                     values[key] = entry[field] ? entry[field] : '';
                 });
-                text = text + values.join(',') + ',\n';
+                text = text + values.join(',') + '\n';
             });
 
             var blob = new Blob([text], {type: "octet/stream"}),

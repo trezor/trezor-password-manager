@@ -47,7 +47,7 @@ var React = require('react'),
                     },
                     {
                         name: 'Secret note', 
-                        value: 'secret_note', 
+                        value: 'safe_note', 
                         selectedCol: 5
                     }
                 ],
@@ -139,7 +139,7 @@ var React = require('react'),
                     password: String(entry.password ? entry.password : ""),
                     nonce: String(""),
                     tags: tags,
-                    safe_note: String(entry.safe_note ? safe_note : ""),
+                    safe_note: String(entry.safe_note ? entry.safe_note : ""),
                     note: String(entry.note ? entry.note : "")
                 };
 
@@ -318,7 +318,7 @@ var React = require('react'),
                             )
                         }
 
-                        if (selected && selected.value === 'password') {
+                        if (selected && (selected.value === 'password' || selected.value === 'safe_note')) {
                             col = <span>
                                 <i className="icon ion-asterisk"></i>
                                 <i className="icon ion-asterisk"></i>
