@@ -15,7 +15,7 @@ const HD_HARDENED = 0x80000000,
     WRONG_PIN = 'Failure_PinInvalid',
 
     MINIMAL_VERSION = '2.0.11',
-    URL_CONNECT = 'https://connect.trezor.io/tpm/',
+    URL_CONNECT = 'https://sisyfos.trezor.io/next/',
     DEFAULT_KEYPHRASE = 'Activate TREZOR Password Manager?',
     DEFAULT_NONCE = '2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee';
 
@@ -46,7 +46,6 @@ class TrezorMgmt {
         this.trezorConnect.init({
             debug: true,
             webusb: true,
-            transportReconnect: true,
             popup: false,
             connectSrc: URL_CONNECT
         });
@@ -145,6 +144,11 @@ class TrezorMgmt {
             case 'ui-no_transport':
                 this._disconnect();
                 this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
+                break;
+
+            case 'ui-bundle_progress':
+                console.log('ui-bundle_progress', msg.payload.progress)
+                this.bgStore.emit('sendMessage', 'exportProgress', {progress: msg.payload.progress});
                 break;
         }
     }
@@ -397,6 +401,57 @@ class TrezorMgmt {
                 }
             }
         }).catch((error) => this._handleTrezorError(error, 'encEntry', responseCallback));
+    }
+
+    decryptEntries(entries, responseCallback, clipboardClear) {
+        var bundle = entries.map(entry => {
+            return {
+                path: PATH,
+                key: this._displayKey(entry.title, entry.username),
+                value: entry.nonce,
+                password: entry.password,
+                safe_note: entry.safe_note,
+                encrypt: false,
+                askOnEncrypt: false,
+                askOnDecrypt: true
+            }
+        });
+
+        this.trezorConnect.cipherKeyValue({
+            device: {path: this._activeDevice.path},
+            override: true,
+            useEmptyPassphrase: true,
+            bundle: bundle
+        }).then((result) => {
+            if (result.success) {
+                var data = [];
+                result.payload.forEach((item, i) => {
+                    let enckey = new Buffer(item.value, 'hex'),
+                        password = new Buffer(entries[i].password),
+                        safenote = new Buffer(entries[i].safe_note);
+                    data.push({
+                        title: entries[i].title,
+                        username: entries[i].username,
+                        password: JSON.parse(this.decrypt(password, enckey)),
+                        safe_note: JSON.parse(this.decrypt(safenote, enckey)),
+                        nonce: entries[i].nonce
+                    })
+                });
+
+                responseCallback({
+                    content: {
+                        success: true,
+                        entries: data
+                    }
+                });
+            } else {
+                responseCallback({
+                    content: {
+                        success: false
+                    }
+                });
+            }
+        }).catch((error) => this._handleTrezorError(error, 'decEntry', responseCallback));
     }
 
     decryptFullEntry(data, responseCallback, clipboardClear) {

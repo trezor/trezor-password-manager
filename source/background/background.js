@@ -299,6 +299,10 @@ var Promise = require('es6-promise').Promise,
                 trezorManager.decryptFullEntry(request.content, sendResponse, request.clipboardClear);
                 break;
 
+            case 'exportEntries':
+                trezorManager.decryptEntries(request.content, sendResponse, request.clipboardClear);
+                break;
+
             case 'decryptFullEntry':
                 trezorManager.decryptFullEntry(request.content, sendResponse, false);
                 break;

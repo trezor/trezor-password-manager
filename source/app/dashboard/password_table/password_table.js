@@ -27,8 +27,9 @@ var React = require('react'),
                 filter: '',
                 newEntry: false,
                 newEntryUrl: '',
-                exportStorage: false,
                 orderType: window.myStore.data.config.orderType || 'note',
+                exportMode: false,
+                exportProgress: -1,
                 exportedEntries: [],
                 _isMounted: false
             }
@@ -39,7 +40,8 @@ var React = require('react'),
             window.myStore.on('filter', this.setupFilter);
             window.myStore.on('toggleNewEntry', this.toggleNewEntry);
             window.myStore.on('update', this.updateTableContent);
-            window.myStore.on('storageExport', this.exportStateChange);
+            window.myStore.on('exportMode', this.setExportMode);
+            window.myStore.on('exportProgress', this.updateExportProgress)
             chrome.runtime.onMessage.addListener(this.chromeTableMsgHandler);
         },
 
@@ -55,6 +57,23 @@ var React = require('react'),
             window.myStore.removeListener('toggleNewEntry', this.toggleNewEntry);
             window.myStore.removeListener('update', this.updateTableContent);
             chrome.runtime.onMessage.removeListener(this.chromeTableMsgHandler);
+        },
+
+        updateExportProgress(progress) {
+            console.log(progress)
+            this.setState({
+                exportProgress: progress
+            });
+        },
+
+        setExportMode(mode) {
+            if (mode) {
+                this.addExportTag(this.state.entries);
+            }
+
+            this.setState({
+                exportMode: mode
+            });
         },
 
         addExportTag(entries) {
@@ -203,19 +222,6 @@ var React = require('react'),
             });
         },
 
-        onExportedEntry(decryptedEntry, entryId) {
-            let exportedEntries = this.state.exportedEntries;
-
-            if (decryptedEntry) {
-                decryptedEntry.tags = window.myStore.getTagTitleArrayById(this.state.entries[entryId].tags).join('|');
-                exportedEntries.push(decryptedEntry);
-                
-                this.setState({
-                    exportedEntries: exportedEntries
-                });
-            }
-        },
-
         onToggleEntry(entryId) {
             var entries = this.state.entries;
                 entries[entryId].export = !entries[entryId].export;
@@ -225,41 +231,33 @@ var React = require('react'),
             });
         },
 
-        exportStateChange(storageExport) {
+        exportEntries(event) {
             if (!this.state._isMounted) return;
+
+            event.preventDefault();
 
             this.setState({
-                exportStorage: (storageExport ? true : false)
+                exportedEntries: []
             });
 
-            if (typeof storageExport === 'object' && storageExport.status !== 'pending') {
-                let nextEntryKey = storageExport.key + 1;
-                this.exportEntry(nextEntryKey);
-            }
-        },
-
-        exportEntry(n) {
-            if (!this.state._isMounted) return;
-
-            if (typeof n !== 'number') {
-                this.setState({
-                    exportedEntries: []
-                });
-                n = 0;
-            }
-
+            var entriesToExport = [];
             let entries = this.getProperOrderArr();
-            
-            if (entries[n]) {
-                window.myStore.emit('storageExport', {
-                    entryId: entries[n],
-                    key: n,
-                    status: 'pending'
+                entries.forEach(entry => {
+                    if (this.state.entries[entry].export) {
+                        entriesToExport.push(this.state.entries[entry]);
+                    }
                 });
-            } else {
-                this.exportDownload();
-                this.exportEnd();
-            }
+
+            chrome.runtime.sendMessage({type: 'exportEntries', content: entriesToExport, clipboardClear: false}, response => {
+                if (response && response.content && response.content.success) {
+                    this.setState({
+                        exportedEntries: response.content.entries
+                    }, function() {
+                        this.exportDownload();
+                        this.exportEnd();
+                    });
+                }
+            });
         },
 
         exportDownload() {
@@ -292,9 +290,7 @@ var React = require('react'),
             this.setState({
                 exportedEntries: []
             });
-            setTimeout(function() {
-                window.myStore.emit('storageExport', false);
-            });
+            window.myStore.emit('exportMode', false);
         },
 
         render(){
@@ -303,9 +299,10 @@ var React = require('react'),
                 allSelected = true,
                 selectedCount = 0,
                 newTagArr = this.state.active_id === 0 ? [] : [this.state.active_id],
-                password_table = !!raw_table.length ? raw_table.map((key) => {
+                password_table = !!raw_table.length ? raw_table.map((key, i) => {
                     let obj = this.state.entries[key];
                     let actTag = this.activeTag(obj);
+                    let exporting = i === this.state.exportProgress;
                     if (obj.export) {
                         selectedCount++;
                     } else {
@@ -326,7 +323,7 @@ var React = require('react'),
                                                 safe_note={obj.safe_note}
                                                 note={obj.note}
                                                 exportEntry={obj.export}
-                                                onExported={this.onExportedEntry}
+                                                exportingEntry={exporting}
                                                 onToggle={this.onToggleEntry}
                                         />
                                 )
@@ -344,7 +341,7 @@ var React = require('react'),
                                             safe_note={obj.safe_note}
                                             note={obj.note}
                                             exportEntry={obj.export}
-                                            onExported={this.onExportedEntry}
+                                            exportingEntry={exporting}
                                             onToggle={this.onToggleEntry}
                                     />
                             )
@@ -355,7 +352,7 @@ var React = require('react'),
             return (
                 <div className='wraper container-fluid'>
                     <div className='row page-title'>
-                        {this.state.exportStorage &&
+                        {this.state.exportMode &&
                         <div className='col-sm-12'>
                             <div className={'export'}>
                                 <label className={'checkbox ' + (allSelected ? ' active' : '')} onClick={this.exportToggleAll}>
@@ -365,10 +362,10 @@ var React = require('react'),
                                 </label>
                                 <span className='info'>({selectedCount}) entries selected</span>
                                 <Button onClick={this.exportEnd} className='btn-link'>Cancel</Button>
-                                <Button onClick={this.exportEntry} bsStyle={'primary'} className={'btn-export'} disabled={selectedCount > 0 ? false : true}>Export selected</Button>
+                                <Button onClick={this.exportEntries} bsStyle={'primary'} className={'btn-export'} disabled={selectedCount > 0 ? false : true}>Export selected</Button>
                             </div>
                         </div>}
-                        {!this.state.exportStorage &&
+                        {!this.state.exportMode &&
                         <div className='col-sm-8 col-xs-9'>
                             <button type='button'
                                     onClick={this.toggleNewEntry}
@@ -377,7 +374,7 @@ var React = require('react'),
                             </button>
                             <FilterInput eventEmitter={this.props.eventEmitter}/>
                         </div>}
-                        {!this.state.exportStorage &&
+                        {!this.state.exportMode &&
                         <div className="col-sm-4 col-xs-3 text-right">
                             <DropdownButton title='Sort' className='dropdown order' noCaret pullRight
                                             id='order-dropdown-no-caret'>

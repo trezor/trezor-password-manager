@@ -25,7 +25,7 @@ var React = require('react'),
         },
 
         exportClick() {
-            window.myStore.emit('storageExport', true);
+            window.myStore.emit('exportMode', true);
         },
 
         userSwitch() {

@@ -42,10 +42,10 @@ var React = require('react'),
                 clipboard_pwd: false,
                 clipboard_usr: false,
                 saving_entry: false,
-                onExported: false,
                 onToggle: false,
                 showMandatoryField: false,
                 exportEntry: false,
+                exportingEntry: false,
                 _isMounted: false
             };
         },
@@ -56,12 +56,15 @@ var React = require('react'),
                 tags_titles: window.myStore.getTagTitleArrayById(nextProps.tags),
                 tag_globa_title_array: window.myStore.getTagTitleArray(),
                 tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value, nextProps.tags),
-                exportEntry: nextProps.exportEntry
+                exportEntry: nextProps.exportEntry,
+                exportingEntry: nextProps.exportingEntry
             });
         },
 
         componentDidMount() {
-            window.myStore.on('storageExport', this.setExportMode);
+            window.myStore.on('exportMode', this.setExportMode);
+            window.myStore.on('exportProgress', this.setExportProgress);
+
             if (this.isUrl(this.removeProtocolPrefix(this.state.title))) {
                 this.setState({
                     image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title) + '?size=100'
@@ -79,49 +82,23 @@ var React = require('react'),
             });
         },
 
-        setExportMode(storageExport) {
+        setExportProgress(progress) {     
+            // if (this.state.mode === 'export') {
+            //     if (this.staste.exportingEntry) {
+            //         this.setTrezorWaitingBackface('Confirm export on your TREZOR');
+            //     } else {
+            //         this.setTrezorWaitingBackface(false);
+            //     }
+            // }
+        },
+
+        setExportMode(mode) {
             if (!this.state._isMounted) return;
 
-            if (storageExport) {
+            if (mode) {
                 this.setState({
                     mode: 'export'
                 });
-
-                if (typeof storageExport === 'object' && storageExport.entryId == this.state.key_value) {
-                    if (this.state.exportEntry) {
-                        if (storageExport.status === 'pending') {
-                            this.setTrezorWaitingBackface('Confirm export on your TREZOR');
-                            let data = {
-                                title: this.state.title,
-                                username: this.state.username,
-                                password: this.state.password,
-                                safe_note: this.state.safe_note,
-                                nonce: this.state.nonce
-                            };
-                            chrome.runtime.sendMessage({type: 'decryptPassword', content: data, clipboardClear: false}, response => {
-                                this.setTrezorWaitingBackface(false);
-                                if (response && response.content && response.content.success) {
-                                    storageExport.status = 'exported';
-                                    if (typeof this.props.onExported === 'function') {
-                                        this.props.onExported(response.content, storageExport.entryId);
-                                    }
-                                    window.myStore.emit('storageExport', storageExport);
-                                } else {
-                                    storageExport.status = 'error';
-                                    
-                                    // @todo: not nice, needs to fire on response event
-                                    setTimeout(() => {
-                                        window.myStore.emit('storageExport', storageExport);
-                                    }, 1000);
-                                }
-
-                            });
-                        }
-                    } else if (storageExport.status === 'pending') {
-                        storageExport.status = 'skip';
-                        window.myStore.emit('storageExport', storageExport);
-                    }
-                }
             } else {
                 this.setState({
                     mode: 'list-mode'

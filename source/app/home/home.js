@@ -90,6 +90,13 @@ var React = require('react'),
                     });
                     break;
 
+                case 'exportProgress':
+                    console.log('ddd', request);
+                    // this.setState({
+                    //     devices: request.content.devices
+                    // });
+                    break;
+
                 case 'trezorTransport':
                     this.setState({
                        transportType: request.content.transport
