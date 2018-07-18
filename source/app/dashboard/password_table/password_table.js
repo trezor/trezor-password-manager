@@ -56,11 +56,12 @@ var React = require('react'),
             window.myStore.removeListener('filter', this.setupFilter);
             window.myStore.removeListener('toggleNewEntry', this.toggleNewEntry);
             window.myStore.removeListener('update', this.updateTableContent);
+            window.myStore.removeListener('exportMode', this.setExportMode);
+            window.myStore.removeListener('exportProgress', this.updateExportProgress)
             chrome.runtime.onMessage.removeListener(this.chromeTableMsgHandler);
         },
 
         updateExportProgress(progress) {
-            console.log(progress)
             this.setState({
                 exportProgress: progress
             });
@@ -88,6 +89,10 @@ var React = require('react'),
                 case 'saveEntry':
                     this.openNewEntry(request.content);
                     sendResponse({type:'entrySaving'});
+                    break;
+
+                case 'exportProgress':
+                    window.myStore.emit('exportProgress', request.content.progress + 1);
                     break;
             }
             return true;
@@ -235,7 +240,7 @@ var React = require('react'),
             if (!this.state._isMounted) return;
 
             event.preventDefault();
-
+            window.myStore.emit('exportProgress', 0);
             this.setState({
                 exportedEntries: []
             });
@@ -291,6 +296,7 @@ var React = require('react'),
                 exportedEntries: []
             });
             window.myStore.emit('exportMode', false);
+            window.myStore.emit('exportProgress', -1);
         },
 
         render(){
@@ -299,10 +305,11 @@ var React = require('react'),
                 allSelected = true,
                 selectedCount = 0,
                 newTagArr = this.state.active_id === 0 ? [] : [this.state.active_id],
-                password_table = !!raw_table.length ? raw_table.map((key, i) => {
+                password_table = !!raw_table.length ? raw_table.map((key) => {
                     let obj = this.state.entries[key];
                     let actTag = this.activeTag(obj);
-                    let exporting = i === this.state.exportProgress;
+                    let exporting = obj.export && selectedCount === this.state.exportProgress;
+
                     if (obj.export) {
                         selectedCount++;
                     } else {

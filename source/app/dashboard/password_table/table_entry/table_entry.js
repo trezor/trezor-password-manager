@@ -58,13 +58,20 @@ var React = require('react'),
                 tags_available: window.myStore.getPossibleToAddTagsForEntry(this.state.key_value, nextProps.tags),
                 exportEntry: nextProps.exportEntry,
                 exportingEntry: nextProps.exportingEntry
+            }, () => {
+                this.updateExportProgress();
             });
         },
 
-        componentDidMount() {
+        componentWillMount() {
             window.myStore.on('exportMode', this.setExportMode);
-            window.myStore.on('exportProgress', this.setExportProgress);
+        },
 
+        componentWillUnmount() {
+            window.myStore.removeListener('exportMode', this.setExportMode);
+        },
+
+        componentDidMount() {
             if (this.isUrl(this.removeProtocolPrefix(this.state.title))) {
                 this.setState({
                     image_src: 'https://logo.clearbit.com/' + tld.getDomain(this.state.title) + '?size=100'
@@ -82,14 +89,12 @@ var React = require('react'),
             });
         },
 
-        setExportProgress(progress) {     
-            // if (this.state.mode === 'export') {
-            //     if (this.staste.exportingEntry) {
-            //         this.setTrezorWaitingBackface('Confirm export on your TREZOR');
-            //     } else {
-            //         this.setTrezorWaitingBackface(false);
-            //     }
-            // }
+        updateExportProgress() {
+            if (this.state.exportingEntry) {
+                this.setTrezorWaitingBackface('Confirm export on your TREZOR');
+            } else {
+                this.setTrezorWaitingBackface(false);
+            }
         },
 
         setExportMode(mode) {

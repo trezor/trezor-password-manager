@@ -147,7 +147,6 @@ class TrezorMgmt {
                 break;
 
             case 'ui-bundle_progress':
-                console.log('ui-bundle_progress', msg.payload.progress)
                 this.bgStore.emit('sendMessage', 'exportProgress', {progress: msg.payload.progress});
                 break;
         }
