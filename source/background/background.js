@@ -26,6 +26,7 @@ var Promise = require('es6-promise').Promise,
     TrezorMgmt = require('./classes/trezor_mgmt'),
     trezorManager = {},
     DropboxMgmt = require('./classes/dropbox_mgmt'),
+    TrezorConnect = require('trezor-connect').default,
     dropboxManager = {},
     DriveMgmt = require('./classes/drive_mgmt'),
     driveManager = {},
@@ -41,7 +42,7 @@ var Promise = require('es6-promise').Promise,
                 bgStore.on('retrySetup', setupRetry);
                 bgStore.on('loadFile', loadFile);
                 bgStore.on('disconnectedTrezor', userSwitch);
-                trezorManager = new TrezorMgmt(bgStore, window.TrezorConnect);
+                trezorManager = new TrezorMgmt(bgStore, TrezorConnect);
                 dropboxManager = new DropboxMgmt(bgStore);
                 driveManager = new DriveMgmt(bgStore);
                 bgStore.on('clearSession', () => trezorManager.clearSession());
