@@ -15,11 +15,17 @@ const HD_HARDENED = 0x80000000,
     WRONG_PIN = 'Failure_PinInvalid',
 
     MINIMAL_VERSION = '2.0.11',
-    URL_CONNECT = 'https://sisyfos.trezor.io/next/',
+    URL_CONNECT = 'https://connect.trezor.io/5/',
     DEFAULT_KEYPHRASE = 'Activate TREZOR Password Manager?',
     DEFAULT_NONCE = '2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee';
 
 var crypto = require('crypto'),
+    TC_UI_EVENT = require('trezor-connect').UI_EVENT,
+    TC_DEVICE_EVENT = require('trezor-connect').DEVICE_EVENT,
+    TC_TRANSPORT_EVENT = require('trezor-connect').TRANSPORT_EVENT,
+    TC_DEVICE = require('trezor-connect').DEVICE,
+    TC_UI = require('trezor-connect').UI,
+    TC_TRANSPORT = require('trezor-connect').TRANSPORT,
     tcMissing = false,
     transportType = false,
     Clipboard = require('clipboard-js');
@@ -40,9 +46,9 @@ class TrezorMgmt {
         };
         this._decryptProgress = false;
         this.trezorConnect = tc;
-        this.trezorConnect.on('TRANSPORT_EVENT', msg => this._transportEvent(msg));
-        this.trezorConnect.on('DEVICE_EVENT', msg => this._deviceEvent(msg));
-        this.trezorConnect.on('UI_EVENT', msg => this._uiEvent(msg));
+        this.trezorConnect.on(TC_TRANSPORT_EVENT, msg => this._transportEvent(msg));
+        this.trezorConnect.on(TC_DEVICE_EVENT, msg => this._deviceEvent(msg));
+        this.trezorConnect.on(TC_UI_EVENT, msg => this._uiEvent(msg));
         this.trezorConnect.init({
             debug: true,
             webusb: true,
@@ -88,20 +94,20 @@ class TrezorMgmt {
 
     _transportEvent(msg) {
         switch (msg.type) {
-            case 'transport__start':
+            case TC_TRANSPORT.START:
                 tcMissing = false;
                 this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_OK_TRANSPORT'});
                 this._validateTransport(msg.payload);
                 break;
 
-            case 'transport__error':
+            case TC_TRANSPORT.ERROR:
                 if (!tcMissing) {
                     tcMissing = true;
                     this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
                 }
                 break;
 
-            case 'transport__unreadable_hid_device':
+            case TC_TRANSPORT.UNREADABLE:
                 this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
                 break;
         }
@@ -110,19 +116,19 @@ class TrezorMgmt {
     _deviceEvent(msg) {
         let device = this._getCleanDevice(msg.payload);
         switch (msg.type) {
-            case 'device__connect':
+            case TC_DEVICE.CONNECT:
                 this._addDevice(device);
                 break;
 
-            case 'device__connect_unacquired':
+            case TC_DEVICE.CONNECT_UNACQUIRED:
                 this._addDevice(device);
                 break;
 
-            case 'device__changed':
+            case TC_DEVICE.CHANGED:
                 this._updateDevice(device);
                 break;
 
-            case 'device__disconnect':
+            case TC_DEVICE.DISCONNECT:
                 this._removeDevice(device);
                 break;
         }
@@ -130,23 +136,23 @@ class TrezorMgmt {
 
     _uiEvent(msg) {
         switch (msg.type) {
-            case 'ui-request_pin':
+            case TC_UI.REQUEST_PIN:
                 this.bgStore.emit('showPinDialog');
                 break;
 
-            case 'ui-button':
+            case TC_UI.REQUEST_BUTTON:
                 this._buttonCallback();
                 if (msg.payload.code === 'ButtonRequest_PassphraseType') {
                     this.bgStore.emit('sendMessage', 'trezorPassphrase');
                 }
                 break;
 
-            case 'ui-no_transport':
+            case TC_UI.TRANSPORT:
                 this._disconnect();
                 this.bgStore.emit('sendMessage', 'errorMsg', {code: 'T_NO_TRANSPORT'});
                 break;
 
-            case 'ui-bundle_progress':
+            case TC_UI.BUNDLE_PROGRESS:
                 this.bgStore.emit('sendMessage', 'exportProgress', {progress: msg.payload.progress});
                 break;
         }

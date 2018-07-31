@@ -47,7 +47,7 @@
     ]
   },
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgRzyy+IKeaKZA6SIHgrDSinXRNcNq1tT/WeyX1K6gTnVc8KFRVHu5CLf0xN0eCfuz7JKy7U+XfNBzO2i0pkamma6kFMEpvX73WU3Lvmc+g6jg/VSZc9OOgCocT6I8FX92ad1Mj6qcDjVyCkpE2FPotUkuH0PwqQNzSQjPor+KhNPnOQIf5IqLvFEr7P4hUTgyiTUsOX6ROxk61EvP1Fi+Qllscgkm961q+/puw+9Z0Gr4eNIgfAK7DpYj0UJQsdlBP59PQqbW91mwPrKTr3FHmaHGOk+odLCOgchN8MmXgLpqoar1Rxo/AXs5BdnyCprlVHvtXRYbLlthQVzxYylNwIDAQAB",
-  "content_security_policy": "script-src 'self' https://apis.google.com/ https://sisyfos.trezor.io/; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://apis.google.com/ https://connect.trezor.io/5/; object-src 'self'",
   "oauth2": {
     "client_id": "296429812941-co5alkvv0tan1ptun23ilefh96gb1heb.apps.googleusercontent.com",
     "scopes": [
@@ -76,6 +76,7 @@
     "activeTab",
     "http://*/",
     "https://*/",
+    "https://*.trezor.io/*",
     "nativeMessaging",
     "https://*.dropbox.com/*",
     "https://www.google.com/accounts/OAuthGetRequestToken",
