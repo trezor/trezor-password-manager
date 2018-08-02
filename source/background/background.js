@@ -22,7 +22,7 @@ var Promise = require('es6-promise').Promise,
   bgStore = new BgDataStore(),
   // Chrome manager will maintain most of injection and other (tab <-> background <-> app) context manipulation
   ChromeMgmt = require('./classes/chrome_mgmt'),
-  chromeManager = new ChromeMgmt(bgStore),
+  chromeManager = new ChromeMgmt(bgStore, chrome.extension.getURL('index.html')),
   TrezorMgmt = require('./classes/trezor_mgmt'),
   trezorManager = {},
   DropboxMgmt = require('./classes/dropbox_mgmt'),

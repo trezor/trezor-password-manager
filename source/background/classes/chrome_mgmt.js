@@ -9,7 +9,8 @@
 
 var Promise = require('es6-promise').Promise;
 class ChromeMgmt {
-  constructor(bgStore) {
+  constructor(bgStore, appUrl) {
+    this.appUrl = appUrl;
     this.bgStore = bgStore;
     this.bgStore.on('decryptedPassword', data => this.fillLoginForm(data));
     this.bgStore.on('checkReopen', () => this._checkReopen());
@@ -57,7 +58,7 @@ class ChromeMgmt {
             resolve(response.tab.id);
           });
         } else {
-          chrome.tabs.create({ url: this.bgStore.appUrl, selected: true }, tab => {
+          chrome.tabs.create({ url: this.appUrl, selected: true }, tab => {
             this.focusTab(tab.id).then(() => {
               resolve(tab.id);
             });
