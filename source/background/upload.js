@@ -115,3 +115,5 @@ var MediaUploader = function(a) {
     var e = this.buildQuery_(b);
     return e && (d += '?' + e), d;
   });
+
+module.exports = MediaUploader;

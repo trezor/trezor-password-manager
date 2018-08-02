@@ -6,6 +6,9 @@
  */
 
 'use strict';
+
+const MediaUploader = require('../upload.js');
+
 const API_URL = 'https://www.googleapis.com/drive/v2',
   scopes = [
     'https://www.googleapis.com/auth/drive',
