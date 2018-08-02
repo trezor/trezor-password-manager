@@ -28,7 +28,7 @@ gulp.task('production-sass', function() {
 gulp.task('production-app', () => {
   console.log('This process will take a several minutes, feel free to have a coffee.');
   var bundler = browserify({
-    entries: ['./source/app/app.js'],
+    entries: ['./source/app/index.js'],
     debug: false
   }).transform(babelify, { presets: ['es2015', 'react'] });
   return bundler
@@ -64,7 +64,7 @@ gulp.task('production-bg', () => {
 
 gulp.task('dev-app', () => {
   var bundler = browserify({
-    entries: ['./source/app/app.js'],
+    entries: ['./source/app/index.js'],
     debug: true
   }).transform(babelify, { presets: ['es2015', 'react'] });
   return bundler
