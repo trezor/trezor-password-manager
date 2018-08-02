@@ -26,7 +26,6 @@
   .connect_storage,
   .loading_dialog,
   .button_dialog {
-
     .spinner {
       height: 50px;
       width: 50px;
@@ -78,7 +77,7 @@
           position: absolute;
           right: -30px;
           top: 0;
-          font-family: 'icomoon' !important;
+          font-family: "icomoon" !important;
           speak: none;
           font-style: normal;
           font-weight: normal;
@@ -98,7 +97,7 @@
 
     span {
       max-width: 290px;
-      color: rgba($c_white, .7);
+      color: rgba($c_white, 0.7);
       font-size: 1.1em;
       font-weight: 400;
     }
@@ -107,16 +106,16 @@
       position: relative;
       display: block;
       margin: 10px 0;
-      color: rgba($c_white, .7);
+      color: rgba($c_white, 0.7);
 
       a {
-        color: rgba($c_white, .7);
+        color: rgba($c_white, 0.7);
         text-decoration: underline;
       }
     }
 
     .dev-list {
-      border: 1px solid rgba($c_white, .45);
+      border: 1px solid rgba($c_white, 0.45);
       display: block;
       width: 320px;
       margin: 0 auto;
@@ -133,17 +132,17 @@
         position: relative;
         padding: 20px 0 20px 50px;
         width: 100%;
-        border-bottom: 1px solid rgba($c_white, .45);
+        border-bottom: 1px solid rgba($c_white, 0.45);
 
         &:hover {
           text-decoration: none;
-          background-color: rgba($c_white, .30);
+          background-color: rgba($c_white, 0.3);
           cursor: pointer;
         }
 
         .icon {
           &.t1:after {
-            content: '';
+            content: "";
             position: absolute;
             display: block;
             width: 24px;
@@ -157,7 +156,7 @@
             background-image: url(app-images/t1.png);
           }
           &.t2:after {
-            content: '';
+            content: "";
             position: absolute;
             display: block;
             width: 24px;
@@ -171,7 +170,7 @@
             background-image: url(app-images/t2.png);
           }
           &.tunknown:after {
-            content: '';
+            content: "";
             position: absolute;
             display: block;
             width: 24px;
@@ -201,7 +200,7 @@
         width: 20px;
         color: $c_white;
       }
-      
+
       &.inline {
         display: inline-block;
         margin-right: 10px;
@@ -229,7 +228,7 @@
       background-color: $c_white;
       border: 2px solid $c_white;
       word-spacing: 2px;
-      letter-spacing: -.1px;
+      letter-spacing: -0.1px;
       color: $c_blue;
       width: auto;
       height: auto;
@@ -249,7 +248,7 @@
       span {
         color: $c_blue;
         word-spacing: 2px;
-        letter-spacing: -.1px;
+        letter-spacing: -0.1px;
       }
 
       a {
@@ -341,12 +340,12 @@
       margin: 0 auto;
     }
     small {
-      color: rgba($c_white, .7);
+      color: rgba($c_white, 0.7);
     }
     .badge {
       color: $c_white;
       padding: 5px 15px;
-      background: rgba($c_black_font, .7);
+      background: rgba($c_black_font, 0.7);
     }
   }
 
@@ -359,7 +358,6 @@
 }
 
 .loading_dialog {
-
   .spinner {
     width: 90px !important;
     height: 90px !important;
@@ -368,6 +366,6 @@
   }
 
   img {
-    @include animation(.3s rotateplane infinite ease-in-out);
+    @include animation(0.3s rotateplane infinite ease-in-out);
   }
 }

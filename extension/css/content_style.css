@@ -1,218 +1,228 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:700);
 
 #tWaitingTrezor {
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 30%;
-    background: transparent;
-    z-index: 99999 !important;
-    height: 186px;
-    width: 100%;
-    overflow: hidden;
-    font-family: 'Open Sans', sans-serif !important;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 30%;
+  background: transparent;
+  z-index: 99999 !important;
+  height: 186px;
+  width: 100%;
+  overflow: hidden;
+  font-family: "Open Sans", sans-serif !important;
 }
 
 #tWaitingTrezor > div {
-    position: relative;
-    display: block;
-    background: rgba(0, 0, 0, .7);
-    height: 186px;
-    width: 176px;
-    border-radius: 4px;
-    -webkit-border-radius: 4px;
-    padding-top: 0;
-    margin: 0 auto;
-    text-align: center;
-    animation-name: tBigEntranceAnimation;
-    -webkit-animation-name: tBigEntranceAnimation;
-    animation-duration: .7s;
-    -webkit-animation-duration: .7s;
-    animation-timing-function: ease-out;
-    -webkit-animation-timing-function: ease-out;
-    animation-iteration-count: 1;
-    -webkit-animation-iteration-count: 1;
-    overflow: hidden;
-    visibility: visible !important;
+  position: relative;
+  display: block;
+  background: rgba(0, 0, 0, 0.7);
+  height: 186px;
+  width: 176px;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  padding-top: 0;
+  margin: 0 auto;
+  text-align: center;
+  animation-name: tBigEntranceAnimation;
+  -webkit-animation-name: tBigEntranceAnimation;
+  animation-duration: 0.7s;
+  -webkit-animation-duration: 0.7s;
+  animation-timing-function: ease-out;
+  -webkit-animation-timing-function: ease-out;
+  animation-iteration-count: 1;
+  -webkit-animation-iteration-count: 1;
+  overflow: hidden;
+  visibility: visible !important;
 }
 
 #tWaitingTrezor > div > img {
-    display: block;
-    width: 50%;
-    margin: 0 auto;
-    padding-top: 15px;
+  display: block;
+  width: 50%;
+  margin: 0 auto;
+  padding-top: 15px;
 }
 
 #tWaitingTrezor > div > span.tTopTextBlock {
-    position: absolute;
-    width: 100%;
-    margin: 0 auto;
-    text-align: center;
-    color: white;
-    font-weight: bold;
-    top: -120px;
-    line-height: 40px;
-    font-size: 16px;
-    opacity: 0;
-    transition-property: all;
-    transition-duration: .4s;
-    transition-timing-function: linear;
+  position: absolute;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  top: -120px;
+  line-height: 40px;
+  font-size: 16px;
+  opacity: 0;
+  transition-property: all;
+  transition-duration: 0.4s;
+  transition-timing-function: linear;
 }
 
 #tWaitingTrezor > div > span.tBottomTextBlock {
-    position: relative;
-    width: 100%;
-    margin: 0 auto;
-    text-align: center;
-    color: white;
-    font-weight: bold;
-    line-height: 40px;
-    font-size: 16px;
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  line-height: 40px;
+  font-size: 16px;
 }
 
 div.tShakeItBaby {
-    animation: tShakeItBaby 1.1s cubic-bezier(0.36, 0.07, 0, 0.1) infinite;
-    -webkit-animation: tShakeItBaby 1.1s cubic-bezier(0.36, 0.07, 0, 0.1) infinite;
-    animation-delay: 1.5s;
-    -webkit-animation-delay: 1.5s;
-    transform: translate3d(0, 0, 0);
+  animation: tShakeItBaby 1.1s cubic-bezier(0.36, 0.07, 0, 0.1) infinite;
+  -webkit-animation: tShakeItBaby 1.1s cubic-bezier(0.36, 0.07, 0, 0.1) infinite;
+  animation-delay: 1.5s;
+  -webkit-animation-delay: 1.5s;
+  transform: translate3d(0, 0, 0);
 }
 
 div.tSucccess {
-    height: 110px !important;
-    transition-property: all;
-    transition-duration: .4s;
-    transition-timing-function: ease-in;
+  height: 110px !important;
+  transition-property: all;
+  transition-duration: 0.4s;
+  transition-timing-function: ease-in;
 }
 
 div.tNoResult {
-    height: 40px !important;
-    width: 280px !important;
-    transition-property: all;
-    transition-duration: .4s;
-    transition-timing-function: linear;
+  height: 40px !important;
+  width: 280px !important;
+  transition-property: all;
+  transition-duration: 0.4s;
+  transition-timing-function: linear;
 }
 
 div.tNoResult > span.tTopTextBlock {
-    position: relative !important;
-    opacity: 1 !important;
-    top: 0 !important;
-    transition-property: all;
-    transition-duration: .4s;
-    transition-timing-function: linear;
+  position: relative !important;
+  opacity: 1 !important;
+  top: 0 !important;
+  transition-property: all;
+  transition-duration: 0.4s;
+  transition-timing-function: linear;
 }
 
 div.tNoResult > img {
-    opacity: 0;
-    transition-property: all;
-    transition-duration: .2s;
-    transition-timing-function: linear;
+  opacity: 0;
+  transition-property: all;
+  transition-duration: 0.2s;
+  transition-timing-function: linear;
 }
 
 div.tNoResult > span.tBottomTextBlock {
-    opacity: 0;
-    transition-property: all;
-    transition-duration: .2s;
-    transition-timing-function: linear;
+  opacity: 0;
+  transition-property: all;
+  transition-duration: 0.2s;
+  transition-timing-function: linear;
 }
 
 .tWaitingTrezorQuiting {
-    top: -100px  !important;
-    opacity: 0;
-    transition-property: all;
-    transition-duration: .2s;
-    transition-timing-function: ease-in;
+  top: -100px !important;
+  opacity: 0;
+  transition-property: all;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in;
 }
 
-
 @keyframes tBigEntranceAnimation {
-    0% {
-        transform: scale(0.3) rotate(6deg) translateX(-30%) translateY(30%);
-        opacity: 0.2;
-    }
-    30% {
-        transform: scale(1.03) rotate(-2deg) translateX(2%) translateY(-2%);
-        opacity: 1;
-    }
-    45% {
-        transform: scale(0.98) rotate(1deg) translateX(0%) translateY(0%);
-        opacity: 1;
-    }
-    60% {
-        transform: scale(1.01) rotate(-1deg) translateX(0%) translateY(0%);
-        opacity: 1;
-    }
-    75% {
-        transform: scale(0.99) rotate(1deg) translateX(0%) translateY(0%);
-        opacity: 1;
-    }
-    90% {
-        transform: scale(1.01) rotate(0deg) translateX(0%) translateY(0%);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(1) rotate(0deg) translateX(0%) translateY(0%);
-        opacity: 1;
-    }
+  0% {
+    transform: scale(0.3) rotate(6deg) translateX(-30%) translateY(30%);
+    opacity: 0.2;
+  }
+  30% {
+    transform: scale(1.03) rotate(-2deg) translateX(2%) translateY(-2%);
+    opacity: 1;
+  }
+  45% {
+    transform: scale(0.98) rotate(1deg) translateX(0%) translateY(0%);
+    opacity: 1;
+  }
+  60% {
+    transform: scale(1.01) rotate(-1deg) translateX(0%) translateY(0%);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(0.99) rotate(1deg) translateX(0%) translateY(0%);
+    opacity: 1;
+  }
+  90% {
+    transform: scale(1.01) rotate(0deg) translateX(0%) translateY(0%);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg) translateX(0%) translateY(0%);
+    opacity: 1;
+  }
 }
 
 @-webkit-keyframes tBigEntranceAnimation {
-    0% {
-        -webkit-transform: scale(0.3) rotate(6deg) translateX(-30%) translateY(30%);
-        opacity: 0.2;
-    }
-    30% {
-        -webkit-transform: scale(1.03) rotate(-2deg) translateX(2%) translateY(-2%);
-        opacity: 1;
-    }
-    45% {
-        -webkit-transform: scale(0.98) rotate(1deg) translateX(0%) translateY(0%);
-        opacity: 1;
-    }
-    60% {
-        -webkit-transform: scale(1.01) rotate(-1deg) translateX(0%) translateY(0%);
-        opacity: 1;
-    }
-    75% {
-        -webkit-transform: scale(0.99) rotate(1deg) translateX(0%) translateY(0%);
-        opacity: 1;
-    }
-    90% {
-        -webkit-transform: scale(1.01) rotate(0deg) translateX(0%) translateY(0%);
-        opacity: 1;
-    }
-    100% {
-        -webkit-transform: scale(1) rotate(0deg) translateX(0%) translateY(0%);
-        opacity: 1;
-    }
+  0% {
+    -webkit-transform: scale(0.3) rotate(6deg) translateX(-30%) translateY(30%);
+    opacity: 0.2;
+  }
+  30% {
+    -webkit-transform: scale(1.03) rotate(-2deg) translateX(2%) translateY(-2%);
+    opacity: 1;
+  }
+  45% {
+    -webkit-transform: scale(0.98) rotate(1deg) translateX(0%) translateY(0%);
+    opacity: 1;
+  }
+  60% {
+    -webkit-transform: scale(1.01) rotate(-1deg) translateX(0%) translateY(0%);
+    opacity: 1;
+  }
+  75% {
+    -webkit-transform: scale(0.99) rotate(1deg) translateX(0%) translateY(0%);
+    opacity: 1;
+  }
+  90% {
+    -webkit-transform: scale(1.01) rotate(0deg) translateX(0%) translateY(0%);
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: scale(1) rotate(0deg) translateX(0%) translateY(0%);
+    opacity: 1;
+  }
 }
 
 @keyframes tShakeItBaby {
-    10%, 90%, 100% {
-        transform: translate3d(-1px, 0, 0);
-    }
-    20%, 80% {
-        transform: translate3d(2px, 0, 0);
-    }
-    30%, 50%, 70% {
-        transform: translate3d(-4px, 0, 0);
-    }
-    40%, 60% {
-        transform: translate3d(4px, 0, 0);
-    }
+  10%,
+  90%,
+  100% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
 }
 
 @-webkit-keyframes tShakeItBaby {
-    10%, 90% {
-        -webkit-transform: translate3d(-1px, 0, 0);
-    }
-    20%, 80% {
-        -webkit-transform: translate3d(2px, 0, 0);
-    }
-    30%, 50%, 70% {
-        -webkit-transform: translate3d(-4px, 0, 0);
-    }
-    40%, 60% {
-        -webkit-transform: translate3d(4px, 0, 0);
-    }
+  10%,
+  90% {
+    -webkit-transform: translate3d(-1px, 0, 0);
+  }
+  20%,
+  80% {
+    -webkit-transform: translate3d(2px, 0, 0);
+  }
+  30%,
+  50%,
+  70% {
+    -webkit-transform: translate3d(-4px, 0, 0);
+  }
+  40%,
+  60% {
+    -webkit-transform: translate3d(4px, 0, 0);
+  }
 }

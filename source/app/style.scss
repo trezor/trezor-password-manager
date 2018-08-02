@@ -1,5 +1,5 @@
 @import "styles/reset";
-@import 'http://fonts.googleapis.com/css?family=Roboto:400,500,700,900';
+@import "http://fonts.googleapis.com/css?family=Roboto:400,500,700,900";
 @import "styles/bootstrap-sprockets";
 @import "styles/bootstrap";
 @import "styles/custom-icons";
@@ -9,7 +9,8 @@
 @import "styles/breakpoints";
 @import "styles/animations";
 
-html, body {
+html,
+body {
   box-sizing: border-box;
   width: 100%;
   min-width: 100vw;
@@ -17,7 +18,7 @@ html, body {
   min-height: 100vh;
   margin: 0;
   line-height: 1;
-  font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   background-color: $c_white;
   color: $c_grey_content_font;
@@ -36,8 +37,11 @@ html, body {
   }
 }
 
-h1, h2, h3, h4 {
-  @include antialiasing(antialiased)
+h1,
+h2,
+h3,
+h4 {
+  @include antialiasing(antialiased);
 }
 
 ul.dropdown-menu {
@@ -77,7 +81,7 @@ ul.dropdown-menu {
     @include border-radius(2px);
     margin: 0;
 
-    +span {
+    + span {
       margin-left: 10px;
     }
   }
@@ -97,18 +101,18 @@ ul.dropdown-menu {
   }
 }
 
-@import 'styles/buttons';
-@import 'home/home';
-@import 'global_components/pin_dialog/pin_dialog';
-@import 'global_components/modal_dialogs/tag_modal';
-@import 'global_components/modal_dialogs/entry_modal';
-@import 'global_components/modal_dialogs/pin_modal';
-@import 'global_components/modal_dialogs/error_modal';
-@import 'global_components/modal_dialogs/import_modal';
-@import 'global_components/footer/footer';
-@import 'dashboard/side_panel/side_panel';
-@import 'dashboard/password_table/password_table';
-@import 'dashboard/password_table/table_entry/table_entry';
-@import 'dashboard/password_table/user_menu/user_menu';
-@import 'dashboard/password_table/filter_input/filter_input';
-@import 'dashboard/dashboard_layout';
+@import "styles/buttons";
+@import "home/home";
+@import "global_components/pin_dialog/pin_dialog";
+@import "global_components/modal_dialogs/tag_modal";
+@import "global_components/modal_dialogs/entry_modal";
+@import "global_components/modal_dialogs/pin_modal";
+@import "global_components/modal_dialogs/error_modal";
+@import "global_components/modal_dialogs/import_modal";
+@import "global_components/footer/footer";
+@import "dashboard/side_panel/side_panel";
+@import "dashboard/password_table/password_table";
+@import "dashboard/password_table/table_entry/table_entry";
+@import "dashboard/password_table/user_menu/user_menu";
+@import "dashboard/password_table/filter_input/filter_input";
+@import "dashboard/dashboard_layout";

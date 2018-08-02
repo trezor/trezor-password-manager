@@ -11,7 +11,7 @@
     border-right: 1px solid $c_grey_border;
     @include box-shadow(0px 0px 4px 1px rgba($c_grey_font_header_links, 0.5));
   }
-  .loading_dialog{
+  .loading_dialog {
     height: 100vh;
     text-align: center;
     padding-top: 20vh;

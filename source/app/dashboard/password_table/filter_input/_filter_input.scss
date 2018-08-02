@@ -38,11 +38,10 @@ form.filter {
     left: 15px;
     content: "\f2f5";
     font-size: 1.3em;
-    font-family: 'ionicons';
+    font-family: "ionicons";
   }
 
   &.active {
-
     input {
       border-color: $c_blue;
     }

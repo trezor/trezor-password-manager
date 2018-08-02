@@ -32,7 +32,7 @@
 
     b {
       color: $c_black;
-      font-size: .9em;
+      font-size: 0.9em;
       text-transform: uppercase;
       font-weight: bold;
     }
@@ -49,7 +49,7 @@
         margin-left: 15px;
 
         &:before {
-          content: counter(numbering)'.';
+          content: counter(numbering) ".";
           counter-increment: numbering;
           position: absolute;
           left: -15px;
@@ -59,10 +59,10 @@
   }
 
   .btn-controls {
-
     padding: 0 10px;
 
-    button, a.button {
+    button,
+    a.button {
       text-align: center;
       display: block;
       width: 100%;

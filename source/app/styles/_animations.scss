@@ -18,9 +18,9 @@
   }
 }
 
-
 @keyframes blink {
-  from, to {
+  from,
+  to {
     background-color: transparent;
   }
   50% {
@@ -29,8 +29,9 @@
 }
 
 @keyframes pulsate {
-  from, to {
-    opacity: 1.0;
+  from,
+  to {
+    opacity: 1;
   }
   50% {
     opacity: 0.5;
@@ -39,27 +40,32 @@
 
 @keyframes rotateplane {
   0% {
-    -webkit-transform: rotateY(0deg)
+    -webkit-transform: rotateY(0deg);
   }
   50% {
-    -webkit-transform: rotateY(90deg)
+    -webkit-transform: rotateY(90deg);
   }
 }
 
 @keyframes shake {
-  10%, 90% {
+  10%,
+  90% {
     transform: translate3d(-1px, 0, 0);
   }
 
-  20%, 80% {
+  20%,
+  80% {
     transform: translate3d(2px, 0, 0);
   }
 
-  30%, 50%, 70% {
+  30%,
+  50%,
+  70% {
     transform: translate3d(-4px, 0, 0);
   }
 
-  40%, 60% {
+  40%,
+  60% {
     transform: translate3d(4px, 0, 0);
   }
 }

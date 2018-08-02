@@ -1,4 +1,3 @@
-
 .dashboard {
   width: 100%;
   height: 100%;
@@ -17,7 +16,6 @@
     z-index: 2;
 
     &.waiting {
-
       .backface {
         @include backface-visibility(visible);
         @include transform(rotateX(0deg));
@@ -33,7 +31,7 @@
             display: inline-block;
             vertical-align: middle;
             margin-right: 10px;
-            animation: shake 1.2s cubic-bezier(.36, .07, 0, .1) infinite;
+            animation: shake 1.2s cubic-bezier(0.36, 0.07, 0, 0.1) infinite;
             transform: translate3d(0, 0, 0);
             perspective: 1000px;
             @include border-radius(2px);
@@ -75,7 +73,6 @@
           display: none;
         }
       }
-
     }
 
     .entry {
@@ -111,7 +108,7 @@
         width: 50px;
         height: 50px;
         float: left;
-        background-color: rgba($c_grey_content_font, .4);
+        background-color: rgba($c_grey_content_font, 0.4);
         @include transition(all 50ms ease-in-out);
         @include border-radius(2px);
 
@@ -149,7 +146,8 @@
         }
       }
 
-      .password, .safe-note {
+      .password,
+      .safe-note {
         .button {
           position: relative;
           z-index: 2;
@@ -161,7 +159,7 @@
           padding: 0;
           margin: 0 0 0 6px;
           line-height: 27px;
-          border-color: rgba($c_grey_content_font, .1);
+          border-color: rgba($c_grey_content_font, 0.1);
           background-color: $c_white;
           color: $c_grey_content_font;
           @include unselectable();
@@ -177,10 +175,15 @@
         min-height: 80px;
 
         &:hover {
-          background: rgba($c_grey_bg, .5);
+          background: rgba($c_grey_bg, 0.5);
         }
 
-        .title-label, .password, .tags, .safe-note, .available-tags, .actions {
+        .title-label,
+        .password,
+        .tags,
+        .safe-note,
+        .available-tags,
+        .actions {
           display: none;
         }
 
@@ -194,8 +197,10 @@
           }
         }
 
-        .title, .username {
-          input, a {
+        .title,
+        .username {
+          input,
+          a {
             width: 80%;
             max-width: 300px;
             background: transparent;
@@ -211,7 +216,8 @@
               text-decoration: none;
             }
 
-            &:focus, &:active {
+            &:focus,
+            &:active {
               @include appearance-none();
             }
 
@@ -300,7 +306,6 @@
             margin-left: 10px;
           }
         }
-
       }
 
       &.edited {
@@ -316,9 +321,10 @@
       }
 
       &.edit-mode {
-        border-top: 1px solid rgba($c_grey_content_font, .1);
-        border-bottom: 1px solid rgba($c_grey_content_font, .1);
-        box-shadow: inset 0 2px 10px rgba($c_grey_bg, .3), inset 0px -2px 10px rgba($c_grey_bg, .3);
+        border-top: 1px solid rgba($c_grey_content_font, 0.1);
+        border-bottom: 1px solid rgba($c_grey_content_font, 0.1);
+        box-shadow: inset 0 2px 10px rgba($c_grey_bg, 0.3),
+          inset 0px -2px 10px rgba($c_grey_bg, 0.3);
         min-height: 180px;
         padding-top: 10px;
         padding-bottom: 10px;
@@ -328,7 +334,13 @@
           padding-top: 10px;
         }
 
-        .title, .title-label, .username, .password, .tags, .safe-note, .actions {
+        .title,
+        .title-label,
+        .username,
+        .password,
+        .tags,
+        .safe-note,
+        .actions {
           color: $c_grey_content_font;
           padding-bottom: 3px;
           margin-bottom: 3px;
@@ -340,17 +352,20 @@
             text-transform: uppercase;
             width: 75px;
             text-align: left;
-            font-size: .8em;
+            font-size: 0.8em;
             font-weight: bold;
           }
 
-          input, textarea, span.tagsinput, div.button {
+          input,
+          textarea,
+          span.tagsinput,
+          div.button {
             display: inline-block;
             border: none;
             width: 100%;
             max-width: 315px;
             padding: 5px 7px;
-            background-color: rgba($c_grey_bg_header_hover, .9);
+            background-color: rgba($c_grey_bg_header_hover, 0.9);
             outline: none;
             font-size: 1.1em;
             @include border-radius(2px);
@@ -381,7 +396,7 @@
               }
 
               i {
-                font-size: .8em;
+                font-size: 0.8em;
               }
 
               &:hover {
@@ -396,7 +411,7 @@
               margin: 2px 1px 2px 2px;
               width: auto !important;
               max-width: none !important;
-              float: left !important;;
+              float: left !important;
               @include border-radius(2px);
               @include unselectable();
             }
@@ -414,7 +429,7 @@
             display: inline-block;
             line-height: 1.6em;
             font-style: italic;
-            color: rgba(#3498db, .8);
+            color: rgba(#3498db, 0.8);
             padding-right: 7px;
             cursor: pointer;
 
@@ -422,7 +437,6 @@
               color: #3498db;
               text-decoration: underline;
             }
-
           }
         }
 
@@ -450,7 +464,8 @@
           padding-left: 215px;
         }
 
-        .safe-note, .actions {
+        .safe-note,
+        .actions {
           padding-left: 140px;
 
           span {

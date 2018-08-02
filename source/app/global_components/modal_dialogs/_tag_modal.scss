@@ -4,7 +4,7 @@
 
 .modal-body {
   padding: 0;
-  background-color: rgba($c_grey_bg_header_hover, .9);
+  background-color: rgba($c_grey_bg_header_hover, 0.9);
   height: 100px;
 
   div {
@@ -103,5 +103,4 @@
       }
     }
   }
-
 }

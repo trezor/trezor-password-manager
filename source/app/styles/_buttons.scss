@@ -1,4 +1,5 @@
-button, .button {
+button,
+.button {
   background-color: $c_black;
   border: 1px solid $c_black;
   color: $c_white;
@@ -17,7 +18,8 @@ button, .button {
     }
   }
 
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     text-decoration: none;
   }
 
@@ -82,14 +84,14 @@ button, .button {
   }
 
   &.half-transparent {
-    background-color: rgba($c_white, .25) !important;
+    background-color: rgba($c_white, 0.25) !important;
     color: $c_white !important;
     border: none !important;
 
     &:hover {
       @include box-shadow(none !important);
       text-decoration: underline !important;
-      background-color: rgba($c_white, .45) !important;
+      background-color: rgba($c_white, 0.45) !important;
     }
   }
 
@@ -108,7 +110,7 @@ button, .button {
 
   &.white-btn {
     background-color: $c_white !important;
-    border-color: rgba($c_grey_content_font, .6) !important;
+    border-color: rgba($c_grey_content_font, 0.6) !important;
     color: $c_grey_content_font !important;
     @include transition(none);
 
@@ -119,7 +121,7 @@ button, .button {
   }
 
   &:disabled {
-    opacity: .5;
+    opacity: 0.5;
   }
 
   &.btn {
@@ -135,4 +137,3 @@ button, .button {
     padding-right: 30px;
   }
 }
-
