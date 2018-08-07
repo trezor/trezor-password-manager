@@ -101,8 +101,13 @@ var React = require('react'),
             if (!this.state._isMounted) return;
 
             if (mode) {
+                let oldValues = window.myStore.getEntryValuesById(this.state.key_value);
                 this.setState({
-                    mode: 'export'
+                    mode: 'export',
+                    password_visible: false,
+                    safe_note_visible: false,
+                    password: oldValues.password,
+                    safe_note: oldValues.safe_note
                 });
             } else {
                 this.setState({
@@ -217,6 +222,7 @@ var React = require('react'),
         },
 
         responseTarget(resp) {
+            console.log(resp)
             return resp.content.nonce === this.state.nonce;
         },
 

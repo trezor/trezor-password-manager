@@ -294,9 +294,10 @@ var React = require('react'),
         exportEnd() {
             this.setState({
                 exportedEntries: []
+            }, function() {
+                window.myStore.emit('exportMode', false);
+                window.myStore.emit('exportProgress', -1);
             });
-            window.myStore.emit('exportMode', false);
-            window.myStore.emit('exportProgress', -1);
         },
 
         render(){

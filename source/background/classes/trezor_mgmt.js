@@ -318,6 +318,7 @@ class TrezorMgmt {
     }
 
     decrypt(data, key) {
+        console.log('decrypt', data, key)
         try {
             let iv = data.slice(0, CIPHER_IVSIZE),
                 auth_tag = data.slice(CIPHER_IVSIZE, CIPHER_IVSIZE + AUTH_SIZE),
