@@ -274,7 +274,11 @@ var React = require('react'),
             this.state.exportedEntries.forEach(entry => {
                 var values = [];
                 fields.forEach((field, key) => {
-                    values[key] = entry[field] ? entry[field] : '';
+                    if (field === 'tags') {
+                        values[key] = entry[field] ? window.myStore.getTagTitleArrayById(entry[field]).join('|') : '';
+                    } else {
+                        values[key] = entry[field] ? entry[field] : '';
+                    }
                 });
                 text = text + values.join(',') + '\n';
             });

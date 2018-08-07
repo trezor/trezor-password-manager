@@ -222,7 +222,6 @@ var React = require('react'),
         },
 
         responseTarget(resp) {
-            console.log(resp)
             return resp.content.nonce === this.state.nonce;
         },
 

@@ -318,7 +318,6 @@ class TrezorMgmt {
     }
 
     decrypt(data, key) {
-        console.log('decrypt', data, key)
         try {
             let iv = data.slice(0, CIPHER_IVSIZE),
                 auth_tag = data.slice(CIPHER_IVSIZE, CIPHER_IVSIZE + AUTH_SIZE),
@@ -417,6 +416,7 @@ class TrezorMgmt {
                 value: entry.nonce,
                 password: entry.password,
                 safe_note: entry.safe_note,
+                tags: entry.tags,
                 encrypt: false,
                 askOnEncrypt: false,
                 askOnDecrypt: true
@@ -440,6 +440,7 @@ class TrezorMgmt {
                         username: entries[i].username,
                         password: JSON.parse(this.decrypt(password, enckey)),
                         safe_note: JSON.parse(this.decrypt(safenote, enckey)),
+                        tags: entries[i].tags,
                         nonce: entries[i].nonce
                     })
                 });
