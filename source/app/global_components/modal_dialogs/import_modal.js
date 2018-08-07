@@ -104,11 +104,16 @@ var React = require('react'),
 
         importStorage(n) {
             if (typeof n !== "number") n = 0;
-            let entry = this.state.storage.data[n];
 
-            if (entry) {
-                entry = this.sortEntryData(entry);
-                this.saveEntry(entry, n);
+            if (this.state.dropdownOptions[0].selectedCol === -1) {
+                alert('Select column for URL (required)!');
+            } else {
+                let entry = this.state.storage.data[n];
+
+                if (entry) {
+                    entry = this.sortEntryData(entry);
+                    this.saveEntry(entry, n);
+                }
             }
         },
 
