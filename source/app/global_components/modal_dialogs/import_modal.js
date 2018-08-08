@@ -55,6 +55,7 @@ var React = require('react'),
                 storageFile: false,
                 firstRowHeader: false,
                 importStatus: [],
+                encryptedEntries: [],
                 dropZoneActive: false
             }
         },
@@ -103,7 +104,12 @@ var React = require('react'),
         },
 
         importStorage(n) {
-            if (typeof n !== "number") n = 0;
+            if (typeof n !== "number") {
+                this.setState({
+                    encryptedEntries: []
+                });
+                n = 0;
+            }
 
             if (this.state.dropdownOptions[0].selectedCol === -1) {
                 alert('Select column for URL (required)!');
@@ -112,7 +118,9 @@ var React = require('react'),
 
                 if (entry) {
                     entry = this.sortEntryData(entry);
-                    this.saveEntry(entry, n);
+                    this.encryptEntry(entry, n);
+                } else {
+                    this.addEncryptedEntries();
                 }
             }
         },
@@ -125,7 +133,8 @@ var React = require('react'),
             return r;
         },
 
-        saveEntry(entry, n) {
+        encryptEntry(entry, n) {
+            var encryptedEntries = this.state.encryptedEntries;
             let tags = [];
             if (entry.tags) {
                 let tags_titles = entry.tags.split('|');
@@ -154,20 +163,30 @@ var React = require('react'),
                     data.nonce = response.content.nonce;
                     data.success = response.content.success;
                     if (data.success) {
-                        window.myStore.addNewEntry(data);
                         this.setImportEntryStatus(n, 'success');
-                        console.log('success');
+                        encryptedEntries.push(data);
+                        this.setState({
+                            encryptedEntries: encryptedEntries
+                        }, res => {
+                            this.importStorage(n + 1);
+                        });
                     } else {
+                        this.importStorage(n + 1);
                         this.setImportEntryStatus(n, 'error');
-                        console.warn('inconsistent entry');
                     }
-                    this.importStorage(n + 1);
                 });
             } else {
                 this.setImportEntryStatus(n, 'warning');
                 this.importStorage(n + 1);
                 console.warn('missing title');
             }
+        },
+
+        addEncryptedEntries() {
+            window.myStore.addNewEntries(this.state.encryptedEntries);
+            this.setState({
+                encryptedEntries: []
+            });
         },
 
         setImportEntryStatus(entryKey, status) {

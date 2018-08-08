@@ -207,6 +207,16 @@ class Store extends EventEmitter {
         if (toggleNewEntry) this.emit('toggleNewEntry');
     }
 
+    addNewEntries(entries) {
+        entries.forEach(entry => {
+            var newId = parseInt(Object.keys(this.data.entries)[parseInt(Object.keys(this.data.entries).length) - 1]) + 1;
+            newId = isNaN(newId) ? 0 : newId;
+            this.data.entries[newId] = entry;
+        });
+        this.emit('update', this.data);
+        Service.saveContext(this.data);
+    }
+
     removeEntry(entryId) {
         delete this.data.entries[entryId];
         this.emit('update', this.data);
