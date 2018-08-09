@@ -7,84 +7,87 @@
 
 'use strict';
 
-
 var React = require('react'),
-    Modal = require('react-bootstrap').Modal,
+  Modal = require('react-bootstrap').Modal,
+  EntryModal = React.createClass({
+    getInitialState() {
+      return {
+        showRemoveModal: false,
+        title: '',
+        entryId: ''
+      };
+    },
 
-    EntryModal = React.createClass({
+    componentWillMount() {
+      window.myStore.on('openRemoveEntry', this.openRemoveEntry);
+    },
 
-        getInitialState() {
-            return {
-                showRemoveModal: false,
-                title: '',
-                entryId: ''
-            };
-        },
+    componentWillUnmount() {
+      window.myStore.removeListener('openRemoveEntry', this.openRemoveEntry);
+    },
 
-        componentWillMount() {
-            window.myStore.on('openRemoveEntry', this.openRemoveEntry);
-        },
+    openRemoveEntry(entryId) {
+      let title = window.myStore.getEntryTitleById(parseInt(entryId));
+      this.setState({
+        entryId: entryId,
+        title: title,
+        showRemoveModal: true
+      });
+    },
 
-        componentWillUnmount() {
-            window.myStore.removeListener('openRemoveEntry', this.openRemoveEntry);
-        },
+    removeEntryCloseModal() {
+      window.myStore.removeEntry(this.state.entryId);
+      this.setState({
+        showRemoveModal: false
+      });
+    },
 
-        openRemoveEntry(entryId) {
-            let title = window.myStore.getEntryTitleById(parseInt(entryId));
-            this.setState({
-                entryId: entryId,
-                title: title,
-                showRemoveModal: true
-            });
-        },
+    closeRemoveModal() {
+      this.setState({
+        showRemoveModal: false
+      });
+    },
 
-        removeEntryCloseModal() {
-            window.myStore.removeEntry(this.state.entryId);
-            this.setState({
-                showRemoveModal: false
-            });
-        },
-
-        closeRemoveModal() {
-            this.setState({
-                showRemoveModal: false
-            });
-        },
-
-        render() {
-            return (
-                <div className='entry-modal'>
-                    <Modal show={this.state.showRemoveModal} onHide={this.closeRemoveModal}
-                           dialogClassName='entry-modal'>
-                        <Modal.Body>
-                            <div>
-                                <a className='icon ion-close-round close-btn' onClick={this.closeRemoveModal}/>
-                                <div className='avatar'>
-                                <span>
-                                <i className='icon ion-trash-a'></i>
-                                </span>
-                                </div>
-                                <span className='title edited'>
-                                    <input type='text'
-                                           autoComplete='off'
-                                           name='removeEntry'
-                                           ref='removeEntry'
-                                           disabled
-                                           value={'Remove ' + this.state.title + ' ?'}/>
-                                    <div className='btn-controls'>
-                                        <button className='btn shadow red-btn' onClick={this.removeEntryCloseModal}>Yes,
-                                            remove
-                                        </button>
-                                        <button className='btn shadow white-btn' onClick={this.closeRemoveModal}>No
-                                        </button>
-                                    </div>
-                                </span>
-                            </div>
-                        </Modal.Body>
-                    </Modal>
+    render() {
+      return (
+        <div className="entry-modal">
+          <Modal
+            show={this.state.showRemoveModal}
+            onHide={this.closeRemoveModal}
+            dialogClassName="entry-modal"
+          >
+            <Modal.Body>
+              <div>
+                <a className="icon ion-close-round close-btn" onClick={this.closeRemoveModal} />
+                <div className="avatar">
+                  <span>
+                    <i className="icon ion-trash-a" />
+                  </span>
                 </div>
-            );
-        }
-    });
+                <span className="title edited">
+                  <input
+                    type="text"
+                    autoComplete="off"
+                    name="removeEntry"
+                    ref="removeEntry"
+                    disabled
+                    value={'Remove ' + this.state.title + ' ?'}
+                  />
+                  <div className="btn-controls">
+                    <button className="btn shadow red-btn" onClick={this.removeEntryCloseModal}>
+                      Yes, remove
+                    </button>
+                    <button className="btn shadow white-btn" onClick={this.closeRemoveModal}>
+                      No
+                    </button>
+                  </div>
+                </span>
+              </div>
+            </Modal.Body>
+          </Modal>
+        </div>
+      );
+    }
+  });
 
 module.exports = EntryModal;
