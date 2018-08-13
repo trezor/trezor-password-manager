@@ -243,7 +243,7 @@ var React = require('react'),
         complete: results => {
           let data = results.data.map(data => {
             return data.map(item => {
-              return item.replace(/~/gi, ',');
+              return item.replace(/~c~/gi, ',');
             });
           });
           results.data = data;
