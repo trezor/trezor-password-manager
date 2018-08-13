@@ -241,6 +241,12 @@ var React = require('react'),
         header: firstRowHeader,
         skipEmptyLines: true,
         complete: results => {
+          let data = results.data.map(data => {
+            return data.map(item => {
+              return item.replace(/~/gi, ',');
+            });
+          });
+          results.data = data;
           window.myStore.emit('storageImport', results);
         }
       });

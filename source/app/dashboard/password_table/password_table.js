@@ -292,7 +292,7 @@ var React = require('react'),
               ? window.myStore.getTagTitleArrayById(entry[field]).join('|')
               : '';
           } else {
-            values[key] = entry[field] ? entry[field] : '';
+            values[key] = entry[field] ? entry[field].replace(/,/gi, '~') : '';
           }
         });
         text = text + values.join(',') + '\n';
