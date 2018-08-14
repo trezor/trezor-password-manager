@@ -239,14 +239,9 @@ var React = require('react'),
       Papa.parse(file, {
         worker: false,
         header: firstRowHeader,
+        quoteChar: '"',
         skipEmptyLines: true,
         complete: results => {
-          let data = results.data.map(data => {
-            return data.map(item => {
-              return item.replace(/~c~/gi, ',');
-            });
-          });
-          results.data = data;
           window.myStore.emit('storageImport', results);
         }
       });
