@@ -145,7 +145,12 @@ var React = require('react'),
         let tags_titles = entry.tags.split('|');
         tags_titles.map(key => {
           let tag = window.myStore.getTagIdByTitle(key);
-          if (tag) tags.push(tag);
+          if (tag) {
+            tags.push(tag);
+          } else {
+            let newId = window.myStore.addNewTag(key, 'cloud');
+            tags.push(newId);
+          }
         });
       }
 
@@ -238,10 +243,9 @@ var React = require('react'),
       window.myStore.emit('storageImport', false);
       Papa.parse(file, {
         worker: false,
-        header: firstRowHeader,
-        quoteChar: '"',
         skipEmptyLines: true,
         complete: results => {
+          if (firstRowHeader) results.data.shift();
           window.myStore.emit('storageImport', results);
         }
       });
