@@ -7,8 +7,7 @@
 
 'use strict';
 
-const fullReceiverPath =
-    'chrome-extension://' + chrome.runtime.id + '/html/chrome_oauth_receiver.html',
+const fullReceiverPath = chrome.extension.getURL('html/chrome_oauth_receiver.html'),
   APIKEY = 's340kh3l0vla1nv',
   STORAGE = 'tpmDropboxToken',
   logoutUrl = 'https://www.dropbox.com/logout',
