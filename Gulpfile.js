@@ -100,13 +100,8 @@ gulp.task('connect', () => {
   });
 });
 
-gulp.task('html', () => {
-  gulp.src('./extension/*.html').pipe(connect.reload());
-});
-
 gulp.task('watch', () => {
   gulp.watch('./source/background/**/*.js', ['dev-bg']);
-  gulp.watch('./source/app/index.html', ['html']);
   gulp.watch('./source/app/**/*.scss', ['sass']);
   gulp.watch('./source/app/**/*.js', ['dev-app']);
 });
