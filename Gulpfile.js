@@ -11,7 +11,7 @@ var gulp = require('gulp'),
 
 gulp.task('sass', function() {
   gulp
-    .src('./source/app/*.scss')
+    .src('./source/app/style.scss')
     .pipe(sass())
     .pipe(gulp.dest('./extension/dist/'))
     .pipe(connect.reload());
@@ -19,7 +19,7 @@ gulp.task('sass', function() {
 
 gulp.task('production-sass', function() {
   gulp
-    .src('./source/app/*.scss')
+    .src('./source/app/style.scss')
     .pipe(sass())
     .pipe(cleanCSS())
     .pipe(gulp.dest('./extension/dist/'));
