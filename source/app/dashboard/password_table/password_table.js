@@ -289,10 +289,10 @@ var React = require('react'),
         fields.forEach((field, key) => {
           if (field === 'tags') {
             values[key] = entry[field]
-              ? window.myStore.getTagTitleArrayById(entry[field]).join('|')
+              ? '"' + window.myStore.getTagTitleArrayById(entry[field]).join('|') + '"'
               : '';
           } else {
-            values[key] = entry[field] ? entry[field] : '';
+            values[key] = entry[field] ? '"' + entry[field] + '"' : '""';
           }
         });
         text = text + values.join(',') + '\n';

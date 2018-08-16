@@ -48,6 +48,11 @@ var React = require('react'),
             name: 'Secret note',
             value: 'safe_note',
             selectedCol: 5
+          },
+          {
+            name: "- don't import -",
+            value: 'dont_import',
+            selectedCol: -1
           }
         ],
         storage: false,
@@ -127,6 +132,7 @@ var React = require('react'),
     sortEntryData(entry) {
       let r = {};
       this.state.dropdownOptions.forEach(function(option) {
+        if (option.value === 'dont_import') return;
         r[option.value] = Object.values(entry)[option.selectedCol];
       });
       return r;
@@ -139,7 +145,12 @@ var React = require('react'),
         let tags_titles = entry.tags.split('|');
         tags_titles.map(key => {
           let tag = window.myStore.getTagIdByTitle(key);
-          if (tag) tags.push(tag);
+          if (tag) {
+            tags.push(tag);
+          } else {
+            let newId = window.myStore.addNewTag(key, 'cloud');
+            tags.push(newId);
+          }
         });
       }
 
@@ -232,9 +243,9 @@ var React = require('react'),
       window.myStore.emit('storageImport', false);
       Papa.parse(file, {
         worker: false,
-        header: firstRowHeader,
         skipEmptyLines: true,
         complete: results => {
+          if (firstRowHeader) results.data.shift();
           window.myStore.emit('storageImport', results);
         }
       });
@@ -267,6 +278,27 @@ var React = require('react'),
       this.setState({
         dropZoneActive: false
       });
+    },
+
+    onFocusValue(event) {
+        event.target.parentNode.classList.add('active');
+    },
+
+    onBlurValue(event) {
+        event.target.parentNode.classList.remove('active');
+    },
+
+    onChangeValue(event) {
+        let id = event.target.getAttribute('id').substr(6);
+        let row = id.substr(0, 1);
+        let col = id.substr(1);
+
+        var storage = this.state.storage;
+            storage.data[row][col] = event.target.value;
+
+        this.setState({
+            storage: storage
+        });
     },
 
     browseFile(event) {
@@ -326,6 +358,7 @@ var React = require('react'),
             var selected = dropdownOptions.find(option => {
               return option.selectedCol == i;
             });
+            var val = col;
 
             if (n == 0) {
               // table header
@@ -350,7 +383,7 @@ var React = require('react'),
             }
 
             if (selected && (selected.value === 'password' || selected.value === 'safe_note')) {
-              col = (
+              val = (
                 <span>
                   <i className="icon ion-asterisk" />
                   <i className="icon ion-asterisk" />
@@ -362,11 +395,14 @@ var React = require('react'),
             }
 
             if (selected && selected.value === 'tags') {
-              col = col.split('|').join(', ');
+              val = col.split('|').join(', ');
             }
 
             i++;
-            return <td key={key}>{col}</td>;
+            return <td key={key}>
+                {val}
+                <input type="text" className="edit" id={'input-' + key} value={col} onChange={this.onChangeValue} onFocus={this.onFocusValue} onBlur={this.onBlurValue} />
+            </td>;
           });
           let statusKey = 'status' + i;
           cols.push(

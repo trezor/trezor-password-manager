@@ -78,12 +78,17 @@ class Store extends EventEmitter {
 
   getTagIconById(tagId) {
     tagId = tagId ? parseInt(tagId) : 0;
-    return Object.getOwnPropertyDescriptor(this.data.tags, tagId).value.icon;
+    let tagIcon = Object.getOwnPropertyDescriptor(this.data.tags, tagId);
+    if (tagIcon && tagIcon.value) {
+      return tagIcon.value.icon;
+    } else {
+      return false;
+    }
   }
 
   getTagTitleArrayById(tag_array) {
     return Object.keys(tag_array).map(key => {
-      return this.data.tags[tag_array[key]].title;
+      return this.data.tags[tag_array[key]] ? this.data.tags[tag_array[key]].title : false;
     });
   }
 
@@ -122,6 +127,7 @@ class Store extends EventEmitter {
     this.data.tags[newId] = data;
     this.emit('update', this.data);
     Service.saveContext(this.data);
+    return newId;
   }
 
   removeTag(tagId, save = true) {

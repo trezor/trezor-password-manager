@@ -1,5 +1,5 @@
 .import-modal-dialog {
-  width: 860px;
+  width: 960px;
   max-width: 100%;
   text-align: left;
   color: $c_grey_content_bg;
@@ -10,6 +10,14 @@
 
     .table {
       margin-bottom: 0;
+
+      tr {
+        &:hover {
+          td {
+            background: $c_grey_bg;
+          }
+        }
+      }
 
       th {
         border: none;
@@ -24,12 +32,14 @@
 
       td {
         border: none;
-        padding: 6px 3px;
+        padding: 0 3px;
         font-size: 12px;
         max-width: 100px;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+        line-height: 30px;
+        position: relative;
 
         .spinner {
           width: 10px;
@@ -51,6 +61,25 @@
             font-size: 0.65em;
             padding: 0 3px 2px 0;
           }
+        }
+
+        &:hover,
+        &.active {
+          .edit {
+            display: inline-block;
+          }
+        }
+
+        .edit {
+          position: absolute;
+          left: 0;
+          right: 5px;
+          line-height: 28px;
+          padding: 0 5px;
+          display: none;
+          width: 100%;
+          @include border-radius(5px);
+          border: 1px solid $c_grey_border;
         }
       }
 
