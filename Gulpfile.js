@@ -17,51 +17,6 @@ gulp.task('sass', function() {
     .pipe(connect.reload());
 });
 
-gulp.task('production-sass', function() {
-  gulp
-    .src('./source/app/style.scss')
-    .pipe(sass())
-    .pipe(cleanCSS())
-    .pipe(gulp.dest('./extension/dist/'));
-});
-
-gulp.task('production-app', () => {
-  console.log('This process will take a several minutes, feel free to have a coffee.');
-  var bundler = browserify({
-    entries: ['./source/app/index.js'],
-    debug: false
-  }).transform(babelify, { presets: ['es2015', 'react'] });
-  return bundler
-    .bundle()
-    .pipe(source('app.js'))
-    .pipe(buffer())
-    .pipe(
-      uglify({
-        mangle: false,
-        ecma: 5
-      })
-    )
-    .pipe(gulp.dest('./extension/dist/'));
-});
-
-gulp.task('production-bg', () => {
-  var bundler = browserify({
-    entries: ['./source/background/background.js'],
-    debug: false
-  }).transform(babelify, { presets: ['es2015'] });
-  return bundler
-    .bundle()
-    .pipe(source('background.js'))
-    .pipe(buffer())
-    .pipe(
-      uglify({
-        mangle: false,
-        ecma: 5
-      })
-    )
-    .pipe(gulp.dest('./extension/js'));
-});
-
 gulp.task('dev-app', () => {
   var bundler = browserify({
     entries: ['./source/app/index.js'],
@@ -74,7 +29,6 @@ gulp.task('dev-app', () => {
     })
     .pipe(source('app.js'))
     .pipe(gulp.dest('./extension/dist/'))
-    .pipe(connect.reload());
 });
 
 gulp.task('dev-bg', () => {
@@ -89,15 +43,6 @@ gulp.task('dev-bg', () => {
     })
     .pipe(source('background.js'))
     .pipe(gulp.dest('./extension/js'))
-    .pipe(connect.reload());
-});
-// if dev build is falling on this task, just try to change port number - its reported bug of gulp-connect
-gulp.task('connect', () => {
-  connect.server({
-    root: 'app',
-    port: 3014,
-    livereload: true
-  });
 });
 
 gulp.task('watch', () => {
@@ -106,6 +51,4 @@ gulp.task('watch', () => {
   gulp.watch('./source/app/**/*.js', ['dev-app']);
 });
 
-gulp.task('default', ['production-app', 'production-bg', 'sass']);
-gulp.task('serve', ['dev-bg', 'dev-app', 'sass', 'connect', 'watch']);
-gulp.task('production', ['production-app', 'production-bg', 'production-sass']);
+gulp.task('default', ['dev-bg', 'dev-app', 'sass', 'watch']);
