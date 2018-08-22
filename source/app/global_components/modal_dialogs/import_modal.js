@@ -246,6 +246,13 @@ var React = require('react'),
         skipEmptyLines: true,
         complete: results => {
           if (firstRowHeader) results.data.shift();
+
+          results.data.forEach((v, k) => {
+            if (results.data[k].length > 9) {
+              results.data[k] = results.data[k].slice(0, 9);
+            }
+          });
+
           window.myStore.emit('storageImport', results);
         }
       });
