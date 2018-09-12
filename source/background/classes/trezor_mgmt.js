@@ -448,6 +448,7 @@ class TrezorMgmt {
               safenote = new Buffer(entries[i].safe_note);
             data.push({
               title: entries[i].title,
+              note: entries[i].note,
               username: entries[i].username,
               password: JSON.parse(this.decrypt(password, enckey)),
               safe_note: JSON.parse(this.decrypt(safenote, enckey)),
