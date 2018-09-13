@@ -1,4 +1,4 @@
-# TREZOR LICENSE
+# TREZOR REFERENCE SOURCE LICENSE (T-RSL)
 
 This license governs use of the accompanying software. If you use the software,
 you accept this license. If you do not accept the license, do not use the
@@ -39,8 +39,8 @@ under licensed patents for reference use.
 the Licensor's name, logo, or trademarks.
 
 (B) If you begin patent litigation against the Licensor over patents that you
-think may apply to the software (including a cross-claim or counterclaim in a
-lawsuit), your license to the software ends automatically.
+think may apply to the software (including a cross-claim or counterclaim in
+a lawsuit), your license to the software ends automatically.
 
 (C) The software is licensed "as-is." You bear the risk of using it. The
 Licensor gives no express warranties, guarantees or conditions. You may have
