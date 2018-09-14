@@ -97,6 +97,7 @@ var React = require('react'),
       this.setState({
         showImportModal: true
       });
+      this.resetDropdownOptions();
     },
 
     closeImportModal() {
@@ -107,7 +108,16 @@ var React = require('react'),
       });
     },
 
+    stopImportProcess() {
+      this.setState({
+        storage: false,
+        importStatus: [],
+        encryptedEntries: []
+      });
+    },
+
     importStorage(n) {
+      if (!this.state.showImportModal) return;
       if (typeof n !== 'number') {
         this.setState({
           encryptedEntries: []
@@ -127,6 +137,21 @@ var React = require('react'),
           this.addEncryptedEntries();
         }
       }
+    },
+
+    resetDropdownOptions() {
+      var options = [];
+      this.state.dropdownOptions.forEach((option, key) => {
+        if (key == 6) {
+          option.selectedCol = -1;
+        } else {
+          option.selectedCol = key;
+        }
+        options.push(option);
+      });
+      this.setState({
+        dropdownOptions: options
+      });
     },
 
     sortEntryData(entry) {
@@ -168,6 +193,8 @@ var React = require('react'),
         };
 
         chrome.runtime.sendMessage({ type: 'encryptFullEntry', content: data }, response => {
+          var importStatus = this.state.importStatus
+          if (importStatus.length === 0) return;
           data.password = response.content.password;
           data.safe_note = response.content.safe_note;
           data.nonce = response.content.nonce;
@@ -335,12 +362,16 @@ var React = require('react'),
           importStatus = this.state.importStatus,
           showImportButtons = true,
           importIsDone = true,
+          importInProgress = false,
           importedCound = 0,
           notImportedCound = 0;
 
         importStatus.forEach(status => {
           if (status == 'pending' || status == 'importing') {
             importIsDone = false;
+          }
+          if (status == 'importing') {
+            importInProgress = true;
           }
           if (status !== 'pending') {
             showImportButtons = false;
@@ -459,9 +490,11 @@ var React = require('react'),
             onHide={this.closeImportModal}
           >
             <Modal.Header>
+              {!importInProgress && (
               <button className="close" onClick={this.closeImportModal}>
                 <img src="./images/cancel.svg" />
               </button>
+              )}
               <Modal.Title id="contained-modal-title-sm">Import keys</Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -526,6 +559,17 @@ var React = require('react'),
                   onClick={this.importStorage}
                 >
                   Import keys
+                </button>
+              </Modal.Footer>
+            )}
+            {importInProgress && (
+              <Modal.Footer>
+                <button
+                  type="button"
+                  className={'red-btn add btn-wide'}
+                  onClick={this.stopImportProcess}
+                >
+                  Stop import
                 </button>
               </Modal.Footer>
             )}
