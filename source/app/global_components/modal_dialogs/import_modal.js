@@ -361,6 +361,7 @@ var React = require('react'),
           dropdownOptions = this.state.dropdownOptions,
           importStatus = this.state.importStatus,
           showImportButtons = true,
+          showClearFirstRow = true,
           importIsDone = true,
           importInProgress = false,
           importedCound = 0,
@@ -385,6 +386,10 @@ var React = require('react'),
           notImportedCound = importStatus.filter(item => {
             return item !== 'success';
           }).length;
+        }
+
+        if (storageData.length === 1) {
+          showClearFirstRow = false;
         }
 
         // table body
@@ -543,6 +548,7 @@ var React = require('react'),
             </Modal.Body>
             {showImportButtons && (
               <Modal.Footer>
+                {showClearFirstRow && (
                 <label
                   className={'checkbox' + (this.state.firstRowHeader ? ' active' : '')}
                   onClick={this.setFirstRow}
@@ -550,6 +556,7 @@ var React = require('react'),
                   <i>{this.state.firstRowHeader && <img src="./images/checkbox_checked.svg" />}</i>
                   Clear first row in the table.
                 </label>
+                )}
                 <button type="button" className={'btn btn-link'} onClick={this.closeImportModal}>
                   Cancel
                 </button>
