@@ -44,11 +44,11 @@ var React = require('react'),
             id="user-dropdown"
           >
             <MenuItem onSelect={this.importClick}>
-              <i className="ion-document" />
+              <i className="ion-android-arrow-down" />
               Import storage
             </MenuItem>
             <MenuItem onSelect={this.exportClick}>
-              <i className="ion-document" />
+              <i className="ion-android-arrow-up" />
               Export storage
             </MenuItem>
             <MenuItem onSelect={this.userSwitch}>

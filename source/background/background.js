@@ -295,6 +295,13 @@ var Promise = require('es6-promise').Promise,
         chromeManager.openTabAndLogin(request.content);
         break;
 
+      case 'getFeatures':
+        TrezorConnect.getFeatures({
+          device: request.content,
+          override: true
+        });
+        break;
+
       case 'clearSession':
         // trezorManager.clearSession();
         break;

@@ -274,13 +274,17 @@ var React = require('react'),
         complete: results => {
           if (firstRowHeader) results.data.shift();
 
-          results.data.forEach((v, k) => {
-            if (results.data[k].length > 9) {
-              results.data[k] = results.data[k].slice(0, 9);
-            }
-          });
+          if (results.data.length === 0) {
+            alert('File error: No data to import!');
+          } else {
+            results.data.forEach((v, k) => {
+              if (results.data[k].length > 9) {
+                results.data[k] = results.data[k].slice(0, 9);
+              }
+            });
 
-          window.myStore.emit('storageImport', results);
+            window.myStore.emit('storageImport', results);
+          }
         }
       });
     },

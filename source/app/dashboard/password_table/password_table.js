@@ -278,6 +278,16 @@ var React = require('react'),
       );
     },
 
+    escapeExportField(value) {
+      if (value.match(/\"/g)) {
+        return '"' + value.replace(/\"/g, '""') + '"';
+      } else if (value.match(/\,/g)) {
+        return '"' + value + '"';
+      } else {
+        return value;
+      }
+    },
+
     exportDownload() {
       if (this.state.exportedEntries.length == 0) return;
 
@@ -289,10 +299,10 @@ var React = require('react'),
         fields.forEach((field, key) => {
           if (field === 'tags') {
             values[key] = entry[field]
-              ? '"' + window.myStore.getTagTitleArrayById(entry[field]).join('|') + '"'
+              ? this.escapeExportField(window.myStore.getTagTitleArrayById(entry[field]).join('|'))
               : '';
           } else {
-            values[key] = entry[field] ? '"' + entry[field] + '"' : '""';
+            values[key] = entry[field] ? this.escapeExportField(entry[field]) : '';
           }
         });
         text = text + values.join(',') + '\n';
@@ -318,6 +328,7 @@ var React = require('react'),
         function() {
           window.myStore.emit('exportMode', false);
           window.myStore.emit('exportProgress', -1);
+          chrome.runtime.sendMessage({ type: 'getFeatures' });
         }
       );
     },

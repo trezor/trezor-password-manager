@@ -52,10 +52,10 @@ ul.dropdown-menu {
     color: $c_grey_font_header_links;
 
     i {
-      width: 38px;
+      width: 10px;
       margin-right: 10px;
       text-align: center;
-      margin-top: 5px;
+      float: left;
     }
   }
 }
