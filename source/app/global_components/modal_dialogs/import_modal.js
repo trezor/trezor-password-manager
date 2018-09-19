@@ -103,6 +103,7 @@ var React = require('react'),
     closeImportModal() {
       this.setState({
         showImportModal: false,
+        firstRowHeader: false,
         storage: false,
         importStatus: []
       });
@@ -112,6 +113,7 @@ var React = require('react'),
       this.setState({
         storage: false,
         importStatus: [],
+        firstRowHeader: false,
         encryptedEntries: []
       });
     },
@@ -225,7 +227,8 @@ var React = require('react'),
     addEncryptedEntries() {
       window.myStore.addNewEntries(this.state.encryptedEntries);
       this.setState({
-        encryptedEntries: []
+        encryptedEntries: [],
+        firstRowHeader: false
       });
     },
 
@@ -275,7 +278,7 @@ var React = require('react'),
           if (firstRowHeader) results.data.shift();
 
           if (results.data.length === 0) {
-            alert('File error: No data to import!');
+            alert('Empty file!');
           } else {
             results.data.forEach((v, k) => {
               if (results.data[k].length > 9) {
@@ -364,6 +367,7 @@ var React = require('react'),
           fields = this.state.storage.meta.fields,
           dropdownOptions = this.state.dropdownOptions,
           importStatus = this.state.importStatus,
+          firstRowHeader = this.state.firstRowHeader,
           showImportButtons = true,
           showClearFirstRow = true,
           importIsDone = true,
@@ -394,6 +398,9 @@ var React = require('react'),
 
         if (storageData.length === 1) {
           showClearFirstRow = false;
+          if (firstRowHeader) {
+            showClearFirstRow = true;
+          }
         }
 
         // table body
@@ -554,10 +561,10 @@ var React = require('react'),
               <Modal.Footer>
                 {showClearFirstRow && (
                 <label
-                  className={'checkbox' + (this.state.firstRowHeader ? ' active' : '')}
+                  className={'checkbox' + (firstRowHeader ? ' active' : '')}
                   onClick={this.setFirstRow}
                 >
-                  <i>{this.state.firstRowHeader && <img src="./images/checkbox_checked.svg" />}</i>
+                  <i>{firstRowHeader && <img src="./images/checkbox_checked.svg" />}</i>
                   Clear first row in the table.
                 </label>
                 )}
