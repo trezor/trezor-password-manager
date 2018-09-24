@@ -298,6 +298,7 @@ var Promise = require('es6-promise').Promise,
       case 'getFeatures':
         TrezorConnect.getFeatures({
           device: request.content,
+          useEmptyPassphrase: true,
           override: true
         });
         break;

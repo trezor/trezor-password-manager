@@ -273,6 +273,8 @@ var React = require('react'),
                 this.exportEnd();
               }
             );
+          } else {
+            this.exportEnd();
           }
         }
       );
@@ -328,9 +330,13 @@ var React = require('react'),
         function() {
           window.myStore.emit('exportMode', false);
           window.myStore.emit('exportProgress', -1);
-          chrome.runtime.sendMessage({ type: 'getFeatures' });
         }
       );
+    },
+
+    exportCancel() {
+      this.exportEnd();
+      chrome.runtime.sendMessage({ type: 'getFeatures' });
     },
 
     render() {
@@ -413,7 +419,7 @@ var React = require('react'),
                     <i>{allSelected && <img src="./images/checkbox_checked.svg" />}</i> Select all
                   </label>
                   <span className="info">({selectedCount}) entries selected</span>
-                  <Button onClick={this.exportEnd} className="btn-link">
+                  <Button onClick={this.exportCancel} className="btn-link">
                     Cancel
                   </Button>
                   <Button
