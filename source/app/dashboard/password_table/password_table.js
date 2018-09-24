@@ -412,12 +412,12 @@ var React = require('react'),
             {this.state.exportMode && (
               <div className="col-sm-12">
                 <div className={'export'}>
-                  <label
+                  {this.state.exportProgress === -1 && (<label
                     className={'checkbox ' + (allSelected ? ' active' : '')}
                     onClick={this.exportToggleAll}
                   >
                     <i>{allSelected && <img src="./images/checkbox_checked.svg" />}</i> Select all
-                  </label>
+                  </label>)}
                   <span className="info">({selectedCount}) entries selected</span>
                   <Button onClick={this.exportCancel} className="btn-link">
                     Cancel

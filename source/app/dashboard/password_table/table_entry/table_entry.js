@@ -49,6 +49,7 @@ var React = require('react'),
         showMandatoryField: false,
         exportEntry: false,
         exportingEntry: false,
+        exportProgress: -1,
         _isMounted: false
       };
     },
@@ -74,6 +75,13 @@ var React = require('react'),
 
     componentWillMount() {
       window.myStore.on('exportMode', this.setExportMode);
+      window.myStore.on('exportProgress', this.exportProgress);
+    },
+
+    exportProgress(exportProgress) {
+      this.setState({
+        exportProgress: exportProgress
+      });
     },
 
     componentWillUnmount() {
@@ -631,11 +639,11 @@ var React = require('react'),
         >
           <div className={this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}>
             <form onSubmit={this.state.saving_entry ? false : this.saveEntry}>
-              <div className={'export' + (this.state.mode === 'export' ? ' active' : '')}>
+              {this.state.exportProgress == -1 && (<div className={'export' + (this.state.mode === 'export' ? ' active' : '')}>
                 <label className={'checkbox' + (this.state.exportEntry ? ' active' : '')}>
                   <i>{this.state.exportEntry && <img src="./images/checkbox_checked.svg" />}</i>
                 </label>
-              </div>
+              </div>)}
               <div
                 className={
                   this.state.image_visible && this.isUrl(this.state.title)
