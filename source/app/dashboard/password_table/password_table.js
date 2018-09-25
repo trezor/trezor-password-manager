@@ -38,15 +38,8 @@ var React = require('react'),
       window.myStore.on('filter', this.setupFilter);
       window.myStore.on('toggleNewEntry', this.toggleNewEntry);
       window.myStore.on('update', this.updateTableContent);
-      window.myStore.on('exportMode', this.setExportMode);
-      window.myStore.on('exportProgress', this.updateExportProgress);
+      window.myStore.on('export', this.setExport);
       chrome.runtime.onMessage.addListener(this.chromeTableMsgHandler);
-    },
-
-    componentDidMount() {
-      this.setState({
-        _isMounted: true
-      });
     },
 
     componentWillUnmount() {
@@ -54,9 +47,25 @@ var React = require('react'),
       window.myStore.removeListener('filter', this.setupFilter);
       window.myStore.removeListener('toggleNewEntry', this.toggleNewEntry);
       window.myStore.removeListener('update', this.updateTableContent);
-      window.myStore.removeListener('exportMode', this.setExportMode);
-      window.myStore.removeListener('exportProgress', this.updateExportProgress);
+      window.myStore.removeListener('export', this.setExport);
       chrome.runtime.onMessage.removeListener(this.chromeTableMsgHandler);
+    },
+
+    setExport(value) {
+      switch(value.eventType) {
+        case 'mode':
+          this.setExportMode(value.value);
+          break;
+        case 'progress':
+          this.updateExportProgress(value.value);
+          break;
+      }
+    },
+
+    componentDidMount() {
+      this.setState({
+        _isMounted: true
+      });
     },
 
     updateExportProgress(progress) {
@@ -90,7 +99,10 @@ var React = require('react'),
           break;
 
         case 'exportProgress':
-          window.myStore.emit('exportProgress', request.content.progress + 1);
+          window.myStore.emit('export', {
+            eventType: 'progress', 
+            value: (request.content.progress + 1)
+          });
           break;
       }
       return true;
@@ -245,9 +257,13 @@ var React = require('react'),
 
     exportEntries(event) {
       if (!this.state._isMounted) return;
-
       event.preventDefault();
-      window.myStore.emit('exportProgress', 0);
+
+      window.myStore.emit('export', {
+        eventType: 'progress', 
+        value: 0
+      });
+
       this.setState({
         exportedEntries: []
       });
@@ -328,8 +344,14 @@ var React = require('react'),
           exportedEntries: []
         },
         function() {
-          window.myStore.emit('exportMode', false);
-          window.myStore.emit('exportProgress', -1);
+          window.myStore.emit('export', {
+            eventType: 'mode', 
+            value: false
+          });
+          window.myStore.emit('export', {
+            eventType: 'progress', 
+            value: -1
+          });
         }
       );
     },

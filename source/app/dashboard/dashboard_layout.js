@@ -27,6 +27,7 @@ var React = require('react'),
 
     componentDidMount() {
       if (this.storeExists()) {
+        window.myStore.setMaxListeners(15);
         this.setState({ ready: true });
         chrome.runtime.onMessage.addListener(this.chromeDashboardMsgHandler);
       } else {

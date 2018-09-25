@@ -74,18 +74,24 @@ var React = require('react'),
     },
 
     componentWillMount() {
-      window.myStore.on('exportMode', this.setExportMode);
-      window.myStore.on('exportProgress', this.exportProgress);
-    },
-
-    exportProgress(exportProgress) {
-      this.setState({
-        exportProgress: exportProgress
-      });
+      window.myStore.on('export', this.setExport);
     },
 
     componentWillUnmount() {
-      window.myStore.removeListener('exportMode', this.setExportMode);
+      window.myStore.removeListener('export', this.setExport);
+    },
+
+    setExport(value) {
+      switch(value.eventType) {
+        case 'mode':
+          this.setExportMode(value.value);
+          break;
+        case 'progress':
+          this.setState({
+            exportProgress: value.value
+          });
+          break;
+      }
     },
 
     componentDidMount() {

@@ -74,6 +74,10 @@ var React = require('react'),
 
     componentWillUnmount() {
       window.myStore.removeListener('storageImport', this.importModalMsgHandler);
+      window.removeEventListener('mouseup', this.fileOnDragLeave);
+      window.removeEventListener('dragleave', this.fileOnDragLeave);
+      window.removeEventListener('dragenter', this.fileOnDragOver);
+      window.removeEventListener('drop', this.fileOnDrop);
     },
 
     importModalMsgHandler(data) {

@@ -24,7 +24,10 @@ var React = require('react'),
     },
 
     exportClick() {
-      window.myStore.emit('exportMode', true);
+      window.myStore.emit('export', {
+        eventType: 'mode', 
+        value: true
+      });
     },
 
     userSwitch() {
