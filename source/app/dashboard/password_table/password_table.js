@@ -394,6 +394,8 @@ var React = require('react'),
                       safe_note={obj.safe_note}
                       note={obj.note}
                       exportEntry={obj.export}
+                      exportProgress={this.state.exportProgress}
+                      exportMode={this.state.exportMode}
                       exportingEntry={exporting}
                       onToggle={this.onToggleEntry}
                     />
@@ -413,6 +415,8 @@ var React = require('react'),
                     safe_note={obj.safe_note}
                     note={obj.note}
                     exportEntry={obj.export}
+                    exportProgress={this.state.exportProgress}
+                    exportMode={this.state.exportMode}
                     exportingEntry={exporting}
                     onToggle={this.onToggleEntry}
                   />

@@ -55,8 +55,24 @@ var React = require('react'),
     },
 
     componentWillReceiveProps(nextProps) {
+      var state = {};
+      if (nextProps.exportMode) {
+        let oldValues = window.myStore.getEntryValuesById(this.state.key_value);
+        state = {
+          mode: 'export',
+          password_visible: false,
+          safe_note_visible: false,
+          password: oldValues.password,
+          safe_note: oldValues.safe_note
+        };
+      } else {
+        state = {
+          mode: 'list-mode'
+        };
+      }
+
       this.setState(
-        {
+        Object.assign(state, {
           tags_id: nextProps.tags,
           tags_titles: window.myStore.getTagTitleArrayById(nextProps.tags),
           tag_globa_title_array: window.myStore.getTagTitleArray(),
@@ -65,33 +81,13 @@ var React = require('react'),
             nextProps.tags
           ),
           exportEntry: nextProps.exportEntry,
-          exportingEntry: nextProps.exportingEntry
-        },
+          exportingEntry: nextProps.exportingEntry,
+          exportProgress: nextProps.exportProgress
+        }),
         () => {
           this.updateExportProgress();
         }
       );
-    },
-
-    componentWillMount() {
-      window.myStore.on('export', this.setExport);
-    },
-
-    componentWillUnmount() {
-      window.myStore.removeListener('export', this.setExport);
-    },
-
-    setExport(value) {
-      switch(value.eventType) {
-        case 'mode':
-          this.setExportMode(value.value);
-          break;
-        case 'progress':
-          this.setState({
-            exportProgress: value.value
-          });
-          break;
-      }
     },
 
     componentDidMount() {
@@ -117,25 +113,6 @@ var React = require('react'),
         this.setTrezorWaitingBackface('Confirm export on your TREZOR');
       } else {
         this.setTrezorWaitingBackface(false);
-      }
-    },
-
-    setExportMode(mode) {
-      if (!this.state._isMounted) return;
-
-      if (mode) {
-        let oldValues = window.myStore.getEntryValuesById(this.state.key_value);
-        this.setState({
-          mode: 'export',
-          password_visible: false,
-          safe_note_visible: false,
-          password: oldValues.password,
-          safe_note: oldValues.safe_note
-        });
-      } else {
-        this.setState({
-          mode: 'list-mode'
-        });
       }
     },
 
