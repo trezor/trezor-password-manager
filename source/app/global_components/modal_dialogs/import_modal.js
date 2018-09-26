@@ -17,7 +17,6 @@ var React = require('react'),
     getInitialState() {
       return {
         showImportModal: false,
-        uploading: true,
         dropdownOptions: [
           {
             name: 'URL (required)',
@@ -83,10 +82,8 @@ var React = require('react'),
     importModalMsgHandler(data) {
       var importStatus = [];
       if (data && data.data) {
-        importStatus = data.data.map(function(value, key) {
-          return 'pending';
-        });
-
+        let lngt = data.data.length;
+        importStatus = Array(lngt).fill('pending');
         this.setState({
           showImportModal: true,
           storage: data,
@@ -148,7 +145,7 @@ var React = require('react'),
     resetDropdownOptions() {
       var options = [];
       this.state.dropdownOptions.forEach((option, key) => {
-        if (key == 6) {
+        if (key === 6) {
           option.selectedCol = -1;
         } else {
           option.selectedCol = key;
@@ -187,15 +184,15 @@ var React = require('react'),
 
       this.setImportEntryStatus(n, 'importing');
 
-      if (entry.title && entry.title.length > 0) {
+      if (!!entry.title) {
         let data = {
-          title: String(entry.title ? entry.title : ''),
-          username: String(entry.username ? entry.username : ''),
-          password: String(entry.password ? entry.password : ''),
+          title: String(entry.title),
+          username: String(entry.username || ''),
+          password: String(entry.password || ''),
           nonce: String(''),
           tags: tags,
-          safe_note: String(entry.safe_note ? entry.safe_note : ''),
-          note: String(entry.note ? entry.note : '')
+          safe_note: String(entry.safe_note || ''),
+          note: String(entry.note || '')
         };
 
         chrome.runtime.sendMessage({ type: 'encryptFullEntry', content: data }, response => {
