@@ -4536,11 +4536,10 @@ tough-cookie@~2.3.3:
   dependencies:
     punycode "^1.4.1"
 
-trezor-connect@5.0.28:
-  version "5.0.28"
-  resolved "https://registry.yarnpkg.com/trezor-connect/-/trezor-connect-5.0.28.tgz#eb39bb0aa2a7555623251f0fb301233886fcdd09"
+trezor-connect@5.0.33:
+  version "5.0.33"
+  resolved "https://registry.yarnpkg.com/trezor-connect/-/trezor-connect-5.0.33.tgz#1acdb16439e03f3ef017671b5bd3be1d89b16238"
   dependencies:
-    babel-polyfill "^6.26.0"
     babel-runtime "^6.26.0"
     events "^1.1.1"
     whatwg-fetch "^2.0.4"
@@ -4819,7 +4818,7 @@ whatwg-fetch@^0.9.0:
 
 whatwg-fetch@^2.0.4:
   version "2.0.4"
-  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-2.0.4.tgz#dde6a5df315f9d39991aa17621853d720b85566f"
+  resolved "http://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-2.0.4.tgz#dde6a5df315f9d39991aa17621853d720b85566f"
 
 which-module@^1.0.0:
   version "1.0.0"
