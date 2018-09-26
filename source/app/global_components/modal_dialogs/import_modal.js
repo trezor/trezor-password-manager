@@ -11,7 +11,6 @@ var React = require('react'),
   Papa = require('papaparse'),
   Table = require('react-bootstrap').Table,
   Modal = require('react-bootstrap').Modal,
-  Button = require('react-bootstrap').Button,
   ImportSelect = require('../import_select'),
   ImportModal = React.createClass({
     getInitialState() {
@@ -132,8 +131,7 @@ var React = require('react'),
         alert('Select column for URL (required)!');
       } else {
         let entry = this.state.storage.data[n];
-
-        if (entry) {
+        if (!!entry) {
           entry = this.sortEntryData(entry);
           this.encryptEntry(entry, n);
         } else {
@@ -244,7 +242,7 @@ var React = require('react'),
     handleChange(value, selectedCol) {
       let dropdownOptions = Object.assign(this.state.dropdownOptions);
 
-      dropdownOptions.forEach(function(option, key) {
+      dropdownOptions.forEach((option, key) => {
         if (option.selectedCol == selectedCol) {
           dropdownOptions[key].selectedCol = -1;
         }
