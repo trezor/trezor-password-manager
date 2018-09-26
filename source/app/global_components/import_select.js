@@ -11,15 +11,6 @@ var React = require('react'),
   DropdownButton = require('react-bootstrap').DropdownButton,
   MenuItem = require('react-bootstrap').MenuItem,
   ImportSelect = React.createClass({
-    displayName: 'ImportSelect',
-
-    propTypes: {
-      onChange: React.PropTypes.func,
-      name: React.PropTypes.string,
-      value: React.PropTypes.string,
-      options: React.PropTypes.array,
-      disabled: React.PropTypes.bool
-    },
 
     componentWillReceiveProps(nextProps) {
       this.setState({
@@ -29,9 +20,7 @@ var React = require('react'),
 
     getInitialState() {
       return {
-        name: 'dropdown',
-        value: '',
-        options: []
+        disabled: false
       };
     },
 
