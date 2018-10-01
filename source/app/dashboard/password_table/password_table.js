@@ -472,7 +472,7 @@ var React = require('react'),
               <div className="col-sm-12">
                 <div className={'export'}>
                   {this.state.exportProgress === -1 && (<label
-                    className={'checkbox ' + (allSelected ? ' active' : '')}
+                    className={'checkbox ' + (allSelected && count > 0 ? ' active' : '') + (count === 0 ? ' disabled' : '')}
                     onClick={this.exportToggleAll}
                   >
                     <i>{allSelected && <img src="./images/checkbox_checked.svg" />}</i> Select all
