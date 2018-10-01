@@ -232,13 +232,29 @@ var React = require('react'),
         entries = this.state.entries;
 
       Object.keys(entries).forEach(entryId => {
-        if (!entries[entryId].export) allSelected = false;
+        if (this.activeTag(entries[entryId])) {
+          if (this.filterIsSet()) {
+            if (this.checkFilterMatching(entries[entryId])) {
+              if (!entries[entryId].export) allSelected = false;  
+            }
+          } else {
+            if (!entries[entryId].export) allSelected = false;
+          }
+        }
       });
 
       if (allSelected) exportAll = false;
 
       Object.keys(entries).forEach(entryId => {
-        entries[entryId].export = exportAll;
+        if (this.activeTag(entries[entryId])) {
+          if (this.filterIsSet()) {
+            if (this.checkFilterMatching(entries[entryId])) {
+              entries[entryId].export = exportAll;
+            }
+          } else {
+            entries[entryId].export = exportAll;
+          }
+        }
       });
 
       this.setState({
@@ -272,7 +288,15 @@ var React = require('react'),
       let entries = this.getProperOrderArr();
       entries.forEach(entry => {
         if (this.state.entries[entry].export) {
-          entriesToExport.push(this.state.entries[entry]);
+          if (this.activeTag(this.state.entries[entry])) {
+            if (this.filterIsSet()) {
+              if (this.checkFilterMatching(entries[entryId])) {
+                entriesToExport.push(this.state.entries[entry]);
+              }
+            } else {
+              entriesToExport.push(this.state.entries[entry]);
+            }
+          }
         }
       });
 
@@ -373,14 +397,16 @@ var React = require('react'),
             let actTag = this.activeTag(obj);
             let exporting = obj.export && selectedCount === this.state.exportProgress;
 
-            if (obj.export) {
-              selectedCount++;
-            } else {
-              allSelected = false;
-            }
             if (actTag) {
               if (this.filterIsSet()) {
                 if (this.checkFilterMatching(obj)) {
+
+                  if (obj.export) {
+                    selectedCount++;
+                  } else {
+                    allSelected = false;
+                  }
+
                   count++;
                   return (
                     <TableEntry
@@ -402,6 +428,13 @@ var React = require('react'),
                   );
                 }
               } else {
+
+                if (obj.export) {
+                  selectedCount++;
+                } else {
+                  allSelected = false;
+                }
+
                 count++;
                 return (
                   <TableEntry
@@ -444,7 +477,7 @@ var React = require('react'),
                   >
                     <i>{allSelected && <img src="./images/checkbox_checked.svg" />}</i> Select all
                   </label>)}
-                  <span className="info">({selectedCount}) entries selected</span>
+                  <span className="info">({selectedCount} entries selected)</span>
                   <Button onClick={this.exportCancel} className="btn-link">
                     Cancel
                   </Button>
