@@ -148,7 +148,11 @@ aside.left-panel {
 
       span {
         display: inline-block;
+        width: 160px;
         line-height: 24px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
 
         @media screen and (max-width: $break-small) {
           display: none;

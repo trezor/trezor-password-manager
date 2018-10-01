@@ -25,6 +25,10 @@
         vertical-align: middle;
         padding: 6px 3px;
 
+        &:nth-child(n+6) {
+          max-width: 100px;
+        }
+
         span {
           font-weight: bold;
         }
@@ -228,6 +232,7 @@
             position: absolute;
             right: 5px;
             top: 6px;
+            background: #f5f5f5;
           }
         }
       }
