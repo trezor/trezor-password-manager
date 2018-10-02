@@ -747,7 +747,7 @@ var React = require('react'),
                   />
                 </OverlayTrigger>
               </div>
-              {this.state.key_value !== null && (
+              {!!this.state.key_value && (
                 <div className="actions">
                   <span>Actions </span>
 
