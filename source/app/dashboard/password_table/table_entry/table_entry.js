@@ -21,7 +21,7 @@ var React = require('react'),
       return {
         image_src: 'dist/app-images/transparent.png',
         image_visible: true,
-        mode: this.props.exportMode ? 'export' : 'list-mode',
+        mode: (this.props.mode ? this.props.mode : (this.props.exportMode ? 'export' : 'list-mode')),
         key_value: this.props.key_value,
         title: this.props.title,
         username: this.props.username,
