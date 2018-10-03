@@ -113,11 +113,16 @@ class DropboxMgmt {
   }
 
   saveFile(data) {
-    let blob = new Blob([data.buffer], { type: 'text/plain;charset=UTF-8' });
+    var blob = new Blob([data.buffer], { type: 'text/plain;charset=UTF-8' });
     this.dbc
       .filesUpload({ path: ADDRS_PATH + this.bgStore.fileName, contents: blob, mode: 'overwrite' })
-      .then(() => {
-        this.loadFile();
+      .then((res) => {
+        let myReader = new FileReader();
+        myReader.addEventListener('loadend', e => {
+          this.bgStore.setData(e.srcElement.result);
+          chrome.runtime.sendMessage({ type: 'fileSaved' });
+        });
+        myReader.readAsArrayBuffer(blob);
       })
       .catch(error => {
         console.error(error);

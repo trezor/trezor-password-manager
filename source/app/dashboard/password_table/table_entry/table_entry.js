@@ -55,24 +55,32 @@ var React = require('react'),
     },
 
     componentWillReceiveProps(nextProps) {
-      var state = {};
+      var stateValue = {};
       if (nextProps.exportMode) {
         let oldValues = window.myStore.getEntryValuesById(this.state.key_value);
-        state = {
+        stateValue = {
           mode: 'export',
           password_visible: false,
           safe_note_visible: false,
           password: oldValues.password,
           safe_note: oldValues.safe_note
         };
-      } else {
-        state = {
-          mode: 'list-mode'
-        };
+      } else if (this.state.mode === 'export') {
+        stateValue.mode = 'list-mode';
+      }
+
+      if (nextProps.saving_entry !== undefined) {
+        stateValue.saving_entry = nextProps.saving_entry;
+        if (!nextProps.saving_entry && this.state.mode === 'edit-mode') {
+          stateValue.mode = 'list-mode';
+          stateValue.content_changed = '';
+          stateValue.password_visible = false;
+          stateValue.safe_note_visible = false;
+        }
       }
 
       this.setState(
-        Object.assign(state, {
+        Object.assign(stateValue, {
           tags_id: nextProps.tags,
           tags_titles: window.myStore.getTagTitleArrayById(nextProps.tags),
           tag_globa_title_array: window.myStore.getTagTitleArray(),
@@ -311,14 +319,9 @@ var React = require('react'),
             if (data.success) {
               if (this.state.key_value) {
                 this.setState({
-                  mode: 'list-mode',
-                  content_changed: '',
                   password: response.content.password,
-                  password_visible: false,
-                  safe_note_visible: false,
                   safe_note: response.content.safe_note,
-                  nonce: response.content.nonce,
-                  saving_entry: false
+                  nonce: response.content.nonce
                 });
                 this.titleOnBlur();
                 window.myStore.saveDataToEntryById(this.state.key_value, data);
@@ -761,7 +764,7 @@ var React = require('react'),
               )}
               <div className="form-buttons">
                 {this.state.key_value !== null &&
-                  this.state.mode !== 'export' && (
+                  this.state.mode !== 'export' && !this.state.saving_entry && (
                     <div className="edit-btns">
                       <span className="button transparent-btn" onClick={this.changeMode}>
                         Edit

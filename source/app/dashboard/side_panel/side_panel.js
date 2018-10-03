@@ -16,18 +16,38 @@ var React = require('react'),
       return {
         tags: window.myStore.data.tags,
         active_id: 0,
-        active_title: window.myStore.getTagTitleById(0)
+        active_title: window.myStore.getTagTitleById(0),
+        saving_entry: false
       };
     },
 
     componentWillMount() {
       window.myStore.on('changeTag', this.changeTag);
       window.myStore.on('update', this.updateContent);
+      chrome.runtime.onMessage.addListener(this.chromeTableMsgHandler);
     },
 
     componentWillUnmount() {
       window.myStore.removeListener('changeTag', this.changeTag);
       window.myStore.removeListener('update', this.updateContent);
+      chrome.runtime.onMessage.removeListener(this.chromeTableMsgHandler);
+    },
+
+    chromeTableMsgHandler(request, sender, sendResponse) {
+      switch (request.type) {
+        case 'fileSaving':
+          this.setState({
+            saving_entry: true
+          });
+          break;
+
+        case 'fileSaved':
+          this.setState({
+            saving_entry: false
+          });
+          break;
+      }
+      return true;
     },
 
     updateContent(data) {
@@ -126,7 +146,7 @@ var React = require('react'),
               {tag_array}
 
               <li className="add-tag-btn fadeIn">
-                <a onClick={this.addTag} onTouchStart={this.addTag}>
+                <a onClick={this.state.saving_entry ? false : this.addTag} onTouchStart={this.state.saving_entry ? false : this.addTag} className={this.state.saving_entry ? 'disabled' : ''}>
                   <i className="icon icon-add" />
                   <span className="nav-label">Add tag</span>
                 </a>

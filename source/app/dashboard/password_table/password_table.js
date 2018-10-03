@@ -29,6 +29,7 @@ var React = require('react'),
         exportMode: false,
         exportProgress: -1,
         exportedEntries: [],
+        saving_entry: false,
         _isMounted: false
       };
     },
@@ -96,6 +97,18 @@ var React = require('react'),
         case 'saveEntry':
           this.openNewEntry(request.content);
           sendResponse({ type: 'entrySaving' });
+          break;
+
+        case 'fileSaving':
+          this.setState({
+            saving_entry: true
+          });
+          break;
+
+        case 'fileSaved':
+          this.setState({
+            saving_entry: false
+          });
           break;
 
         case 'exportProgress':
@@ -424,6 +437,7 @@ var React = require('react'),
                       exportMode={this.state.exportMode}
                       exportingEntry={exporting}
                       onToggle={this.onToggleEntry}
+                      saving_entry={this.state.saving_entry}
                     />
                   );
                 }
@@ -452,6 +466,7 @@ var React = require('react'),
                     exportMode={this.state.exportMode}
                     exportingEntry={exporting}
                     onToggle={this.onToggleEntry}
+                    saving_entry={this.state.saving_entry}
                   />
                 );
               }
@@ -497,7 +512,7 @@ var React = require('react'),
                 <button
                   type="button"
                   onClick={this.toggleNewEntry}
-                  disabled={this.state.newEntry}
+                  disabled={this.state.newEntry || this.state.saving_entry}
                   className="blue-btn add"
                 >
                   Add entry
@@ -558,6 +573,16 @@ var React = require('react'),
                 <div>Consider your criteria.</div>
               </div>
             )}
+          </div>
+          <div className={"data-loader" + (this.state.saving_entry ? " active" : "")}>
+            {this.state.saving_entry && (<div>
+                <span className="spinner" />
+                Saving
+              </div>)}
+            {!this.state.saving_entry && (<div>
+              <i className={"icon icon-checkmark"}></i>
+              Saved
+            </div>)}
           </div>
         </div>
       );

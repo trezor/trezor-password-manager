@@ -322,6 +322,7 @@ class DriveMgmt {
         },
         onComplete: data => {
           resolve(JSON.parse(data).id);
+          chrome.runtime.sendMessage({ type: 'fileSaved' });
         },
         onError: data => {
           reject(JSON.parse(data));

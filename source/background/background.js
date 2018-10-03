@@ -270,12 +270,14 @@ var Promise = require('es6-promise').Promise,
         break;
 
       case 'saveContent':
+        chrome.runtime.sendMessage({ type: 'fileSaving' });
         trezorManager.encrypt(request.content, bgStore.encryptionKey).then(res => {
           saveContent(res);
         });
         break;
 
       case 'encryptFullEntry':
+        chrome.runtime.sendMessage({ type: 'fileSaving' });
         trezorManager.encryptFullEntry(request.content, sendResponse);
         break;
 
