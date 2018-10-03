@@ -29,22 +29,27 @@ var React = require('react'),
         dialog: 'preloading',
         loadingText: 'Waking up ...',
         passphrase: false,
-        transportType: false
+        transportType: false,
+        isOnline: navigator.onLine
       };
     },
 
     componentDidMount() {
       chrome.runtime.onMessage.addListener(this.chromeMsgHandler);
+      window.addEventListener('online', this.updateOnlineStatus);
+      window.addEventListener('offline', this.updateOnlineStatus);
       // RUN INIT!
       this.sendMessage('initPlease');
     },
 
     componentWillUnmount() {
       chrome.runtime.onMessage.removeListener(this.chromeMsgHandler);
+      window.removeEventListener('online', this.updateOnlineStatus);
+      window.removeEventListener('offline', this.updateOnlineStatus);
     },
 
     componentDidUpdate() {
-      if (this.state.transportType === 'ParallelTransport') {
+      if (this.state.transportType === 'ParallelTransport' && this.state.isOnline) {
         var button = this.webusbButton.getDOMNode();
         if (button && button.getElementsByTagName('iframe').length < 1) {
           var iframe = document.createElement('iframe');
@@ -159,6 +164,13 @@ var React = require('react'),
           break;
       }
       return true;
+    },
+    
+    updateOnlineStatus() {
+      let status = navigator.onLine;
+      this.setState({
+          isOnline: status
+      });
     },
 
     toggleDetails() {
@@ -298,7 +310,7 @@ var React = require('react'),
                       <img src="dist/app-images/connect-trezor.svg" /> Connect TREZOR to continue
                     </span>
                   )}
-                {this.state.transportType === 'ParallelTransport' && (
+                {this.state.transportType === 'ParallelTransport' && this.state.isOnline ? (
                   <div>
                     <span className="connect_trezor inline">
                       <img src="dist/app-images/connect-trezor.svg" /> Connect TREZOR
@@ -313,7 +325,7 @@ var React = require('react'),
                       Check for devices
                     </button>
                   </div>
-                )}
+                ) : (<div><span className="connect_trezor inline">Yor are offline, please connect to internet.</span></div>)}
                 <div className={this.state.devices.length ? '' : 'hidden'}>
                   <span>Choose from device</span>
                   <ul className="dev-list">{device_list}</ul>
