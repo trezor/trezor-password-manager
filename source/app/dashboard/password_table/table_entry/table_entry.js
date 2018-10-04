@@ -79,19 +79,22 @@ var React = require('react'),
         }
       }
 
+      if (this.state.mode === 'edit-mode' && !nextProps.saving_entry) {
+        stateValue.tags_id = nextProps.tags || [];
+        stateValue.tags_titles = window.myStore.getTagTitleArrayById(nextProps.tags);
+        stateValue.tag_globa_title_array = window.myStore.getTagTitleArray();
+        stateValue.tags_available = window.myStore.getPossibleToAddTagsForEntry(
+          this.state.key_value,
+          nextProps.tags
+        );
+      }
+
+      stateValue.exportEntry = nextProps.exportEntry || false;
+      stateValue.exportingEntry = nextProps.exportingEntry || false;
+      stateValue.exportProgress = nextProps.exportProgress || -1;
+
       this.setState(
-        Object.assign(stateValue, {
-          tags_id: nextProps.tags,
-          tags_titles: window.myStore.getTagTitleArrayById(nextProps.tags),
-          tag_globa_title_array: window.myStore.getTagTitleArray(),
-          tags_available: window.myStore.getPossibleToAddTagsForEntry(
-            this.state.key_value,
-            nextProps.tags
-          ),
-          exportEntry: nextProps.exportEntry,
-          exportingEntry: nextProps.exportingEntry,
-          exportProgress: nextProps.exportProgress
-        }),
+        stateValue,
         () => {
           this.updateExportProgress();
         }

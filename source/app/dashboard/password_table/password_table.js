@@ -562,6 +562,7 @@ var React = require('react'),
                 safe_note=""
                 mode={'edit-mode'}
                 content_changed={'edited'}
+                saving_entry={this.state.saving_entry}
               />
             )}
             {count !== 0 ? (
