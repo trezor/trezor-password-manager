@@ -307,25 +307,27 @@ var React = require('react'),
                 {this.state.transportType === 'bridge' &&
                   !this.state.devices.length && (
                     <span className="connect_trezor">
-                      <img src="dist/app-images/connect-trezor.svg" /> Connect TREZOR to continue
+                      {this.state.isOnline ? (
+                          <span>
+                              <img src="dist/app-images/connect-trezor.svg" /> Connect TREZOR to continue
+                          </span>) : (<span>
+                              <span className="connect_trezor">You are offline, please connect to internet.</span>
+                          </span>)}
                     </span>
                   )}
-                {this.state.transportType === 'ParallelTransport' && this.state.isOnline ? (
+                {this.state.transportType === 'ParallelTransport' && (
                   <div>
-                    <span className="connect_trezor inline">
+                      {this.state.isOnline ? (
+                          <div>
+                            <span className="connect_trezor inline">
                       <img src="dist/app-images/connect-trezor.svg" /> Connect TREZOR
-                    </span>{' '}
-                    and{' '}
-                    <button
-                      className="webusb no-style half-transparent"
-                      ref={f => {
-                        this.webusbButton = f;
-                      }}
-                    >
-                      Check for devices
-                    </button>
+                      </span>{' '} and {' '}
+                          <button className="webusb no-style half-transparent"
+                              ref={f => {this.webusbButton = f;}}>Check for devices</button>
+                          </div>
+                      ) : (<span><span className="connect_trezor">You are offline, please connect to internet.</span></span>)}
                   </div>
-                ) : (<div><span className="connect_trezor inline">Yor are offline, please connect to internet.</span></div>)}
+                )}
                 <div className={this.state.devices.length ? '' : 'hidden'}>
                   <span>Choose from device</span>
                   <ul className="dev-list">{device_list}</ul>
