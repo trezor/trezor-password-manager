@@ -23,7 +23,7 @@
         border: none;
         text-align: center;
         vertical-align: middle;
-        padding: 6px 3px;
+        padding: 6px 5px 6px 0;
 
         &:nth-child(n+6) {
           max-width: 100px;
@@ -254,6 +254,9 @@
       }
     }
 
+    .checkbox {
+      margin: 0 0 10px 8px;
+    }
 
     .spinner {
       content: '';
@@ -271,10 +274,6 @@
   .modal-footer {
     border: none;
     padding: 25px;
-
-    .checkbox {
-      margin-top: 12px;
-    }
 
     .blue-btn {
       margin: 0 0 0 10px;

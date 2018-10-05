@@ -96,8 +96,9 @@ var React = require('react'),
     showImportModal() {
       this.setState({
         showImportModal: true
+      }, () => {
+        this.resetDropdownOptions();
       });
-      this.resetDropdownOptions();
     },
 
     closeImportModal() {
@@ -265,11 +266,11 @@ var React = require('react'),
         this.setState({
           storageFile: file
         });
+        window.myStore.emit('storageImport', false);
       } else {
         file = this.state.storageFile;
       }
 
-      window.myStore.emit('storageImport', false);
       Papa.parse(file, {
         worker: false,
         skipEmptyLines: true,
@@ -352,7 +353,7 @@ var React = require('react'),
         {
           firstRowHeader: !this.state.firstRowHeader
         },
-        function() {
+        () => {
           this.fileChange();
         }
       );
@@ -545,6 +546,15 @@ var React = require('react'),
                 </form>
               )}
               {this.state.storage && <p className={'help'}>Sort your .CSV columns by type.</p>}
+              {showClearFirstRow && (
+              <label
+                className={'checkbox' + (firstRowHeader ? ' active' : '')}
+                onClick={this.setFirstRow}
+              >
+                <i>{firstRowHeader && <img src="./images/checkbox_checked.svg" />}</i>
+                Clear first row in the table.
+              </label>
+              )}
               {this.state.storage && (
                 <div className={'storage_content'}>
                   <Table>
@@ -558,15 +568,6 @@ var React = require('react'),
             </Modal.Body>
             {showImportButtons && (
               <Modal.Footer>
-                {showClearFirstRow && (
-                <label
-                  className={'checkbox' + (firstRowHeader ? ' active' : '')}
-                  onClick={this.setFirstRow}
-                >
-                  <i>{firstRowHeader && <img src="./images/checkbox_checked.svg" />}</i>
-                  Clear first row in the table.
-                </label>
-                )}
                 <button type="button" className={'btn btn-link'} onClick={this.closeImportModal}>
                   Cancel
                 </button>
