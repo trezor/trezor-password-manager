@@ -183,9 +183,9 @@ var React = require('react'),
 
       this.setImportEntryStatus(n, 'importing');
 
-      if (!!entry.title) {
+      if (!!entry.title || !!entry.note) {
         let data = {
-          title: String(entry.title),
+          title: String(entry.title || entry.note),
           username: String(entry.username || ''),
           password: String(entry.password || ''),
           nonce: String(''),
