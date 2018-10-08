@@ -334,7 +334,6 @@ var React = require('react'),
     },
 
     escapeExportField(value = String('')) {
-      console.log(value)
       if (value.match(/\"/g)) {
         return '"' + value.replace(/\"/g, '""') + '"';
       } else if (value.match(/\,/g)) {
@@ -513,7 +512,7 @@ var React = require('react'),
                 <button
                   type="button"
                   onClick={this.toggleNewEntry}
-                  disabled={this.state.newEntry || (this.state.saving_entry ? true : false)}
+                  disabled={this.state.newEntry || !!this.state.saving_entry}
                   className="blue-btn add"
                 >
                   Add entry
