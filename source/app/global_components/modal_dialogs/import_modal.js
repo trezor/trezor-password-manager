@@ -12,6 +12,8 @@ var React = require('react'),
   Table = require('react-bootstrap').Table,
   Modal = require('react-bootstrap').Modal,
   ImportSelect = require('../import_select'),
+  tld = require('tldjs'),
+  validator = require('validator'),
   ImportModal = React.createClass({
     getInitialState() {
       return {
@@ -191,9 +193,17 @@ var React = require('react'),
           nonce: String(''),
           tags: tags,
           safe_note: String(entry.safe_note || ''),
-          note: String(entry.note || ''),
+          note: String(entry.note) || null,
           key_value: this.state.key_value
         };
+        
+        if (!data.note) {
+          if (this.isUrl(this.removeProtocolPrefix(entry.title))) {
+            data.note = tld.getDomain(entry.title)
+          } else {
+            data.note = data.title;
+          }
+        }
 
         chrome.runtime.sendMessage({ type: 'encryptFullEntry', content: data }, response => {
           var importStatus = this.state.importStatus
@@ -223,6 +233,16 @@ var React = require('react'),
         this.importStorage(n + 1);
         console.warn('missing title');
       }
+    },
+
+    isUrl(url) {
+      return validator.isURL(url.trim());
+    },
+    
+    removeProtocolPrefix(url) {
+      return url.indexOf('://') > -1
+        ? url.substring(url.indexOf('://') + 3, url.length).split('/')[0]
+        : url.split('/')[0];
     },
 
     addEncryptedEntries() {
