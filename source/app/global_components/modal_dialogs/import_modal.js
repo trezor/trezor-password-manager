@@ -191,7 +191,8 @@ var React = require('react'),
           nonce: String(''),
           tags: tags,
           safe_note: String(entry.safe_note || ''),
-          note: String(entry.note || '')
+          note: String(entry.note || ''),
+          key_value: this.state.key_value
         };
 
         chrome.runtime.sendMessage({ type: 'encryptFullEntry', content: data }, response => {
@@ -546,7 +547,7 @@ var React = require('react'),
                 </form>
               )}
               {this.state.storage && <p className={'help'}>Sort your .CSV columns by type.</p>}
-              {showClearFirstRow && (
+              {showClearFirstRow && !importInProgress && (
               <label
                 className={'checkbox' + (firstRowHeader ? ' active' : '')}
                 onClick={this.setFirstRow}

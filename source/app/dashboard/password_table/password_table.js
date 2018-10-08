@@ -101,7 +101,7 @@ var React = require('react'),
 
         case 'fileSaving':
           this.setState({
-            saving_entry: true
+            saving_entry: request.key_value || (this.state.saving_entry && this.state.saving_entry !== true ? this.state.saving_entry : true)
           });
           break;
 
@@ -333,7 +333,8 @@ var React = require('react'),
       );
     },
 
-    escapeExportField(value) {
+    escapeExportField(value = String('')) {
+      console.log(value)
       if (value.match(/\"/g)) {
         return '"' + value.replace(/\"/g, '""') + '"';
       } else if (value.match(/\,/g)) {
@@ -512,7 +513,7 @@ var React = require('react'),
                 <button
                   type="button"
                   onClick={this.toggleNewEntry}
-                  disabled={this.state.newEntry || this.state.saving_entry}
+                  disabled={this.state.newEntry || (this.state.saving_entry ? true : false)}
                   className="blue-btn add"
                 >
                   Add entry

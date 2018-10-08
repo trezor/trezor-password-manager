@@ -71,7 +71,11 @@ var React = require('react'),
 
       if (nextProps.saving_entry !== undefined) {
         stateValue.saving_entry = nextProps.saving_entry;
-        if (!nextProps.saving_entry && this.state.mode === 'edit-mode') {
+        if (
+          !nextProps.saving_entry && 
+          this.state.saving_entry === this.state.key_value &&
+          this.state.mode === 'edit-mode'
+        ) {
           stateValue.mode = 'list-mode';
           stateValue.content_changed = '';
           stateValue.password_visible = false;
@@ -79,7 +83,11 @@ var React = require('react'),
         }
       }
 
-      if (this.state.mode === 'edit-mode' && !nextProps.saving_entry) {
+      if (
+        this.state.mode === 'edit-mode' && 
+        this.state.saving_entry === this.state.key_value &&
+        !nextProps.saving_entry
+      ) {
         stateValue.tags_id = nextProps.tags || [];
         stateValue.tags_titles = window.myStore.getTagTitleArrayById(nextProps.tags);
         stateValue.tag_globa_title_array = window.myStore.getTagTitleArray();
@@ -297,7 +305,7 @@ var React = require('react'),
       if (!this.state.saving_entry) {
         if (this.state.title.length > 0) {
           this.setState({
-            saving_entry: true
+            saving_entry: this.state.key_value
           });
           let tags_id = [];
           this.state.tags_titles.map(key => {
@@ -311,7 +319,8 @@ var React = require('react'),
             nonce: this.state.nonce,
             tags: tags_id,
             safe_note: this.state.safe_note,
-            note: this.state.note
+            note: this.state.note,
+            key_value: this.state.key_value
           };
 
           chrome.runtime.sendMessage({ type: 'encryptFullEntry', content: data }, response => {
@@ -627,7 +636,7 @@ var React = require('react'),
           onClick={this.toggleExportEntry}
         >
           <div className={this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}>
-            <form onSubmit={this.state.saving_entry ? false : this.saveEntry}>
+            <form onSubmit={this.state.saving_entry === this.state.key_value ? false : this.saveEntry}>
               {this.state.exportProgress == -1 && (<div className={'export' + (this.state.mode === 'export' ? ' active' : '')}>
                 <label className={'checkbox' + (this.state.exportEntry ? ' active' : '')}>
                   <i>{this.state.exportEntry && <img src="./images/checkbox_checked.svg" />}</i>
@@ -807,13 +816,16 @@ var React = require('react'),
                 <div className="content-btns">
                   <span
                     className="button green-btn"
-                    onClick={this.state.saving_entry ? false : this.saveEntry}
+                    onClick={this.state.saving_entry === this.state.key_value ? false : this.saveEntry}
                   >
-                    {this.state.saving_entry ? 'Saving' : 'Save'}
+                    {(this.state.saving_entry === true && !this.state.key_value) || 
+                      this.state.saving_entry === this.state.key_value ? 
+                      'Saving' : 
+                      'Save'}
                   </span>
                   <span
                     className="button white-btn"
-                    onClick={this.state.saving_entry ? false : this.discardChanges}
+                    onClick={this.state.saving_entry === this.state.key_value ? false : this.discardChanges}
                   >
                     Discard
                   </span>
