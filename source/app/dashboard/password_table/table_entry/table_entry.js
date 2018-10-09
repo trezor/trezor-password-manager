@@ -47,6 +47,7 @@ var React = require('react'),
         saving_entry: false,
         onToggle: false,
         showMandatoryField: false,
+        showMaxFieldLength: false,
         exportEntry: this.props.exportEntry,
         exportingEntry: false,
         exportProgress: -1,
@@ -303,7 +304,7 @@ var React = require('react'),
     saveEntry(e) {
       e.preventDefault();
       if (!this.state.saving_entry) {
-        if (this.state.title.length > 0) {
+        if (this.state.title.length > 0 && !this.state.showMaxFieldLength) {
           this.setState({
             saving_entry: this.state.key_value
           });
@@ -344,6 +345,12 @@ var React = require('react'),
               console.warn('inconsistent entry');
             }
           });
+        } else if (this.state.showMaxFieldLength) {
+          var node = React.findDOMNode(this.refs.safe_note);
+              node.classList.add('shake');
+          setTimeout(() => {
+            node.classList.remove('shake');
+          }, 1200);
         } else {
           // TITLE (item/url) is mandatory field - so fill it
           if (this.state.key_value) {
@@ -488,6 +495,18 @@ var React = require('react'),
           this.discardChanges();
         }
       }
+
+      if (event.target.name === 'safe_note') {
+        if (event.target.value.length > 1000) {
+          this.setState({
+            showMaxFieldLength: true
+          });
+        } else if (this.state.showMaxFieldLength) {
+          this.setState({
+            showMaxFieldLength: false
+          });
+        }
+      }
     },
 
     removeEntry() {
@@ -507,6 +526,11 @@ var React = require('react'),
         mandatoryField = (
           <Tooltip id="mandatory" placement="right">
             This field is mandatory!
+          </Tooltip>
+        ),
+        maxFieldLength = (
+          <Tooltip id="mandatory" placement="right">
+            1000 characters max!
           </Tooltip>
         ),
         copyClipboardPwd = (
@@ -732,7 +756,7 @@ var React = require('react'),
               <div className="safe-note">
                 <span>Secret Note </span>
                 {this.state.safe_note_visible ? (
-                  <TextareaAutosize
+                  <textarea
                     type="text"
                     ref="safe_note"
                     autoComplete="off"
@@ -741,6 +765,7 @@ var React = require('react'),
                     value={this.state.safe_note.toString()}
                     spellCheck="false"
                     name="safe_note"
+                    rows="5"
                   />
                 ) : (
                   <input
@@ -752,6 +777,19 @@ var React = require('react'),
                     value={this.state.safe_note.toString()}
                     name="safe_note"
                   />
+                )}
+                {this.state.mode === 'edit-mode' && (
+                  <Overlay
+                    show={this.state.showMaxFieldLength}
+                    container={this}
+                    onHide={() => this.setState({ showMaxFieldLength: false })}
+                    target={() =>
+                      React.findDOMNode(this.refs.safe_note)
+                    }
+                    placement="top"
+                  >
+                    {maxFieldLength}
+                  </Overlay>
                 )}
                 <OverlayTrigger placement="top" overlay={showNote}>
                   <i

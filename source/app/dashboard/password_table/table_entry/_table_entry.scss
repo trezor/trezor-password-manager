@@ -492,6 +492,10 @@
         display: none;
       }
     }
+
+    .shake {
+      animation: shake 1.2s cubic-bezier(.36, .07, 0, .1);
+    }
   }
 }
 
