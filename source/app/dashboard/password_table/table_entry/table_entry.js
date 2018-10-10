@@ -51,6 +51,11 @@ var React = require('react'),
         exportEntry: this.props.exportEntry,
         exportingEntry: false,
         exportProgress: -1,
+        secretProps: {
+            password: this.props.password,
+            safe_note: this.props.safe_note,
+            nonce: this.props.nonce,
+        },
         _isMounted: false
       };
     },
@@ -69,11 +74,10 @@ var React = require('react'),
       } else if (this.state.mode === 'export') {
         stateValue.mode = 'list-mode';
       }
-
       if (nextProps.saving_entry !== undefined) {
         stateValue.saving_entry = nextProps.saving_entry;
         if (
-          !nextProps.saving_entry && 
+          !nextProps.saving_entry &&
           this.state.saving_entry === this.state.key_value &&
           this.state.mode === 'edit-mode'
         ) {
@@ -81,11 +85,14 @@ var React = require('react'),
           stateValue.content_changed = '';
           stateValue.password_visible = false;
           stateValue.safe_note_visible = false;
+          stateValue.password = this.state.secretProps.password;
+          stateValue.safe_note = this.state.secretProps.safe_note;
+          stateValue.nonce = this.state.secretProps.nonce;
         }
       }
 
       if (
-        this.state.mode === 'edit-mode' && 
+        this.state.mode === 'edit-mode' &&
         this.state.saving_entry === this.state.key_value &&
         !nextProps.saving_entry
       ) {
@@ -97,7 +104,6 @@ var React = require('react'),
           nextProps.tags
         );
       }
-
       stateValue.exportEntry = nextProps.exportEntry || false;
       stateValue.exportingEntry = nextProps.exportingEntry || false;
       stateValue.exportProgress = nextProps.exportProgress || -1;
@@ -332,9 +338,11 @@ var React = require('react'),
             if (data.success) {
               if (this.state.key_value) {
                 this.setState({
-                  password: response.content.password,
-                  safe_note: response.content.safe_note,
-                  nonce: response.content.nonce
+                    secretProps: {
+                      password: response.content.password,
+                      safe_note: response.content.safe_note,
+                      nonce: response.content.nonce
+                    }
                 });
                 this.titleOnBlur();
                 window.myStore.saveDataToEntryById(this.state.key_value, data);
@@ -856,9 +864,9 @@ var React = require('react'),
                     className="button green-btn"
                     onClick={this.state.saving_entry === this.state.key_value ? false : this.saveEntry}
                   >
-                    {(this.state.saving_entry === true && !this.state.key_value) || 
-                      this.state.saving_entry === this.state.key_value ? 
-                      'Saving' : 
+                    {(this.state.saving_entry === true && !this.state.key_value) ||
+                      this.state.saving_entry === this.state.key_value ?
+                      'Saving' :
                       'Save'}
                   </span>
                   <span
