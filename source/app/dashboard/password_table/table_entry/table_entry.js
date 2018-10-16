@@ -64,9 +64,9 @@ var React = require('react'),
       var stateValue = {};
       if (nextProps.exportMode) {
         let oldValues = window.myStore.getEntryValuesById(this.state.key_value);
-        // if (this.state.content_changed !== '') {
-        //   this.discardChanges();
-        // }
+        if (this.state.content_changed !== '') {
+          this.discardChanges();
+        }
         stateValue = {
           mode: 'export',
           password_visible: false,
