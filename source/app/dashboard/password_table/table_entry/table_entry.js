@@ -64,12 +64,16 @@ var React = require('react'),
       var stateValue = {};
       if (nextProps.exportMode) {
         let oldValues = window.myStore.getEntryValuesById(this.state.key_value);
+        // if (this.state.content_changed !== '') {
+        //   this.discardChanges();
+        // }
         stateValue = {
           mode: 'export',
           password_visible: false,
           safe_note_visible: false,
           password: oldValues.password,
-          safe_note: oldValues.safe_note
+          safe_note: oldValues.safe_note,
+          content_changed: ''
         };
       } else if (this.state.mode === 'export') {
         stateValue.mode = 'list-mode';
