@@ -334,10 +334,16 @@ var React = require('react'),
     },
 
     escapeExportField(value = String('')) {
-      if (value.match(/\"/g)) {
-        return '"' + value.replace(/\"/g, '""') + '"';
-      } else if (value.match(/\,/g)) {
-        return '"' + value + '"';
+      if (typeof value === 'string') {
+        if (value.match(/\"/g)) {
+          return '"' + value.replace(/\"/g, '""') + '"';
+        } else if (value.match(/\,/g)) {
+          return '"' + value + '"';
+        } else {
+          return value;
+        }
+      } else if (typeof value === 'object') {
+        return value.toString();
       } else {
         return value;
       }
