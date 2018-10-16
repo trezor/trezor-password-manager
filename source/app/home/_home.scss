@@ -97,7 +97,7 @@
     }
 
     span {
-      max-width: 290px;
+      max-width: 350px;
       color: rgba($c_white, .7);
       font-size: 1.1em;
       font-weight: 400;
@@ -201,7 +201,7 @@
         width: 20px;
         color: $c_white;
       }
-      
+
       &.inline {
         display: inline-block;
         margin-right: 10px;
@@ -272,8 +272,8 @@
 
       &.dropbox-login {
         width: 240px;
-        padding-left: 60px;
-        background: $c_white url(app-images/dropbox-blue.svg) no-repeat 20px 8px;
+        padding-left: 55px;
+        background: $c_white url(app-images/dropbox-blue.svg) no-repeat 15px 8px;
         background-size: 30px 30px;
       }
 

@@ -7,6 +7,7 @@ button, .button {
   margin-bottom: 5px;
   cursor: pointer;
   line-height: 20px;
+  font-size: 12px;
   @include border-radius(3px);
   @include transition(all 0.2s ease-in-out);
 
@@ -119,6 +120,19 @@ button, .button {
 
   &:disabled {
     opacity: .5;
+  }
+
+  &.btn {
+    font-size: 12px;
+  }
+
+  &.btn-link {
+    color: $c_grey_content_font;
+  }
+
+  &.btn-wide {
+    padding-left: 30px;
+    padding-right: 30px;
   }
 }
 

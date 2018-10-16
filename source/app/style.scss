@@ -52,10 +52,47 @@ ul.dropdown-menu {
     color: $c_grey_font_header_links;
 
     i {
-      width: 38px;
+      width: 10px;
       margin-right: 10px;
       text-align: center;
-      margin-top: 5px;
+      float: left;
+    }
+  }
+}
+
+.checkbox {
+  float: left;
+  font-size: 12px;
+  line-height: 20px;
+  font-weight: normal;
+  margin: 0;
+
+  i {
+    float: left;
+    display: inline-block;
+    color: $c_grey_border;
+    width: 20px;
+    height: 20px;
+    border: 1px solid #c1c1c1;
+    @include border-radius(2px);
+    margin: 0;
+
+    +span {
+      margin-left: 10px;
+    }
+  }
+
+  &.active {
+    i {
+      background: $c_blue;
+      border-color: $c_blue;
+      position: relative;
+
+      img {
+        position: absolute;
+        left: 4px;
+        top: 5px;
+      }
     }
   }
 }

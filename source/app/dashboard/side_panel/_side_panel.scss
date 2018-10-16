@@ -148,7 +148,11 @@ aside.left-panel {
 
       span {
         display: inline-block;
+        width: 160px;
         line-height: 24px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
 
         @media screen and (max-width: $break-small) {
           display: none;
@@ -251,13 +255,18 @@ aside.left-panel {
         line-height: 31px;
         @include border-radius(20px);
 
-        &:hover {
+        &:hover:not(.disabled) {
           background: rgba(255,255,255,.20);
+        }
+
+        &.disabled {
+          opacity: 0.5;
+          cursor: default;
         }
 
         span {
           margin-top: 4px;
-          line-height: 31px;
+          line-height: 34px;
         }
 
         i {

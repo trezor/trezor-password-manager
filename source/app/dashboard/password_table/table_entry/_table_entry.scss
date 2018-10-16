@@ -85,6 +85,24 @@
       @include transform(rotateX(0deg));
       @include transition(all 150ms ease-in-out);
       @include transform-style(preserve-3d);
+      border-bottom: 1px solid #fff;
+
+      .export {
+        display: inline-block;
+        float: left;
+        font-size: 24px;
+        line-height: 24px;
+        margin: 0;
+        padding: 27px 0;
+        overflow: hidden;
+        width: 0;
+        @include transition(all 200ms ease-in-out);
+
+        &.active {
+          width: auto;
+          padding: 27px 0 27px 10px;
+        }
+      }
 
       .avatar {
         display: inline-block;
@@ -150,19 +168,16 @@
         }
       }
 
-      &.list-mode {
+      &.export {
+        cursor: pointer;
+      }
+
+      &.list-mode,
+      &.export {
         min-height: 80px;
 
         &:hover {
           background: rgba($c_grey_bg, .5);
-
-          .title {
-            color: $c_black_font;
-          }
-
-          .username {
-            color: $c_grey_content_font;
-          }
         }
 
         .title-label, .password, .tags, .safe-note, .available-tags, .actions {
@@ -476,6 +491,10 @@
       .submit-btn {
         display: none;
       }
+    }
+
+    .shake {
+      animation: shake 1.2s cubic-bezier(.36, .07, 0, .1);
     }
   }
 }

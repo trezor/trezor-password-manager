@@ -8,44 +8,43 @@
 'use strict';
 
 var React = require('react'),
-    Router = require('react-router'),
-    ErrorModal = require('./modal_dialogs/error_modal'),
-    InitModal = require('./modal_dialogs/init_modal'),
-    { RouteHandler } = Router,
-    Layout = React.createClass({
+  Router = require('react-router'),
+  ErrorModal = require('./modal_dialogs/error_modal'),
+  InitModal = require('./modal_dialogs/init_modal'),
+  { RouteHandler } = Router,
+  Layout = React.createClass({
+    componentDidMount() {
+      chrome.runtime.onMessage.addListener(this.chromeLayoutModalMsgHandler);
+    },
 
-        componentDidMount() {
-            chrome.runtime.onMessage.addListener(this.chromeLayoutModalMsgHandler);
-        },
+    componentWillUnmount() {
+      chrome.runtime.onMessage.removeListener(this.chromeLayoutModalMsgHandler);
+    },
 
-        componentWillUnmount() {
-            chrome.runtime.onMessage.removeListener(this.chromeLayoutModalMsgHandler);
-        },
+    chromeLayoutModalMsgHandler(request, sender, sendResponse) {
+      switch (request.type) {
+        case 'focus':
+          window.focus();
+          break;
 
-        chromeLayoutModalMsgHandler(request, sender, sendResponse) {
-            switch (request.type) {
-                case 'focus':
-                    window.focus();
-                    break;
+        case 'isAppOpen':
+          chrome.tabs.getCurrent(tab => {
+            sendResponse({ type: 'openApp', tab: tab });
+          });
+          break;
+      }
+      return true;
+    },
 
-                case 'isAppOpen':
-                    chrome.tabs.getCurrent((tab) => {
-                        sendResponse({type:'openApp', tab: tab});
-                    });
-                    break;
-            }
-            return true;
-        },
-
-        render() {
-            return (
-                <div>
-                    <RouteHandler />
-                    <ErrorModal />
-                    <InitModal />
-                </div>
-            )
-        }
-    });
+    render() {
+      return (
+        <div>
+          <RouteHandler />
+          <ErrorModal />
+          <InitModal />
+        </div>
+      );
+    }
+  });
 
 module.exports = Layout;
