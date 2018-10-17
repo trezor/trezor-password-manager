@@ -29,36 +29,6 @@ class DropboxMgmt {
     return this.authToken !== '';
   }
 
-  connect() {
-    if (!this.isAuth()) {
-      window.open(this.authUrl);
-    } else {
-      this.dbc.setAccessToken(this.authToken);
-      this.getDropboxUsername();
-    }
-  }
-
-  loadMetadataToken() {
-    return window.localStorage[STORAGE] ? window.localStorage[STORAGE] : '';
-  }
-
-  saveToken(token) {
-    this.authToken = this.parseQuery(token).access_token;
-    window.localStorage[STORAGE] = this.authToken;
-    this.connect();
-  }
-
-  getDropboxUsername() {
-    this.dbc
-      .usersGetCurrentAccount()
-      .then(response => {
-        this.bgStore.setUsername(response.name.display_name, 'DROPBOX');
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }
-
   disconnect() {
     if (this.isAuth()) {
       this.authToken = '';
