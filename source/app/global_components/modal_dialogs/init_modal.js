@@ -53,7 +53,7 @@ var React = require('react'),
     },
 
     closeInitModal(e) {
-      e.preventDefault();
+      if (!!e) e.preventDefault();
     },
 
     render() {

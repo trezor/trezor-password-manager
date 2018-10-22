@@ -393,7 +393,8 @@ var React = require('react'),
           ),
           safe_note: oldValues.safe_note,
           note: oldValues.note,
-          mode: 'list-mode'
+          mode: 'list-mode',
+          showMaxFieldLength: false
         });
         if (this.state.content_changed === 'edited') {
           this.setState({
