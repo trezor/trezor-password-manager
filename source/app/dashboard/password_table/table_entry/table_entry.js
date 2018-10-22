@@ -522,6 +522,23 @@ var React = require('react'),
       }
     },
 
+    textAreaKeyDown(e) {
+      // Fix for window/linux on textarea PgUp and PgDown moves website out of the window
+      let textAreaValue = e.target.value;
+
+      //Page up
+      if(e.keyCode === 33) {
+        e.preventDefault();
+        e.target.setSelectionRange(0, 0);
+      }
+
+      //Page down
+      if(e.keyCode === 34 && textAreaValue){
+        e.preventDefault();
+        e.target.setSelectionRange(textAreaValue.length, textAreaValue.length);
+      }
+    },
+
     removeEntry() {
       window.myStore.emit('openRemoveEntry', this.state.key_value);
     },
@@ -774,6 +791,7 @@ var React = require('react'),
                     ref="safe_note"
                     autoComplete="off"
                     onChange={this.handleChange}
+                    onKeyDown={this.textAreaKeyDown}
                     onKeyUp={this.keyPressed}
                     value={this.state.safe_note.toString()}
                     spellCheck="false"
