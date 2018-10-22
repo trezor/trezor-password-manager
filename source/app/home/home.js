@@ -220,7 +220,9 @@ var React = require('react'),
     },
 
     render() {
+      var hasUnknownVersion = false;
       var device_list = Object.keys(this.state.devices).map((key, i = 0) => {
+        if (this.state.devices[key].version === "unknown") hasUnknownVersion = true;
         return (
           <li key={i++}>
             <a
@@ -334,6 +336,7 @@ var React = require('react'),
                 )}
                 <div className={this.state.devices.length ? '' : 'hidden'}>
                   <span>Choose from device</span>
+                  {hasUnknownVersion && <p style={{marginTop: "15px"}}>TREZOR bridge not installed.</p>}
                   <ul className="dev-list">{device_list}</ul>
                 </div>
                 <div className={this.state.devices.length ? 'hidden' : 'desc'}>
