@@ -180,11 +180,15 @@ var React = require('react'),
     },
 
     activateDevice(d) {
-      this.setState({
-        dialog: 'loading_dialog',
-        activeDevice: this.state.devices[d]
-      });
-      this.sendMessage('activateTrezor', this.state.devices[d].path);
+      if (this.state.devices[d].version === "unknown") {
+        this.sendMessage('errorMsg', { code: 'T_NO_TRANSPORT' });
+      } else {
+        this.setState({
+          dialog: 'loading_dialog',
+          activeDevice: this.state.devices[d]
+        });
+        this.sendMessage('activateTrezor', this.state.devices[d].path);
+      }
     },
 
     sendMessage(msgType, msgContent) {
