@@ -89,6 +89,26 @@ class TrezorMgmt {
     this.bgStore.emit('sendMessage', 'updateDevices', { devices: this._deviceList });
   }
 
+  getDeviceState(d, callback) {
+    console.log(d, d.path)
+    this.trezorConnect.getDeviceState({
+      device: d,
+      useEmptyPassphrase: true
+    }).then(state => {
+      if (typeof callback === "function") callback(state);
+    });
+  }
+
+  getFeatures(d, callback) {
+    this.trezorConnect.getFeatures({
+      device: d,
+      useEmptyPassphrase: true,
+      override: true
+    }).then(result => {
+      if (typeof callback === "function") callback(result);
+    });
+  }
+
   checkReconnect() {
     if (tcMissing) {
       this.bgStore.emit('sendMessage', 'errorMsg', { code: 'T_NO_TRANSPORT' });
@@ -157,6 +177,10 @@ class TrezorMgmt {
 
       case TC_UI.BUNDLE_PROGRESS:
         this.bgStore.emit('sendMessage', 'exportProgress', { progress: msg.payload.progress });
+        break;
+
+      case 'ui-cancel-popup-request':
+        this.bgStore.emit('sendMessage', 'hidePinModal');
         break;
     }
   }

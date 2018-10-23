@@ -180,9 +180,28 @@ var React = require('react'),
     },
 
     activateDevice(d) {
-      if (this.state.devices[d].version === "unknown") {
+      if (!this.state.devices[d].accquired) {
+        // acquire device
+        chrome.runtime.sendMessage({
+            type: 'getDeviceState',
+            content: this.state.devices[d]
+          }, (a) => {
+            if (a.success) {
+              // activate device
+              this.setState({
+                dialog: 'loading_dialog',
+                activeDevice: this.state.devices[d]
+              });
+              this.sendMessage('activateTrezor', this.state.devices[d].path);
+            } else {
+              this.sendMessage('hidePinModal');
+            }
+        });
+      } else if (this.state.devices[d].version === "unknown") {
+        // install bridge
         this.sendMessage('errorMsg', { code: 'T_NO_TRANSPORT' });
       } else {
+        // activate device
         this.setState({
           dialog: 'loading_dialog',
           activeDevice: this.state.devices[d]
@@ -220,9 +239,11 @@ var React = require('react'),
     },
 
     render() {
-      var hasUnknownVersion = false;
+      var showInstallBridge = false;
       var device_list = Object.keys(this.state.devices).map((key, i = 0) => {
-        if (this.state.devices[key].version === "unknown") hasUnknownVersion = true;
+        if (this.state.devices[key].version === "unknown" && this.state.devices[key].accquired) {
+          showInstallBridge = true;
+        }
         return (
           <li key={i++}>
             <a
@@ -336,7 +357,7 @@ var React = require('react'),
                 )}
                 <div className={this.state.devices.length ? '' : 'hidden'}>
                   <span>Choose from device</span>
-                  {hasUnknownVersion && <p style={{marginTop: "15px"}}>TREZOR bridge not installed.</p>}
+                  {showInstallBridge && <p style={{marginTop: "15px"}}>TREZOR bridge not installed.</p>}
                   <ul className="dev-list">{device_list}</ul>
                 </div>
                 <div className={this.state.devices.length ? 'hidden' : 'desc'}>
