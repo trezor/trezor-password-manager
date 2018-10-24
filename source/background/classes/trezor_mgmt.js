@@ -90,7 +90,6 @@ class TrezorMgmt {
   }
 
   getDeviceState(d, callback) {
-    console.log(d, d.path)
     this.trezorConnect.getDeviceState({
       device: d,
       useEmptyPassphrase: true
