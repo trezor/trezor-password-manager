@@ -187,26 +187,25 @@ var React = require('react'),
     },
 
     activateDevice(d) {
-      if (!this.state.devices[d].accquired) {
-        // acquire device
-        chrome.runtime.sendMessage({
-            type: 'getDeviceState',
-            content: this.state.devices[d]
-          }, (a) => {
-            if (a.success) {
-              // activate device
-              this.setState({
-                dialog: 'loading_dialog',
-                activeDevice: this.state.devices[d]
-              });
-              this.sendMessage('activateTrezor', this.state.devices[d].path);
-            } else {
-              this.sendMessage('hidePinModal');
-            }
-        });
-      } else if (this.state.devices[d].version === "unknown") {
-        // install bridge
-        this.sendMessage('errorMsg', { code: 'T_NO_TRANSPORT' });
+        if (this.state.devices[d].accquired && this.state.devices[d].version === 'unknown') {
+            // install bridge
+            this.sendMessage('errorMsg', { code: 'T_NO_TRANSPORT' });
+       }
+       else if (!this.state.devices[d].accquired) {
+            chrome.runtime.sendMessage({
+                type: 'getDeviceState',
+                content: this.state.devices[d]
+            }, (a) => {
+              if (a.success) {
+                this.setState({
+                    dialog: 'loading_dialog',
+                    activeDevice: this.state.devices[d]
+                });
+                this.sendMessage('activateTrezor', this.state.devices[d].path);
+              } else {
+                this.sendMessage('hidePinModal');
+              }
+            });
       } else {
         // activate device
         this.setState({
