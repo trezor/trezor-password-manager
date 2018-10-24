@@ -261,6 +261,10 @@ var Promise = require('es6-promise').Promise,
         chromeManager.sendMessage('hidePinModal');
         break;
 
+      case 'trezorPinCancel':
+        trezorManager.cancelPinDialog();
+        break;
+
       case 'activateTrezor':
         trezorManager.useDevice(request.content);
         break;

@@ -109,6 +109,10 @@ class TrezorMgmt {
     });
   }
 
+  cancelPinDialog() {
+    this.bgStore.emit('sendMessage', 'cancelPinDialog');
+  }
+
   checkReconnect() {
     if (tcMissing) {
       this.bgStore.emit('sendMessage', 'errorMsg', { code: 'T_NO_TRANSPORT' });
@@ -180,7 +184,11 @@ class TrezorMgmt {
         break;
 
       case 'ui-cancel-popup-request':
-        this.bgStore.emit('sendMessage', 'hidePinModal');
+        this.cancelPinDialog();
+        break;
+
+      case 'device-connect':
+        this.cancelPinDialog();
         break;
     }
   }

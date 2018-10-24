@@ -86,4 +86,15 @@
       }
     }
   }
+
+  .pin_cancel {
+    #cancel {
+      background: none;
+      border: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
 }
