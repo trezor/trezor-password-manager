@@ -52,7 +52,7 @@ class TrezorMgmt {
       debug: true,
       webusb: true,
       popup: false,
-      connectSrc: URL_CONNECT
+      // connectSrc: URL_CONNECT
     });
     this.bgStore.emit('checkReopen');
   }
