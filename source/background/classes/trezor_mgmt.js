@@ -182,7 +182,7 @@ class TrezorMgmt {
         this.bgStore.emit('sendMessage', 'exportProgress', { progress: msg.payload.progress });
         break;
 
-      case 'ui-close_window':
+      case TC_UI.CLOSE_UI_WINDOW:
         this.cancelPinDialog();
         break;
 
