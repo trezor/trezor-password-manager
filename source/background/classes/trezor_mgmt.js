@@ -14,7 +14,7 @@ const HD_HARDENED = 0x80000000,
   PATH = [(10016 | HD_HARDENED) >>> 0, 0],
   WRONG_PIN = 'Failure_PinInvalid',
   MINIMAL_VERSION = '2.0.11',
-  URL_CONNECT = 'https://connect.trezor.io/5/',
+  URL_CONNECT = 'https://sisyfos.trezor.io/connect/',
   DEFAULT_KEYPHRASE = 'Activate TREZOR Password Manager?',
   DEFAULT_NONCE =
     '2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee2d650551248d792eabf628f451200d7f51cb63e46aadcbb1038aacb05e8c8aee';
@@ -182,7 +182,7 @@ class TrezorMgmt {
         this.bgStore.emit('sendMessage', 'exportProgress', { progress: msg.payload.progress });
         break;
 
-      case 'ui-cancel-popup-request':
+      case 'ui-close_window':
         this.cancelPinDialog();
         break;
 
@@ -623,6 +623,8 @@ class TrezorMgmt {
           this._disconnect();
           if (this._isValidError(result.payload)) {
             this.bgStore.emit('sendMessage', 'errorMsg', { code: 'T_ENCRYPTION' });
+          } else {
+            this.cancelPinDialog();
           }
         }
       })
