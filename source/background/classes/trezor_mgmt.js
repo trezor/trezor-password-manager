@@ -108,6 +108,17 @@ class TrezorMgmt {
     });
   }
 
+  renderWebUSBButton(callback) {
+    var button = document.createElement('button');
+        button.setAttribute('class', 'trezor-webusb-button');
+        button.append('Check for devices');
+
+    document.body.append(button);
+    this.trezorConnect.renderWebUSBButton();
+    callback(button.innerHTML);
+    button.remove();
+  }
+
   cancelPinDialog() {
     this.bgStore.emit('sendMessage', 'cancelPinDialog');
   }
@@ -183,10 +194,6 @@ class TrezorMgmt {
         break;
 
       case TC_UI.CLOSE_UI_WINDOW:
-        this.cancelPinDialog();
-        break;
-
-      case 'device-connect':
         this.cancelPinDialog();
         break;
     }

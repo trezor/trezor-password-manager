@@ -309,6 +309,10 @@ var Promise = require('es6-promise').Promise,
         trezorManager.getDeviceState(request.content, sendResponse);
         break;
 
+      case 'renderWebUSBButton':
+        trezorManager.renderWebUSBButton(sendResponse);
+        break;
+
       case 'clearSession':
         // trezorManager.clearSession();
         break;

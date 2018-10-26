@@ -52,18 +52,18 @@ var React = require('react'),
       if (this.state.transportType === 'ParallelTransport' && this.state.isOnline) {
         var button = this.webusbButton.getDOMNode();
         if (button && button.getElementsByTagName('iframe').length < 1) {
-          var iframe = document.createElement('iframe');
-          iframe.frameBorder = '0';
-          iframe.width = '100%';
-          iframe.height = '100%';
-          iframe.setAttribute('allow', 'usb');
-          iframe.setAttribute('scrolling', 'no');
-          iframe.onload = function() {
-            iframe.contentWindow.postMessage({}, 'https://connect.trezor.io/tpm/');
-          };
-          iframe.src = 'https://connect.trezor.io/tpm/webusb.html';
-          // inject iframe into button
-          button.append(iframe);
+          chrome.runtime.sendMessage({
+            type: 'renderWebUSBButton'
+          }, (innerHTML) => {
+            button.innerHTML = innerHTML;
+            
+            let iframe = button.getElementsByTagName('iframe')[0];
+            let connectUrl = iframe.getAttribute('src');
+
+            iframe.onload = () => {
+              iframe.contentWindow.postMessage({}, connectUrl);
+            }
+          });
         }
       }
     },
@@ -187,25 +187,24 @@ var React = require('react'),
     },
 
     activateDevice(d) {
-        if (this.state.devices[d].accquired && this.state.devices[d].version === 'unknown') {
-            // install bridge
-            this.sendMessage('errorMsg', { code: 'T_NO_TRANSPORT' });
-       }
-       else if (!this.state.devices[d].accquired) {
-            chrome.runtime.sendMessage({
-                type: 'getDeviceState',
-                content: this.state.devices[d]
-            }, (a) => {
-              if (a.success) {
-                this.setState({
-                    dialog: 'loading_dialog',
-                    activeDevice: this.state.devices[d]
-                });
-                this.sendMessage('activateTrezor', this.state.devices[d].path);
-              } else {
-                this.sendMessage('hidePinModal');
-              }
+      if (this.state.devices[d].path === "unreadable-device") {
+        // install bridge
+        this.sendMessage('errorMsg', { code: 'T_NO_TRANSPORT' });
+      } else if (!this.state.devices[d].accquired) {
+        chrome.runtime.sendMessage({
+            type: 'getDeviceState',
+            content: this.state.devices[d]
+        }, (a) => {
+          if (a.success) {
+            this.setState({
+                dialog: 'loading_dialog',
+                activeDevice: this.state.devices[d]
             });
+            this.sendMessage('activateTrezor', this.state.devices[d].path);
+          } else {
+            this.sendMessage('hidePinModal');
+          }
+        });
       } else {
         // activate device
         this.setState({
@@ -247,7 +246,7 @@ var React = require('react'),
     render() {
       var showInstallBridge = false;
       var device_list = Object.keys(this.state.devices).map((key, i = 0) => {
-        if (this.state.devices[key].version === "unknown" && this.state.devices[key].accquired) {
+        if (this.state.devices[key].path === "unreadable-device") {
           showInstallBridge = true;
         }
         return (
@@ -355,7 +354,7 @@ var React = require('react'),
                             <span className="connect_trezor inline">
                       <img src="dist/app-images/connect-trezor.svg" /> Connect TREZOR
                       </span>{' '} and {' '}
-                          <button className="webusb no-style half-transparent"
+                          <button className="webusb no-style half-transparent trezor-webusb-button"
                               ref={f => {this.webusbButton = f;}}>Check for devices</button>
                           </div>
                       ) : (<span><span className="connect_trezor">You are offline, please connect to internet.</span></span>)}
