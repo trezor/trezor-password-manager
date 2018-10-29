@@ -98,10 +98,6 @@ var React = require('react'),
       return stars;
     },
 
-    pinCancel() {
-      this.sendMessage('trezorPinCancel');
-    },
-
     render() {
       return (
         <div className="pin_dialog">
@@ -152,11 +148,6 @@ var React = require('react'),
             </button>
             <button type="button" id="backspace" onClick={this.pinBackspace}>
               &#9003;
-            </button>
-          </div>
-          <div className="pin_cancel">
-            <button type="button" id="cancel" onClick={this.pinCancel}>
-              cancel
             </button>
           </div>
         </div>

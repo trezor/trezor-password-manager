@@ -121,10 +121,12 @@ var React = require('react'),
           break;
 
         case 'cancelPinDialog':
-          this.setState({
-            dialog: 'accept_user',
-            storageReady: true
-          });
+          if (this.state.dialog === 'pin_dialog' || this.state.dialog === 'loading_dialog') {
+            this.setState({
+              dialog: 'accept_user',
+              storageReady: true
+            });
+          }
           break;
 
         case 'hidePinModal':
