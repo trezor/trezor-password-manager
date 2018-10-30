@@ -119,6 +119,7 @@ var React = require('react'),
         firstRowHeader: false,
         encryptedEntries: []
       });
+      chrome.runtime.sendMessage({ type: 'importCancel' });
     },
 
     importStorage(n) {

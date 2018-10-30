@@ -293,6 +293,10 @@ var Promise = require('es6-promise').Promise,
         trezorManager.decryptEntries(request.content, sendResponse, request.clipboardClear);
         break;
 
+      case 'importCancel':
+        chrome.runtime.sendMessage({ type: 'fileSaved' });
+        break;
+
       case 'decryptFullEntry':
         trezorManager.decryptFullEntry(request.content, sendResponse, false);
         break;
