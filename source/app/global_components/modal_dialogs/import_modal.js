@@ -352,9 +352,9 @@ var React = require('react'),
     },
 
     onChangeValue(event) {
-        let id = event.target.getAttribute('id').substr(6);
-        let row = id.substr(0, 1);
-        let col = id.substr(1);
+        let id = event.target.getAttribute('id').split('-');
+        let row = parseInt(id[1]);
+        let col = parseInt(id[2]);
 
         var storage = this.state.storage;
             storage.data[row][col] = event.target.value;
@@ -474,10 +474,12 @@ var React = require('react'),
               val = col.split('|').join(', ');
             }
 
+            let id = 'input-' + n + '-' + i;
+
             i++;
             return <td key={key}>
                 {val}
-                <input type="text" className="edit" id={'input-' + key} value={col} onChange={this.onChangeValue} onFocus={this.onFocusValue} onBlur={this.onBlurValue} />
+                <input type="text" className="edit" id={id} value={col} onChange={this.onChangeValue} onFocus={this.onFocusValue} onBlur={this.onBlurValue} />
             </td>;
           });
           let statusKey = 'status' + i;
