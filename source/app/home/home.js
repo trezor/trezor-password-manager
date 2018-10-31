@@ -121,7 +121,7 @@ var React = require('react'),
           break;
 
         case 'cancelPinDialog':
-          if (this.state.dialog === 'pin_dialog' || this.state.dialog === 'loading_dialog') {
+          if (this.state.dialog === 'pin_dialog' || (this.state.dialog === 'loading_dialog' && this.state.activeDevice.version !== "unknown")) {
             this.setState({
               dialog: 'accept_user',
               storageReady: true
@@ -193,15 +193,15 @@ var React = require('react'),
         // install bridge
         this.sendMessage('errorMsg', { code: 'T_NO_TRANSPORT' });
       } else if (!this.state.devices[d].accquired) {
+        this.setState({
+          dialog: 'loading_dialog',
+          activeDevice: this.state.devices[d]
+        });
         chrome.runtime.sendMessage({
             type: 'getDeviceState',
             content: this.state.devices[d]
         }, (a) => {
           if (a.success) {
-            this.setState({
-                dialog: 'loading_dialog',
-                activeDevice: this.state.devices[d]
-            });
             this.sendMessage('activateTrezor', this.state.devices[d].path);
           } else {
             this.sendMessage('hidePinModal');
