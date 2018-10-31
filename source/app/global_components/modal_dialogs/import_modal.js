@@ -59,6 +59,7 @@ var React = require('react'),
         storageFile: false,
         firstRowHeader: false,
         importStatus: [],
+        importedTags: [],
         encryptedEntries: [],
         dropZoneActive: false
       };
@@ -113,9 +114,16 @@ var React = require('react'),
     },
 
     stopImportProcess() {
+      if (this.state.importedTags.length > 0) {
+        this.state.importedTags.map((tagId) => {
+          window.myStore.removeTag(tagId, false);
+        });
+      }
+
       this.setState({
         storage: false,
         importStatus: [],
+        importedTags: [],
         firstRowHeader: false,
         encryptedEntries: []
       });
@@ -180,6 +188,12 @@ var React = require('react'),
           } else {
             let newId = window.myStore.addNewTag(key, 'cloud');
             tags.push(newId);
+            
+            let importedTags = this.state.importedTags;
+                importedTags.push(newId);
+            this.setState({
+              importedTags: importedTags
+            });
           }
         });
       }
