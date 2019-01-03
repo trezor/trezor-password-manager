@@ -17,7 +17,8 @@ var React = require('react'),
         tags: window.myStore.data.tags,
         active_id: 0,
         active_title: window.myStore.getTagTitleById(0),
-        saving_entry: false
+        saving_entry: false,
+        initAnimationDelay: true
       };
     },
 
@@ -53,6 +54,7 @@ var React = require('react'),
     updateContent(data) {
       if (window.myStore.hasTagId(this.state.active_id) > -1) {
         this.setState({
+          initAnimationDelay: false,
           tags: data.tags,
           active_title: window.myStore.getTagTitleById(this.state.active_id)
         });
@@ -116,9 +118,11 @@ var React = require('react'),
           </DropdownButton>
         ),
         tag_array = Object.keys(this.state.tags).map((key, i = 0) => {
-          var obj = this.state.tags[key];
+          const obj = this.state.tags[key];
+          let classStyle = this.state.active_id === parseInt(key) ? 'active fadeIn' : 'fadeIn';
+          classStyle += this.state.initAnimationDelay ? ' delayed' : '';
           return (
-            <li key={i++} className={this.state.active_id == key ? 'active fadeIn' : 'fadeIn'}>
+            <li key={i++} className={classStyle}>
               <a
                 data-tag-key={key}
                 data-tag-name={obj.title}

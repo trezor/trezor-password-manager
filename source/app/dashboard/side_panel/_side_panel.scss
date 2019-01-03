@@ -68,12 +68,13 @@ aside.left-panel {
 
   ul li.fadeIn {
     opacity: 0;
+    animation: fadeIn .2s ease 0s;
+    animation-fill-mode: forwards;
   }
 
-  @for $i from 1 through 30 {
-    ul li.fadeIn:nth-child(#{$i}) {
-      animation: fadeIn .2s ease (#{$i*0.1s});
-      animation-fill-mode: forwards;
+  @for $i from 1 through 50 {
+    ul li.delayed:nth-child(#{$i}) {
+      animation-delay: (#{$i*0.1s});
     }
   }
 
