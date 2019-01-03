@@ -247,9 +247,13 @@ var React = require('react'),
 
     render() {
       var showInstallBridge = false;
+      var showUnacquired = false;
       var device_list = Object.keys(this.state.devices).map((key, i = 0) => {
         if (this.state.devices[key].path === "unreadable-device") {
           showInstallBridge = true;
+        }
+        if (!this.state.devices[key].accquired) {
+          showUnacquired = true;
         }
         return (
           <li key={i++}>
@@ -366,6 +370,7 @@ var React = require('react'),
                   <span>Choose from device</span>
                   {showInstallBridge && <p style={{marginTop: "15px"}}>TREZOR bridge not installed.</p>}
                   <ul className="dev-list">{device_list}</ul>
+                  {showUnacquired && <p style={{marginTop: "15px"}}>Your device is being used in another window.</p>}
                 </div>
                 <div className={this.state.devices.length ? 'hidden' : 'desc'}>
                   <div className="desc">
