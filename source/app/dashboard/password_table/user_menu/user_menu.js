@@ -31,6 +31,7 @@ var React = require('react'),
     },
 
     userSwitch() {
+      chrome.runtime.sendMessage({ type: 'getFeatures' });
       window.myStore.userSwitch();
     },
 
