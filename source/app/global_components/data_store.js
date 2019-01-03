@@ -221,6 +221,7 @@ class Store extends EventEmitter {
   }
 
   addNewEntries(entries) {
+    entries = entries.reverse();
     entries.forEach(entry => {
       var newId =
         parseInt(
