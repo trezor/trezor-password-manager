@@ -1,3 +1,36 @@
+.left-panel-wrapper {
+  .backdrop {
+    display: none;
+  }
+
+  @media screen and (max-width: $break-small) {
+    aside.left-panel {
+      position: fixed;
+      left: -251px;
+      transition: left .5s;
+      z-index: 9;
+    }
+
+    .backdrop {
+      position: fixed;
+      left: 0;
+      right: 0;
+      height: 100%;
+      background: rgba(255,255,255,.8);
+      z-index: 8;
+    }
+
+    &.show {
+      aside.left-panel {
+        left: 0;
+      }
+      .backdrop {
+        display: block;
+      }
+    }
+  }
+}
+
 aside.left-panel {
   color: $c_grey_content_font;
   outline: none;
@@ -13,16 +46,6 @@ aside.left-panel {
   background-size: 100% 100%;
 
   @include box-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
-
-  @media screen and (max-width: $break-small) {
-    width: 80px;
-  }
-  @media screen and (min-width: $break-large) {
-    position: fixed;
-    left: auto;
-    bottom: 0;
-    top: 0;
-  }
 }
 
 .logo {
@@ -31,14 +54,6 @@ aside.left-panel {
   height: 81px;
   border-bottom: 1px solid rgba(255, 255, 255, .10);
 
-  @media screen and (max-width: $break-small) {
-    padding: 0;
-    text-align: center;
-    width: 80px;
-    line-height: 52px;
-    height: 52px;
-  }
-
   img {
     vertical-align: middle;
     text-align: left;
@@ -46,11 +61,6 @@ aside.left-panel {
     float: left;
     margin-right: 10px;
     height: 34px;
-
-    @media screen and (max-width: $break-small) {
-      margin: 0 auto;
-
-    }
   }
 }
 
@@ -59,7 +69,6 @@ aside.left-panel {
 
   @media screen and (max-width: $break-small) {
     margin-top: 0;
-
   }
 
   ul {
@@ -112,15 +121,6 @@ aside.left-panel {
       outline: none !important;
       @include transition(all 0.3s);
 
-      @media screen and (max-width: $break-small) {
-        width: 80px;
-        height: 60px;
-        line-height: 60px;
-        padding: 0;
-        margin: 0;
-        text-align: center;
-      }
-
       &:hover {
         color: $c_white;
         background: rgba($c_white,.1);
@@ -136,15 +136,6 @@ aside.left-panel {
         font-size: 24px;
         width: 25px;
         float: left;
-
-        @media screen and (max-width: $break-small) {
-          width: 80px;
-          height: 60px;
-          padding: 0;
-          margin: 0;
-          text-align: center;
-        }
-
       }
 
       span {
@@ -154,10 +145,6 @@ aside.left-panel {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-
-        @media screen and (max-width: $break-small) {
-          display: none;
-        }
       }
     }
 

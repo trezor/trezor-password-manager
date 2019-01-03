@@ -18,6 +18,7 @@ var React = require('react'),
         active_id: 0,
         active_title: window.myStore.getTagTitleById(0),
         saving_entry: false,
+        show_mobile_nav: false,
         initAnimationDelay: true
       };
     },
@@ -25,12 +26,14 @@ var React = require('react'),
     componentWillMount() {
       window.myStore.on('changeTag', this.changeTag);
       window.myStore.on('update', this.updateContent);
+      window.myStore.on('mobileNav', this.mobileNav);
       chrome.runtime.onMessage.addListener(this.chromeTableMsgHandler);
     },
 
     componentWillUnmount() {
       window.myStore.removeListener('changeTag', this.changeTag);
       window.myStore.removeListener('update', this.updateContent);
+      window.myStore.removeListener('mobileNav', this.mobileNav);
       chrome.runtime.onMessage.removeListener(this.chromeTableMsgHandler);
     },
 
@@ -80,12 +83,25 @@ var React = require('react'),
       }
     },
 
+    mobileNav(e) {
+      this.setState({
+        show_mobile_nav: e.show
+      });
+    },
+
+    hideMobileNav() {
+      this.setState({
+        show_mobile_nav: false
+      });
+    },
+
     changeTagAndEmitt(e) {
       this.setState({
         active_id: parseInt(e),
         active_title: window.myStore.getTagTitleById(e)
       });
       window.myStore.emit('changeTag', e);
+      this.hideMobileNav();
     },
 
     addTag() {
@@ -138,26 +154,33 @@ var React = require('react'),
         });
 
       return (
-        <aside className="left-panel">
-          <div className="logo">
-            <span className="logo-expanded">
-              <img src="dist/app-images/t-logo.svg" alt="logo" />
-            </span>
-          </div>
+        <div className={'left-panel-wrapper ' + (this.state.show_mobile_nav ? 'show' : '')}>
+          <div className="backdrop" onClick={this.hideMobileNav} />
+          <aside className="left-panel">
+            <div className="logo">
+              <span className="logo-expanded">
+                <img src="dist/app-images/t-logo.svg" alt="logo" />
+              </span>
+            </div>
 
-          <nav className="navigation">
-            <ul className="list-unstyled">
-              {tag_array}
+            <nav className="navigation">
+              <ul className="list-unstyled">
+                {tag_array}
 
-              <li className="add-tag-btn fadeIn">
-                <a onClick={this.state.saving_entry ? false : this.addTag} onTouchStart={this.state.saving_entry ? false : this.addTag} className={this.state.saving_entry ? 'disabled' : ''}>
-                  <i className="icon icon-add" />
-                  <span className="nav-label">Add tag</span>
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </aside>
+                <li className="add-tag-btn fadeIn">
+                  <a
+                    onClick={this.state.saving_entry ? false : this.addTag}
+                    onTouchStart={this.state.saving_entry ? false : this.addTag}
+                    className={this.state.saving_entry ? 'disabled' : ''}
+                  >
+                    <i className="icon icon-add" />
+                    <span className="nav-label">Add tag</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </aside>
+        </div>
       );
     }
   });

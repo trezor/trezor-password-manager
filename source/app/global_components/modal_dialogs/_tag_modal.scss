@@ -22,6 +22,10 @@
         height: 100px;
         line-height: 100px;
         vertical-align: top;
+
+        @media screen and (max-width: $break-small) {
+          max-width: 50%;
+        }
       }
 
       .btn-controls {

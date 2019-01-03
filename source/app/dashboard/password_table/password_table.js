@@ -53,7 +53,7 @@ var React = require('react'),
     },
 
     setExport(value) {
-      switch(value.eventType) {
+      switch (value.eventType) {
         case 'mode':
           this.setExportMode(value.value);
           break;
@@ -101,7 +101,11 @@ var React = require('react'),
 
         case 'fileSaving':
           this.setState({
-            saving_entry: request.key_value || (this.state.saving_entry && this.state.saving_entry !== true ? this.state.saving_entry : true)
+            saving_entry:
+              request.key_value ||
+              (this.state.saving_entry && this.state.saving_entry !== true
+                ? this.state.saving_entry
+                : true)
           });
           break;
 
@@ -113,8 +117,8 @@ var React = require('react'),
 
         case 'exportProgress':
           window.myStore.emit('export', {
-            eventType: 'progress', 
-            value: (request.content.progress + 1)
+            eventType: 'progress',
+            value: request.content.progress + 1
           });
           break;
       }
@@ -239,6 +243,12 @@ var React = require('react'),
       });
     },
 
+    showMobileNav() {
+      window.myStore.emit('mobileNav', {
+        show: true
+      });
+    },
+
     exportToggleAll() {
       var exportAll = true,
         allSelected = true,
@@ -248,7 +258,7 @@ var React = require('react'),
         if (this.activeTag(entries[entryId])) {
           if (this.filterIsSet()) {
             if (this.checkFilterMatching(entries[entryId])) {
-              if (!entries[entryId].export) allSelected = false;  
+              if (!entries[entryId].export) allSelected = false;
             }
           } else {
             if (!entries[entryId].export) allSelected = false;
@@ -289,7 +299,7 @@ var React = require('react'),
       event.preventDefault();
 
       window.myStore.emit('export', {
-        eventType: 'progress', 
+        eventType: 'progress',
         value: 0
       });
 
@@ -388,11 +398,11 @@ var React = require('react'),
         },
         function() {
           window.myStore.emit('export', {
-            eventType: 'mode', 
+            eventType: 'mode',
             value: false
           });
           window.myStore.emit('export', {
-            eventType: 'progress', 
+            eventType: 'progress',
             value: -1
           });
         }
@@ -419,7 +429,6 @@ var React = require('react'),
             if (actTag) {
               if (this.filterIsSet()) {
                 if (this.checkFilterMatching(obj)) {
-
                   if (obj.export) {
                     selectedCount++;
                   } else {
@@ -448,7 +457,6 @@ var React = require('react'),
                   );
                 }
               } else {
-
                 if (obj.export) {
                   selectedCount++;
                 } else {
@@ -492,12 +500,18 @@ var React = require('react'),
             {this.state.exportMode && (
               <div className="col-sm-12">
                 <div className={'export'}>
-                  {this.state.exportProgress === -1 && (<label
-                    className={'checkbox ' + (allSelected && count > 0 ? ' active' : '') + (count === 0 ? ' disabled' : '')}
-                    onClick={this.exportToggleAll}
-                  >
-                    <i>{allSelected && <img src="./images/checkbox_checked.svg" />}</i> Select all
-                  </label>)}
+                  {this.state.exportProgress === -1 && (
+                    <label
+                      className={
+                        'checkbox ' +
+                        (allSelected && count > 0 ? ' active' : '') +
+                        (count === 0 ? ' disabled' : '')
+                      }
+                      onClick={this.exportToggleAll}
+                    >
+                      <i>{allSelected && <img src="./images/checkbox_checked.svg" />}</i> Select all
+                    </label>
+                  )}
                   <span className="info">({selectedCount} entries selected)</span>
                   <Button onClick={this.exportCancel} className="btn-link">
                     Cancel
@@ -514,7 +528,14 @@ var React = require('react'),
               </div>
             )}
             {!this.state.exportMode && (
-              <div className="col-sm-8 col-xs-9">
+              <div className="col-sm-8 col-xs-8">
+                <button
+                  type="button"
+                  onClick={this.showMobileNav}
+                  className="btn btn-link mobile-nav"
+                >
+                  <i className="ion-android-menu" />
+                </button>
                 <button
                   type="button"
                   onClick={this.toggleNewEntry}
@@ -527,7 +548,7 @@ var React = require('react'),
               </div>
             )}
             {!this.state.exportMode && (
-              <div className="col-sm-4 col-xs-3 text-right">
+              <div className="col-sm-4 col-xs-4 text-right">
                 <DropdownButton
                   title="Sort"
                   className="dropdown order"
@@ -581,15 +602,19 @@ var React = require('react'),
               </div>
             )}
           </div>
-          <div className={"data-loader" + (this.state.saving_entry ? " active" : "")}>
-            {this.state.saving_entry && (<div>
+          <div className={'data-loader' + (this.state.saving_entry ? ' active' : '')}>
+            {this.state.saving_entry && (
+              <div>
                 <span className="spinner" />
                 Saving
-              </div>)}
-            {!this.state.saving_entry && (<div>
-              <i className={"icon icon-checkmark"}></i>
-              Saved
-            </div>)}
+              </div>
+            )}
+            {!this.state.saving_entry && (
+              <div>
+                <i className={'icon icon-checkmark'} />
+                Saved
+              </div>
+            )}
           </div>
         </div>
       );
