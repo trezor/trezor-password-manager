@@ -98,13 +98,11 @@ class TrezorMgmt {
     });
   }
 
-  getFeatures(d, callback) {
+  getFeatures() {
     this.trezorConnect.getFeatures({
-      device: d,
+      device: { path:  this._activeDevice.path},
       useEmptyPassphrase: true,
       override: true
-    }).then(result => {
-      if (typeof callback === "function") callback(result);
     });
   }
 

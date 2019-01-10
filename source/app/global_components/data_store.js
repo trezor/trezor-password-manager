@@ -285,6 +285,7 @@ class Store extends EventEmitter {
   }
 
   userSwitch() {
+    this.sendMsg('getFeatures');
     this.sendMsg('userSwitch');
   }
 }

@@ -39,7 +39,7 @@ var React = require('react'),
       window.addEventListener('online', this.updateOnlineStatus);
       window.addEventListener('offline', this.updateOnlineStatus);
       // RUN INIT!
-      this.sendMessage('initPlease');
+        this.sendMessage('initPlease');
     },
 
     componentWillUnmount() {

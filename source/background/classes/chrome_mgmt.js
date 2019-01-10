@@ -124,10 +124,6 @@ class ChromeMgmt {
         this._fillOrSave();
         break;
 
-      case 'clear_session':
-        this.bgStore.emit('clearSession');
-        break;
-
       case 'restart_app':
         chrome.runtime.reload();
         break;

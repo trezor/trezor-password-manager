@@ -306,7 +306,7 @@ var Promise = require('es6-promise').Promise,
         break;
 
       case 'getFeatures':
-        trezorManager.getFeatures(request.content, sendResponse);
+        trezorManager.getFeatures();
         break;
 
       case 'getDeviceState':

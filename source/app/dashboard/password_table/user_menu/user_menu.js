@@ -25,13 +25,12 @@ var React = require('react'),
 
     exportClick() {
       window.myStore.emit('export', {
-        eventType: 'mode', 
+        eventType: 'mode',
         value: true
       });
     },
 
     userSwitch() {
-      chrome.runtime.sendMessage({ type: 'getFeatures' });
       window.myStore.userSwitch();
     },
 

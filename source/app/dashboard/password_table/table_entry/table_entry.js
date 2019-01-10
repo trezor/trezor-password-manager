@@ -21,7 +21,7 @@ var React = require('react'),
       return {
         image_src: 'dist/app-images/transparent.png',
         image_visible: true,
-        mode: (this.props.mode ? this.props.mode : (this.props.exportMode ? 'export' : 'list-mode')),
+        mode: this.props.mode ? this.props.mode : this.props.exportMode ? 'export' : 'list-mode',
         key_value: this.props.key_value,
         title: this.props.title,
         username: this.props.username,
@@ -52,11 +52,10 @@ var React = require('react'),
         exportingEntry: false,
         exportProgress: -1,
         secretProps: {
-            password: this.props.password,
-            safe_note: this.props.safe_note,
-            nonce: this.props.nonce,
-        },
-        _isMounted: false
+          password: this.props.password,
+          safe_note: this.props.safe_note,
+          nonce: this.props.nonce
+        }
       };
     },
 
@@ -112,12 +111,9 @@ var React = require('react'),
       stateValue.exportingEntry = nextProps.exportingEntry || false;
       stateValue.exportProgress = nextProps.exportProgress || -1;
 
-      this.setState(
-        stateValue,
-        () => {
-          this.updateExportProgress();
-        }
-      );
+      this.setState(stateValue, () => {
+        this.updateExportProgress();
+      });
     },
 
     componentDidMount() {
@@ -133,9 +129,6 @@ var React = require('react'),
           React.findDOMNode(this.refs.username).focus();
         }
       }
-      this.setState({
-        _isMounted: true
-      });
     },
 
     updateExportProgress() {
@@ -187,13 +180,15 @@ var React = require('react'),
     },
 
     setTrezorWaitingBackface(msg) {
-      if (msg) {
-        this.setState({
-          waiting_trezor: 'waiting',
-          waiting_trezor_msg: msg
-        });
-      } else {
-        this.setState({ waiting_trezor: '' });
+      if (typeof window.myStore !== 'undefined') {
+        if (msg) {
+          this.setState({
+            waiting_trezor: 'waiting',
+            waiting_trezor_msg: msg
+          });
+        } else {
+          this.setState({ waiting_trezor: '' });
+        }
       }
     },
 
@@ -276,7 +271,7 @@ var React = require('react'),
         };
         chrome.runtime.sendMessage({ type: 'decryptFullEntry', content: data }, response => {
           if (this.responseTarget(response)) {
-            if (response.content.success) {
+            if (response.content.success && typeof window.myStore !== 'undefined') {
               this.setState({
                 password: response.content.password,
                 safe_note: response.content.safe_note,
@@ -342,11 +337,11 @@ var React = require('react'),
             if (data.success) {
               if (this.state.key_value) {
                 this.setState({
-                    secretProps: {
-                      password: response.content.password,
-                      safe_note: response.content.safe_note,
-                      nonce: response.content.nonce
-                    }
+                  secretProps: {
+                    password: response.content.password,
+                    safe_note: response.content.safe_note,
+                    nonce: response.content.nonce
+                  }
                 });
                 this.titleOnBlur();
                 window.myStore.saveDataToEntryById(this.state.key_value, data);
@@ -359,7 +354,7 @@ var React = require('react'),
           });
         } else if (this.state.showMaxFieldLength) {
           var node = React.findDOMNode(this.refs.safe_note);
-              node.classList.add('shake');
+          node.classList.add('shake');
           setTimeout(() => {
             node.classList.remove('shake');
           }, 1200);
@@ -527,13 +522,13 @@ var React = require('react'),
       let textAreaValue = e.target.value;
 
       //Page up
-      if(e.keyCode === 33) {
+      if (e.keyCode === 33) {
         e.preventDefault();
         e.target.setSelectionRange(0, 0);
       }
 
       //Page down
-      if(e.keyCode === 34 && textAreaValue){
+      if (e.keyCode === 34 && textAreaValue) {
         e.preventDefault();
         e.target.setSelectionRange(textAreaValue.length, textAreaValue.length);
       }
@@ -690,12 +685,16 @@ var React = require('react'),
           onClick={this.toggleExportEntry}
         >
           <div className={this.state.mode + ' entry col-xs-12 ' + this.state.content_changed}>
-            <form onSubmit={this.state.saving_entry === this.state.key_value ? false : this.saveEntry}>
-              {this.state.exportProgress == -1 && (<div className={'export' + (this.state.mode === 'export' ? ' active' : '')}>
-                <label className={'checkbox' + (this.state.exportEntry ? ' active' : '')}>
-                  <i>{this.state.exportEntry && <img src="./images/checkbox_checked.svg" />}</i>
-                </label>
-              </div>)}
+            <form
+              onSubmit={this.state.saving_entry === this.state.key_value ? false : this.saveEntry}
+            >
+              {this.state.exportProgress == -1 && (
+                <div className={'export' + (this.state.mode === 'export' ? ' active' : '')}>
+                  <label className={'checkbox' + (this.state.exportEntry ? ' active' : '')}>
+                    <i>{this.state.exportEntry && <img src="./images/checkbox_checked.svg" />}</i>
+                  </label>
+                </div>
+              )}
               <div
                 className={
                   this.state.image_visible && this.isUrl(this.state.title)
@@ -814,9 +813,7 @@ var React = require('react'),
                     show={this.state.showMaxFieldLength}
                     container={this}
                     onHide={() => this.setState({ showMaxFieldLength: false })}
-                    target={() =>
-                      React.findDOMNode(this.refs.safe_note)
-                    }
+                    target={() => React.findDOMNode(this.refs.safe_note)}
                     placement="top"
                   >
                     {maxFieldLength}
@@ -845,7 +842,8 @@ var React = require('react'),
               )}
               <div className="form-buttons">
                 {this.state.key_value !== null &&
-                  this.state.mode !== 'export' && !this.state.saving_entry && (
+                  this.state.mode !== 'export' &&
+                  !this.state.saving_entry && (
                     <div className="edit-btns">
                       <span className="button transparent-btn" onClick={this.changeMode}>
                         Edit
@@ -885,16 +883,20 @@ var React = require('react'),
                 <div className="content-btns">
                   <span
                     className="button green-btn"
-                    onClick={this.state.saving_entry === this.state.key_value ? false : this.saveEntry}
+                    onClick={
+                      this.state.saving_entry === this.state.key_value ? false : this.saveEntry
+                    }
                   >
                     {(this.state.saving_entry === true && !this.state.key_value) ||
-                      this.state.saving_entry === this.state.key_value ?
-                      'Saving' :
-                      'Save'}
+                    this.state.saving_entry === this.state.key_value
+                      ? 'Saving'
+                      : 'Save'}
                   </span>
                   <span
                     className="button white-btn"
-                    onClick={this.state.saving_entry === this.state.key_value ? false : this.discardChanges}
+                    onClick={
+                      this.state.saving_entry === this.state.key_value ? false : this.discardChanges
+                    }
                   >
                     Discard
                   </span>
