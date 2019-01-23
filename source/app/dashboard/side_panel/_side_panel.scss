@@ -119,6 +119,9 @@ aside.left-panel {
       text-decoration: none;
       font-weight: 400;
       outline: none !important;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
       @include transition(all 0.3s);
 
       &:hover {
@@ -142,9 +145,6 @@ aside.left-panel {
         display: inline;
         width: 160px;
         line-height: 24px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
       }
     }
 
