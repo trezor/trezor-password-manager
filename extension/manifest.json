@@ -8,19 +8,19 @@
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {
-        "default": "Alt+Shift+T"
+        "default": "Ctrl+Shift+L"
       },
       "description": "Open TREZOR Password Manager app window."
     },
     "fill_login_form": {
       "suggested_key": {
-        "default": "Alt+Shift+F"
+        "default": "Ctrl+Shift+V"
       },
       "description": "Fill login form with first fitting credentials."
     },
     "restart_app": {
       "suggested_key": {
-        "default": "Alt+Shift+U"
+        "default": "Ctrl+Shift+U"
       },
       "description": "App restart."
     }
