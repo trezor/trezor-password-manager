@@ -133,13 +133,7 @@ class ChromeMgmt {
   _fillCredentials(host) {
     let entry = false;
     if (this.bgStore.decryptedContent) {
-      Object.keys(this.bgStore.decryptedContent.entries).map(key => {
-        let obj = this.bgStore.decryptedContent.entries[key];
-        host = host.indexOf('www.') > -1 ? host.split('www.')[1] : host;
-        if (obj.title.indexOf(host) > -1 || host.indexOf(obj.title) > -1) {
-          entry = obj;
-        }
-      });
+      entry = this._matchingContent(host);
       chrome.tabs.query({ active: true, lastFocusedWindow: true }, tabs => {
         if (typeof tabs[0] !== 'undefined') {
           if (this.bgStore.isUrl(tabs[0].url)) {
@@ -184,10 +178,18 @@ class ChromeMgmt {
   _matchingContent(host) {
     let entry = false;
     if (this.bgStore.decryptedContent && typeof host !== 'undefined') {
+      host = host.split('.').reverse();
+
       Object.keys(this.bgStore.decryptedContent.entries).map(key => {
         let obj = this.bgStore.decryptedContent.entries[key];
-        host = host.indexOf('www.') > -1 ? host.split('www.')[1] : host;
-        if (obj.title.indexOf(host) > -1 || host.indexOf(obj.title) > -1) {
+        let title = obj.title.split('.').reverse();
+        let matches = [];
+
+        title.forEach(function(item, k) {
+          matches.push(item === host[k]);
+        });
+
+        if (matches.every(function(v) { return v === true })) {
           entry = obj;
         }
       });
