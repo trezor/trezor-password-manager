@@ -1,7 +1,7 @@
 {
   "name": "TREZOR Password Manager",
   "description": "Really secure password manager using TREZOR.",
-  "version": "0.6.3.6",
+  "version": "0.6.3.7",
   "author": "SatoshiLabs",
   "short_name": "TREZOR Password Manager",
   "minimum_chrome_version": "59.0.0",
