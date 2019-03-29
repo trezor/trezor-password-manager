@@ -24,6 +24,7 @@ var React = require('react'),
             value: 'title',
             selectedCol: 0
           },
+          
           {
             name: 'Title',
             value: 'note',
@@ -48,6 +49,11 @@ var React = require('react'),
             name: 'Secret note',
             value: 'safe_note',
             selectedCol: 5
+          },
+          {
+            name: 'Is TOTP?',
+            value: 'totp_entry',
+            selectedCol: 6
           },
           {
             name: "- don't import -",
@@ -155,7 +161,7 @@ var React = require('react'),
     resetDropdownOptions() {
       var options = [];
       this.state.dropdownOptions.forEach((option, key) => {
-        if (key === 6) {
+        if (key === 7) {
           option.selectedCol = -1;
         } else {
           option.selectedCol = key;
@@ -203,6 +209,7 @@ var React = require('react'),
       if (!!entry.title || !!entry.note) {
         let data = {
           title: String(entry.title || entry.note),
+          totp_entry:Boolean(entry.totp_entry || 'false'),
           username: String(entry.username || ''),
           password: String(entry.password || ''),
           nonce: String(''),

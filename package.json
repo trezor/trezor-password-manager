@@ -27,6 +27,7 @@
     "gulp-sourcemaps": "^1.3.0",
     "gulp-uglifyes": "^0.1.3",
     "ionicons": "^2.0.1",
+    "otplib": "^11.0.0",
     "papaparse": "^4.3.7",
     "prettier": "^1.14.2",
     "react": "^0.13.2",

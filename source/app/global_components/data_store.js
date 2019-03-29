@@ -208,7 +208,7 @@ class Store extends EventEmitter {
     return resultTagArray;
   }
 
-  addNewEntry(data, toggleNewEntry) {
+  addNewEntry(data, toggleNewEntry,toggleNewTOTP) {
     var newId =
       parseInt(
         Object.keys(this.data.entries)[parseInt(Object.keys(this.data.entries).length) - 1]
@@ -217,7 +217,10 @@ class Store extends EventEmitter {
     this.data.entries[newId] = data;
     this.emit('update', this.data);
     Service.saveContext(this.data);
-    if (toggleNewEntry) this.emit('toggleNewEntry');
+    if (toggleNewTOTP)
+      this.emit('toggleNewTOTP');
+    else if (toggleNewEntry) 
+      this.emit('toggleNewEntry');
   }
 
   addNewEntries(entries) {
@@ -278,6 +281,10 @@ class Store extends EventEmitter {
 
   hideNewEntry() {
     return this.emit('toggleNewEntry');
+  }
+
+  hideNewTOTP() {
+    return this.emit('toggleNewTOTP');
   }
 
   sendMsg(type, content = null) {

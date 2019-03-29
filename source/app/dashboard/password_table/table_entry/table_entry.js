@@ -13,9 +13,11 @@ var React = require('react'),
   Tooltip = require('react-bootstrap').Tooltip,
   OverlayTrigger = require('react-bootstrap').OverlayTrigger,
   Overlay = require('react-bootstrap').Overlay,
+  ProgressBar = require('react-bootstrap').ProgressBar,
   TextareaAutosize = require('react-textarea-autosize'),
   Clipboard = require('clipboard-js'),
   Password = require('../../../global_components/password_mgmt'),
+  otplib = require('otplib'),
   TableEntry = React.createClass({
     getInitialState() {
       return {
@@ -24,6 +26,7 @@ var React = require('react'),
         mode: this.props.mode ? this.props.mode : this.props.exportMode ? 'export' : 'list-mode',
         key_value: this.props.key_value,
         title: this.props.title,
+        totp_entry:this.props.totp_entry,
         username: this.props.username,
         password: this.props.password,
         password_visible: false,
@@ -56,6 +59,7 @@ var React = require('react'),
           safe_note: this.props.safe_note,
           nonce: this.props.nonce
         }
+        
       };
     },
 
@@ -213,6 +217,33 @@ var React = require('react'),
         }
       );
     },
+    showVerificationCode(){
+
+      this.setTrezorWaitingBackface('Showing Code');
+      let data = {
+        title: this.state.title,
+        username: this.state.username,
+        password: this.state.password,
+        safe_note: this.state.safe_note,
+        nonce: this.state.nonce
+      };
+      chrome.runtime.sendMessage(
+        { type: 'decryptFullEntry', content: data, clipboardClear: false },
+        response => {
+          if (response.content.success) {
+            this.state.mode = 'show-code-mode';
+            this.password = response.content.password;
+            if (!this.totp_timer){
+              this.totp_timer = setInterval(()=>{
+                this.forceUpdate();
+              },1000);  
+            }
+            
+          }
+          this.setTrezorWaitingBackface(false);
+        }
+      );
+    },
 
     copyUsernameToClipboard() {
       Clipboard.copy(this.state.username);
@@ -265,6 +296,7 @@ var React = require('react'),
         let data = {
           title: this.state.title,
           username: this.state.username,
+          totp_entry: this.state.totp_entry,
           password: this.state.password,
           safe_note: this.state.safe_note,
           nonce: this.state.nonce
@@ -290,6 +322,8 @@ var React = require('react'),
           }
         });
       } else {
+        clearInterval(this.totp_timer);
+        this.totp_timer=null;
         let oldValues = window.myStore.getEntryValuesById(this.state.key_value);
         if (this.isUrl(this.removeProtocolPrefix(this.state.title))) {
           this.setState({
@@ -322,18 +356,19 @@ var React = require('react'),
             title: this.state.title,
             username: this.state.username,
             password: this.state.password,
+            totp_entry:this.state.totp_entry,
             nonce: this.state.nonce,
             tags: tags_id,
             safe_note: this.state.safe_note,
             note: this.state.note,
             key_value: this.state.key_value
           };
-
           chrome.runtime.sendMessage({ type: 'encryptFullEntry', content: data }, response => {
             data.password = response.content.password;
             data.safe_note = response.content.safe_note;
             data.nonce = response.content.nonce;
             data.success = response.content.success;
+            
             if (data.success) {
               if (this.state.key_value) {
                 this.setState({
@@ -346,7 +381,7 @@ var React = require('react'),
                 this.titleOnBlur();
                 window.myStore.saveDataToEntryById(this.state.key_value, data);
               } else {
-                window.myStore.addNewEntry(data, true);
+                window.myStore.addNewEntry(data, true,data.totp_entry);
               }
             } else {
               console.warn('inconsistent entry');
@@ -398,6 +433,11 @@ var React = require('react'),
         }
       } else {
         window.myStore.hideNewEntry();
+        if(this.state.totp_entry){
+          window.myStore.hideNewTOTP();
+        }
+        
+        
       }
     },
 
@@ -586,8 +626,8 @@ var React = require('react'),
               </a>
             ) : (
               <a
-                onClick={this.isUrl(this.state.title) ? this.openTabAndLogin : null}
-                className={this.isUrl(this.state.title) ? 'pointer openlogin' : ''}
+                onClick={(this.isUrl(this.state.title) && !this.state.totp_entry) ? this.openTabAndLogin : null}
+                className={this.isUrl(this.state.title)&& !this.state.totp_entry ? 'pointer openlogin' : ''}
               >
                 {entryTitleVal}
               </a>
@@ -714,17 +754,29 @@ var React = require('react'),
                 {this.state.username.length === 0 ? (
                   <a
                     href={
-                      this.isUrl(this.state.title) ? this.setProtocolPrefix(this.state.title) : null
+                      this.isUrl(this.state.title)&& !this.state.totp_entry ? this.setProtocolPrefix(this.state.title) : null
                     }
-                    className={this.isUrl(this.state.title) ? 'pointer' : null}
+                    className={this.isUrl(this.state.title)&& !this.state.totp_entry ? 'pointer' : null}
                   />
                 ) : (
                   <a
-                    onClick={this.isUrl(this.state.title) ? this.openTabAndLogin : null}
-                    className={this.isUrl(this.state.title) ? 'pointer' : null}
+                    onClick={(this.isUrl(this.state.title) && !this.state.totp_entry)  ? this.openTabAndLogin : null}
+                    className={this.isUrl(this.state.title)&& !this.state.totp_entry ? 'pointer' : null}
                   />
                 )}
               </div>
+
+
+              {this.state.mode == 'show-code-mode' && (
+                <div className="totp-code">
+                  <div className="code-div">
+                    <span>
+                      {otplib.authenticator.generate(this.password)}
+                    </span>
+                  </div>
+                  <ProgressBar now={otplib.authenticator.timeRemaining()} max={30} label={otplib.authenticator.timeRemaining()+"s"}/>
+                </div>)}
+
 
               <div className="title">
                 <span>{entryTitle}</span>
@@ -742,15 +794,16 @@ var React = require('react'),
                   onKeyUp={this.keyPressed}
                 />
               </div>
-
+              
               <div className="username">
-                <span>Username </span>
+                <span>Username</span>
+                
                 {username}
                 {passwordShadow}
               </div>
-
+              
               <div className="password">
-                <span>Password </span>
+                <span>{!this.state.totp_entry ? "Password" : "TOTP Secret * "}</span>
                 <input
                   type={this.state.password_visible ? 'text' : 'password'}
                   autoComplete="off"
@@ -760,6 +813,7 @@ var React = require('react'),
                   onKeyUp={this.keyPressed}
                   value={this.state.password}
                 />
+
                 <OverlayTrigger placement="top" overlay={showPassword}>
                   <i
                     className={
@@ -768,10 +822,13 @@ var React = require('react'),
                     onClick={this.togglePassword}
                   />
                 </OverlayTrigger>
+                {!this.state.totp_entry && (
                 <OverlayTrigger placement="top" overlay={generatePassword}>
                   <i className="button ion-loop" onClick={this.generatePassword} />
-                </OverlayTrigger>
+                </OverlayTrigger>)
+                }
               </div>
+              
 
               <div className="tags">
                 <span>Tags </span>
@@ -848,12 +905,19 @@ var React = require('react'),
                       <span className="button transparent-btn" onClick={this.changeMode}>
                         Edit
                       </span>
+                       {!this.state.totp_entry ? (
                       <span
                         onClick={this.isUrl(this.state.title) ? this.openTabAndLogin : null}
                         className={this.isUrl(this.state.title) ? 'button blue-btn' : 'hidden'}
                       >
                         Login
-                      </span>
+                  </span>): (
+                      <span
+                        onClick={this.showVerificationCode}
+                        className={'button blue-btn'}
+                      >
+                        Show Code
+                    </span>)}
                     </div>
                   )}
 
@@ -878,7 +942,25 @@ var React = require('react'),
                   >
                     {mandatoryField}
                   </Overlay>
+                  
                 )}
+
+                {this.state.totp_entry && this.state.mode === 'edit-mode' &&
+                    (
+                  <Overlay
+                    show={this.state.showMandatoryField}
+                    container={this}
+                    onHide={() => this.setState({ showMandatoryField: false })}
+                    target={() =>
+                      React.findDOMNode(this.refs.password)
+                    }
+                    placement="right"
+                  >
+                    {mandatoryField}
+                  </Overlay>
+                )}
+
+                
 
                 <div className="content-btns">
                   <span

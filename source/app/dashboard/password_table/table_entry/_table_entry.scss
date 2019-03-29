@@ -6,7 +6,9 @@
   border: none;
   border-top: 1px solid $c_grey_border;
   margin: 0 0 20px 0;
-
+  @media only screen and (max-width: 572px) {
+    margin: 30px 0 20px 0;
+  }
   .card {
     position: relative;
     display: block;
@@ -172,6 +174,53 @@
         cursor: pointer;
       }
 
+      &.show-code-mode{
+        min-height: 160px;
+        border-top: 1px solid rgba($c_grey_content_font, .1);
+        border-bottom: 1px solid rgba($c_grey_content_font, .1);
+        box-shadow: inset 0 2px 10px rgba($c_grey_bg, .3), inset 0px -2px 10px rgba($c_grey_bg, .3);
+        min-height: 0px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        position: relative;
+        
+        .totp-code {
+          text-align: center;
+          font-size: 3em;
+        }
+
+        .code-div{
+          padding:10px;
+        }
+        .progress{
+          width: 85%;
+        }
+        &:hover {
+          background: rgba($c_grey_bg, .5);
+        }
+
+        .username, .title, .password-shadow, .title-label, .password, .tags, .safe-note, .available-tags, .actions {
+          display: none;
+        }
+        
+        .form-buttons {
+          visibility: visible;
+          z-index: 10;
+
+          .edit-btns {
+            display: none;
+          }
+
+          .close-btn {
+            display: block;
+          }
+
+          .clipboard-btn {
+            right: -180px;
+          }
+        }
+
+      }
       &.list-mode,
       &.export {
         min-height: 80px;
@@ -314,6 +363,8 @@
           }
         }
       }
+      
+      
 
       &.edit-mode {
         border-top: 1px solid rgba($c_grey_content_font, .1);

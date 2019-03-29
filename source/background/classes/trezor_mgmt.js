@@ -396,6 +396,7 @@ class TrezorMgmt {
       this._cryptoData = {
         title: data.title,
         username: data.username,
+        totp_entry: data.totp_entry,
         password: data.password,
         safe_note: data.safe_note,
         keyPhrase: this._displayKey(data.title, data.username),
@@ -430,6 +431,7 @@ class TrezorMgmt {
                 content: {
                   title: this._cryptoData.title,
                   username: this._cryptoData.username,
+                  totp_entry:true,
                   password: password,
                   safe_note: safenote,
                   nonce: result.payload.value,
@@ -484,6 +486,7 @@ class TrezorMgmt {
               safenote = new Buffer(entries[i].safe_note);
             data.push({
               title: entries[i].title,
+              totp_entry: entries[i].totp_entry,
               note: entries[i].note,
               username: entries[i].username,
               password: JSON.parse(this.decrypt(password, enckey)),
@@ -524,6 +527,7 @@ class TrezorMgmt {
     this._cryptoData = {
       title: data.title,
       username: data.username,
+      totp_entry: data.totp_entry,
       password: data.password,
       safe_note: data.safe_note,
       keyPhrase: this._displayKey(data.title, data.username),
@@ -580,6 +584,7 @@ class TrezorMgmt {
             content: {
               title: this._cryptoData.title,
               username: this._cryptoData.username,
+              totp_entry: this._cryptoData.username,
               password: JSON.parse(this.decrypt(password, enckey)),
               safe_note: JSON.parse(this.decrypt(safenote, enckey)),
               nonce: this._cryptoData.nonce,

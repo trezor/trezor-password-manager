@@ -24,6 +24,7 @@ var React = require('react'),
         entries: this.addExportTag(window.myStore.data.entries),
         filter: '',
         newEntry: false,
+        newTOTP: false,
         newEntryUrl: '',
         orderType: window.myStore.data.config.orderType || 'note',
         exportMode: false,
@@ -38,6 +39,7 @@ var React = require('react'),
       window.myStore.on('changeTag', this.changeTag);
       window.myStore.on('filter', this.setupFilter);
       window.myStore.on('toggleNewEntry', this.toggleNewEntry);
+      window.myStore.on('toggleNewTOTP', this.toggleNewTOTP)
       window.myStore.on('update', this.updateTableContent);
       window.myStore.on('export', this.setExport);
       chrome.runtime.onMessage.addListener(this.chromeTableMsgHandler);
@@ -47,6 +49,7 @@ var React = require('react'),
       window.myStore.removeListener('changeTag', this.changeTag);
       window.myStore.removeListener('filter', this.setupFilter);
       window.myStore.removeListener('toggleNewEntry', this.toggleNewEntry);
+      window.myStore.removeListener('toggleNewTOTP', this.toggleNewTOTP)
       window.myStore.removeListener('update', this.updateTableContent);
       window.myStore.removeListener('export', this.setExport);
       chrome.runtime.onMessage.removeListener(this.chromeTableMsgHandler);
@@ -242,6 +245,13 @@ var React = require('react'),
         newEntry: !this.state.newEntry
       });
     },
+    toggleNewTOTP(){
+      this.setState({
+        newEntryUrl: '',
+        newEntry: !this.state.newEntry,
+        newTOTP: !this.state.newTOTP
+      });
+    },
 
     showMobileNav() {
       window.myStore.emit('mobileNav', {
@@ -362,7 +372,7 @@ var React = require('react'),
     exportDownload() {
       if (this.state.exportedEntries.length == 0) return;
 
-      var fields = ['title', 'note', 'username', 'password', 'tags', 'safe_note'];
+      var fields = ['title', 'note', 'username', 'password', 'tags', 'safe_note','totp_entry'];
       var text = String();
 
       this.state.exportedEntries.forEach(entry => {
@@ -435,13 +445,14 @@ var React = require('react'),
                     allSelected = false;
                   }
 
-                  count++;
+                  count++;  
                   return (
                     <TableEntry
                       key={key}
                       key_value={key}
                       title={obj.title}
                       username={obj.username}
+                      totp_entry={obj.totp_entry}
                       password={obj.password}
                       nonce={obj.nonce}
                       tags={obj.tags}
@@ -462,7 +473,6 @@ var React = require('react'),
                 } else {
                   allSelected = false;
                 }
-
                 count++;
                 return (
                   <TableEntry
@@ -470,6 +480,7 @@ var React = require('react'),
                     key_value={key}
                     title={obj.title}
                     username={obj.username}
+                    totp_entry={obj.totp_entry}
                     password={obj.password}
                     nonce={obj.nonce}
                     tags={obj.tags}
@@ -539,10 +550,18 @@ var React = require('react'),
                 <button
                   type="button"
                   onClick={this.toggleNewEntry}
-                  disabled={this.state.newEntry || !!this.state.saving_entry}
+                  disabled={this.state.newEntry || !!this.state.saving_entry || this.state.newTOTP}
                   className="blue-btn add"
                 >
                   Add entry
+                </button>
+                <button
+                  type="button"
+                  onClick={this.toggleNewTOTP}
+                  disabled={this.state.newEntry || !!this.state.saving_entry || this.state.newTOTP}
+                  className="blue-btn totp"
+                >
+                  Add TOTP
                 </button>
                 <FilterInput eventEmitter={this.props.eventEmitter} />
               </div>
@@ -588,6 +607,7 @@ var React = require('react'),
                 nonce=""
                 safe_note=""
                 mode={'edit-mode'}
+                totp_entry = {this.state.newTOTP}
                 content_changed={'edited'}
                 saving_entry={this.state.saving_entry}
               />
