@@ -14,7 +14,7 @@
     },
     "fill_login_form": {
       "suggested_key": {
-        "default": "Ctrl+Shift+V"
+        "default": "Ctrl+Shift+U"
       },
       "description": "Fill login form with first fitting credentials."
     },
