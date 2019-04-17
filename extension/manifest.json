@@ -17,12 +17,6 @@
         "default": "Ctrl+Shift+U"
       },
       "description": "Fill login form with first fitting credentials."
-    },
-    "restart_app": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+U"
-      },
-      "description": "App restart."
     }
   },
   "icons": {
