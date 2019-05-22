@@ -12,9 +12,11 @@ var React = require('react'),
     componentDidMount() {},
 
     render() {
+      let date = new Date();
+
       return (
         <div className={'footer ' + this.props.footerStyle}>
-          TREZOR Password Manager © 2018 |{' '}
+          TREZOR Password Manager © {date.getFullYear()} |{' '}
           <a href="https://trezor.io/support/" rel="noopener noreferrer" target="_blank">
             Support Center
           </a>{' '}
