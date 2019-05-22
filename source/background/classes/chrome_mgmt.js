@@ -182,10 +182,12 @@ class ChromeMgmt {
 
       Object.keys(this.bgStore.decryptedContent.entries).map(key => {
         let obj = this.bgStore.decryptedContent.entries[key];
-        let title = obj.title.split('.').reverse();
+        let urlRegex = /^((http[s]?):\/)?\/?([^:\/\s]+)((\/\w+)*\/)?([\w\-\.]*[^#?\s]+)?(.*)?(#[\w\-]+)?$/;
+        let title = obj.title.match(urlRegex);
+        let titleUrl = title[3].split('.').reverse();
         let matches = [];
 
-        title.forEach(function(item, k) {
+        titleUrl.forEach(function(item, k) {
           matches.push(item === host[k]);
         });
 
