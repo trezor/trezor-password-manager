@@ -1,11 +1,11 @@
-# TREZOR Password Manager
+# Trezor Password Manager
 
 ## Overview
 
 
-- [What is TREZOR?](https://trezor.io/)
-- [What is TREZOR Password Manager?](https://trezor.io/passwords/)
-- [Download TREZOR Password Manager for Chrome](https://chrome.google.com/webstore/detail/trezor-password-manager/imloifkgjagghnncjkhggdhalmcnfklk)
+- [What is Trezor?](https://trezor.io/)
+- [What is Trezor Password Manager?](https://trezor.io/passwords/)
+- [Download Trezor Password Manager for Chrome](https://chrome.google.com/webstore/detail/trezor-password-manager/imloifkgjagghnncjkhggdhalmcnfklk)
 
 ## Development setup
 
@@ -27,8 +27,8 @@ you need to register and obtain own API keys.
 [view on github](https://github.com/satoshilabs/password-manager/blob/master/source/background/classes/dropbox_mgmt.js#L11)
    * Google Drive needs to set OAuth.client_id in `/extension/manifest.json` [view on github](https://github.com/satoshilabs/password-manager/blob/master/extension/manifest.json#L49)
 
-4. To make your dev version of extension accessible for TREZOR Chrome Extension and TREZOR Bridge
-   you need to append key value into your extension manifest file. It will override dev extension id to same id as original TREZOR Password manager.
+4. To make your dev version of extension accessible for Trezor Chrome Extension and Trezor Bridge
+   you need to append key value into your extension manifest file. It will override dev extension id to same id as original Trezor Password manager.
    **Remove this key before releasing to production and inform our support to add your new extension key into whitelist!**
    [Read about Manifest key](https://developer.chrome.com/apps/manifest/key)
 
@@ -57,4 +57,4 @@ Always check version number and manifest keys in manifest.json file before build
 
 ## License
 
-TREZOR LICENSE [view on github](https://github.com/satoshilabs/password-manager/blob/master/LICENSE.md)
+Trezor LICENSE [view on github](https://github.com/satoshilabs/password-manager/blob/master/LICENSE.md)
