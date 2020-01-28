@@ -1,16 +1,16 @@
 {
-  "name": "TREZOR Password Manager",
-  "description": "Really secure password manager using TREZOR.",
+  "name": "Trezor Password Manager",
+  "description": "Really secure password manager using Trezor.",
   "version": "0.6.3.8",
   "author": "SatoshiLabs",
-  "short_name": "TREZOR Password Manager",
+  "short_name": "Trezor Password Manager",
   "minimum_chrome_version": "59.0.0",
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {
         "default": "Ctrl+Shift+L"
       },
-      "description": "Open TREZOR Password Manager app window."
+      "description": "Open Trezor Password Manager app window."
     },
     "fill_login_form": {
       "suggested_key": {
@@ -31,7 +31,7 @@
       "19": "images/icon19.png",
       "38": "images/icon38.png"
     },
-    "default_title": "TREZOR Password Manager"
+    "default_title": "Trezor Password Manager"
   },
   "background": {
     "persistent": true,
