@@ -11,6 +11,7 @@
 
 1. Clone repository and install dependencies
 
+`Notice: use node version 8 because of outdated dependencies`
    ```
    git clone git@github.com:satoshilabs/password-manager.git
    cd password-manager
