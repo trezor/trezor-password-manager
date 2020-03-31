@@ -49,9 +49,14 @@ class TrezorMgmt {
     this.trezorConnect.on(TC_DEVICE_EVENT, msg => this._deviceEvent(msg));
     this.trezorConnect.on(TC_UI_EVENT, msg => this._uiEvent(msg));
     this.trezorConnect.init({
+      manifest: {
+        email: 'info@trezor.io',
+        appUrl: 'trezor-password-manager',
+      },
       debug: true,
       webusb: true,
       popup: false,
+      connectSrc: 'https://connect.corp.sldev.cz/develop/',
       // connectSrc: URL_CONNECT
     });
     this.bgStore.emit('checkReopen');
@@ -176,6 +181,7 @@ class TrezorMgmt {
         break;
 
       case TC_UI.REQUEST_BUTTON:
+      case TC_UI.REQUEST_PASSPHRASE_ON_DEVICE:
         this._buttonCallback();
         if (msg.payload.code === 'ButtonRequest_PassphraseType') {
           this.bgStore.emit('sendMessage', 'trezorPassphrase');
