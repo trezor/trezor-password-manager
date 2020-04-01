@@ -180,8 +180,12 @@ class TrezorMgmt {
         this.bgStore.emit('showPinDialog');
         break;
 
-      case TC_UI.REQUEST_BUTTON:
       case TC_UI.REQUEST_PASSPHRASE_ON_DEVICE:
+        this._buttonCallback();
+        this.bgStore.emit('sendMessage', 'passphraseOnDevice');
+        break;
+
+      case TC_UI.REQUEST_BUTTON:
         this._buttonCallback();
         if (msg.payload.code === 'ButtonRequest_PassphraseType') {
           this.bgStore.emit('sendMessage', 'trezorPassphrase');
