@@ -1,5 +1,5 @@
 {
-  "name": "",
+  "name": "trezor-password-manager",
   "version": "0.0.0",
   "description": "",
   "scripts": {
@@ -34,7 +34,7 @@
     "react-router": "^0.13.0",
     "react-textarea-autosize": "^2.5.4",
     "tldjs": "^1.6.2",
-    "trezor-connect": "6.0.0",
+    "trezor-connect": "8.1.1",
     "validator": "^5.5.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.0.0",

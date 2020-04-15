@@ -14,6 +14,13 @@ window.tpmErroLog = [];
 window.AppRootFolder = 'Apps';
 window.AppFolder = 'TREZOR Password Manager';
 
+// Useful for sendMessage debugging (chrome.runtime.lastError)
+// const sm = chrome.runtime.sendMessage;
+// chrome.runtime.sendMessage = (a, b) => {
+//   console.log("runtime.sendMessage:", a, b);
+//   sm(a, b);
+// }
+
 // Storage will be used for background internal messaging (extends EventEmitter) ...
 var Promise = require('es6-promise').Promise,
   setupReady = false,

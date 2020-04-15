@@ -49,6 +49,10 @@ class TrezorMgmt {
     this.trezorConnect.on(TC_DEVICE_EVENT, msg => this._deviceEvent(msg));
     this.trezorConnect.on(TC_UI_EVENT, msg => this._uiEvent(msg));
     this.trezorConnect.init({
+      manifest: {
+        email: 'info@trezor.io',
+        appUrl: 'trezor-password-manager',
+      },
       debug: true,
       webusb: true,
       popup: false,
@@ -173,6 +177,11 @@ class TrezorMgmt {
     switch (msg.type) {
       case TC_UI.REQUEST_PIN:
         this.bgStore.emit('showPinDialog');
+        break;
+
+      case TC_UI.REQUEST_PASSPHRASE_ON_DEVICE:
+        this._buttonCallback();
+        this.bgStore.emit('sendMessage', 'passphraseOnDevice');
         break;
 
       case TC_UI.REQUEST_BUTTON:

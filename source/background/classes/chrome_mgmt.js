@@ -52,15 +52,15 @@ class ChromeMgmt {
   openAppTab() {
     return new Promise((resolve, reject) => {
       chrome.runtime.sendMessage({ type: 'isAppOpen', content: '' }, response => {
-        if (!!response) {
-          this.focusTab(response.tab.id).then(() => {
-            resolve(response.tab.id);
-          });
-        } else {
+        if (chrome.runtime.lastError || !response) {
           chrome.tabs.create({ url: this.bgStore.appUrl, selected: true }, tab => {
             this.focusTab(tab.id).then(() => {
               resolve(tab.id);
             });
+          });
+        } else {
+          this.focusTab(response.tab.id).then(() => {
+            resolve(response.tab.id);
           });
         }
       });

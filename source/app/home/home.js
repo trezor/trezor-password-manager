@@ -29,6 +29,7 @@ var React = require('react'),
         dialog: 'preloading',
         loadingText: 'Waking up ...',
         passphrase: false,
+        passphraseOnDevice: false,
         transportType: false,
         isOnline: navigator.onLine
       };
@@ -144,7 +145,9 @@ var React = require('react'),
 
         case 'showButtonDialog':
           this.setState({
-            dialog: 'button_dialog'
+            dialog: 'button_dialog',
+            passphrase: false,
+            passphraseOnDevice: false,
           });
           break;
 
@@ -159,6 +162,14 @@ var React = require('react'),
           if (this.state.activeDevice.version === 2) {
             this.setState({
               passphrase: true
+            });
+          }
+          break;
+
+        case 'passphraseOnDevice':
+          if (this.state.activeDevice.version === 2) {
+            this.setState({
+              passphraseOnDevice: true
             });
           }
           break;
@@ -400,12 +411,16 @@ var React = require('react'),
             >
               <h1>
                 <span className="icon icon-device" />
-                <div className={!this.state.passphrase ? 'desc' : 'hidden'}>
+                <div className={!this.state.passphrase && !this.state.passphraseOnDevice ? 'desc' : 'hidden'}>
                   Follow instructions on your <br />{' '}
                   <b className="smallcaps">{this.state.activeDevice.label}</b> device.
                 </div>
                 <div className={this.state.passphrase ? 'desc' : 'hidden'}>
                   Select <span className="badge">Host</span> on the device to continue.
+                  <br /> <small>TREZOR Password Manager does not support passphrase yet.</small>
+                </div>
+                <div className={this.state.passphraseOnDevice ? 'desc' : 'hidden'}>
+                  Enter empty passphrase on <b className="smallcaps">{this.state.activeDevice.label}</b> device.
                   <br /> <small>TREZOR Password Manager does not support passphrase yet.</small>
                 </div>
               </h1>
