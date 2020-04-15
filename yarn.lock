@@ -4555,10 +4555,10 @@ tough-cookie@~2.3.3:
   dependencies:
     punycode "^1.4.1"
 
-trezor-connect@8.1.0:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/trezor-connect/-/trezor-connect-8.1.0.tgz#c11e304bc4ce7c07c9373fa680d108b3ed005b17"
-  integrity sha512-4qu7kRwjM1NeG9oUMypP2yC4f5m4yEMyBy4tPl5YSIMeSl+A3Uqr/HV9oA+gm10z9KCqxCA+ra6zL3ZuOMHr5A==
+trezor-connect@8.1.1:
+  version "8.1.1"
+  resolved "https://registry.yarnpkg.com/trezor-connect/-/trezor-connect-8.1.1.tgz#9e68ed673a39763d973ba9f641232ec30642580b"
+  integrity sha512-JEh4ACtqOSx7RzTb4IkJFP8HKtgMZ3voKO0OpNev6vJ+T0Mb+UOUM9DGxuWIgI+z53BajAUjAXiuD5t61Y/Wlw==
   dependencies:
     "@babel/runtime" "^7.8.7"
     events "^3.1.0"
