@@ -56,7 +56,6 @@ class TrezorMgmt {
       debug: true,
       webusb: true,
       popup: false,
-      connectSrc: 'https://connect.corp.sldev.cz/develop/',
       // connectSrc: URL_CONNECT
     });
     this.bgStore.emit('checkReopen');
