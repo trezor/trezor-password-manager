@@ -304,7 +304,7 @@ class TrezorMgmt {
 
   _validateTransport(payload) {
     if (typeof payload.type !== 'undefined' && typeof payload.version !== 'undefined') {
-      if (payload.type !== 'bridge' && payload.type !== 'ParallelTransport') {
+      if (payload.type !== 'bridge' && payload.type !== 'WebUsbPlugin') {
         this.bgStore.emit('sendMessage', 'errorMsg', { code: 'T_NO_TRANSPORT' });
       } else if (
         payload.type === 'bridge' &&
