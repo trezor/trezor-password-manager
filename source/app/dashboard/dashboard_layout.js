@@ -41,6 +41,7 @@ var React = require('react'),
     chromeDashboardMsgHandler(request, sender, sendResponse) {
       switch (request.type) {
         case 'trezorDisconnected':
+        case 'disconnected':
           this.setState({
             ready: false
           });
