@@ -417,6 +417,21 @@ var React = require('react'),
             supportDefaultMailText: ''
           };
           break;
+        case 'UNAUTHORIZED':
+          return {
+            showModal: true,
+            errorTitle: 'You were logged out',
+            solution: ['Sign to ' + content.storage + ' again'],
+            restartAction: false,
+            supportAction: false,
+            redirectAction: false,
+            closeAction: true,
+            cleanupAction: false,
+            redirectText: '',
+            redirectTo: '',
+            supportDefaultMailText: ''
+          };
+          break;
       }
       return {
         showModal: true,

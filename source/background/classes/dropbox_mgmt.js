@@ -62,15 +62,19 @@ class DropboxMgmt {
         }
     }
 
-    getDropboxUsername() {
-        this.dbc.usersGetCurrentAccount()
-            .then((response) => {
-                this.bgStore.setUsername(response.name.display_name, 'DROPBOX');
-            })
-            .catch((error) => {
-                console.error(error);
-        });
-    }
+  getDropboxUsername() {
+    this.dbc.usersGetCurrentAccount()
+      .then((response) => {
+        this.bgStore.setUsername(response.name.display_name, 'DROPBOX');
+      })
+      .catch((error) => {
+        console.error(error);
+        if (error.status === 401) {
+          this.authToken = '';
+          this.connect();
+        }
+      });
+  }
 
   loadFile() {
     if (!this.bgStore.fileName) {
@@ -103,6 +107,9 @@ class DropboxMgmt {
         if (error.status === 400) {
           this.connect();
         }
+        if (error.status === 401) {
+          return this.handleUnauthorized();
+        }
         // we try to check if file is accessible
         if (dbRetryFileLoad) {
           setTimeout(() => {
@@ -130,11 +137,15 @@ class DropboxMgmt {
       })
       .catch(error => {
         console.error(error);
-        this.bgStore.emit('sendMessage', 'errorMsg', {
-          code: 'NETWORK_ERROR',
-          msg: error.status,
-          storage: 'Dropbox'
-        });
+        if (error.status === 401) {
+          return this.handleUnauthorized();
+        }
+        this.authToken =
+          this.bgStore.emit('sendMessage', 'errorMsg', {
+            code: 'NETWORK_ERROR',
+            msg: error.status,
+            storage: 'Dropbox'
+          });
       });
   }
 
@@ -154,6 +165,17 @@ class DropboxMgmt {
       query[decodeURIComponent(b[0])] = decodeURIComponent(b[1] || '');
     }
     return query;
+  }
+
+  handleUnauthorized() {
+    delete window.localStorage[STORAGE];
+    this.authToken = '';
+    this.bgStore.disconnect();
+    this.bgStore.emit('sendMessage', 'disconnected');
+    this.bgStore.emit('sendMessage', 'errorMsg', {
+      code: 'UNAUTHORIZED',
+      storage: 'Dropbox'
+    });
   }
 }
 
