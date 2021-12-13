@@ -1,5 +1,5 @@
 var gulp = require('gulp'),
-  sass = require('gulp-sass'),
+  sass = require('gulp-sass')(require('sass')),
   connect = require('gulp-connect'),
   uglify = require('gulp-uglifyes'),
   cleanCSS = require('gulp-clean-css'),
@@ -10,7 +10,7 @@ var gulp = require('gulp'),
   browserify = require('browserify');
 
 gulp.task('sass', function() {
-  gulp
+  return gulp
     .src('./source/app/*.scss')
     .pipe(sass())
     .pipe(gulp.dest('./extension/dist/'))
@@ -18,7 +18,7 @@ gulp.task('sass', function() {
 });
 
 gulp.task('production-sass', function() {
-  gulp
+  return gulp
     .src('./source/app/*.scss')
     .pipe(sass())
     .pipe(cleanCSS())
@@ -111,6 +111,6 @@ gulp.task('watch', () => {
   gulp.watch('./source/app/**/*.js', ['dev-app']);
 });
 
-gulp.task('default', ['production-app', 'production-bg', 'sass']);
-gulp.task('serve', ['dev-bg', 'dev-app', 'sass', 'connect', 'watch']);
-gulp.task('production', ['production-app', 'production-bg', 'production-sass']);
+gulp.task('default', gulp.series('production-app', 'production-bg', 'sass'));
+gulp.task('serve', gulp.series('dev-bg', 'dev-app', 'sass', 'connect', 'watch'));
+gulp.task('production', gulp.series('production-app', 'production-bg', 'production-sass'));
