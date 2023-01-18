@@ -362,9 +362,15 @@ var React = require('react'),
     exportDownload() {
       if (this.state.exportedEntries.length == 0) return;
 
-      var fields = ['title', 'note', 'username', 'password', 'tags', 'safe_note'];
-      var text = String();
+      var fields = [
+        'title',   // -> url/title
+        'username',
+        'password',
+        'safe_note',
+        'note',    // -> title
+      ];
 
+      var text = String();
       this.state.exportedEntries.forEach(entry => {
         var values = [];
         fields.forEach((field, key) => {
@@ -378,6 +384,8 @@ var React = require('react'),
         });
         text = text + values.join(',') + '\n';
       });
+
+      text = `url,username,password,extra,name\n${text}`
 
       var blob = new Blob([text], { type: 'octet/stream' }),
         url = window.URL.createObjectURL(blob),
