@@ -66,7 +66,7 @@ var React = require('react'),
               <PinModal />
               <SidePanel />
               <section className="content">
-             /*   <div
+                {/* <div
                   style={{
                     backgroundColor: 'red',
                     color: 'white !important',
@@ -87,9 +87,7 @@ var React = require('react'),
                     our guide
                   </a>
                   &#160; to learn how to move all your data.
-                </div>
-               */
-            
+                </div> */}
                 <PasswordTable />
                 <Footer footerStyle="black" />
               </section>
