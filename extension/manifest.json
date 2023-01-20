@@ -1,7 +1,7 @@
 {
   "name": "Trezor Password Manager",
   "description": "Really secure password manager using Trezor.",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "author": "SatoshiLabs",
   "short_name": "Trezor Password Manager",
   "minimum_chrome_version": "59.0.0",
