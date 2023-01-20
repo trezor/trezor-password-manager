@@ -66,28 +66,7 @@ var React = require('react'),
               <PinModal />
               <SidePanel />
               <section className="content">
-                <div
-                  style={{
-                    backgroundColor: 'red',
-                    color: 'white !important',
-                    padding: '8px',
-                    lineHeight: 1.4
-                  }}
-                >
-                  Trezor password manager will be deprecated by the end of June 2023. Please follow
-                  &#160;
-                  <a
-                    href="https://trezor.io/learn/a/trezor-password-manager"
-                    target="_blank"
-                    style={{
-                      color: 'white',
-                      textDecoration: 'underline'
-                    }}
-                  >
-                    our guide
-                  </a>
-                  &#160; to learn how to move all your data.
-                </div>
+            
                 <PasswordTable />
                 <Footer footerStyle="black" />
               </section>
