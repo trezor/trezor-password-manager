@@ -5,6 +5,27 @@ let visibleDialog = false,
   getInputs = () => {
     return document.getElementsByTagName('input');
   },
+  internalSetValue = (input, value) => {
+    var lastValue = input.value;
+    var value = value;
+    
+    input.focus();
+    input.value = value;
+
+    var ev = new Event("change", { bubbles: true });
+    ev.simulated = true;
+
+    var ev2 = new Event("input", { bubbles: true });
+    ev2.simulated = true;
+
+    var tracker = input._valueTracker;
+    if (tracker) {
+        tracker.setValue(lastValue);
+    }
+
+    input.dispatchEvent(ev);
+    input.dispatchEvent(ev2);
+  },
   setInputValues = content => {
     let inputs = getInputs();
     if (inputs.length === 0) {
@@ -19,19 +40,18 @@ let visibleDialog = false,
       } else {
         appendSuccessDialog();
       }
+
       for (let i = 0; i < inputs.length; i++) {
+        if (inputs[i].focus) inputs[i].focus();
         switch (inputs[i].type.toLowerCase()) {
           case 'email':
-            inputs[i].defaultValue = content.username;
-            inputs[i].value = content.username;
+            internalSetValue(inputs[i], content.username);
             break;
           case 'text':
-            inputs[i].defaultValue = content.username;
-            inputs[i].value = content.username;
+            internalSetValue(inputs[i], content.username);
             break;
           case 'password':
-            inputs[i].defaultValue = content.password;
-            inputs[i].value = content.password;
+            internalSetValue(inputs[i], content.password);
             break;
         }
       }
