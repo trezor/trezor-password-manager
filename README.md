@@ -1,7 +1,9 @@
  
-<!--***Trezor Password Manager will be deprecated by the end of June 2023.*** -->
+***Trezor Password Manager was deprecated by the end of June 2023.***
 
-<!--***Please migrate all your data elsewhere.*** -->
+***Please migrate all your data elsewhere.***
+
+Read more: [Ending support for Trezor Password Manager](https://blog.trezor.io/ending-support-for-trezor-password-manager-23319d16b31c)
 
 # Trezor Password Manager
 
